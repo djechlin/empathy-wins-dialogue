@@ -4,15 +4,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, List, ListCheck, Youtube, Users, ArrowDown, ArrowUp } from 'lucide-react';
 
 const LearningCards = () => {
   const [currentCard, setCurrentCard] = useState(0);
   const [comfortLevel, setComfortLevel] = useState([5]);
   const [friends, setFriends] = useState(['']);
+  const [selectedScenarios, setSelectedScenarios] = useState<string[]>([]);
+  const [reflection, setReflection] = useState('');
+  
+  const totalCards = 5; // Updated total number of cards
   
   const handleNextCard = () => {
-    if (currentCard < 2) {
+    if (currentCard < totalCards - 1) {
       setCurrentCard(currentCard + 1);
     }
   };
@@ -38,10 +42,18 @@ const LearningCards = () => {
     setFriends(updatedFriends);
   };
   
+  const toggleScenario = (scenario: string) => {
+    if (selectedScenarios.includes(scenario)) {
+      setSelectedScenarios(selectedScenarios.filter(s => s !== scenario));
+    } else {
+      setSelectedScenarios([...selectedScenarios, scenario]);
+    }
+  };
+  
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex justify-between items-center mb-4">
-        <div className="text-sm font-medium text-muted-foreground">Card {currentCard + 1} of 3</div>
+        <div className="text-sm font-medium text-muted-foreground">Card {currentCard + 1} of {totalCards}</div>
         <div className="flex space-x-2">
           <Button 
             variant="outline" 
@@ -52,7 +64,7 @@ const LearningCards = () => {
           </Button>
           <Button 
             onClick={handleNextCard} 
-            disabled={currentCard === 2}
+            disabled={currentCard === totalCards - 1}
             className="bg-dialogue-purple hover:bg-dialogue-darkblue"
           >
             Next
@@ -170,6 +182,105 @@ const LearningCards = () => {
                 </p>
                 <Button className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue">
                   Save My List
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Card 4: Challenging Scenarios */}
+      {currentCard === 3 && (
+        <Card className="shadow-lg border-dialogue-neutral animate-fade-in">
+          <CardHeader>
+            <CardTitle>What scenarios do you find most challenging?</CardTitle>
+            <CardDescription>
+              Select all that apply to help us customize your learning experience
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[
+                "Family gatherings with opposing viewpoints",
+                "Social media disagreements with friends",
+                "Workplace political discussions",
+                "Community meetings on divisive issues",
+                "One-on-one conversations with someone who disagrees",
+                "Group settings where I'm the minority opinion"
+              ].map((scenario) => (
+                <div 
+                  key={scenario} 
+                  className={`p-4 rounded-md border cursor-pointer transition-colors ${
+                    selectedScenarios.includes(scenario) 
+                      ? 'bg-dialogue-purple bg-opacity-10 border-dialogue-purple' 
+                      : 'border-dialogue-neutral hover:bg-muted'
+                  }`}
+                  onClick={() => toggleScenario(scenario)}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{scenario}</span>
+                    <ListCheck className={`h-5 w-5 ${
+                      selectedScenarios.includes(scenario) 
+                        ? 'text-dialogue-purple' 
+                        : 'text-muted-foreground'
+                    }`} />
+                  </div>
+                </div>
+              ))}
+              
+              <div className="pt-6">
+                <p className="text-muted-foreground mb-4">
+                  Understanding your specific challenges helps us provide more targeted strategies
+                  for these situations.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Card 5: Reflection */}
+      {currentCard === 4 && (
+        <Card className="shadow-lg border-dialogue-neutral animate-fade-in">
+          <CardHeader>
+            <CardTitle>Reflect on your political dialogue goals</CardTitle>
+            <CardDescription>
+              Share what you hope to achieve by improving your political conversation skills
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <textarea
+                value={reflection}
+                onChange={(e) => setReflection(e.target.value)}
+                placeholder="I hope to improve my political conversation skills because..."
+                className="w-full h-40 p-4 rounded-md border border-dialogue-neutral focus:border-dialogue-purple focus:ring focus:ring-dialogue-purple focus:ring-opacity-50 outline-none resize-none"
+              />
+              
+              <div className="space-y-4">
+                <h4 className="font-semibold flex items-center gap-2">
+                  <Users className="h-5 w-5 text-dialogue-purple" />
+                  What successful dialogue looks like:
+                </h4>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <ArrowDown className="h-4 w-4 text-dialogue-purple mt-1 shrink-0" />
+                    <span>Lower tension in conversations about politics</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ArrowUp className="h-4 w-4 text-dialogue-purple mt-1 shrink-0" />
+                    <span>Increased understanding of different perspectives</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ArrowUp className="h-4 w-4 text-dialogue-purple mt-1 shrink-0" />
+                    <span>More productive exchanges that build relationships</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="pt-4">
+                <Button className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue">
+                  Complete Learning Module
                 </Button>
               </div>
             </div>
