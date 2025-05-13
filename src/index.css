@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&family=PT+Serif:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -124,5 +124,9 @@
   
   .dialogue-card {
     @apply bg-white rounded-lg shadow-md border border-dialogue-neutral p-6 hover:shadow-lg transition-shadow;
+  }
+  
+  .serif-heading {
+    @apply font-serif;
   }
 }
