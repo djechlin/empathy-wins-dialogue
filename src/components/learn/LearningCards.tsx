@@ -4,28 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, List, ListCheck, Youtube, Users, ArrowDown, ArrowUp } from 'lucide-react';
 
 const LearningCards = () => {
-  const [currentCard, setCurrentCard] = useState(0);
   const [comfortLevel, setComfortLevel] = useState([5]);
   const [friends, setFriends] = useState(['']);
   const [selectedScenarios, setSelectedScenarios] = useState<string[]>([]);
   const [reflection, setReflection] = useState('');
-  
-  const totalCards = 5; // Updated total number of cards
-  
-  const handleNextCard = () => {
-    if (currentCard < totalCards - 1) {
-      setCurrentCard(currentCard + 1);
-    }
-  };
-  
-  const handlePrevCard = () => {
-    if (currentCard > 0) {
-      setCurrentCard(currentCard - 1);
-    }
-  };
   
   const addFriend = () => {
     setFriends([...friends, '']);
@@ -52,28 +38,8 @@ const LearningCards = () => {
   
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex justify-between items-center mb-4">
-        <div className="text-sm font-medium text-muted-foreground">Card {currentCard + 1} of {totalCards}</div>
-        <div className="flex space-x-2">
-          <Button 
-            variant="outline" 
-            onClick={handlePrevCard} 
-            disabled={currentCard === 0}
-          >
-            Previous
-          </Button>
-          <Button 
-            onClick={handleNextCard} 
-            disabled={currentCard === totalCards - 1}
-            className="bg-dialogue-purple hover:bg-dialogue-darkblue"
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-      
-      {/* Card 1: Comfort Level Slider */}
-      {currentCard === 0 && (
+      <div className="space-y-8">
+        {/* Card 1: Comfort Level Slider */}
         <Card className="shadow-lg border-dialogue-neutral animate-fade-in">
           <CardHeader>
             <CardTitle>How comfortable are you having political conversations?</CardTitle>
@@ -106,10 +72,8 @@ const LearningCards = () => {
             </div>
           </CardContent>
         </Card>
-      )}
-      
-      {/* Card 2: YouTube Video */}
-      {currentCard === 1 && (
+        
+        {/* Card 2: YouTube Video */}
         <Card className="shadow-lg border-dialogue-neutral animate-fade-in">
           <CardHeader>
             <CardTitle>Introduction to Empathetic Political Dialogue</CardTitle>
@@ -133,10 +97,8 @@ const LearningCards = () => {
             </p>
           </CardContent>
         </Card>
-      )}
-      
-      {/* Card 3: Friends List */}
-      {currentCard === 2 && (
+        
+        {/* Card 3: Friends List */}
         <Card className="shadow-lg border-dialogue-neutral animate-fade-in">
           <CardHeader>
             <CardTitle>Who would you like to have better conversations with?</CardTitle>
@@ -187,10 +149,8 @@ const LearningCards = () => {
             </div>
           </CardContent>
         </Card>
-      )}
 
-      {/* Card 4: Challenging Scenarios */}
-      {currentCard === 3 && (
+        {/* Card 4: Challenging Scenarios */}
         <Card className="shadow-lg border-dialogue-neutral animate-fade-in">
           <CardHeader>
             <CardTitle>What scenarios do you find most challenging?</CardTitle>
@@ -237,10 +197,8 @@ const LearningCards = () => {
             </div>
           </CardContent>
         </Card>
-      )}
 
-      {/* Card 5: Reflection */}
-      {currentCard === 4 && (
+        {/* Card 5: Reflection */}
         <Card className="shadow-lg border-dialogue-neutral animate-fade-in">
           <CardHeader>
             <CardTitle>Reflect on your political dialogue goals</CardTitle>
@@ -250,11 +208,11 @@ const LearningCards = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              <textarea
+              <Textarea
                 value={reflection}
                 onChange={(e) => setReflection(e.target.value)}
                 placeholder="I hope to improve my political conversation skills because..."
-                className="w-full h-40 p-4 rounded-md border border-dialogue-neutral focus:border-dialogue-purple focus:ring focus:ring-dialogue-purple focus:ring-opacity-50 outline-none resize-none"
+                className="w-full h-40 resize-none"
               />
               
               <div className="space-y-4">
@@ -286,7 +244,7 @@ const LearningCards = () => {
             </div>
           </CardContent>
         </Card>
-      )}
+      </div>
     </div>
   );
 };
