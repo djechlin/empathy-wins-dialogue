@@ -4,27 +4,29 @@ import { Button } from '@/components/ui/button';
 import { MessageCircle, LogIn } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
-
 const Navbar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
-
   useEffect(() => {
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null);
+    const {
+      data: {
+        subscription
       }
-    );
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
     });
 
+    // Check for existing session
+    supabase.auth.getSession().then(({
+      data: {
+        session
+      }
+    }) => {
+      setUser(session?.user ?? null);
+    });
     return () => subscription.unsubscribe();
   }, []);
-
   const handleAuthClick = () => {
     if (user) {
       supabase.auth.signOut();
@@ -32,14 +34,12 @@ const Navbar = () => {
       navigate('/auth');
     }
   };
-
-  return (
-    <nav className="py-4 border-b border-border bg-white sticky top-0 z-50">
+  return <nav className="py-4 border-b border-border bg-white sticky top-0 z-50">
       <div className="container-custom flex items-center justify-between">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
             <MessageCircle className="h-6 w-6 text-dialogue-purple" />
-            <Link to="/" className="font-heading font-bold text-xl text-dialogue-darkblue">
+            <Link to="/" className="font-heading text-xl text-dialogue-darkblue">
               type2dialogue
             </Link>
           </div>
@@ -54,24 +54,15 @@ const Navbar = () => {
         </div>
         
         <div className="flex items-center gap-4">
-          <Button 
-            variant="outline" 
-            className="hidden sm:flex"
-            onClick={handleAuthClick}
-          >
+          <Button variant="outline" className="hidden sm:flex" onClick={handleAuthClick}>
             {user ? 'Log Out' : 'Log In'}
           </Button>
-          <Button 
-            className="bg-dialogue-purple hover:bg-dialogue-darkblue"
-            onClick={() => navigate('/auth')}
-          >
+          <Button className="bg-dialogue-purple hover:bg-dialogue-darkblue" onClick={() => navigate('/auth')}>
             <LogIn className="mr-2 h-4 w-4" />
             {user ? 'Dashboard' : 'Sign Up'}
           </Button>
         </div>
       </div>
-    </nav>
-  );
+    </nav>;
 };
-
 export default Navbar;
