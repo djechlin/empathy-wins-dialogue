@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -40,9 +41,14 @@ const LearningCards = () => {
         if (error) {
           console.error('Error fetching willingness data:', error);
           toast.error('Failed to load your saved comfort level');
-        } else if (data && data.length > 0 && data[0].value) {
-          // Set the comfort level from the database
-          setComfortLevel([data[0].value]);
+        } else if (data && data.length > 0) {
+          // Set the comfort level from the database if a value exists
+          if (data[0].value !== null) {
+            setComfortLevel([data[0].value]);
+          }
+          console.log('Loaded comfort level from database:', data[0].value);
+        } else {
+          console.log('No willingness data found');
         }
       } catch (error) {
         console.error('Error in fetching willingness data:', error);
@@ -87,6 +93,8 @@ const LearningCards = () => {
         toast.error('You must be logged in to save your comfort level');
         return;
       }
+
+      console.log('Saving comfort level:', comfortLevel[0]);
       
       // Insert the comfort level into the willingness table
       // user_id will be set automatically via the DEFAULT value we set
@@ -150,7 +158,7 @@ const LearningCards = () => {
                     </div>
                   </div>
                   <div className="text-center text-xl font-heading">
-                    Your comfort level: <span className="text-dialogue-purple font-bold">{comfortLevel}</span>
+                    Your comfort level: <span className="text-dialogue-purple font-bold">{comfortLevel[0]}</span>
                   </div>
                   <p className="text-muted-foreground">
                     Understanding your starting point helps us tailor the learning experience for you.
