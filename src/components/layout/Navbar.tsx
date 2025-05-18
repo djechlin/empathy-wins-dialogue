@@ -47,7 +47,7 @@ const Navbar = () => {
           </Link>
           
           <Link to="/learn" className="text-foreground hover:text-dialogue-purple transition-colors">
-            Learn
+            Learn - Intro
           </Link>
           
           <Link to="/build-story" className="text-foreground hover:text-dialogue-purple transition-colors">
