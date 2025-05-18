@@ -22,15 +22,6 @@ const Navbar = () => {
           <Link to="/learn" className="text-foreground hover:text-dialogue-purple transition-colors">
             Learn
           </Link>
-          <Link to="#" className="text-foreground hover:text-dialogue-purple transition-colors">
-            How It Works
-          </Link>
-          <Link to="#" className="text-foreground hover:text-dialogue-purple transition-colors">
-            Topics
-          </Link>
-          <Link to="#" className="text-foreground hover:text-dialogue-purple transition-colors">
-            Stories
-          </Link>
         </div>
         
         <div className="flex items-center gap-4">
