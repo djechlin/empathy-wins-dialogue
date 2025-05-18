@@ -85,7 +85,7 @@ const Learn = () => {
                         {lesson.description}
                       </CardDescription>
                     </CardHeader>
-                    <AnimatePresence>
+                    <AnimatePresence initial={false}>
                       {openLessons[lesson.id] && (
                         <CollapsibleContent asChild>
                           <motion.div
@@ -98,6 +98,7 @@ const Learn = () => {
                               <motion.div 
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
+                                exit={{ y: 20, opacity: 0 }}
                                 transition={{ delay: 0.1, duration: 0.3 }}
                                 className="prose max-w-none mb-4"
                               >
@@ -106,6 +107,7 @@ const Learn = () => {
                                 <motion.div 
                                   initial={{ opacity: 0 }}
                                   animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
                                   transition={{ delay: 0.2, duration: 0.3 }}
                                   className="bg-dialogue-neutral p-4 rounded-md my-4 border-l-4 border-dialogue-purple"
                                 >
@@ -116,12 +118,18 @@ const Learn = () => {
                                 </motion.div>
                               </motion.div>
                               
-                              <div className="flex justify-end mt-4">
+                              <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ delay: 0.3, duration: 0.3 }}
+                                className="flex justify-end mt-4"
+                              >
                                 <Button variant="outline" className="flex items-center gap-2">
                                   <span>Continue Learning</span>
                                   <ChevronRight className="h-4 w-4" />
                                 </Button>
-                              </div>
+                              </motion.div>
                             </CardContent>
                           </motion.div>
                         </CollapsibleContent>
