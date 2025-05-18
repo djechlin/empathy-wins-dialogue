@@ -66,27 +66,24 @@ const Learn = () => {
             <div className="space-y-6">
               {lessons.map((lesson) => (
                 <Card key={lesson.id} className="border-dialogue-neutral hover:shadow-sm transition-shadow">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-center">
-                      <CardTitle className="text-xl">
-                        Lesson {lesson.id.slice(-1)}: {lesson.title}
-                      </CardTitle>
-                      <CollapsibleTrigger 
-                        onClick={() => toggleLesson(lesson.id)}
-                        className="p-2 hover:bg-muted rounded-full transition-colors"
-                      >
-                        {openLessons[lesson.id] ? (
-                          <ChevronUp className="h-5 w-5" />
-                        ) : (
-                          <ChevronDown className="h-5 w-5" />
-                        )}
-                      </CollapsibleTrigger>
-                    </div>
-                    <CardDescription>
-                      {lesson.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <Collapsible open={openLessons[lesson.id]}>
+                  <Collapsible open={openLessons[lesson.id]} onOpenChange={() => toggleLesson(lesson.id)}>
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-center">
+                        <CardTitle className="text-xl">
+                          Lesson {lesson.id.slice(-1)}: {lesson.title}
+                        </CardTitle>
+                        <CollapsibleTrigger className="p-2 hover:bg-muted rounded-full transition-colors">
+                          {openLessons[lesson.id] ? (
+                            <ChevronUp className="h-5 w-5" />
+                          ) : (
+                            <ChevronDown className="h-5 w-5" />
+                          )}
+                        </CollapsibleTrigger>
+                      </div>
+                      <CardDescription>
+                        {lesson.description}
+                      </CardDescription>
+                    </CardHeader>
                     <CollapsibleContent>
                       <CardContent>
                         <div className="prose max-w-none mb-4">
