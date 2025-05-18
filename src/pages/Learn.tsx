@@ -1,13 +1,49 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, ChevronRight } from 'lucide-react';
+import { BookOpen, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 const Learn = () => {
+  const [openLessons, setOpenLessons] = useState<Record<string, boolean>>({
+    lesson1: false,
+    lesson2: false,
+    lesson3: false,
+  });
+
+  const toggleLesson = (lessonId: string) => {
+    setOpenLessons(prev => ({
+      ...prev,
+      [lessonId]: !prev[lessonId]
+    }));
+  };
+
+  // Lesson data
+  const lessons = [
+    {
+      id: 'lesson1',
+      title: 'Understanding Perspectives',
+      description: 'Learn how to recognize and appreciate different viewpoints in political conversations',
+      content: 'This lesson focuses on understanding how different life experiences and values shape political views. You\'ll learn techniques to recognize perspectives different from your own and why this is crucial for productive dialogue.'
+    },
+    {
+      id: 'lesson2',
+      title: 'Active Listening',
+      description: 'Master the art of truly hearing others during challenging political discussions',
+      content: 'Active listening is more than just hearing words—it\'s about understanding the meaning and emotion behind them. This lesson covers techniques for demonstrating that you truly understand what someone is saying before responding.'
+    },
+    {
+      id: 'lesson3',
+      title: 'Finding Common Ground',
+      description: 'Discover strategies for identifying shared values despite political differences',
+      content: 'Even in heated political disagreements, common values often exist beneath the surface. This lesson teaches methods for identifying shared concerns and building conversations on areas of agreement rather than division.'
+    },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -18,6 +54,64 @@ const Learn = () => {
             <p className="text-muted-foreground mb-8">
               Welcome to the learning section. Explore our resources to develop skills for productive political dialogue.
             </p>
+          </div>
+          
+          {/* Lessons Section */}
+          <div className="max-w-6xl mx-auto mb-16">
+            <h2 className="text-2xl font-bold text-dialogue-darkblue mb-6 flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-dialogue-purple" />
+              Lessons
+            </h2>
+            
+            <div className="space-y-6">
+              {lessons.map((lesson) => (
+                <Card key={lesson.id} className="border-dialogue-neutral hover:shadow-sm transition-shadow">
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-center">
+                      <CardTitle className="text-xl">
+                        Lesson {lesson.id.slice(-1)}: {lesson.title}
+                      </CardTitle>
+                      <CollapsibleTrigger 
+                        onClick={() => toggleLesson(lesson.id)}
+                        className="p-2 hover:bg-muted rounded-full transition-colors"
+                      >
+                        {openLessons[lesson.id] ? (
+                          <ChevronUp className="h-5 w-5" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5" />
+                        )}
+                      </CollapsibleTrigger>
+                    </div>
+                    <CardDescription>
+                      {lesson.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <Collapsible open={openLessons[lesson.id]}>
+                    <CollapsibleContent>
+                      <CardContent>
+                        <div className="prose max-w-none mb-4">
+                          <p>{lesson.content}</p>
+                          
+                          <div className="bg-dialogue-neutral p-4 rounded-md my-4 border-l-4 border-dialogue-purple">
+                            <p className="font-semibold">Key concept:</p>
+                            <p className="text-muted-foreground">
+                              An important takeaway from this lesson.
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex justify-end mt-4">
+                          <Button variant="outline" className="flex items-center gap-2">
+                            <span>Continue Learning</span>
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </Card>
+              ))}
+            </div>
           </div>
           
           {/* Learning Paths */}
