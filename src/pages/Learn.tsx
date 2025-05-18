@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { BookOpen, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Learn = () => {
   const [openLessons, setOpenLessons] = useState<Record<string, boolean>>({
@@ -84,27 +85,48 @@ const Learn = () => {
                         {lesson.description}
                       </CardDescription>
                     </CardHeader>
-                    <CollapsibleContent>
-                      <CardContent>
-                        <div className="prose max-w-none mb-4">
-                          <p>{lesson.content}</p>
-                          
-                          <div className="bg-dialogue-neutral p-4 rounded-md my-4 border-l-4 border-dialogue-purple">
-                            <p className="font-semibold">Key concept:</p>
-                            <p className="text-muted-foreground">
-                              An important takeaway from this lesson.
-                            </p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex justify-end mt-4">
-                          <Button variant="outline" className="flex items-center gap-2">
-                            <span>Continue Learning</span>
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </CollapsibleContent>
+                    <AnimatePresence>
+                      {openLessons[lesson.id] && (
+                        <CollapsibleContent asChild>
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                          >
+                            <CardContent>
+                              <motion.div 
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.1, duration: 0.3 }}
+                                className="prose max-w-none mb-4"
+                              >
+                                <p>{lesson.content}</p>
+                                
+                                <motion.div 
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ delay: 0.2, duration: 0.3 }}
+                                  className="bg-dialogue-neutral p-4 rounded-md my-4 border-l-4 border-dialogue-purple"
+                                >
+                                  <p className="font-semibold">Key concept:</p>
+                                  <p className="text-muted-foreground">
+                                    An important takeaway from this lesson.
+                                  </p>
+                                </motion.div>
+                              </motion.div>
+                              
+                              <div className="flex justify-end mt-4">
+                                <Button variant="outline" className="flex items-center gap-2">
+                                  <span>Continue Learning</span>
+                                  <ChevronRight className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </motion.div>
+                        </CollapsibleContent>
+                      )}
+                    </AnimatePresence>
                   </Collapsible>
                 </Card>
               ))}
