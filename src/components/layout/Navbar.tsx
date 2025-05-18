@@ -8,14 +8,14 @@ const Navbar = () => {
   return (
     <nav className="py-4 border-b border-border bg-white sticky top-0 z-50">
       <div className="container-custom flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="h-6 w-6 text-dialogue-purple" />
-          <Link to="/" className="font-heading font-bold text-xl text-dialogue-darkblue">
-            type2dialogue
-          </Link>
-        </div>
-        
-        <div className="hidden md:flex items-center space-x-8">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="h-6 w-6 text-dialogue-purple" />
+            <Link to="/" className="font-heading font-bold text-xl text-dialogue-darkblue">
+              type2dialogue
+            </Link>
+          </div>
+          
           <Link to="/learn" className="text-foreground hover:text-dialogue-purple transition-colors">
             Learn
           </Link>
