@@ -16,9 +16,6 @@ const Navbar = () => {
         </div>
         
         <div className="hidden md:flex items-center space-x-8">
-          <Link to="/" className="text-foreground hover:text-dialogue-purple transition-colors">
-            Home
-          </Link>
           <Link to="/learn" className="text-foreground hover:text-dialogue-purple transition-colors">
             Learn
           </Link>
