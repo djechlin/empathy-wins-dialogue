@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -8,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, List, ListCheck, Youtube, Users, ArrowDown, ArrowUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const LearningCards = () => {
   const [comfortLevel, setComfortLevel] = useState([5]);
@@ -15,6 +15,44 @@ const LearningCards = () => {
   const [selectedScenarios, setSelectedScenarios] = useState<string[]>([]);
   const [reflection, setReflection] = useState('');
   const [savingComfort, setSavingComfort] = useState(false);
+  const [loadingWillingness, setLoadingWillingness] = useState(true);
+  
+  // Fetch willingness data when component mounts
+  useEffect(() => {
+    async function fetchWillingnessData() {
+      try {
+        setLoadingWillingness(true);
+        
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (!sessionData.session) {
+          // Not authenticated, just stop loading
+          setLoadingWillingness(false);
+          return;
+        }
+        
+        // Get the latest willingness value for this user
+        const { data, error } = await supabase
+          .from('willingness')
+          .select('value')
+          .order('created_at', { ascending: false })
+          .limit(1);
+          
+        if (error) {
+          console.error('Error fetching willingness data:', error);
+          toast.error('Failed to load your saved comfort level');
+        } else if (data && data.length > 0 && data[0].value) {
+          // Set the comfort level from the database
+          setComfortLevel([data[0].value]);
+        }
+      } catch (error) {
+        console.error('Error in fetching willingness data:', error);
+      } finally {
+        setLoadingWillingness(false);
+      }
+    }
+    
+    fetchWillingnessData();
+  }, []);
   
   const addFriend = () => {
     setFriends([...friends, '']);
@@ -84,33 +122,48 @@ const LearningCards = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-8">
-              <div>
-                <Slider 
-                  value={comfortLevel} 
-                  onValueChange={setComfortLevel}
-                  max={10}
-                  min={1}
-                  step={1}
-                  className="py-4"
-                />
-                <div className="flex justify-between mt-2 text-sm text-muted-foreground">
-                  <span>1 - Very uncomfortable</span>
-                  <span>10 - Very comfortable</span>
+              {loadingWillingness ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-8 w-full" />
+                  <div className="flex justify-between mt-2">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-5 w-32" />
+                  </div>
+                  <Skeleton className="h-8 w-40 mx-auto" />
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-10 w-full" />
                 </div>
-              </div>
-              <div className="text-center text-xl font-heading">
-                Your comfort level: <span className="text-dialogue-purple font-bold">{comfortLevel}</span>
-              </div>
-              <p className="text-muted-foreground">
-                Understanding your starting point helps us tailor the learning experience for you.
-              </p>
-              <Button
-                onClick={saveComfortLevel}
-                disabled={savingComfort}
-                className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue"
-              >
-                {savingComfort ? 'Saving...' : 'Save My Comfort Level'}
-              </Button>
+              ) : (
+                <>
+                  <div>
+                    <Slider 
+                      value={comfortLevel} 
+                      onValueChange={setComfortLevel}
+                      max={10}
+                      min={1}
+                      step={1}
+                      className="py-4"
+                    />
+                    <div className="flex justify-between mt-2 text-sm text-muted-foreground">
+                      <span>1 - Very uncomfortable</span>
+                      <span>10 - Very comfortable</span>
+                    </div>
+                  </div>
+                  <div className="text-center text-xl font-heading">
+                    Your comfort level: <span className="text-dialogue-purple font-bold">{comfortLevel}</span>
+                  </div>
+                  <p className="text-muted-foreground">
+                    Understanding your starting point helps us tailor the learning experience for you.
+                  </p>
+                  <Button
+                    onClick={saveComfortLevel}
+                    disabled={savingComfort}
+                    className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue"
+                  >
+                    {savingComfort ? 'Saving...' : 'Save My Comfort Level'}
+                  </Button>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>
