@@ -7,7 +7,7 @@ const Hero = () => {
     <section className="py-24 md:py-32 bg-background">
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="animate-fade-in">
+          <div className="animate-fade-in order-2 lg:order-1">
             <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-dialogue-darkblue mb-8">
               Empathy Wins Elections.
             </h1>
@@ -37,7 +37,7 @@ const Hero = () => {
             </div>
           </div>
           
-          <div className="rounded-lg overflow-hidden shadow-xl animate-fade-in">
+          <div className="rounded-lg overflow-hidden shadow-xl animate-fade-in order-1 lg:order-2">
             <img 
               src="/lovable-uploads/01c3e643-e913-481c-85db-4d3ca81a0318.png" 
               alt="Two people having a conversation overlooking city at dusk" 
