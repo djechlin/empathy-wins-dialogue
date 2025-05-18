@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { BookOpen, ChevronRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -74,11 +73,12 @@ const Learn = () => {
                           Lesson {lesson.id.slice(-1)}: {lesson.title}
                         </CardTitle>
                         <CollapsibleTrigger className="p-2 hover:bg-muted rounded-full transition-colors">
-                          {openLessons[lesson.id] ? (
-                            <ChevronUp className="h-5 w-5" />
-                          ) : (
+                          <motion.div
+                            animate={{ rotate: openLessons[lesson.id] ? 180 : 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                          >
                             <ChevronDown className="h-5 w-5" />
-                          )}
+                          </motion.div>
                         </CollapsibleTrigger>
                       </div>
                       <CardDescription>
