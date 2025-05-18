@@ -1,5 +1,7 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
+
 const Hero = () => {
   return <section className="py-24 md:py-32 bg-background">
       <div className="container-custom">
@@ -8,7 +10,7 @@ const Hero = () => {
             <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-dialogue-darkblue mb-8 font-light">
               Empathy Wins Elections.
             </h1>
-            <p className="text-lg md:text-xl text-foreground mb-10 max-w-lg leading-relaxed">
+            <p className="text-lg md:text-xl font-serif text-foreground mb-10 max-w-lg leading-relaxed">
               Persuasion happens not by talking and informing, but through creating a 
               shared space where we listen to those we disagree with. Type2Dialogue
               helps people create that space in their political conversations and
@@ -34,4 +36,5 @@ const Hero = () => {
       </div>
     </section>;
 };
+
 export default Hero;
