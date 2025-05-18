@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { MessageCircle, LogIn } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
+
 const Navbar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+
   useEffect(() => {
     // Set up auth state listener
     const {
@@ -27,6 +29,7 @@ const Navbar = () => {
     });
     return () => subscription.unsubscribe();
   }, []);
+  
   const handleAuthClick = () => {
     if (user) {
       supabase.auth.signOut();
@@ -34,15 +37,13 @@ const Navbar = () => {
       navigate('/auth');
     }
   };
+  
   return <nav className="py-4 border-b border-border bg-white sticky top-0 z-50">
       <div className="container-custom flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <MessageCircle className="h-6 w-6 text-dialogue-purple" />
-            <Link to="/" className="font-heading text-xl text-dialogue-darkblue">
-              type2dialogue
-            </Link>
-          </div>
+          <Link to="/" className="font-heading text-2xl text-gray-800 tracking-tight">
+            type2dialogue
+          </Link>
           
           <Link to="/learn" className="text-foreground hover:text-dialogue-purple transition-colors">
             Learn
@@ -65,4 +66,5 @@ const Navbar = () => {
       </div>
     </nav>;
 };
+
 export default Navbar;
