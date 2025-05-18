@@ -1,17 +1,20 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, List, ListCheck, Youtube, Users, ArrowDown, ArrowUp } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/sonner';
 
 const LearningCards = () => {
   const [comfortLevel, setComfortLevel] = useState([5]);
   const [friends, setFriends] = useState(['']);
   const [selectedScenarios, setSelectedScenarios] = useState<string[]>([]);
   const [reflection, setReflection] = useState('');
+  const [savingComfort, setSavingComfort] = useState(false);
   
   const addFriend = () => {
     setFriends([...friends, '']);
@@ -33,6 +36,30 @@ const LearningCards = () => {
       setSelectedScenarios(selectedScenarios.filter(s => s !== scenario));
     } else {
       setSelectedScenarios([...selectedScenarios, scenario]);
+    }
+  };
+
+  const saveComfortLevel = async () => {
+    try {
+      setSavingComfort(true);
+      
+      // Insert the comfort level into the willingness table
+      const { data, error } = await supabase
+        .from('willingness')
+        .insert([{ value: comfortLevel[0] }]);
+        
+      if (error) {
+        console.error('Error saving comfort level:', error);
+        toast.error('Failed to save your comfort level');
+        return;
+      }
+      
+      toast.success('Your comfort level has been saved!');
+    } catch (error) {
+      console.error('Error in saving comfort level:', error);
+      toast.error('An unexpected error occurred');
+    } finally {
+      setSavingComfort(false);
     }
   };
   
@@ -69,6 +96,13 @@ const LearningCards = () => {
               <p className="text-muted-foreground">
                 Understanding your starting point helps us tailor the learning experience for you.
               </p>
+              <Button
+                onClick={saveComfortLevel}
+                disabled={savingComfort}
+                className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue"
+              >
+                {savingComfort ? 'Saving...' : 'Save My Comfort Level'}
+              </Button>
             </div>
           </CardContent>
         </Card>
