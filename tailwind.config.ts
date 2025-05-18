@@ -73,7 +73,7 @@ export default {
 			},
 			fontFamily: {
 				sans: ['Inter', 'sans-serif'],
-				heading: ['Montserrat', 'sans-serif'],
+				heading: ['Geist Sans', 'Montserrat', 'sans-serif'],
 				serif: ['PT Serif', 'Georgia', 'serif'],
 			},
 			borderRadius: {
