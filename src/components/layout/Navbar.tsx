@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -47,6 +46,10 @@ const Navbar = () => {
           
           <Link to="/learn" className="text-foreground hover:text-dialogue-purple transition-colors">
             Learn
+          </Link>
+          
+          <Link to="/build-story" className="text-foreground hover:text-dialogue-purple transition-colors">
+            Build Story
           </Link>
         </div>
         
