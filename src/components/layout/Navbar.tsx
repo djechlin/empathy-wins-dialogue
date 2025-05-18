@@ -42,7 +42,7 @@ const Navbar = () => {
   return <nav className="py-4 border-b border-border bg-white sticky top-0 z-50">
       <div className="container-custom flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link to="/" className="font-heading text-[18px] font-semibold text-gray-800 tracking-tight">
+          <Link to="/" className="font-sans text-[18px] font-semibold text-gray-800 tracking-tight">
             type2dialogue
           </Link>
           
