@@ -18,7 +18,7 @@ const BuildStory = () => {
           </div>
           
           {/* Introduction Card */}
-          <Card className="mb-8 border-dialogue-neutral bg-white shadow-sm">
+          <Card className="mb-8 border-dialogue-neutral bg-white shadow-sm max-w-3xl mx-auto">
             <CardHeader>
               <CardTitle className="text-dialogue-darkblue">Your Personal Narrative</CardTitle>
               <CardDescription className="text-muted-foreground text-base">
@@ -28,7 +28,7 @@ const BuildStory = () => {
           </Card>
           
           {/* Episodes Section */}
-          <div className="mb-16">
+          <div className="mb-16 max-w-3xl mx-auto">
             <h2 className="font-heading text-2xl font-semibold text-dialogue-darkblue mb-6">
               Episode 1: The Love List
             </h2>
