@@ -85,10 +85,11 @@ const Learn = () => {
                         {lesson.description}
                       </CardDescription>
                     </CardHeader>
-                    <AnimatePresence initial={false}>
+                    <AnimatePresence mode="wait" initial={false}>
                       {openLessons[lesson.id] && (
-                        <CollapsibleContent asChild>
+                        <CollapsibleContent forceMount>
                           <motion.div
+                            key={`content-${lesson.id}`}
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
