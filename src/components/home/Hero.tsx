@@ -39,8 +39,8 @@ const Hero = () => {
           
           <div className="rounded-lg overflow-hidden shadow-xl animate-fade-in">
             <img 
-              src="/lovable-uploads/1f0a2eff-c3d6-42ed-a72f-856fd174d6e4.png" 
-              alt="Two people having a conversation" 
+              src="/lovable-uploads/01c3e643-e913-481c-85db-4d3ca81a0318.png" 
+              alt="Two people having a conversation overlooking city at dusk" 
               className="w-full h-full object-cover rounded-lg"
             />
           </div>
