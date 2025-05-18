@@ -43,8 +43,16 @@ const LearningCards = () => {
     try {
       setSavingComfort(true);
       
+      // Check if user is authenticated
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        toast.error('You must be logged in to save your comfort level');
+        return;
+      }
+      
       // Insert the comfort level into the willingness table
-      const { data, error } = await supabase
+      // user_id will be set automatically via the DEFAULT value we set
+      const { error } = await supabase
         .from('willingness')
         .insert([{ value: comfortLevel[0] }]);
         

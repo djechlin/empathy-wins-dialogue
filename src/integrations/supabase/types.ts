@@ -31,16 +31,19 @@ export type Database = {
         Row: {
           created_at: string
           id: number
+          user_id: string | null
           value: number | null
         }
         Insert: {
           created_at?: string
           id?: number
+          user_id?: string | null
           value?: number | null
         }
         Update: {
           created_at?: string
           id?: number
+          user_id?: string | null
           value?: number | null
         }
         Relationships: []
