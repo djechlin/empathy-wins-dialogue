@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -48,7 +47,7 @@ const Learn = () => {
     sections: [
       {
         id: 'definition',
-        title: 'What is deep canvassing?',
+        title: 'Definition and Purpose',
         content: [
           '**Canvassing**: Talking to people to secure their vote or their support.',
           '**Deep canvassing**: A form of canvassing that involves longer, in-depth conversations in which the canvasser builds a connection with the voter before trying to persuade them on an issue.'
