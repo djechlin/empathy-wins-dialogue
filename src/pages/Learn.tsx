@@ -48,7 +48,7 @@ const Learn = () => {
     sections: [
       {
         id: 'definition',
-        title: '🟢 Definition and Purpose',
+        title: 'Definition and Purpose',
         content: [
           '**Canvassing**: Talking to people to secure their vote or their support.',
           '**Deep canvassing**: A form of canvassing that involves longer, in-depth conversations in which the canvasser builds a connection with the voter before trying to persuade them on an issue.'
@@ -56,7 +56,7 @@ const Learn = () => {
       },
       {
         id: 'characteristics',
-        title: '🟢 Characteristics of a deep canvassing conversation',
+        title: 'Characteristics of a deep canvassing conversation',
         content: [
           'Conversations last up to 20 minutes',
           'Canvassers focus on building a connection by sharing stories about loved ones with the voter',
@@ -67,7 +67,7 @@ const Learn = () => {
       },
       {
         id: 'caseStudies',
-        title: '🟢 Case studies',
+        title: 'Case studies',
         content: [
           'Deep canvassing campaigns have focused on gay rights, transgender rights, extending the social safety net to undocumented immigrants, midterm general election turnout and other issues',
           'Rigorous studies show 3-8 point increase in support for an issue after a deep canvassing conversation.',
@@ -76,7 +76,7 @@ const Learn = () => {
       },
       {
         id: 'philosophy',
-        title: '🟢 Persuasion Philosophy',
+        title: 'Persuasion Philosophy',
         content: [
           'Political persuasion is possible by creating a safe space to process issues, not by presenting more facts',
           'If information flows like an electric current, deep canvassing focuses on lowering emotional resistance, not piling on more information',
@@ -85,7 +85,7 @@ const Learn = () => {
       },
       {
         id: 'flow',
-        title: '🟢 The flow of a deep canvassing conversation',
+        title: 'The flow of a deep canvassing conversation',
         content: [
           'People stay on the phone to chat or keep the door open fairly often.',
           'Canvassers get the voter to share their support or opposition to the issue, rating their support 1-10.',
