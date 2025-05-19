@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -74,7 +75,7 @@ const Learn = () => {
                         </CardTitle>
                         <CollapsibleTrigger className="p-2 hover:bg-muted rounded-full transition-colors">
                           <motion.div
-                            animate={{ rotate: openLessons[lesson.id] ? 180 : 0 }}
+                            animate={{ rotate: openLessons[lesson.id] ? -180 : 0 }}
                             transition={{ duration: 0.3, ease: "easeInOut" }}
                           >
                             <ChevronDown className="h-5 w-5" />
