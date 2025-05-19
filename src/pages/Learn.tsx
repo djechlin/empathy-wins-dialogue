@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -42,7 +41,7 @@ const Learn = () => {
   // Lesson data
   const lessons = [{
     id: 'lesson1',
-    title: 'Understanding Perspectives',
+    title: 'What is deep canvassing?',
     description: 'Learn how to recognize and appreciate different viewpoints in political conversations',
     content: 'This lesson focuses on understanding how different life experiences and values shape political views. You\'ll learn techniques to recognize perspectives different from your own and why this is crucial for productive dialogue.',
     sections: [
@@ -71,7 +70,7 @@ const Learn = () => {
         content: [
           'Deep canvassing campaigns have focused on gay rights, transgender rights, extending the social safety net to undocumented immigrants, midterm general election turnout and other issues',
           'Rigorous studies show 3-8 point increase in support for an issue after a deep canvassing conversation.',
-          'Furthermore, the effect is longlasting, seemingly for a year or more'
+          'Furthermore, the effect is long-lasting, seemingly for a year or more'
         ]
       },
       {
