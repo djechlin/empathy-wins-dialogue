@@ -1,13 +1,17 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, ChevronRight, ChevronDown, Youtube } from 'lucide-react';
+import { BookOpen, ChevronRight, ChevronDown, Youtube, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from '@/components/ui/sonner';
 
 const Learn = () => {
   const [openLessons, setOpenLessons] = useState<Record<string, boolean>>({
@@ -22,8 +26,18 @@ const Learn = () => {
     characteristics: false,
     caseStudies: false,
     philosophy: false,
-    flow: false
+    flow: false,
+    quiz: false
   });
+  
+  // Track quiz answers
+  const [quizAnswers, setQuizAnswers] = useState<Record<string, boolean>>({
+    question1: false,
+    question2: false
+  });
+  
+  // Track if quiz has been submitted
+  const [quizSubmitted, setQuizSubmitted] = useState(false);
   
   const toggleLesson = (lessonId: string) => {
     setOpenLessons(prev => ({
@@ -37,6 +51,34 @@ const Learn = () => {
       ...prev,
       [sectionId]: !prev[sectionId]
     }));
+  };
+  
+  const handleQuizChange = (question: string, value: boolean) => {
+    setQuizAnswers(prev => ({
+      ...prev,
+      [question]: value
+    }));
+  };
+  
+  const submitQuiz = () => {
+    setQuizSubmitted(true);
+    
+    // Both answers should be true for this quiz
+    const allCorrect = quizAnswers.question1 && quizAnswers.question2;
+    
+    if (allCorrect) {
+      toast.success("Great job! All answers are correct.");
+    } else {
+      toast.error("Some answers are incorrect. Please review and try again.");
+    }
+  };
+  
+  const resetQuiz = () => {
+    setQuizAnswers({
+      question1: false,
+      question2: false
+    });
+    setQuizSubmitted(false);
   };
 
   // Lesson data
@@ -99,6 +141,23 @@ const Learn = () => {
           'The canvasser then focuses the conversation on people the voter knows impacted by the issue, or stories of our loved ones more generally. The canvasser often shares a vulnerable story about one of their own loved ones.',
           'The canvasser only brings up issues and politics after they and the voter are opening up to each other. They then focus on nonjudgmental listening as the voter processes the issue.',
           'The conversation concludes with that same 1-10 scale, so voters say aloud and hear themselves say if they\'ve changed their minds.'
+        ]
+      },
+      {
+        id: 'quiz',
+        title: 'Knowledge Check',
+        isQuiz: true,
+        questions: [
+          {
+            id: 'question1',
+            text: 'Deep canvassers share vulnerable stories from their own life to connect with the voter.',
+            correctAnswer: true
+          },
+          {
+            id: 'question2',
+            text: 'Deep canvassers listen to voters talk through the issue rather than share lots of new facts and information.',
+            correctAnswer: true
+          }
         ]
       }
     ]
@@ -228,6 +287,78 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                                                     <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
                                                       <Youtube className="h-4 w-4 text-red-600" />
                                                       <span>Watch this video to get an introduction to deep canvassing</span>
+                                                    </div>
+                                                  </div>
+                                                ) : section.isQuiz ? (
+                                                  <div className="space-y-6">
+                                                    <div className="text-sm text-muted-foreground mb-4">
+                                                      Test your knowledge of deep canvassing concepts by answering these questions.
+                                                    </div>
+                                                    
+                                                    <div className="space-y-6">
+                                                      {section.questions.map((question) => (
+                                                        <div key={question.id} className="space-y-2">
+                                                          <div className="flex items-start gap-2">
+                                                            <div className="flex-1">
+                                                              <p className="font-medium">{question.text}</p>
+                                                            </div>
+                                                            {quizSubmitted && (
+                                                              <div>
+                                                                {quizAnswers[question.id] === question.correctAnswer ? (
+                                                                  <div className="flex items-center text-green-600">
+                                                                    <Check className="h-5 w-5" />
+                                                                  </div>
+                                                                ) : (
+                                                                  <div className="flex items-center text-red-600">
+                                                                    <X className="h-5 w-5" />
+                                                                  </div>
+                                                                )}
+                                                              </div>
+                                                            )}
+                                                          </div>
+                                                          <RadioGroup 
+                                                            value={quizAnswers[question.id] ? "true" : "false"} 
+                                                            onValueChange={(value) => handleQuizChange(question.id, value === "true")}
+                                                            className="flex gap-6"
+                                                            disabled={quizSubmitted}
+                                                          >
+                                                            <div className="flex items-center space-x-2">
+                                                              <RadioGroupItem value="true" id={`${question.id}-true`} />
+                                                              <label htmlFor={`${question.id}-true`} className="text-sm">True</label>
+                                                            </div>
+                                                            <div className="flex items-center space-x-2">
+                                                              <RadioGroupItem value="false" id={`${question.id}-false`} />
+                                                              <label htmlFor={`${question.id}-false`} className="text-sm">False</label>
+                                                            </div>
+                                                          </RadioGroup>
+                                                          
+                                                          {quizSubmitted && quizAnswers[question.id] !== question.correctAnswer && (
+                                                            <div className="text-sm mt-2 p-2 bg-red-50 text-red-800 rounded-md">
+                                                              The correct answer is: {question.correctAnswer ? "True" : "False"}
+                                                            </div>
+                                                          )}
+                                                        </div>
+                                                      ))}
+                                                    </div>
+                                                    
+                                                    <div className="flex justify-end gap-3">
+                                                      {quizSubmitted ? (
+                                                        <Button 
+                                                          onClick={resetQuiz}
+                                                          variant="outline"
+                                                          className="mt-4"
+                                                        >
+                                                          Try Again
+                                                        </Button>
+                                                      ) : (
+                                                        <Button 
+                                                          onClick={submitQuiz}
+                                                          variant="default"
+                                                          className="mt-4 bg-dialogue-purple hover:bg-dialogue-purple/90"
+                                                        >
+                                                          Submit Answers
+                                                        </Button>
+                                                      )}
                                                     </div>
                                                   </div>
                                                 ) : (
