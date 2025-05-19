@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -8,14 +7,12 @@ import { BookOpen, ChevronRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
-
 const Learn = () => {
   const [openLessons, setOpenLessons] = useState<Record<string, boolean>>({
     lesson1: false,
     lesson2: false,
-    lesson3: false,
+    lesson3: false
   });
-
   const toggleLesson = (lessonId: string) => {
     setOpenLessons(prev => ({
       ...prev,
@@ -24,37 +21,31 @@ const Learn = () => {
   };
 
   // Lesson data
-  const lessons = [
-    {
-      id: 'lesson1',
-      title: 'Understanding Perspectives',
-      description: 'Learn how to recognize and appreciate different viewpoints in political conversations',
-      content: 'This lesson focuses on understanding how different life experiences and values shape political views. You\'ll learn techniques to recognize perspectives different from your own and why this is crucial for productive dialogue.'
-    },
-    {
-      id: 'lesson2',
-      title: 'Active Listening',
-      description: 'Master the art of truly hearing others during challenging political discussions',
-      content: 'Active listening is more than just hearing words—it\'s about understanding the meaning and emotion behind them. This lesson covers techniques for demonstrating that you truly understand what someone is saying before responding.'
-    },
-    {
-      id: 'lesson3',
-      title: 'Finding Common Ground',
-      description: 'Discover strategies for identifying shared values despite political differences',
-      content: 'Even in heated political disagreements, common values often exist beneath the surface. This lesson teaches methods for identifying shared concerns and building conversations on areas of agreement rather than division.'
-    },
-  ];
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  const lessons = [{
+    id: 'lesson1',
+    title: 'Understanding Perspectives',
+    description: 'Learn how to recognize and appreciate different viewpoints in political conversations',
+    content: 'This lesson focuses on understanding how different life experiences and values shape political views. You\'ll learn techniques to recognize perspectives different from your own and why this is crucial for productive dialogue.'
+  }, {
+    id: 'lesson2',
+    title: 'Active Listening',
+    description: 'Master the art of truly hearing others during challenging political discussions',
+    content: 'Active listening is more than just hearing words—it\'s about understanding the meaning and emotion behind them. This lesson covers techniques for demonstrating that you truly understand what someone is saying before responding.'
+  }, {
+    id: 'lesson3',
+    title: 'Finding Common Ground',
+    description: 'Discover strategies for identifying shared values despite political differences',
+    content: 'Even in heated political disagreements, common values often exist beneath the surface. This lesson teaches methods for identifying shared concerns and building conversations on areas of agreement rather than division.'
+  }];
+  return <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
         <div className="container-custom py-12">
           <div className="max-w-3xl mx-auto mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-dialogue-darkblue mb-4">Learn</h1>
-            <p className="text-muted-foreground mb-8">
-              Welcome to the learning section. Explore our resources to develop skills for productive political dialogue.
-            </p>
+            <h1 className="text-3xl md:text-4xl font-bold text-dialogue-darkblue mb-4">Learn the deep canvass method</h1>
+            <p className="text-muted-foreground mb-8">For this module, we'll focus on a hypothetical city ballot initiative to improve bus and subway service. The campaign is deploying deep canvassers to talk to people who are registered to vote, but who never vote in off-year local elections.
+
+Do you think the canvasser and possible voters will get into arguments? Maybe there won't be heated partisan debates, but the the canvasser and voter genuinely disagree about the importance of voting. The canvasser must truly persuade the prospective voter to change their minds. Therefore, we can study the full deep canvass method just by learning how to persuade nonvoters in a local election.</p>
           </div>
           
           {/* Lessons Section */}
@@ -65,8 +56,7 @@ const Learn = () => {
             </h2>
             
             <div className="space-y-6">
-              {lessons.map((lesson) => (
-                <Card key={lesson.id} className="border-dialogue-neutral hover:shadow-sm transition-shadow">
+              {lessons.map(lesson => <Card key={lesson.id} className="border-dialogue-neutral hover:shadow-sm transition-shadow">
                   <Collapsible open={openLessons[lesson.id]} onOpenChange={() => toggleLesson(lesson.id)}>
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
@@ -74,10 +64,12 @@ const Learn = () => {
                           Lesson {lesson.id.slice(-1)}: {lesson.title}
                         </CardTitle>
                         <CollapsibleTrigger className="p-2 hover:bg-muted rounded-full transition-colors">
-                          <motion.div
-                            animate={{ rotate: openLessons[lesson.id] ? -180 : 0 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                          >
+                          <motion.div animate={{
+                        rotate: openLessons[lesson.id] ? -180 : 0
+                      }} transition={{
+                        duration: 0.3,
+                        ease: "easeInOut"
+                      }}>
                             <ChevronDown className="h-5 w-5" />
                           </motion.div>
                         </CollapsibleTrigger>
@@ -87,32 +79,46 @@ const Learn = () => {
                       </CardDescription>
                     </CardHeader>
                     <AnimatePresence mode="wait" initial={false}>
-                      {openLessons[lesson.id] && (
-                        <CollapsibleContent forceMount>
-                          <motion.div
-                            key={`content-${lesson.id}`}
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                          >
+                      {openLessons[lesson.id] && <CollapsibleContent forceMount>
+                          <motion.div key={`content-${lesson.id}`} initial={{
+                      opacity: 0,
+                      height: 0
+                    }} animate={{
+                      opacity: 1,
+                      height: "auto"
+                    }} exit={{
+                      opacity: 0,
+                      height: 0
+                    }} transition={{
+                      duration: 0.3,
+                      ease: "easeInOut"
+                    }}>
                             <CardContent>
-                              <motion.div 
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                exit={{ y: 20, opacity: 0 }}
-                                transition={{ delay: 0.1, duration: 0.3 }}
-                                className="prose max-w-none mb-4"
-                              >
+                              <motion.div initial={{
+                          y: 20,
+                          opacity: 0
+                        }} animate={{
+                          y: 0,
+                          opacity: 1
+                        }} exit={{
+                          y: 20,
+                          opacity: 0
+                        }} transition={{
+                          delay: 0.1,
+                          duration: 0.3
+                        }} className="prose max-w-none mb-4">
                                 <p>{lesson.content}</p>
                                 
-                                <motion.div 
-                                  initial={{ opacity: 0 }}
-                                  animate={{ opacity: 1 }}
-                                  exit={{ opacity: 0 }}
-                                  transition={{ delay: 0.2, duration: 0.3 }}
-                                  className="bg-dialogue-neutral p-4 rounded-md my-4 border-l-4 border-dialogue-purple"
-                                >
+                                <motion.div initial={{
+                            opacity: 0
+                          }} animate={{
+                            opacity: 1
+                          }} exit={{
+                            opacity: 0
+                          }} transition={{
+                            delay: 0.2,
+                            duration: 0.3
+                          }} className="bg-dialogue-neutral p-4 rounded-md my-4 border-l-4 border-dialogue-purple">
                                   <p className="font-semibold">Key concept:</p>
                                   <p className="text-muted-foreground">
                                     An important takeaway from this lesson.
@@ -120,13 +126,16 @@ const Learn = () => {
                                 </motion.div>
                               </motion.div>
                               
-                              <motion.div 
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ delay: 0.3, duration: 0.3 }}
-                                className="flex justify-end mt-4"
-                              >
+                              <motion.div initial={{
+                          opacity: 0
+                        }} animate={{
+                          opacity: 1
+                        }} exit={{
+                          opacity: 0
+                        }} transition={{
+                          delay: 0.3,
+                          duration: 0.3
+                        }} className="flex justify-end mt-4">
                                 <Button variant="outline" className="flex items-center gap-2">
                                   <span>Continue Learning</span>
                                   <ChevronRight className="h-4 w-4" />
@@ -134,12 +143,10 @@ const Learn = () => {
                               </motion.div>
                             </CardContent>
                           </motion.div>
-                        </CollapsibleContent>
-                      )}
+                        </CollapsibleContent>}
                     </AnimatePresence>
                   </Collapsible>
-                </Card>
-              ))}
+                </Card>)}
             </div>
           </div>
           
@@ -206,8 +213,6 @@ const Learn = () => {
         </div>
       </main>
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Learn;
