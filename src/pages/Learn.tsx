@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -7,16 +8,34 @@ import { BookOpen, ChevronRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
+
 const Learn = () => {
   const [openLessons, setOpenLessons] = useState<Record<string, boolean>>({
     lesson1: false,
     lesson2: false,
     lesson3: false
   });
+  
+  // Track open sections within Lesson 1
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    definition: false,
+    characteristics: false,
+    caseStudies: false,
+    philosophy: false,
+    flow: false
+  });
+  
   const toggleLesson = (lessonId: string) => {
     setOpenLessons(prev => ({
       ...prev,
       [lessonId]: !prev[lessonId]
+    }));
+  };
+  
+  const toggleSection = (sectionId: string) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId]
     }));
   };
 
@@ -25,7 +44,57 @@ const Learn = () => {
     id: 'lesson1',
     title: 'Understanding Perspectives',
     description: 'Learn how to recognize and appreciate different viewpoints in political conversations',
-    content: 'This lesson focuses on understanding how different life experiences and values shape political views. You\'ll learn techniques to recognize perspectives different from your own and why this is crucial for productive dialogue.'
+    content: 'This lesson focuses on understanding how different life experiences and values shape political views. You\'ll learn techniques to recognize perspectives different from your own and why this is crucial for productive dialogue.',
+    sections: [
+      {
+        id: 'definition',
+        title: '🟢 Definition and Purpose',
+        content: [
+          '**Canvassing**: Talking to people to secure their vote or their support.',
+          '**Deep canvassing**: A form of canvassing that involves longer, in-depth conversations in which the canvasser builds a connection with the voter before trying to persuade them on an issue.'
+        ]
+      },
+      {
+        id: 'characteristics',
+        title: '🟢 Characteristics of a deep canvassing conversation',
+        content: [
+          'Conversations last up to 20 minutes',
+          'Canvassers focus on building a connection by sharing stories about loved ones with the voter',
+          'Instead of explaining the issue to the voter, the canvasser asks the voter how the issue impacts their loves ones or people in their community and nonjudgmentally listens',
+          'Canvassers assume most opposers are persuadable, and most supporters could use a nudge',
+          'Canvassers can fall back to traditional canvassing when they feel there\'s no need to persuade a voter deeply'
+        ]
+      },
+      {
+        id: 'caseStudies',
+        title: '🟢 Case studies',
+        content: [
+          'Deep canvassing campaigns have focused on gay rights, transgender rights, extending the social safety net to undocumented immigrants, midterm general election turnout and other issues',
+          'Rigorous studies show 3-8 point increase in support for an issue after a deep canvassing conversation.',
+          'Furthermore, the effect is longlasting, seemingly for a year or more'
+        ]
+      },
+      {
+        id: 'philosophy',
+        title: '🟢 Persuasion Philosophy',
+        content: [
+          'Political persuasion is possible by creating a safe space to process issues, not by presenting more facts',
+          'If information flows like an electric current, deep canvassing focuses on lowering emotional resistance, not piling on more information',
+          'Canvassers always listen nonjudgmentally as voters process conflicting opinions, creating a safe space for cognitive dissonance and for the voter to change their mind'
+        ]
+      },
+      {
+        id: 'flow',
+        title: '🟢 The flow of a deep canvassing conversation',
+        content: [
+          'People stay on the phone to chat or keep the door open fairly often.',
+          'Canvassers get the voter to share their support or opposition to the issue, rating their support 1-10.',
+          'The canvasser then focuses the conversation on people the voter knows impacted by the issue, or stories of our loved ones more generally. The canvasser often shares a vulnerable story about one of their own loved ones.',
+          'The canvasser only brings up issues and politics after they and the voter are opening up to each other. They then focus on nonjudgmental listening as the voter processes the issue.',
+          'The conversation concludes with that same 1-10 scale, so voters say aloud and hear themselves say if they\'ve changed their minds.'
+        ]
+      }
+    ]
   }, {
     id: 'lesson2',
     title: 'Active Listening',
@@ -37,6 +106,7 @@ const Learn = () => {
     description: 'Discover strategies for identifying shared values despite political differences',
     content: 'Even in heated political disagreements, common values often exist beneath the surface. This lesson teaches methods for identifying shared concerns and building conversations on areas of agreement rather than division.'
   }];
+  
   return <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
@@ -56,7 +126,8 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
             </h2>
             
             <div className="space-y-6">
-              {lessons.map(lesson => <Card key={lesson.id} className="border-dialogue-neutral hover:shadow-sm transition-shadow">
+              {lessons.map(lesson => (
+                <Card key={lesson.id} className="border-dialogue-neutral hover:shadow-sm transition-shadow">
                   <Collapsible open={openLessons[lesson.id]} onOpenChange={() => toggleLesson(lesson.id)}>
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
@@ -65,11 +136,11 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                         </CardTitle>
                         <CollapsibleTrigger className="p-2 hover:bg-muted rounded-full transition-colors">
                           <motion.div animate={{
-                        rotate: openLessons[lesson.id] ? -180 : 0
-                      }} transition={{
-                        duration: 0.3,
-                        ease: "easeInOut"
-                      }}>
+                            rotate: openLessons[lesson.id] ? -180 : 0
+                          }} transition={{
+                            duration: 0.3,
+                            ease: "easeInOut"
+                          }}>
                             <ChevronDown className="h-5 w-5" />
                           </motion.div>
                         </CollapsibleTrigger>
@@ -78,64 +149,89 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                         {lesson.description}
                       </CardDescription>
                     </CardHeader>
+                    
                     <AnimatePresence mode="wait" initial={false}>
-                      {openLessons[lesson.id] && <CollapsibleContent forceMount>
-                          <motion.div key={`content-${lesson.id}`} initial={{
-                      opacity: 0,
-                      height: 0
-                    }} animate={{
-                      opacity: 1,
-                      height: "auto"
-                    }} exit={{
-                      opacity: 0,
-                      height: 0
-                    }} transition={{
-                      duration: 0.3,
-                      ease: "easeInOut"
-                    }}>
+                      {openLessons[lesson.id] && (
+                        <CollapsibleContent forceMount>
+                          <motion.div 
+                            key={`content-${lesson.id}`} 
+                            initial={{ opacity: 0, height: 0 }} 
+                            animate={{ opacity: 1, height: "auto" }} 
+                            exit={{ opacity: 0, height: 0 }} 
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                          >
                             <CardContent>
-                              <motion.div initial={{
-                          y: 20,
-                          opacity: 0
-                        }} animate={{
-                          y: 0,
-                          opacity: 1
-                        }} exit={{
-                          y: 20,
-                          opacity: 0
-                        }} transition={{
-                          delay: 0.1,
-                          duration: 0.3
-                        }} className="prose max-w-none mb-4">
-                                <p>{lesson.content}</p>
+                              <motion.div 
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                exit={{ y: 20, opacity: 0 }}
+                                transition={{ delay: 0.1, duration: 0.3 }}
+                                className="prose max-w-none mb-4"
+                              >
+                                {/* If this is lesson 1, render the detailed content with collapsible sections */}
+                                {lesson.id === 'lesson1' && lesson.sections ? (
+                                  <div className="space-y-4">
+                                    {lesson.sections.map((section) => (
+                                      <Card key={section.id} className="border-dialogue-neutral hover:shadow-md transition-shadow overflow-hidden">
+                                        <CardHeader className="py-3 px-4 bg-dialogue-neutral/10 cursor-pointer" onClick={() => toggleSection(section.id)}>
+                                          <div className="flex items-center justify-between">
+                                            <h3 className="text-lg font-medium">{section.title}</h3>
+                                            <motion.div 
+                                              animate={{ rotate: openSections[section.id] ? -180 : 0 }}
+                                              transition={{ duration: 0.3, ease: "easeInOut" }}
+                                            >
+                                              <ChevronDown className="h-4 w-4 text-dialogue-purple" />
+                                            </motion.div>
+                                          </div>
+                                        </CardHeader>
+                                        <AnimatePresence mode="wait" initial={false}>
+                                          {openSections[section.id] && (
+                                            <motion.div
+                                              initial={{ opacity: 0, height: 0 }}
+                                              animate={{ opacity: 1, height: "auto" }}
+                                              exit={{ opacity: 0, height: 0 }}
+                                              transition={{ duration: 0.3, ease: "easeInOut" }}
+                                            >
+                                              <CardContent className="py-4">
+                                                <ul className="list-disc pl-5 space-y-2">
+                                                  {section.content.map((item, idx) => (
+                                                    <li key={idx} className="text-sm" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                                                  ))}
+                                                </ul>
+                                              </CardContent>
+                                            </motion.div>
+                                          )}
+                                        </AnimatePresence>
+                                      </Card>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <p>{lesson.content}</p>
+                                )}
                                 
-                                <motion.div initial={{
-                            opacity: 0
-                          }} animate={{
-                            opacity: 1
-                          }} exit={{
-                            opacity: 0
-                          }} transition={{
-                            delay: 0.2,
-                            duration: 0.3
-                          }} className="bg-dialogue-neutral p-4 rounded-md my-4 border-l-4 border-dialogue-purple">
+                                <motion.div 
+                                  initial={{ opacity: 0 }} 
+                                  animate={{ opacity: 1 }} 
+                                  exit={{ opacity: 0 }} 
+                                  transition={{ delay: 0.2, duration: 0.3 }}
+                                  className="bg-dialogue-neutral p-4 rounded-md my-4 border-l-4 border-dialogue-purple"
+                                >
                                   <p className="font-semibold">Key concept:</p>
                                   <p className="text-muted-foreground">
-                                    An important takeaway from this lesson.
+                                    {lesson.id === 'lesson1' ? 
+                                      'Deep canvassing creates connections through vulnerability and nonjudgmental listening to achieve long-lasting persuasion.' : 
+                                      'An important takeaway from this lesson.'}
                                   </p>
                                 </motion.div>
                               </motion.div>
                               
-                              <motion.div initial={{
-                          opacity: 0
-                        }} animate={{
-                          opacity: 1
-                        }} exit={{
-                          opacity: 0
-                        }} transition={{
-                          delay: 0.3,
-                          duration: 0.3
-                        }} className="flex justify-end mt-4">
+                              <motion.div 
+                                initial={{ opacity: 0 }} 
+                                animate={{ opacity: 1 }} 
+                                exit={{ opacity: 0 }} 
+                                transition={{ delay: 0.3, duration: 0.3 }} 
+                                className="flex justify-end mt-4"
+                              >
                                 <Button variant="outline" className="flex items-center gap-2">
                                   <span>Continue Learning</span>
                                   <ChevronRight className="h-4 w-4" />
@@ -143,10 +239,12 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                               </motion.div>
                             </CardContent>
                           </motion.div>
-                        </CollapsibleContent>}
+                        </CollapsibleContent>
+                      )}
                     </AnimatePresence>
                   </Collapsible>
-                </Card>)}
+                </Card>
+              ))}
             </div>
           </div>
           
@@ -215,4 +313,5 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
       <Footer />
     </div>;
 };
+
 export default Learn;
