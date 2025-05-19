@@ -48,7 +48,7 @@ const Learn = () => {
     sections: [
       {
         id: 'definition',
-        title: 'Definition and Purpose',
+        title: 'What is deep canvassing?',
         content: [
           '**Canvassing**: Talking to people to secure their vote or their support.',
           '**Deep canvassing**: A form of canvassing that involves longer, in-depth conversations in which the canvasser builds a connection with the voter before trying to persuade them on an issue.'
