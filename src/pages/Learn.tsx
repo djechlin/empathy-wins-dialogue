@@ -1,16 +1,14 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, ChevronRight, ChevronDown, Youtube, Check, X, RotateCcw } from 'lucide-react';
+import { BookOpen, ChevronRight, ChevronDown, Youtube, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Toggle } from '@/components/ui/toggle';
 import { toast } from '@/components/ui/sonner';
 
 const Learn = () => {
@@ -31,13 +29,10 @@ const Learn = () => {
   });
   
   // Track quiz answers
-  const [quizAnswers, setQuizAnswers] = useState<Record<string, boolean>>({
-    question1: false,
-    question2: false
+  const [quizAnswers, setQuizAnswers] = useState<Record<string, string | null>>({
+    question1: null,
+    question2: null
   });
-  
-  // Track if quiz has been submitted
-  const [quizSubmitted, setQuizSubmitted] = useState(false);
   
   const toggleLesson = (lessonId: string) => {
     setOpenLessons(prev => ({
@@ -53,32 +48,38 @@ const Learn = () => {
     }));
   };
   
-  const handleQuizChange = (question: string, value: boolean) => {
-    setQuizAnswers(prev => ({
-      ...prev,
-      [question]: value
-    }));
-  };
-  
-  const submitQuiz = () => {
-    setQuizSubmitted(true);
-    
-    // Both answers should be true for this quiz
-    const allCorrect = quizAnswers.question1 && quizAnswers.question2;
-    
-    if (allCorrect) {
-      toast.success("Great job! All answers are correct.");
-    } else {
-      toast.error("Some answers are incorrect. Please review and try again.");
-    }
+  const handleQuizToggle = (question: string, value: string) => {
+    setQuizAnswers(prev => {
+      // If the same value is already selected, keep it (don't allow toggling off)
+      if (prev[question] === value) {
+        return prev;
+      }
+      
+      // Set to the new value
+      return {
+        ...prev,
+        [question]: value
+      };
+    });
   };
   
   const resetQuiz = () => {
     setQuizAnswers({
-      question1: false,
-      question2: false
+      question1: null,
+      question2: null
     });
-    setQuizSubmitted(false);
+  };
+
+  // Check if an answer is correct
+  const isCorrectAnswer = (questionId: string, answer: string | null): boolean => {
+    if (answer === null) return false;
+    
+    const correctAnswers: Record<string, string> = {
+      question1: "true",
+      question2: "true"
+    };
+    
+    return answer === correctAnswers[questionId];
   };
 
   // Lesson data
@@ -292,83 +293,79 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                                                 ) : section.isQuiz ? (
                                                   <div className="space-y-6">
                                                     <div className="text-sm text-muted-foreground mb-4">
-                                                      Test your knowledge of deep canvassing concepts by answering these questions.
+                                                      Select your answers to test your knowledge of deep canvassing concepts.
                                                     </div>
                                                     
-                                                    <div className="space-y-6">
+                                                    <div className="space-y-8">
                                                       {section.questions.map((question) => (
-                                                        <div key={question.id} className="space-y-2">
-                                                          <div className="flex items-start gap-2">
-                                                            <div className="flex-1">
-                                                              <p className="font-medium">{question.text}</p>
-                                                            </div>
-                                                            {quizSubmitted && (
-                                                              <div>
-                                                                {quizAnswers[question.id] === question.correctAnswer ? (
-                                                                  <div className="flex items-center text-green-600">
-                                                                    <Check className="h-5 w-5" />
-                                                                  </div>
-                                                                ) : (
-                                                                  <div className="flex items-center text-red-600">
-                                                                    <X className="h-5 w-5" />
-                                                                  </div>
-                                                                )}
-                                                              </div>
-                                                            )}
-                                                          </div>
-                                                          <RadioGroup 
-                                                            value={quizAnswers[question.id] ? "true" : "false"} 
-                                                            onValueChange={(value) => handleQuizChange(question.id, value === "true")}
-                                                            className="flex gap-6"
-                                                            disabled={quizSubmitted}
-                                                          >
-                                                            <div className="flex items-center space-x-2">
-                                                              <RadioGroupItem value="true" id={`${question.id}-true`} />
-                                                              <label htmlFor={`${question.id}-true`} className="text-sm">True</label>
-                                                            </div>
-                                                            <div className="flex items-center space-x-2">
-                                                              <RadioGroupItem value="false" id={`${question.id}-false`} />
-                                                              <label htmlFor={`${question.id}-false`} className="text-sm">False</label>
-                                                            </div>
-                                                          </RadioGroup>
+                                                        <div key={question.id} className="space-y-3">
+                                                          <div className="font-medium">{question.text}</div>
                                                           
-                                                          {quizSubmitted && quizAnswers[question.id] !== question.correctAnswer && (
-                                                            <div className="text-sm mt-2 p-2 bg-red-50 text-red-800 rounded-md">
-                                                              The correct answer is: {question.correctAnswer ? "True" : "False"}
+                                                          <div className="flex flex-wrap gap-3">
+                                                            <div className="flex items-center gap-2">
+                                                              <Toggle
+                                                                pressed={quizAnswers[question.id] === "true"}
+                                                                onPressedChange={() => handleQuizToggle(question.id, "true")}
+                                                                variant="outline"
+                                                                className={`border ${
+                                                                  quizAnswers[question.id] === "true"
+                                                                    ? isCorrectAnswer(question.id, "true")
+                                                                      ? "bg-green-100 border-green-500 text-green-700"
+                                                                      : "bg-red-100 border-red-500 text-red-700"
+                                                                    : ""
+                                                                }`}
+                                                              >
+                                                                <span>True</span>
+                                                                {quizAnswers[question.id] === "true" && (
+                                                                  isCorrectAnswer(question.id, "true") 
+                                                                    ? <Check className="ml-2 h-4 w-4 text-green-600" /> 
+                                                                    : <X className="ml-2 h-4 w-4 text-red-600" />
+                                                                )}
+                                                              </Toggle>
+                                                            </div>
+                                                            
+                                                            <div className="flex items-center gap-2">
+                                                              <Toggle
+                                                                pressed={quizAnswers[question.id] === "false"}
+                                                                onPressedChange={() => handleQuizToggle(question.id, "false")}
+                                                                variant="outline"
+                                                                className={`border ${
+                                                                  quizAnswers[question.id] === "false"
+                                                                    ? isCorrectAnswer(question.id, "false")
+                                                                      ? "bg-green-100 border-green-500 text-green-700"
+                                                                      : "bg-red-100 border-red-500 text-red-700"
+                                                                    : ""
+                                                                }`}
+                                                              >
+                                                                <span>False</span>
+                                                                {quizAnswers[question.id] === "false" && (
+                                                                  isCorrectAnswer(question.id, "false") 
+                                                                    ? <Check className="ml-2 h-4 w-4 text-green-600" /> 
+                                                                    : <X className="ml-2 h-4 w-4 text-red-600" />
+                                                                )}
+                                                              </Toggle>
+                                                            </div>
+                                                          </div>
+                                                          
+                                                          {quizAnswers[question.id] !== null && !isCorrectAnswer(question.id, quizAnswers[question.id]) && (
+                                                            <div className="text-sm p-2 bg-red-50 text-red-800 rounded-md">
+                                                              <p>The correct answer is: {question.correctAnswer ? "True" : "False"}</p>
                                                             </div>
                                                           )}
                                                         </div>
                                                       ))}
                                                     </div>
                                                     
-                                                    <div className="flex justify-between gap-3 pt-4 border-t">
+                                                    <div className="flex justify-end pt-4 border-t">
                                                       <Button 
                                                         onClick={resetQuiz}
                                                         variant="outline"
                                                         size="sm"
                                                         className="flex items-center gap-1"
                                                       >
-                                                        <RotateCcw className="h-4 w-4" />
-                                                        Clear All Answers
+                                                        <X className="h-4 w-4" />
+                                                        Reset Answers
                                                       </Button>
-                                                      
-                                                      {quizSubmitted ? (
-                                                        <Button 
-                                                          onClick={resetQuiz}
-                                                          variant="outline"
-                                                          className="mt-0"
-                                                        >
-                                                          Try Again
-                                                        </Button>
-                                                      ) : (
-                                                        <Button 
-                                                          onClick={submitQuiz}
-                                                          variant="default"
-                                                          className="mt-0 bg-dialogue-purple hover:bg-dialogue-purple/90"
-                                                        >
-                                                          Submit Answers
-                                                        </Button>
-                                                      )}
                                                     </div>
                                                   </div>
                                                 ) : (
