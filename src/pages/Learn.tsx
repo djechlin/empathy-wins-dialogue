@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -126,14 +127,18 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
             
             <div className="space-y-6">
               {lessons.map(lesson => (
-                <Card key={lesson.id} className="border-dialogue-neutral hover:shadow-sm transition-shadow">
+                <Card 
+                  key={lesson.id} 
+                  className="border-dialogue-neutral hover:shadow-sm transition-shadow cursor-pointer"
+                  onClick={() => toggleLesson(lesson.id)}
+                >
                   <Collapsible open={openLessons[lesson.id]} onOpenChange={() => toggleLesson(lesson.id)}>
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
                         <CardTitle className="text-xl">
                           Lesson {lesson.id.slice(-1)}: {lesson.title}
                         </CardTitle>
-                        <CollapsibleTrigger className="p-2 hover:bg-muted rounded-full transition-colors">
+                        <div className="p-2 hover:bg-muted rounded-full transition-colors">
                           <motion.div animate={{
                             rotate: openLessons[lesson.id] ? -180 : 0
                           }} transition={{
@@ -142,7 +147,7 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                           }}>
                             <ChevronDown className="h-5 w-5" />
                           </motion.div>
-                        </CollapsibleTrigger>
+                        </div>
                       </div>
                       <CardDescription>
                         {lesson.description}
@@ -158,6 +163,7 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                             animate={{ opacity: 1, height: "auto" }} 
                             exit={{ opacity: 0, height: 0 }} 
                             transition={{ duration: 0.3, ease: "easeInOut" }}
+                            onClick={(e) => e.stopPropagation()} // Prevent clicks inside content from toggling
                           >
                             <CardContent>
                               <motion.div 
@@ -171,8 +177,17 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                                 {lesson.id === 'lesson1' && lesson.sections ? (
                                   <div className="space-y-4">
                                     {lesson.sections.map((section) => (
-                                      <Card key={section.id} className="border-dialogue-neutral hover:shadow-md transition-shadow overflow-hidden">
-                                        <CardHeader className="py-3 px-4 bg-dialogue-neutral/10 cursor-pointer" onClick={() => toggleSection(section.id)}>
+                                      <Card 
+                                        key={section.id} 
+                                        className="border-dialogue-neutral hover:shadow-md transition-shadow overflow-hidden"
+                                      >
+                                        <CardHeader 
+                                          className="py-3 px-4 bg-dialogue-neutral/10 cursor-pointer" 
+                                          onClick={(e) => {
+                                            e.stopPropagation(); // Prevent event from bubbling to parent card
+                                            toggleSection(section.id);
+                                          }}
+                                        >
                                           <div className="flex items-center justify-between">
                                             <h3 className="text-lg font-medium">{section.title}</h3>
                                             <motion.div 
