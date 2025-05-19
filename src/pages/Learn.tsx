@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, ChevronRight, ChevronDown, Youtube, Check, X } from 'lucide-react';
+import { BookOpen, ChevronRight, ChevronDown, Youtube, Check, X, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -341,12 +341,22 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                                                       ))}
                                                     </div>
                                                     
-                                                    <div className="flex justify-end gap-3">
+                                                    <div className="flex justify-between gap-3 pt-4 border-t">
+                                                      <Button 
+                                                        onClick={resetQuiz}
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="flex items-center gap-1"
+                                                      >
+                                                        <RotateCcw className="h-4 w-4" />
+                                                        Clear All Answers
+                                                      </Button>
+                                                      
                                                       {quizSubmitted ? (
                                                         <Button 
                                                           onClick={resetQuiz}
                                                           variant="outline"
-                                                          className="mt-4"
+                                                          className="mt-0"
                                                         >
                                                           Try Again
                                                         </Button>
@@ -354,7 +364,7 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                                                         <Button 
                                                           onClick={submitQuiz}
                                                           variant="default"
-                                                          className="mt-4 bg-dialogue-purple hover:bg-dialogue-purple/90"
+                                                          className="mt-0 bg-dialogue-purple hover:bg-dialogue-purple/90"
                                                         >
                                                           Submit Answers
                                                         </Button>
