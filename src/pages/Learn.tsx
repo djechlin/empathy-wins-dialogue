@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, ChevronRight, ChevronDown } from 'lucide-react';
+import { BookOpen, ChevronRight, ChevronDown, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const Learn = () => {
   const [openLessons, setOpenLessons] = useState<Record<string, boolean>>({
@@ -45,6 +46,13 @@ const Learn = () => {
     description: 'Learn how to recognize and appreciate different viewpoints in political conversations',
     content: 'This lesson focuses on understanding how different life experiences and values shape political views. You\'ll learn techniques to recognize perspectives different from your own and why this is crucial for productive dialogue.',
     sections: [
+      {
+        id: 'video',
+        title: 'Watch: Deep Canvassing Explained',
+        content: [],
+        isVideo: true,
+        videoUrl: 'https://www.youtube.com/watch?v=Ip_pjb5_fgA'
+      },
       {
         id: 'definition',
         title: 'Definition and Purpose',
@@ -206,11 +214,29 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                                               transition={{ duration: 0.3, ease: "easeInOut" }}
                                             >
                                               <CardContent className="py-4">
-                                                <ul className="list-disc pl-5 space-y-2">
-                                                  {section.content.map((item, idx) => (
-                                                    <li key={idx} className="text-sm" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
-                                                  ))}
-                                                </ul>
+                                                {section.isVideo ? (
+                                                  <div className="mb-4">
+                                                    <AspectRatio ratio={16/9}>
+                                                      <iframe 
+                                                        className="w-full h-full rounded-md"
+                                                        src={`https://www.youtube.com/embed/${section.videoUrl.split('v=')[1]}`}
+                                                        title="Deep Canvassing Video"
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        allowFullScreen
+                                                      ></iframe>
+                                                    </AspectRatio>
+                                                    <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+                                                      <Youtube className="h-4 w-4 text-red-600" />
+                                                      <span>Watch this video to get an introduction to deep canvassing</span>
+                                                    </div>
+                                                  </div>
+                                                ) : (
+                                                  <ul className="list-disc pl-5 space-y-2">
+                                                    {section.content.map((item, idx) => (
+                                                      <li key={idx} className="text-sm" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                                                    ))}
+                                                  </ul>
+                                                )}
                                               </CardContent>
                                             </motion.div>
                                           )}
