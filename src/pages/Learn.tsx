@@ -177,13 +177,8 @@ const Learn = () => {
 Do you think the canvasser and possible voters will get into arguments? Maybe there won't be heated partisan debates, but the the canvasser and voter genuinely disagree about the importance of voting. The canvasser must truly persuade the prospective voter to change their minds. Therefore, we can study the full deep canvass method just by learning how to persuade nonvoters in a local election.</p>
           </div>
           
-          {/* Lessons Section */}
-          <div className="max-w-6xl mx-auto mb-16">
-            <h2 className="text-2xl font-bold text-dialogue-darkblue mb-6 flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-dialogue-purple" />
-              Lessons
-            </h2>
-            
+          {/* Lessons Section - Removed the redundant header */}
+          <div className="max-w-6xl mx-auto mb-16">            
             <div className="space-y-6">
               {lessons.map(lesson => (
                 <Card 
