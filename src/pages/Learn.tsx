@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, ChevronRight, ChevronDown, Youtube, Check, X } from 'lucide-react';
+import { BookOpen, ChevronRight, ChevronDown, Youtube, Check, X, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -80,6 +81,15 @@ const Learn = () => {
     };
     
     return answer === correctAnswers[questionId];
+  };
+
+  // Check if all questions in a lesson are answered correctly
+  const isLessonComplete = (lessonId: string): boolean => {
+    if (lessonId !== 'lesson1') return false; // Only lesson1 has a quiz for now
+    
+    // Check if all questions are answered correctly
+    return isCorrectAnswer('question1', quizAnswers.question1) && 
+           isCorrectAnswer('question2', quizAnswers.question2);
   };
 
   // Lesson data
@@ -196,15 +206,25 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
               {lessons.map(lesson => (
                 <Card 
                   key={lesson.id} 
-                  className="border-dialogue-neutral hover:shadow-sm transition-shadow cursor-pointer"
+                  className={`border-dialogue-neutral hover:shadow-sm transition-shadow cursor-pointer ${
+                    isLessonComplete(lesson.id) ? 'border-green-500 border-2' : ''
+                  }`}
                   onClick={() => toggleLesson(lesson.id)}
                 >
                   <Collapsible open={openLessons[lesson.id]} onOpenChange={() => toggleLesson(lesson.id)}>
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
-                        <CardTitle className="text-xl">
-                          Lesson {lesson.id.slice(-1)}: {lesson.title}
-                        </CardTitle>
+                        <div className="flex items-center gap-2">
+                          <CardTitle className="text-xl">
+                            Lesson {lesson.id.slice(-1)}: {lesson.title}
+                          </CardTitle>
+                          {isLessonComplete(lesson.id) && (
+                            <div className="flex items-center text-green-600 bg-green-50 px-2 py-1 rounded-full gap-1">
+                              <CheckCircle2 className="h-4 w-4" />
+                              <span className="text-xs font-medium">Complete</span>
+                            </div>
+                          )}
+                        </div>
                         <div className="p-2 hover:bg-muted rounded-full transition-colors">
                           <motion.div animate={{
                             rotate: openLessons[lesson.id] ? -180 : 0
@@ -355,6 +375,18 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                                                         </div>
                                                       ))}
                                                     </div>
+                                                    
+                                                    {isLessonComplete(lesson.id) && (
+                                                      <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md flex items-center gap-3">
+                                                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                                        <div>
+                                                          <h4 className="font-medium text-green-800">Lesson Complete!</h4>
+                                                          <p className="text-sm text-green-700">
+                                                            You've successfully completed this lesson's knowledge check.
+                                                          </p>
+                                                        </div>
+                                                      </div>
+                                                    )}
                                                     
                                                     <div className="flex justify-end pt-4 border-t">
                                                       <Button 
