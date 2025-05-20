@@ -156,8 +156,8 @@ const Learn = () => {
     ]
   }, {
     id: 'lesson2',
-    title: 'Active Listening',
-    description: 'Master the art of truly hearing others during challenging political discussions',
+    title: 'Story Workshop',
+    description: 'Learn to practice vulnerability with the voter by telling your story',
     content: 'Active listening is more than just hearing words—it\'s about understanding the meaning and emotion behind them. This lesson covers techniques for demonstrating that you truly understand what someone is saying before responding.'
   }, {
     id: 'lesson3',
