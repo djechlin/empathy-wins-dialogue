@@ -193,7 +193,7 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
                           <CardTitle className="text-xl">
-                            Lesson {lesson.id.slice(-1)}: {lesson.title}
+                            {lesson.title}
                           </CardTitle>
                           {isLessonComplete(lesson.id) && (
                             <div className="flex items-center bg-dialogue-purple text-white px-2 py-1 rounded-full gap-1">
