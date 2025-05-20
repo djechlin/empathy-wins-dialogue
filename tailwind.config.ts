@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -71,7 +72,7 @@ export default {
 				}
 			},
 			fontFamily: {
-				sans: ['Inter', 'sans-serif'],
+				sans: ['Geist Sans', 'Inter', 'sans-serif'],
 				heading: ['PT Serif', 'Georgia', 'serif'],
 				serif: ['PT Serif', 'Georgia', 'serif'],
 			},
