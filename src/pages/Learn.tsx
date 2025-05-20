@@ -18,16 +18,6 @@ const Learn = () => {
     lesson3: false
   });
   
-  // Track open sections within Lesson 1
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    definition: false,
-    characteristics: false,
-    caseStudies: false,
-    philosophy: false,
-    flow: false,
-    quiz: false
-  });
-  
   // Track quiz answers
   const [quizAnswers, setQuizAnswers] = useState<Record<string, string | null>>({
     question1: null,
@@ -38,13 +28,6 @@ const Learn = () => {
     setOpenLessons(prev => ({
       ...prev,
       [lessonId]: !prev[lessonId]
-    }));
-  };
-  
-  const toggleSection = (sectionId: string) => {
-    setOpenSections(prev => ({
-      ...prev,
-      [sectionId]: !prev[sectionId]
     }));
   };
   
@@ -259,7 +242,7 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                                 transition={{ delay: 0.1, duration: 0.3 }}
                                 className="prose max-w-none mb-4"
                               >
-                                {/* If this is lesson 1, render the detailed content with collapsible sections */}
+                                {/* If this is lesson 1, render the detailed content with sections */}
                                 {lesson.id === 'lesson1' && lesson.sections ? (
                                   <div className="space-y-4">
                                     {lesson.sections.map((section) => (
@@ -267,149 +250,124 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                                         key={section.id} 
                                         className="border-dialogue-neutral hover:shadow-md transition-shadow overflow-hidden"
                                       >
-                                        <CardHeader 
-                                          className="py-3 px-4 bg-dialogue-neutral/10 cursor-pointer" 
-                                          onClick={(e) => {
-                                            e.stopPropagation(); // Prevent event from bubbling to parent card
-                                            toggleSection(section.id);
-                                          }}
-                                        >
-                                          <div className="flex items-center justify-between">
-                                            <h3 className="text-lg font-medium">{section.title}</h3>
-                                            <motion.div 
-                                              animate={{ rotate: openSections[section.id] ? -180 : 0 }}
-                                              transition={{ duration: 0.3, ease: "easeInOut" }}
-                                            >
-                                              <ChevronDown className="h-4 w-4 text-dialogue-purple" />
-                                            </motion.div>
-                                          </div>
+                                        <CardHeader className="py-3 px-4 bg-dialogue-neutral/10">
+                                          <h3 className="text-lg font-medium">{section.title}</h3>
                                         </CardHeader>
-                                        <AnimatePresence mode="wait" initial={false}>
-                                          {openSections[section.id] && (
-                                            <motion.div
-                                              initial={{ opacity: 0, height: 0 }}
-                                              animate={{ opacity: 1, height: "auto" }}
-                                              exit={{ opacity: 0, height: 0 }}
-                                              transition={{ duration: 0.3, ease: "easeInOut" }}
-                                            >
-                                              <CardContent className="py-4">
-                                                {section.isVideo ? (
-                                                  <div className="mb-4">
-                                                    <AspectRatio ratio={16/9}>
-                                                      <iframe 
-                                                        className="w-full h-full rounded-md"
-                                                        src={`https://www.youtube.com/embed/${section.videoUrl.split('v=')[1]}`}
-                                                        title="Deep Canvassing Video"
-                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                        allowFullScreen
-                                                      ></iframe>
-                                                    </AspectRatio>
-                                                    <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-                                                      <Youtube className="h-4 w-4 text-red-600" />
-                                                      <span>Watch this video to get an introduction to deep canvassing</span>
-                                                    </div>
-                                                  </div>
-                                                ) : section.isQuiz ? (
-                                                  <div className="space-y-6">
-                                                    <div className="text-sm text-muted-foreground mb-4">
-                                                      Select your answers to test your knowledge of deep canvassing concepts.
-                                                    </div>
+                                        <CardContent className="py-4">
+                                          {section.isVideo ? (
+                                            <div className="mb-4">
+                                              <AspectRatio ratio={16/9}>
+                                                <iframe 
+                                                  className="w-full h-full rounded-md"
+                                                  src={`https://www.youtube.com/embed/${section.videoUrl.split('v=')[1]}`}
+                                                  title="Deep Canvassing Video"
+                                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                  allowFullScreen
+                                                ></iframe>
+                                              </AspectRatio>
+                                              <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+                                                <Youtube className="h-4 w-4 text-red-600" />
+                                                <span>Watch this video to get an introduction to deep canvassing</span>
+                                              </div>
+                                            </div>
+                                          ) : section.isQuiz ? (
+                                            <div className="space-y-6">
+                                              <div className="text-sm text-muted-foreground mb-4">
+                                                Select your answers to test your knowledge of deep canvassing concepts.
+                                              </div>
+                                              
+                                              <div className="space-y-8">
+                                                {section.questions.map((question) => (
+                                                  <div key={question.id} className="space-y-3">
+                                                    <div className="font-medium">{question.text}</div>
                                                     
-                                                    <div className="space-y-8">
-                                                      {section.questions.map((question) => (
-                                                        <div key={question.id} className="space-y-3">
-                                                          <div className="font-medium">{question.text}</div>
-                                                          
-                                                          <div className="flex flex-wrap gap-3">
-                                                            <div className="flex items-center gap-2">
-                                                              <Toggle
-                                                                pressed={quizAnswers[question.id] === "true"}
-                                                                onPressedChange={() => handleQuizToggle(question.id, "true")}
-                                                                variant="outline"
-                                                                className={`border ${
-                                                                  quizAnswers[question.id] === "true"
-                                                                    ? isCorrectAnswer(question.id, "true")
-                                                                      ? "bg-green-100 border-green-500 text-green-700"
-                                                                      : "bg-red-100 border-red-500 text-red-700"
-                                                                    : ""
-                                                                }`}
-                                                              >
-                                                                <span>True</span>
-                                                                {quizAnswers[question.id] === "true" && (
-                                                                  isCorrectAnswer(question.id, "true") 
-                                                                    ? <Check className="ml-2 h-4 w-4 text-green-600" /> 
-                                                                    : <X className="ml-2 h-4 w-4 text-red-600" />
-                                                                )}
-                                                              </Toggle>
-                                                            </div>
-                                                            
-                                                            <div className="flex items-center gap-2">
-                                                              <Toggle
-                                                                pressed={quizAnswers[question.id] === "false"}
-                                                                onPressedChange={() => handleQuizToggle(question.id, "false")}
-                                                                variant="outline"
-                                                                className={`border ${
-                                                                  quizAnswers[question.id] === "false"
-                                                                    ? isCorrectAnswer(question.id, "false")
-                                                                      ? "bg-green-100 border-green-500 text-green-700"
-                                                                      : "bg-red-100 border-red-500 text-red-700"
-                                                                    : ""
-                                                                }`}
-                                                              >
-                                                                <span>False</span>
-                                                                {quizAnswers[question.id] === "false" && (
-                                                                  isCorrectAnswer(question.id, "false") 
-                                                                    ? <Check className="ml-2 h-4 w-4 text-green-600" /> 
-                                                                    : <X className="ml-2 h-4 w-4 text-red-600" />
-                                                                )}
-                                                              </Toggle>
-                                                            </div>
-                                                          </div>
-                                                          
-                                                          {quizAnswers[question.id] !== null && !isCorrectAnswer(question.id, quizAnswers[question.id]) && (
-                                                            <div className="text-sm p-2 bg-red-50 text-red-800 rounded-md">
-                                                              <p>The correct answer is: {question.correctAnswer ? "True" : "False"}</p>
-                                                            </div>
+                                                    <div className="flex flex-wrap gap-3">
+                                                      <div className="flex items-center gap-2">
+                                                        <Toggle
+                                                          pressed={quizAnswers[question.id] === "true"}
+                                                          onPressedChange={() => handleQuizToggle(question.id, "true")}
+                                                          variant="outline"
+                                                          className={`border ${
+                                                            quizAnswers[question.id] === "true"
+                                                              ? isCorrectAnswer(question.id, "true")
+                                                                ? "bg-green-100 border-green-500 text-green-700"
+                                                                : "bg-red-100 border-red-500 text-red-700"
+                                                              : ""
+                                                          }`}
+                                                        >
+                                                          <span>True</span>
+                                                          {quizAnswers[question.id] === "true" && (
+                                                            isCorrectAnswer(question.id, "true") 
+                                                              ? <Check className="ml-2 h-4 w-4 text-green-600" /> 
+                                                              : <X className="ml-2 h-4 w-4 text-red-600" />
                                                           )}
-                                                        </div>
-                                                      ))}
+                                                        </Toggle>
+                                                      </div>
+                                                      
+                                                      <div className="flex items-center gap-2">
+                                                        <Toggle
+                                                          pressed={quizAnswers[question.id] === "false"}
+                                                          onPressedChange={() => handleQuizToggle(question.id, "false")}
+                                                          variant="outline"
+                                                          className={`border ${
+                                                            quizAnswers[question.id] === "false"
+                                                              ? isCorrectAnswer(question.id, "false")
+                                                                ? "bg-green-100 border-green-500 text-green-700"
+                                                                : "bg-red-100 border-red-500 text-red-700"
+                                                              : ""
+                                                          }`}
+                                                        >
+                                                          <span>False</span>
+                                                          {quizAnswers[question.id] === "false" && (
+                                                            isCorrectAnswer(question.id, "false") 
+                                                              ? <Check className="ml-2 h-4 w-4 text-green-600" /> 
+                                                              : <X className="ml-2 h-4 w-4 text-red-600" />
+                                                          )}
+                                                        </Toggle>
+                                                      </div>
                                                     </div>
                                                     
-                                                    {isLessonComplete(lesson.id) && (
-                                                      <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md flex items-center gap-3">
-                                                        <CheckCircle2 className="h-5 w-5 text-green-600" />
-                                                        <div>
-                                                          <h4 className="font-medium text-green-800">Lesson Complete!</h4>
-                                                          <p className="text-sm text-green-700">
-                                                            You've successfully completed this lesson's knowledge check.
-                                                          </p>
-                                                        </div>
+                                                    {quizAnswers[question.id] !== null && !isCorrectAnswer(question.id, quizAnswers[question.id]) && (
+                                                      <div className="text-sm p-2 bg-red-50 text-red-800 rounded-md">
+                                                        <p>The correct answer is: {question.correctAnswer ? "True" : "False"}</p>
                                                       </div>
                                                     )}
-                                                    
-                                                    <div className="flex justify-end pt-4 border-t">
-                                                      <Button 
-                                                        onClick={resetQuiz}
-                                                        variant="outline"
-                                                        size="sm"
-                                                        className="flex items-center gap-1"
-                                                      >
-                                                        <X className="h-4 w-4" />
-                                                        Reset Answers
-                                                      </Button>
-                                                    </div>
                                                   </div>
-                                                ) : (
-                                                  <ul className="list-disc pl-5 space-y-2">
-                                                    {section.content.map((item, idx) => (
-                                                      <li key={idx} className="text-sm" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
-                                                    ))}
-                                                  </ul>
-                                                )}
-                                              </CardContent>
-                                            </motion.div>
+                                                ))}
+                                              </div>
+                                              
+                                              {isLessonComplete(lesson.id) && (
+                                                <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md flex items-center gap-3">
+                                                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                                  <div>
+                                                    <h4 className="font-medium text-green-800">Lesson Complete!</h4>
+                                                    <p className="text-sm text-green-700">
+                                                      You've successfully completed this lesson's knowledge check.
+                                                    </p>
+                                                  </div>
+                                                </div>
+                                              )}
+                                              
+                                              <div className="flex justify-end pt-4 border-t">
+                                                <Button 
+                                                  onClick={resetQuiz}
+                                                  variant="outline"
+                                                  size="sm"
+                                                  className="flex items-center gap-1"
+                                                >
+                                                  <X className="h-4 w-4" />
+                                                  Reset Answers
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <ul className="list-disc pl-5 space-y-2">
+                                              {section.content.map((item, idx) => (
+                                                <li key={idx} className="text-sm" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                                              ))}
+                                            </ul>
                                           )}
-                                        </AnimatePresence>
+                                        </CardContent>
                                       </Card>
                                     ))}
                                   </div>
