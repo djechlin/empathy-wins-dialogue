@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -207,36 +206,36 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                 <Card 
                   key={lesson.id} 
                   className={`border-dialogue-neutral hover:shadow-sm transition-shadow cursor-pointer ${
-                    isLessonComplete(lesson.id) ? 'border-green-500 border-2' : ''
+                    isLessonComplete(lesson.id) ? 'border-dialogue-darkblue border-2' : ''
                   }`}
                   onClick={() => toggleLesson(lesson.id)}
                 >
                   <Collapsible open={openLessons[lesson.id]} onOpenChange={() => toggleLesson(lesson.id)}>
-                    <CardHeader className="pb-2">
+                    <CardHeader className={`pb-2 ${isLessonComplete(lesson.id) ? 'bg-dialogue-darkblue text-white rounded-t-lg' : ''}`}>
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
-                          <CardTitle className="text-xl">
+                          <CardTitle className={`text-xl ${isLessonComplete(lesson.id) ? 'text-white' : ''}`}>
                             Lesson {lesson.id.slice(-1)}: {lesson.title}
                           </CardTitle>
                           {isLessonComplete(lesson.id) && (
-                            <div className="flex items-center text-green-600 bg-green-50 px-2 py-1 rounded-full gap-1">
+                            <div className="flex items-center bg-white/20 text-white px-2 py-1 rounded-full gap-1">
                               <CheckCircle2 className="h-4 w-4" />
                               <span className="text-xs font-medium">Complete</span>
                             </div>
                           )}
                         </div>
-                        <div className="p-2 hover:bg-muted rounded-full transition-colors">
+                        <div className={`p-2 ${isLessonComplete(lesson.id) ? 'hover:bg-white/20' : 'hover:bg-muted'} rounded-full transition-colors`}>
                           <motion.div animate={{
                             rotate: openLessons[lesson.id] ? -180 : 0
                           }} transition={{
                             duration: 0.3,
                             ease: "easeInOut"
                           }}>
-                            <ChevronDown className="h-5 w-5" />
+                            <ChevronDown className={`h-5 w-5 ${isLessonComplete(lesson.id) ? 'text-white' : ''}`} />
                           </motion.div>
                         </div>
                       </div>
-                      <CardDescription>
+                      <CardDescription className={isLessonComplete(lesson.id) ? 'text-white/80' : ''}>
                         {lesson.description}
                       </CardDescription>
                     </CardHeader>
