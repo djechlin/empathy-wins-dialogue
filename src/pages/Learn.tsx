@@ -211,31 +211,31 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                   onClick={() => toggleLesson(lesson.id)}
                 >
                   <Collapsible open={openLessons[lesson.id]} onOpenChange={() => toggleLesson(lesson.id)}>
-                    <CardHeader className={`pb-2 ${isLessonComplete(lesson.id) ? 'bg-dialogue-darkblue text-white rounded-t-lg' : ''}`}>
+                    <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
-                          <CardTitle className={`text-xl ${isLessonComplete(lesson.id) ? 'text-white' : ''}`}>
+                          <CardTitle className="text-xl">
                             Lesson {lesson.id.slice(-1)}: {lesson.title}
                           </CardTitle>
                           {isLessonComplete(lesson.id) && (
-                            <div className="flex items-center bg-white/20 text-white px-2 py-1 rounded-full gap-1">
+                            <div className="flex items-center bg-dialogue-purple text-white px-2 py-1 rounded-full gap-1">
                               <CheckCircle2 className="h-4 w-4" />
                               <span className="text-xs font-medium">Complete</span>
                             </div>
                           )}
                         </div>
-                        <div className={`p-2 ${isLessonComplete(lesson.id) ? 'hover:bg-white/20' : 'hover:bg-muted'} rounded-full transition-colors`}>
+                        <div className="p-2 hover:bg-muted rounded-full transition-colors">
                           <motion.div animate={{
                             rotate: openLessons[lesson.id] ? -180 : 0
                           }} transition={{
                             duration: 0.3,
                             ease: "easeInOut"
                           }}>
-                            <ChevronDown className={`h-5 w-5 ${isLessonComplete(lesson.id) ? 'text-white' : ''}`} />
+                            <ChevronDown className="h-5 w-5" />
                           </motion.div>
                         </div>
                       </div>
-                      <CardDescription className={isLessonComplete(lesson.id) ? 'text-white/80' : ''}>
+                      <CardDescription>
                         {lesson.description}
                       </CardDescription>
                     </CardHeader>
