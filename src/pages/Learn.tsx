@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, ChevronRight, ChevronDown, Youtube, Check, X, CheckCircle2 } from 'lucide-react';
+import { BookOpen, ChevronRight, ChevronDown, Youtube, Check, X, CheckCircle2, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -155,6 +155,11 @@ const Learn = () => {
       }
     ]
   }, {
+    id: 'practice',
+    title: 'Practice deep canvassing',
+    description: 'Start a phone call with a virtual voice assistant who will roleplay the voter',
+    content: 'Practice your deep canvassing skills in a safe environment with our AI voice assistant. This interactive experience allows you to apply what you\'ve learned in real conversation scenarios.'
+  }, {
     id: 'lesson2',
     title: 'Story Workshop',
     description: 'Learn to practice vulnerability with the voter by telling your story',
@@ -177,7 +182,6 @@ const Learn = () => {
 Do you think the canvasser and possible voters will get into arguments? Maybe there won't be heated partisan debates, but the the canvasser and voter genuinely disagree about the importance of voting. The canvasser must truly persuade the prospective voter to change their minds. Therefore, we can study the full deep canvass method just by learning how to persuade nonvoters in a local election.</p>
           </div>
           
-          {/* Lessons Section - Removed the redundant header */}
           <div className="max-w-6xl mx-auto mb-16">            
             <div className="space-y-6">
               {lessons.map(lesson => (
@@ -216,6 +220,12 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                       <CardDescription>
                         {lesson.description}
                       </CardDescription>
+                      {lesson.id === 'practice' && (
+                        <div className="flex items-center gap-2 mt-2 text-dialogue-purple">
+                          <Phone className="h-4 w-4" />
+                          <span className="text-sm font-medium">Interactive voice practice</span>
+                        </div>
+                      )}
                     </CardHeader>
                     
                     <AnimatePresence mode="wait" initial={false}>
@@ -366,6 +376,20 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                                       </Card>
                                     ))}
                                   </div>
+                                ) : lesson.id === 'practice' ? (
+                                  <div className="space-y-6">
+                                    <p>{lesson.content}</p>
+                                    <div className="bg-dialogue-neutral/10 rounded-lg p-6">
+                                      <h3 className="text-lg font-medium mb-3">Start Practice Call</h3>
+                                      <p className="text-sm text-muted-foreground mb-4">
+                                        Get real-time feedback as you practice deep canvassing techniques with our AI voice assistant.
+                                      </p>
+                                      <Button className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue flex items-center justify-center gap-2">
+                                        <Phone className="h-4 w-4" />
+                                        Start Interactive Practice
+                                      </Button>
+                                    </div>
+                                  </div>
                                 ) : (
                                   <p>{lesson.content}</p>
                                 )}
@@ -381,6 +405,8 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                                   <p className="text-muted-foreground">
                                     {lesson.id === 'lesson1' ? 
                                       'Deep canvassing creates connections through vulnerability and nonjudgmental listening to achieve long-lasting persuasion.' : 
+                                      lesson.id === 'practice' ?
+                                      'Practice makes perfect - the best way to learn deep canvassing is through hands-on experience with real conversations.' :
                                       'An important takeaway from this lesson.'}
                                   </p>
                                 </motion.div>
