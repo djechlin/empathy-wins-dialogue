@@ -23,13 +23,6 @@ const LearnIntro = () => {
       description: 'Master the art of truly hearing others during challenging political discussions',
       lessonsCount: 3,
       progress: 0
-    },
-    {
-      id: 'chapter3',
-      title: 'Finding Common Ground',
-      description: 'Discover strategies for identifying shared values despite political differences',
-      lessonsCount: 3,
-      progress: 0
     }
   ];
 
@@ -68,7 +61,7 @@ const LearnIntro = () => {
               to develop your political conversation skills.
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {chapters.map((chapter) => (
                 <Card key={chapter.id} className="border-dialogue-neutral hover:shadow-md transition-shadow">
                   <CardHeader className="pb-2">
