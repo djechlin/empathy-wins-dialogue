@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Ear, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { CallWorkspace as VoiceCallWorkspace } from '@/components/voice/CallWorkspace';
 
 const EmpatheticListening = () => {
   return (
@@ -347,6 +348,34 @@ const EmpatheticListening = () => {
                         People need to feel heard before they can hear you. Validation doesn't mean agreement - 
                         it means acknowledging their human experience.
                       </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-dialogue-neutral">
+                <CardHeader>
+                  <CardTitle>Practice: Engaging Busy Voters</CardTitle>
+                  <CardDescription>
+                    Practice using the "door is open" principle with a busy voter scenario
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <p className="text-muted-foreground">
+                      This focused practice scenario helps you get comfortable with the opening moments of a conversation 
+                      when a voter mentions being busy. Practice starting the conversation and getting through the 1-10 question.
+                    </p>
+                    <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded p-4">
+                      <h4 className="font-medium text-blue-800 dark:text-blue-300 mb-2">Your Script:</h4>
+                      <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                        <p><strong>Opening:</strong> "My name's Jill, I'm talking to voters about increase funding for our libraries, is this Adam?"</p>
+                        <p><strong>If busy:</strong> <em>Continue the conversation</em></p>
+                        <p><strong>1-10 Question:</strong> "Great, real quick on a scale of 1-10, where 1 means you're opposed and 10 means you definitely support increasing library funding, what number is right for you?"</p>
+                      </div>
+                    </div>
+                    <div className="border rounded-lg p-4">
+                      <VoiceCallWorkspace callId='busy-voter-libraries' />
                     </div>
                   </div>
                 </CardContent>

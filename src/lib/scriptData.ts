@@ -9,13 +9,15 @@ export type ScenarioId =
   | 'deep-canvassing'
   | 'law-order-voter'
   | 'code-review-junior-feedback'
-  | 'intro-canvassing';
+  | 'intro-canvassing'
+  | 'busy-voter-libraries';
 
 export const SCRIPT_TITLES: { [key in ScenarioId]: string } = {
   'deep-canvassing': 'Script',
   'law-order-voter': 'Law & Order Voter Script',
   'code-review-junior-feedback': 'Code Review Feedback Script',
   'intro-canvassing': 'Candidate Introduction Script',
+  'busy-voter-libraries': 'Library Funding Script',
 };
 
 export const HUME_PERSONAS: { [key in ScenarioId]: string } = {
@@ -23,6 +25,7 @@ export const HUME_PERSONAS: { [key in ScenarioId]: string } = {
   'law-order-voter': '419a04ee-8457-4f9b-8e2f-d5ae4f632597',
   'code-review-junior-feedback': 'ba08f302-361f-43fa-886b-4eacd2691fe3',
   'intro-canvassing': '8e875e6a-83f5-4f97-a5f8-dcddb4ba9b6c',
+  'busy-voter-libraries': 'd3b113c7-3e87-49a2-b400-1b155b514d0a',
 };
 
 export const SCRIPTS: { [key in ScenarioId]: Script } = {
@@ -201,6 +204,27 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
       ],
     },
   ],
+  'busy-voter-libraries': [
+    {
+      name: 'Starting the conversation',
+      description: [
+        {
+          text: '"My name\'s Jill, I\'m talking to voters about increase funding for our libraries, is this Adam?"',
+          triggers: ['jill', 'increase funding', 'libraries', 'adam'],
+          isScript: true,
+        },
+        {
+          text: 'If the voter says they\'re busy, continue',
+          isScript: false,
+        },
+        {
+          text: '"Great, real quick on a scale of 1-10, where 1 means you\'re opposed and 10 means you definitely support increasing library funding, what number is right for you?"',
+          triggers: ['scale', '1-10', 'opposed', 'support increasing', 'library funding', 'right for you'],
+          isScript: true,
+        },
+      ],
+    },
+  ],
 };
 
 export const EXAMPLE_STORY = `"I think of my husband Jim. We were barely making ends meet back in the 90s - still had teen band posters but didn't know how to make rent. That first Christmas together, I was determined to get him a present.
@@ -241,6 +265,13 @@ export const SCENARIOS: { [key in ScenarioId]: Scenario } = {
     description: [
       'Practice a canvassing conversation where you introduce a candidate, share your personal story, and invite the voter to the campaign office.',
       'This script focuses on making a personal connection and effective invitations.',
+    ],
+  },
+  'busy-voter-libraries': {
+    title: 'Engage a Busy Voter - Library Funding',
+    description: [
+      'Practice engaging with a voter who mentions being busy while discussing library funding.',
+      'Apply the "door is open" principle - if they keep talking, they\'re still engaged in the conversation.',
     ],
   },
 };
