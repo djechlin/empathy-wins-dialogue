@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { SCRIPTS, SCRIPT_TITLES, ScenarioId } from '@/lib/scriptData';
+import { SCRIPTS, ScenarioId } from '@/lib/scriptData';
 import { useVoice, VoiceContextType } from '@humeai/voice-react';
 
 export type Message = {
@@ -17,12 +17,6 @@ export type Message = {
   };
 };
 
-const exampleStory = `"I think of my husband Jim. We were barely making ends meet back in the 90s - still had teen band posters but didn't know how to make rent. That first Christmas together, I was determined to get him a present.
-
-I remember standing in that dusty record shop, hands shaking a little as I slid my rare vinyl across the counter. 'You sure about this?' the dealer asked, eyebrows raised. I nodded, thinking of Jim's face when he'd open the guitar case I'd bought with that money. The leather smell of that handcrafted strap, how perfectly it would match his uncle's vintage guitar. Worth it.
-
-Christmas Eve came, and Jim handed me a wrapped package. Inside was a record by the same band I'd just sold. His eyes sparkled as he told me he'd been secretly giving guitar lessons on weekends to save up. I burst out laughing right there - couldn't help it. And you know, we felt pretty good that Christmas. It was just the two of us, like we wanted it. We didn't have much, but I loved him and I really knew he loved me."`;
-
 export default function ScriptBar({
   callId,
 }: {
@@ -31,7 +25,6 @@ export default function ScriptBar({
 
     const { messages }: VoiceContextType = useVoice();
 
-  const [showExampleStory, setShowExampleStory] = useState(false);
   const [showCodeReviewHint, setShowCodeReviewHint] = useState(false);
   const [showLandlordHint, setShowLandlordHint] = useState(false);
 
@@ -59,12 +52,11 @@ export default function ScriptBar({
   }, [messages, callId]);
 
   const callSteps = SCRIPTS[callId] || [];
-  const scriptTitle = SCRIPT_TITLES[callId];
 
   return (
     <div className="min-h-[800px] h-fit w-full bg-card border-r border-border">
       <div className="p-4">
-        <h2 className="text-lg font-semibold mb-4">{scriptTitle}</h2>
+        <h2 className="text-lg font-semibold mb-4">Script</h2>
         <div className="space-y-6">
           {callSteps.map((step, stepIndex) => (
             <div
@@ -202,26 +194,6 @@ export default function ScriptBar({
                         </li>
                       </ul>
                     </div>
-
-                    <button
-                      onClick={() => setShowExampleStory(!showExampleStory)}
-                      className="flex items-center gap-1 text-xs mt-3 text-primary hover:text-primary/80 transition-colors"
-                    >
-                      {showExampleStory ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                      <span>{showExampleStory ? 'Hide example story' : 'Show example story'}</span>
-                    </button>
-
-                    {showExampleStory && (
-                      <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 rounded text-xs">
-                        <h4 className="font-medium mb-1 text-green-800 dark:text-green-300">
-                          Example Story:
-                        </h4>
-                        <p className="whitespace-pre-line">{exampleStory}</p>
-                        <p className="mt-2 italic text-green-700/70 dark:text-green-400/70 text-[10px]">
-                          Adapted from &ldquo;Gift of the Magi&rdquo;
-                        </p>
-                      </div>
-                    )}
                   </>
                 )}
               </div>

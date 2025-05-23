@@ -12,7 +12,7 @@ export type ScenarioId =
   | 'intro-canvassing';
 
 export const SCRIPT_TITLES: { [key in ScenarioId]: string } = {
-  'deep-canvassing': 'Deep Canvassing Script',
+  'deep-canvassing': 'Script',
   'law-order-voter': 'Law & Order Voter Script',
   'code-review-junior-feedback': 'Code Review Feedback Script',
   'intro-canvassing': 'Candidate Introduction Script',

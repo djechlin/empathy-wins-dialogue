@@ -5,26 +5,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Toggle } from '@/components/ui/toggle';
 import MicFFT from './MicFFT';
 import { cn } from '@/lib/utils';
-import { useEffect, useRef } from 'react';
 
 export default function ControlPanel() {
   const { disconnect, connect, status, isMuted, unmute, mute, micFft }: VoiceContextType =
     useVoice();
 
-  const connectionAttempted = useRef(false);
-
-  useEffect(() => {
-    if (!connectionAttempted.current && status.value !== 'connected') {
-      connectionAttempted.current = true;
-      connect()
-        .then(() => {
-          console.log('Voice connection established');
-        })
-        .catch((error) => {
-          console.error('Failed to connect to voice:', error);
-        });
-    }
-  }, [connect, status]);
+  const handleStartCall = () => {
+    connect()
+      .then(() => {
+        console.log('Voice connection established');
+      })
+      .catch((error) => {
+        console.error('Failed to connect to voice:', error);
+      });
+  };
 
   return (
     <div
@@ -33,9 +27,10 @@ export default function ControlPanel() {
         'bg-gradient-to-t from-card via-card/90 to-card/0'
       )}
     >
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {status.value === 'connected' ? (
           <motion.div
+            key="connected"
             initial={{
               y: '100%',
               opacity: 0,
@@ -80,7 +75,34 @@ export default function ControlPanel() {
               <span>End Call</span>
             </Button>
           </motion.div>
-        ) : null}
+        ) : (
+          <motion.div
+            key="disconnected"
+            initial={{
+              y: '100%',
+              opacity: 0,
+            }}
+            animate={{
+              y: 0,
+              opacity: 1,
+            }}
+            exit={{
+              y: '100%',
+              opacity: 0,
+            }}
+            className={
+              'p-4 bg-card border border-border rounded-lg shadow-sm flex items-center gap-4'
+            }
+          >
+            <Button
+              className={'flex items-center gap-2 bg-green-600 hover:bg-green-700'}
+              onClick={handleStartCall}
+            >
+              <Phone className={'size-4'} strokeWidth={2} stroke={'currentColor'} />
+              <span>Start Call</span>
+            </Button>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

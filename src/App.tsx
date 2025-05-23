@@ -6,6 +6,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Learn from "./pages/Learn";
+import StartingOut from "./pages/StartingOut";
+import VulnerableStorytelling from "./pages/VulnerableStorytelling";
+import EmpatheticListening from "./pages/EmpatheticListening";
+import WhenToKeepTalking from "./pages/WhenToKeepTalking";
 import LearnChapter from "./pages/LearnChapter";
 import BuildStory from "./pages/BuildStory";
 import Auth from "./pages/Auth";
@@ -22,6 +26,10 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/learn" element={<Learn />} />
+          <Route path="/learn/starting-out" element={<StartingOut />} />
+          <Route path="/learn/vulnerable-storytelling" element={<VulnerableStorytelling />} />
+          <Route path="/learn/empathetic-listening" element={<EmpatheticListening />} />
+          <Route path="/learn/when-to-keep-talking" element={<WhenToKeepTalking />} />
           <Route path="/learn/:chapterId" element={<LearnChapter />} />
           <Route path="/build-story" element={<BuildStory />} />
           <Route path="/auth" element={<Auth />} />
