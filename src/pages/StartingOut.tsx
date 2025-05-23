@@ -10,6 +10,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Toggle } from '@/components/ui/toggle';
 import { toast } from '@/components/ui/sonner';
+import { Slider } from '@/components/ui/slider';
+import { Textarea } from '@/components/ui/textarea';
+import SliderCard from '@/components/ui/slider-card';
 import PracticeCard from '@/components/learn/PracticeCard';
 
 const Learn = () => {
@@ -185,20 +188,15 @@ type QuizQuestion = {
     description: 'Start a phone call with a virtual voice assistant who will roleplay the voter',
     content: 'Practice your deep canvassing skills in a safe environment with our AI voice assistant. This interactive experience allows you to apply what you\'ve learned in real conversation scenarios.'
   }, {
-    id: 'lesson2',
+    id: 'story',
     lessonTitle: 'Learning to talk about someone we love',
     description: 'Learn to practice vulnerability with the voter by telling your story',
     content: 'Active listening is more than just hearing words—it\'s about understanding the meaning and emotion behind them. This lesson covers techniques for demonstrating that you truly understand what someone is saying before responding.'
   }, {
-    id: 'lesson3',
+    id: 'telling',
     lessonTitle: 'Telling our story about a loved one',
     description: 'Learn to practice vulnerability with the voter by telling your story',
     content: 'Active listening is more than just hearing words—it\'s about understanding the meaning and emotion behind them. This lesson covers techniques for demonstrating that you truly understand what someone is saying before responding.'
-  }, {
-    id: 'lesson4',
-    lessonTitle: 'Finding Common Ground',
-    description: 'Discover strategies for identifying shared values despite political differences',
-    content: 'Even in heated political disagreements, common values often exist beneath the surface. This lesson teaches methods for identifying shared concerns and building conversations on areas of agreement rather than division.'
   }];
 
   return <div className="min-h-screen flex flex-col">
@@ -210,6 +208,14 @@ type QuizQuestion = {
             <p className="text-muted-foreground mb-8">For this module, we'll focus on a hypothetical city ballot initiative to improve bus and subway service. The campaign is deploying deep canvassers to talk to people who are registered to vote, but who never vote in off-year local elections.
 
 Do you think the canvasser and possible voters will get into arguments? Maybe there won't be heated partisan debates, but the the canvasser and voter genuinely disagree about the importance of voting. The canvasser must truly persuade the prospective voter to change their minds. Therefore, we can study the full deep canvass method just by learning how to persuade nonvoters in a local election.</p>
+          </div>
+
+          {/* Deep Canvassing Assessment */}
+          <div className="max-w-6xl mx-auto mb-12">
+            <SliderCard 
+              title="How do you feel about deep canvassing?"
+              question="I am interested in having vulnerable political conversations with voters with different perspectives than mine."
+            />
           </div>
 
           <div className="max-w-6xl mx-auto mb-16">
@@ -434,67 +440,6 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                 </Card>
               ))}
             </div>
-          </div>
-
-          {/* Learning Paths */}
-          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card className="border-dialogue-neutral hover:shadow-md transition-shadow">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xl">
-                  Introduction to Political Dialogue
-                </CardTitle>
-                <CardDescription>
-                  Assessment & learning fundamentals
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-6">
-                  Start with a personalized assessment and learn the core concepts of effective political conversation.
-                </p>
-                <Link to="/learn-intro">
-                  <Button variant="outline" className="w-full mt-2 flex justify-between items-center">
-                    <span>Begin Introduction</span>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            <Card className="border-dialogue-neutral hover:shadow-md transition-shadow">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xl">
-                  Chapter Learning
-                </CardTitle>
-                <CardDescription>
-                  Structured learning modules
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-6">
-                  Dive into focused learning chapters covering specific dialogue skills and techniques.
-                </p>
-                <div className="space-y-3">
-                  <Link to="/learn/chapter1">
-                    <Button variant="outline" className="w-full flex justify-between items-center">
-                      <span>Chapter 1: Understanding Perspectives</span>
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                  <Link to="/learn/chapter2">
-                    <Button variant="outline" className="w-full flex justify-between items-center">
-                      <span>Chapter 2: Active Listening</span>
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                  <Link to="/learn/chapter3">
-                    <Button variant="outline" className="w-full flex justify-between items-center">
-                      <span>Chapter 3: Finding Common Ground</span>
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </main>
