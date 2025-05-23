@@ -30,7 +30,7 @@ const Navbar = () => {
     });
     return () => subscription.unsubscribe();
   }, []);
-  
+
   const handleAuthClick = () => {
     if (user) {
       supabase.auth.signOut();
@@ -38,27 +38,22 @@ const Navbar = () => {
       navigate('/auth');
     }
   };
-  
+
   return <nav className="py-4 border-b border-border bg-white sticky top-0 z-50">
       <div className="container-custom flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Link to="/" className="font-sans text-[18px] font-semibold text-gray-800 tracking-tight">
             type2dialogue
           </Link>
-          
+
           <Link to="/learn" className="text-foreground hover:text-dialogue-purple transition-colors">
             Learn
           </Link>
-          
-          <Link to="/learn-intro" className="text-foreground hover:text-dialogue-purple transition-colors">
-            Learn - Intro
-          </Link>
-          
           <Link to="/build-story" className="text-foreground hover:text-dialogue-purple transition-colors">
             Build Story
           </Link>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <Button variant="outline" className="hidden sm:flex" onClick={handleAuthClick}>
             {user ? 'Log Out' : 'Log In'}

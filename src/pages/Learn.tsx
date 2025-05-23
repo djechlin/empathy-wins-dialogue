@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Toggle } from '@/components/ui/toggle';
 import { toast } from '@/components/ui/sonner';
+import PracticeCard from '@/components/learn/PracticeCard';
 
 const Learn = () => {
   const [openLessons, setOpenLessons] = useState<Record<string, boolean>>({
@@ -401,19 +402,7 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                                     ))}
                                   </div>
                                 ) : lesson.id === 'practice' ? (
-                                  <div className="space-y-6">
-                                    <p>{lesson.content}</p>
-                                    <div className="bg-dialogue-neutral/10 rounded-lg p-6">
-                                      <h3 className="text-lg font-medium mb-3">Start Practice Call</h3>
-                                      <p className="text-sm text-muted-foreground mb-4">
-                                        Get real-time feedback as you practice deep canvassing techniques with our AI voice assistant.
-                                      </p>
-                                      <Button className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue flex items-center justify-center gap-2">
-                                        <Phone className="h-4 w-4" />
-                                        Start Interactive Practice
-                                      </Button>
-                                    </div>
-                                  </div>
+                                  <PracticeCard isOpen={openLessons[lesson.id]} />
                                 ) : (
                                   <p>{lesson.content}</p>
                                 )}
