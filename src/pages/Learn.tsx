@@ -11,7 +11,7 @@ const Learn = () => {
     {
       id: 'starting-out',
       title: 'Starting out',
-      description: 'Learn the fundamentals of deep canvassing and practice with AI',
+      description: 'Learn the fundamentals of deep canvassing',
       icon: BookOpen,
       path: '/learn/starting-out',
       color: 'text-blue-600',
@@ -66,33 +66,21 @@ const Learn = () => {
               {learningPaths.map((path) => {
                 const IconComponent = path.icon;
                 return (
-                  <Card
-                    key={path.id}
-                    className="border-dialogue-neutral hover:shadow-lg transition-all duration-300 hover:scale-105"
-                  >
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className={`p-2 rounded-lg ${path.bgColor}`}>
-                          <IconComponent className={`h-6 w-6 ${path.color}`} />
+                  <Link key={path.id} to={path.path}>
+                    <Card className="border-dialogue-neutral hover:shadow-lg hover:border-dialogue-purple transition-all duration-300 hover:scale-105 cursor-pointer">
+                      <CardHeader className="pb-4">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className={`p-2 rounded-lg ${path.bgColor}`}>
+                            <IconComponent className={`h-6 w-6 ${path.color}`} />
+                          </div>
+                          <CardTitle className="text-xl">{path.title}</CardTitle>
                         </div>
-                        <CardTitle className="text-xl">{path.title}</CardTitle>
-                      </div>
-                      <CardDescription className="text-base">
-                        {path.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Link to={path.path}>
-                        <Button 
-                          variant="outline" 
-                          className="w-full flex justify-between items-center hover:bg-muted/50"
-                        >
-                          <span>Begin Learning</span>
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                    </CardContent>
-                  </Card>
+                        <CardDescription className="text-base">
+                          {path.description}
+                        </CardDescription>
+                      </CardHeader>
+                    </Card>
+                  </Link>
                 );
               })}
             </div>

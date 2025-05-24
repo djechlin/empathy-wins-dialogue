@@ -47,10 +47,10 @@ export function CallWorkspace({ callId }: CallWorkspaceProps) {
         }}
         >
         <div className="flex flex-row w-full min-h-[800px] h-fit">
-        <div className="w-80 h-full flex-shrink-0">
+        <div className="w-1/2 h-full flex-shrink-0">
         <ScriptBar callId={callId} />
         </div>
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="w-1/2 flex flex-col min-w-0">
         <MessageList ref={ref} />
         <ControlPanel />
         </div>
