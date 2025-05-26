@@ -1,3 +1,4 @@
+
 import { VoiceProvider } from '@humeai/voice-react';
 import { ReactNode, useEffect, useState } from 'react';
 import { getHumeAccessToken } from '@/lib/getHumeAccessToken';
@@ -5,7 +6,7 @@ import { getHumeAccessToken } from '@/lib/getHumeAccessToken';
 interface AuthenticatingVoiceProviderProps {
   configId?: string;
   children: ReactNode;
-  onMessage?: () => void;
+  onMessage?: (message: any) => void;
   className?: string;
   [key: string]: any; // Allow other VoiceProvider props to pass through
 }
