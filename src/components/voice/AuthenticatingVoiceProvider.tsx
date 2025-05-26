@@ -1,5 +1,5 @@
 
-import { VoiceProvider } from '@humeai/voice-react';
+import { ToolCallHandler, VoiceProvider } from '@humeai/voice-react';
 import { ReactNode, useEffect, useState } from 'react';
 import { getHumeAccessToken } from '@/lib/getHumeAccessToken';
 
@@ -8,15 +8,17 @@ interface AuthenticatingVoiceProviderProps {
   children: ReactNode;
   onMessage?: (message: any) => void;
   className?: string;
+  onToolCall?: ToolCallHandler;
   [key: string]: any; // Allow other VoiceProvider props to pass through
 }
 
-export function AuthenticatingVoiceProvider({ 
-  children, 
-  configId, 
-  onMessage, 
+export function AuthenticatingVoiceProvider({
+  children,
+  configId,
+  onMessage,
   className,
-  ...otherProps 
+  onToolCall,
+  ...otherProps
 }: AuthenticatingVoiceProviderProps) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +48,7 @@ export function AuthenticatingVoiceProvider({
 
   return (
     <div className={className}>
-      <VoiceProvider
+      <VoiceProvider onToolCall={onToolCall}
         auth={{ type: 'accessToken', value: accessToken }}
         configId={configId}
         onMessage={onMessage}

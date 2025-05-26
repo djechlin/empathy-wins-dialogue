@@ -8,6 +8,14 @@ import { Badge } from '@/components/ui/badge';
 const Blog = () => {
   const blogPosts = [
     {
+      id: 'the-name-type2dialogue',
+      title: 'The Name Type2Dialogue',
+      description: 'Why meaningful political conversations require System 2 thinking and how cognitive dissonance exploration happens in deliberate, slow thinking.',
+      date: 'December 2024',
+      category: 'Psychology',
+      readTime: '9 min read'
+    },
+    {
       id: 'turning-out-the-base',
       title: 'What Every Activist Should Know About Turning Out the Base',
       description: 'Why mobilizing your supporters often yields better returns than persuading swing voters.',

@@ -8,7 +8,6 @@ import ActivityCard from '@/components/learn/ActivityCard';
 import FactCard from '@/components/learn/FactCard';
 import FactCardList from '@/components/learn/FactCardList';
 import Quiz from '@/components/learn/Quiz';
-import { CallWorkspace } from '@/components/voice/CallWorkspace';
 import { LoveListWidget } from '@/components/voice/LoveListWidget';
 import { AuthenticatingVoiceProvider } from '@/components/voice/AuthenticatingVoiceProvider';
 import { HUME_PERSONAS } from '@/lib/scriptData';
@@ -92,11 +91,11 @@ const VulnerableStorytelling = () => {
                 <div className="space-y-6">
                   <div className="space-y-4">
                     <p className="text-muted-foreground">
-                      In this exercise, you'll practice talking about people, pets, things, and experiences you love. 
-                      The AI will listen and capture what you mention, building your personal love list that you can 
+                      In this exercise, you'll practice talking about people, pets, things, and experiences you love.
+                      The AI will listen and capture what you mention, building your personal love list that you can
                       use in future conversations.
                     </p>
-                    
+
                     <FactCard topic="How it works">
                       <FactCardList>
                         <li>Start a voice conversation and talk about things you love</li>
@@ -107,21 +106,8 @@ const VulnerableStorytelling = () => {
                     </FactCard>
                   </div>
 
-                  <AuthenticatingVoiceProvider
-                    configId={HUME_PERSONAS["deep-canvassing"]}
-                    onMessage={() => {}}
-                    className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-                  >
-                    <div className="space-y-4">
-                      <h4 className="font-semibold text-dialogue-darkblue">Voice Practice</h4>
-                      <CallWorkspace callId="deep-canvassing" />
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <h4 className="font-semibold text-dialogue-darkblue">Your Love List</h4>
+
                       <LoveListWidget />
-                    </div>
-                  </AuthenticatingVoiceProvider>
                 </div>
               </ActivityCard>
 

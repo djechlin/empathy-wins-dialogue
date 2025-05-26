@@ -15,6 +15,7 @@ import Blog from "./pages/Blog";
 import CognitiveDissonance from "./pages/blog/CognitiveDissonance";
 import SwingVoters from "./pages/blog/SwingVoters";
 import TurningOutTheBase from "./pages/blog/TurningOutTheBase";
+import TheNameType2Dialogue from "./pages/blog/TheNameType2Dialogue";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/learn/when-to-keep-talking" element={<WhenToKeepTalking />} />
           <Route path="/learn/:chapterId" element={<LearnChapter />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/the-name-type2dialogue" element={<TheNameType2Dialogue />} />
           <Route path="/blog/cognitive-dissonance" element={<CognitiveDissonance />} />
           <Route path="/blog/swing-voters" element={<SwingVoters />} />
           <Route path="/blog/turning-out-the-base" element={<TurningOutTheBase />} />

@@ -1,11 +1,14 @@
 
-import React, { useState, useEffect } from 'react';
-import { useVoice, VoiceContextType } from '@humeai/voice-react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import { useVoice, VoiceContextType, ToolCallHandler } from '@humeai/voice-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Heart, User, Dog, Package, MapPin, Trash2, Edit3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ControlPanel from './ControlPanel';
+import { AuthenticatingVoiceProvider } from './AuthenticatingVoiceProvider';
+import { HUME_PERSONAS } from '../../lib/scriptData';
 
 type CategoryType = 'person' | 'pet' | 'things' | 'experiences';
 
@@ -23,6 +26,10 @@ interface LoveListMessage {
   };
 }
 
+interface LoveListInnerHandle {
+  addItem: (item: HumeLovedItem) => void;
+}
+
 const categoryIcons = {
   person: <User className="h-4 w-4" />,
   pet: <Dog className="h-4 w-4" />,
@@ -37,57 +44,93 @@ const categoryColors = {
   experiences: 'bg-orange-100 text-orange-800 border-orange-200'
 };
 
+type HumeLovedItem = {
+  category: string;
+  item: string;
+}
+
 export const LoveListWidget = () => {
+  const innerRef = useRef<LoveListInnerHandle>(null);
+
+  const handleToolCall: ToolCallHandler = async (toolCall, send) => {
+    console.log('Tool call received:', toolCall);
+    console.log('Tool call name:', toolCall.name);
+    console.log('Tool call parameters:', toolCall.parameters);
+
+    if (toolCall.name === 'streaming_love_list_with_category' && toolCall.parameters) {
+      try {
+        console.log('Parsing parameters...');
+        const parameters = JSON.parse(toolCall.parameters)['love_list'] as HumeLovedItem[];
+        console.log('Parsed parameters:', parameters);
+        console.log('innerRef.current exists:', !!innerRef.current);
+        
+        parameters.forEach((item, index) => {
+          console.log(`Adding item ${index}:`, item);
+          innerRef.current?.addItem(item);
+        });
+        
+        console.log('Items added successfully');
+        
+        // Send trivial success response (required but not used by voice assistant)
+        return send.success({});
+      } catch (error) {
+        console.error('Error parsing parameters:', error);
+        return send.error({
+          error: 'Parse error',
+          code: 'PARSE_ERROR',
+          level: 'error',
+          content: String(error)
+        });
+      }
+    }
+    
+    console.log('Unknown tool call:', toolCall.name);
+    // Send trivial error for unknown tool calls
+    return send.error({
+      error: 'Unknown tool',
+      code: 'UNKNOWN',
+      level: 'info',
+      content: ''
+    });
+  };
+
+  return (
+    <AuthenticatingVoiceProvider
+      configId={HUME_PERSONAS['love-list']}
+      onMessage={() => {}}
+      onToolCall={handleToolCall}
+      className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+    >
+      <ControlPanel />
+      <LoveListWidgetInner ref={innerRef} />
+    </AuthenticatingVoiceProvider>
+  );
+};
+
+const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
   const [items, setItems] = useState<LoveItem[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
-  const { messages }: VoiceContextType = useVoice();
 
-  // Listen for Hume messages containing love items
-  useEffect(() => {
-    if (!messages || messages.length === 0) return;
+  const addItem = (lovedItem: HumeLovedItem) => {
+    console.log('addItem called with:', lovedItem);
+    const newItem: LoveItem = {
+      id: Date.now().toString(),
+      text: lovedItem.item,
+      category: lovedItem.category as CategoryType
+    };
+    console.log('Creating new item:', newItem);
+    setItems(prev => {
+      const newItems = [...prev, newItem];
+      console.log('Updated items array:', newItems);
+      return newItems;
+    });
+  };
 
-    const lastMessage = messages[messages.length - 1];
-    
-    // Check if this is a tool response or JSON message containing love item data
-    if (lastMessage.type === 'assistant_message' || lastMessage.type === 'tool_response') {
-      try {
-        let content = '';
-        
-        // Handle different message types
-        if (lastMessage.type === 'assistant_message') {
-          content = (lastMessage as any).message?.content || '';
-        } else if (lastMessage.type === 'tool_response') {
-          content = (lastMessage as any).content || '';
-        }
-        
-        // Try to parse JSON from the message content
-        const jsonMatch = content.match(/\{.*\}/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]) as LoveListMessage;
-          
-          if (parsed.type === 'love_item' && parsed.data) {
-            const newItem: LoveItem = {
-              id: Date.now().toString(),
-              text: parsed.data.item,
-              category: parsed.data.category
-            };
-            
-            // Avoid duplicates
-            setItems(prev => {
-              const exists = prev.some(item => 
-                item.text.toLowerCase() === newItem.text.toLowerCase()
-              );
-              return exists ? prev : [...prev, newItem];
-            });
-          }
-        }
-      } catch (error) {
-        // Not a valid JSON message, ignore
-        console.log('No valid love item data in message');
-      }
-    }
-  }, [messages]);
+  useImperativeHandle(ref, () => ({
+    addItem
+  }));
+
 
   const handleEdit = (item: LoveItem) => {
     setEditingId(item.id);
@@ -96,7 +139,7 @@ export const LoveListWidget = () => {
 
   const handleSaveEdit = () => {
     if (editingId && editText.trim()) {
-      setItems(prev => prev.map(item => 
+      setItems(prev => prev.map(item =>
         item.id === editingId ? { ...item, text: editText.trim() } : item
       ));
     }
@@ -141,7 +184,7 @@ export const LoveListWidget = () => {
             items.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center gap-3 p-3 bg-grey-50 rounded-lg border hover:shadow-sm transition-shadow"
+                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border hover:shadow-sm transition-shadow"
               >
                 <div className={cn(
                   "flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border",
@@ -150,7 +193,7 @@ export const LoveListWidget = () => {
                   {categoryIcons[item.category]}
                   <span className="capitalize">{item.category}</span>
                 </div>
-                
+
                 {editingId === item.id ? (
                   <div className="flex-1 flex items-center gap-2">
                     <Input
@@ -193,4 +236,4 @@ export const LoveListWidget = () => {
       </CardContent>
     </Card>
   );
-};
+});

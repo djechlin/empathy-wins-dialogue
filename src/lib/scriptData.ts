@@ -10,7 +10,8 @@ export type ScenarioId =
   | 'law-order-voter'
   | 'code-review-junior-feedback'
   | 'intro-canvassing'
-  | 'busy-voter-libraries';
+  | 'busy-voter-libraries'
+  | 'love-list';
 
 export const SCRIPT_TITLES: { [key in ScenarioId]: string } = {
   'deep-canvassing': 'Script',
@@ -18,6 +19,7 @@ export const SCRIPT_TITLES: { [key in ScenarioId]: string } = {
   'code-review-junior-feedback': 'Code Review Feedback Script',
   'intro-canvassing': 'Candidate Introduction Script',
   'busy-voter-libraries': 'Library Funding Script',
+  'love-list': 'Love list'
 };
 
 export const HUME_PERSONAS: { [key in ScenarioId]: string } = {
@@ -26,9 +28,13 @@ export const HUME_PERSONAS: { [key in ScenarioId]: string } = {
   'code-review-junior-feedback': 'ba08f302-361f-43fa-886b-4eacd2691fe3',
   'intro-canvassing': '8e875e6a-83f5-4f97-a5f8-dcddb4ba9b6c',
   'busy-voter-libraries': 'd3b113c7-3e87-49a2-b400-1b155b514d0a',
+  'love-list': 'd3b113c7-3e87-49a2-b400-1b155b514d0a'
 };
 
 export const SCRIPTS: { [key in ScenarioId]: Script } = {
+  'love-list': [
+
+  ],
   'intro-canvassing': [
     {
       name: '1. Introduce the candidate',
@@ -239,6 +245,10 @@ export type Scenario = {
 };
 
 export const SCENARIOS: { [key in ScenarioId]: Scenario } = {
+  'love-list': {
+    title: 'Love list',
+    description: ['Love list exercise']
+  },
   'deep-canvassing': {
     title: 'Practice Deep Canvassing',
     description: [
