@@ -1,21 +1,9 @@
+
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { SCRIPTS, ScenarioId } from '@/lib/scriptData';
 import { useVoice, VoiceContextType } from '@humeai/voice-react';
-
-export type Message = {
-  type: string;
-  message: {
-    content: string;
-    role: string;
-  };
-  models?: {
-    prosody?: {
-      scores?: Record<string, number>;
-    };
-  };
-};
 
 export default function ScriptBar({
   callId,
@@ -32,14 +20,14 @@ export default function ScriptBar({
   const [triggeredSteps, triggeredItems] = useMemo(() => {
     const userMessages = messages?.filter((msg) => msg.type === 'user_message');
     if (userMessages.length === 0) return [new Set(), new Set()];
-    const lastUserMessage = userMessages[userMessages.length - 1] as Message;
+    const lastUserMessage = userMessages[userMessages.length - 1];
     const triggeredSteps = new Set<number>();
     const triggeredDescriptions = new Set<string>();
     SCRIPTS[callId]?.forEach((step, stepIndex) => {
       step.description.forEach((description, descriptionIndex) => {
         if (
           description.triggers?.some((trigger) =>
-            lastUserMessage.message.content.toLowerCase().includes(trigger)
+            (lastUserMessage as any).message?.content?.toLowerCase()?.includes(trigger)
           )
         ) {
           triggeredSteps.add(stepIndex);

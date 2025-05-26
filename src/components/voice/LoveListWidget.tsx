@@ -52,7 +52,14 @@ export const LoveListWidget = () => {
     // Check if this is a tool response or JSON message containing love item data
     if (lastMessage.type === 'assistant_message' || lastMessage.type === 'tool_response') {
       try {
-        const content = lastMessage.message?.content || '';
+        let content = '';
+        
+        // Handle different message types
+        if (lastMessage.type === 'assistant_message') {
+          content = (lastMessage as any).message?.content || '';
+        } else if (lastMessage.type === 'tool_response') {
+          content = (lastMessage as any).content || '';
+        }
         
         // Try to parse JSON from the message content
         const jsonMatch = content.match(/\{.*\}/);

@@ -1,3 +1,4 @@
+
 import React, { ReactNode, useState, Children, isValidElement, cloneElement } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronDown, CheckCircle2 } from 'lucide-react';
@@ -10,8 +11,9 @@ export interface ActivityCardProps {
   description: string;
   defaultOpen?: boolean;
   children: ReactNode;
-  headerExtra?: ReactNode; // For additional elements in header like the phone icon
+  headerExtra?: ReactNode;
   className?: string;
+  isComplete?: boolean;
 }
 
 const ActivityCard: React.FC<ActivityCardProps> = ({
@@ -21,24 +23,28 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
   defaultOpen = false,
   children,
   headerExtra,
-  className = ""
+  className = "",
+  isComplete: externalIsComplete = false
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
-  const [isComplete, setIsComplete] = useState(false);
+  const [internalIsComplete, setInternalIsComplete] = useState(false);
+  
+  // Use external isComplete if provided, otherwise use internal state
+  const isComplete = externalIsComplete || internalIsComplete;
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
 
   const handleQuizComplete = (passed: boolean) => {
-    setIsComplete(passed);
+    setInternalIsComplete(passed);
   };
 
   // Clone children and pass handleQuizComplete to any Quiz components
   const enhancedChildren = Children.map(children, (child) => {
     if (isValidElement(child) && child.type && 
         (child.type as any).name === 'Quiz') {
-      return cloneElement(child, { onQuizComplete: handleQuizComplete });
+      return cloneElement(child as any, { onQuizComplete: handleQuizComplete });
     }
     return child;
   });
@@ -93,7 +99,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
-                onClick={(e) => e.stopPropagation()} // Prevent clicks inside content from toggling
+                onClick={(e) => e.stopPropagation()}
               >
                 <CardContent>
                   <motion.div
