@@ -4,9 +4,10 @@ import { useVoice, VoiceContextType, ToolCallHandler } from '@humeai/voice-react
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Heart, User, Dog, Package, MapPin, Trash2, Edit3 } from 'lucide-react';
+import { Heart, User, Dog, Package, MapPin, Trash2, Edit3, Mic } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ControlPanel from './ControlPanel';
+import MessageList from '../MessageList';
 import { AuthenticatingVoiceProvider } from './AuthenticatingVoiceProvider';
 import { HUME_PERSONAS } from '../../lib/scriptData';
 
@@ -99,10 +100,38 @@ export const LoveListWidget = () => {
       configId={HUME_PERSONAS['love-list']}
       onMessage={() => {}}
       onToolCall={handleToolCall}
-      className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+      className="space-y-6"
     >
-      <ControlPanel />
-      <LoveListWidgetInner ref={innerRef} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left side: Voice controls and transcript */}
+        <div className="space-y-4">
+          <Card className="border-dialogue-neutral bg-white">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Mic className="h-5 w-5 text-dialogue-purple" />
+                Voice Recording
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ControlPanel />
+            </CardContent>
+          </Card>
+          
+          <Card className="border-dialogue-neutral bg-white">
+            <CardHeader>
+              <CardTitle>Live Transcript</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="min-h-[300px] max-h-[400px] overflow-y-auto">
+                <MessageList />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Right side: Love list */}
+        <LoveListWidgetInner ref={innerRef} />
+      </div>
     </AuthenticatingVoiceProvider>
   );
 };
