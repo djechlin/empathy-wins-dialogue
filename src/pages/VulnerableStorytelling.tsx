@@ -19,7 +19,7 @@ const VulnerableStorytelling = () => {
                 Back to Learning Paths
               </Button>
             </Link>
-            
+
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 rounded-lg bg-red-50">
@@ -37,25 +37,23 @@ const VulnerableStorytelling = () => {
             <div className="space-y-8">
               <Card className="border-dialogue-neutral">
                 <CardHeader>
-                  <CardTitle>Why Vulnerability Works</CardTitle>
-                  <CardDescription>
-                    Understanding the psychology behind personal storytelling in political conversations
-                  </CardDescription>
+                  <CardTitle>Opening up to the voter by sharing a story about a loved one</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <p className="text-muted-foreground">
-                      Vulnerable storytelling creates emotional connection by showing your humanity. When you share 
-                      a personal story about someone you love, it signals to the voter that this conversation is 
-                      about real people, not abstract politics.
+                      When we speak of our loved ones, we communicate to the voter that we really are here
+                      talking to them, first and foremost, because of the people in our lives. Voters often respond
+                      with similar openness and share their own stories. Deep canvassers establish this two-way openness
+                      before moving on to exploring the issue.
                     </p>
                     <div className="bg-dialogue-neutral/10 rounded-lg p-4">
                       <h4 className="font-medium mb-2 text-dialogue-darkblue">Key Principles:</h4>
                       <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li>• Share stories about people you genuinely care about</li>
-                        <li>• Focus on emotions and relationships, not policy details</li>
-                        <li>• Be authentic - voters can sense when stories are rehearsed</li>
-                        <li>• Keep stories concise but emotionally rich</li>
+                        <li>• Use the person's name and say that you love them</li>
+                        <li>• Share what makes them lovable and how they make you feel</li>
+                        <li>• Pause on a moment in time they were they for you</li>
+                        <li>• Now is the time to focus on relationships, not issues</li>
                       </ul>
                     </div>
                   </div>
