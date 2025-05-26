@@ -1,13 +1,15 @@
+
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Heart, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import PracticeCard from '@/components/learn/PracticeCard';
 import ActivityCard from '@/components/learn/ActivityCard';
 import FactCard from '@/components/learn/FactCard';
 import FactCardList from '@/components/learn/FactCardList';
 import Quiz from '@/components/learn/Quiz';
+import { CallWorkspace } from '@/components/voice/CallWorkspace';
+import { LoveListWidget } from '@/components/voice/LoveListWidget';
 
 const VulnerableStorytelling = () => {
   return (
@@ -79,13 +81,43 @@ const VulnerableStorytelling = () => {
                 />
               </ActivityCard>
 
-              <PracticeCard
-                id="practice-vulnerable-storytelling"
-                title="Practice Vulnerable Storytelling"
-                description="Practice sharing personal stories in a deep canvassing conversation"
+              <ActivityCard
+                id="exercise-love-list"
+                title="Exercise: the love list"
+                description="Practice talking about things you love to build your vulnerable storytelling skills"
                 defaultOpen={false}
-                scenarioId="deep-canvassing"
-              />
+              >
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <p className="text-muted-foreground">
+                      In this exercise, you'll practice talking about people, pets, things, and experiences you love. 
+                      The AI will listen and capture what you mention, building your personal love list that you can 
+                      use in future conversations.
+                    </p>
+                    
+                    <FactCard topic="How it works">
+                      <FactCardList>
+                        <li>Start a voice conversation and talk about things you love</li>
+                        <li>The AI will identify and categorize what you mention</li>
+                        <li>Items will appear in your love list with category icons</li>
+                        <li>You can edit or remove items if the AI misheard something</li>
+                      </FactCardList>
+                    </FactCard>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-dialogue-darkblue">Voice Practice</h4>
+                      <CallWorkspace callId="deep-canvassing" />
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-dialogue-darkblue">Your Love List</h4>
+                      <LoveListWidget />
+                    </div>
+                  </div>
+                </div>
+              </ActivityCard>
 
               <ActivityCard
                 id="example-story"
