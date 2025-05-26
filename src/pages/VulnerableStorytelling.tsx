@@ -62,9 +62,9 @@ const VulnerableStorytelling = () => {
 
               <Card className="border-dialogue-neutral">
                 <CardHeader>
-                  <CardTitle>Story Structure</CardTitle>
+                  <CardTitle>Warming up: the love list</CardTitle>
                   <CardDescription>
-                    How to craft compelling personal narratives for deep canvassing
+                    Getting used to saying "love" by talking about people, experiences and things we love
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
