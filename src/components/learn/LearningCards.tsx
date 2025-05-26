@@ -9,7 +9,6 @@ import { Plus, Trash2, List, ListCheck, Youtube, Users, ArrowDown, ArrowUp } fro
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import { Skeleton } from '@/components/ui/skeleton';
-import CallWorkspace from './CallWorkspace';
 import PracticeCard from './PracticeCard';
 
 const LearningCards = () => {
@@ -203,7 +202,7 @@ const LearningCards = () => {
           </CardContent>
         </Card>
 
-        <PracticeCard isOpen={false}/>
+        <PracticeCard isOpen={false} scenarioId="deep-canvassing" />
 
         {/* Card 3: Friends List */}
         <Card className="shadow-lg border-dialogue-neutral animate-fade-in">

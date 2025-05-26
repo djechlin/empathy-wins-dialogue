@@ -12,6 +12,10 @@ import EmpatheticListening from "./pages/EmpatheticListening";
 import WhenToKeepTalking from "./pages/WhenToKeepTalking";
 import LearnChapter from "./pages/LearnChapter";
 import BuildStory from "./pages/BuildStory";
+import Blog from "./pages/Blog";
+import CognitiveDissonance from "./pages/blog/CognitiveDissonance";
+import SwingVoters from "./pages/blog/SwingVoters";
+import TurningOutTheBase from "./pages/blog/TurningOutTheBase";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -32,6 +36,10 @@ const App = () => (
           <Route path="/learn/when-to-keep-talking" element={<WhenToKeepTalking />} />
           <Route path="/learn/:chapterId" element={<LearnChapter />} />
           <Route path="/build-story" element={<BuildStory />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/cognitive-dissonance" element={<CognitiveDissonance />} />
+          <Route path="/blog/swing-voters" element={<SwingVoters />} />
+          <Route path="/blog/turning-out-the-base" element={<TurningOutTheBase />} />
           <Route path="/auth" element={<Auth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
