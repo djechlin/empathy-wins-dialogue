@@ -1,11 +1,13 @@
-import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Heart, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import PracticeCard from '@/components/learn/PracticeCard';
+import ActivityCard from '@/components/learn/ActivityCard';
+import FactCard from '@/components/learn/FactCard';
+import FactCardList from '@/components/learn/FactCardList';
+import Quiz from '@/components/learn/Quiz';
 
 const VulnerableStorytelling = () => {
   return (
@@ -36,84 +38,135 @@ const VulnerableStorytelling = () => {
             </div>
 
             <div className="space-y-8">
-              <Card className="border-dialogue-neutral">
-                <CardHeader>
-                  <CardTitle>Opening up to the voter by sharing a story about a loved one</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <p className="text-muted-foreground">
-                      When we speak of our loved ones, we communicate to the voter that we really are here
-                      talking to them, first and foremost, because of the people in our lives. Voters often respond
-                      with similar openness and share their own stories. Deep canvassers establish this two-way openness
-                      before moving on to exploring the issue.
+              <ActivityCard
+                id="vulnerable-storytelling-intro"
+                title="Opening up to the voter by sharing a story about a loved one"
+                description="Learn the fundamentals of vulnerable storytelling in deep canvassing"
+              >
+                <div className="space-y-4">
+                  <p className="text-muted-foreground">
+                    When we speak of our loved ones, we communicate to the voter that we really are here
+                    talking to them, first and foremost, because of the people in our lives. Voters often respond
+                    with similar openness and share their own stories. Deep canvassers establish this two-way openness
+                    before moving on to exploring the issue.
+                  </p>
+
+                  <FactCard topic="Key Principles">
+                    <FactCardList>
+                      <li>Use the person's name and say that you love them</li>
+                      <li>Share what makes them lovable and how they make you feel</li>
+                      <li>Pause on a moment in time they were there for you</li>
+                      <li>Now is the time to focus on relationships, not issues</li>
+                    </FactCardList>
+                  </FactCard>
+                </div>
+
+                <Quiz
+                  questions={[
+                    {
+                      id: 'storytelling_q1',
+                      text: 'When sharing vulnerable stories, you should focus on relationships before discussing political issues.',
+                      correctAnswer: true
+                    },
+                    {
+                      id: 'storytelling_q2',
+                      text: 'The main goal of vulnerable storytelling is to win the political argument.',
+                      correctAnswer: false
+                    }
+                  ]}
+                  title="Quiz"
+                  description="Test your understanding of vulnerable storytelling principles."
+                />
+              </ActivityCard>
+
+              <PracticeCard
+                id="practice-vulnerable-storytelling"
+                title="Practice Vulnerable Storytelling"
+                description="Practice sharing personal stories in a deep canvassing conversation"
+                defaultOpen={false}
+                scenarioId="deep-canvassing"
+              />
+
+              <ActivityCard
+                id="example-story"
+                title="Example Story"
+                description="A sample vulnerable story about healthcare"
+              >
+                <div className="space-y-4">
+                  <div className="bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 rounded p-4">
+                    <p className="text-sm italic">
+                      "I think of my daughter Sarah. She's 28 now, works as a teacher, and has Type 1 diabetes.
+                      Last year, she had to ration her insulin because even with insurance, she couldn't afford
+                      her prescription. I remember getting that phone call from her, crying, saying she was
+                      scared. As her parent, feeling helpless when your child is suffering... it's something
+                      that stays with you. Sarah is brilliant, caring, and she's dedicating her life to educating
+                      kids. She shouldn't have to choose between her medication and paying rent."
                     </p>
-                    <div className="bg-dialogue-neutral/10 rounded-lg p-4">
-                      <h4 className="font-medium mb-2 text-dialogue-darkblue">Key Principles:</h4>
-                      <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li>• Use the person's name and say that you love them</li>
-                        <li>• Share what makes them lovable and how they make you feel</li>
-                        <li>• Pause on a moment in time they were they for you</li>
-                        <li>• Now is the time to focus on relationships, not issues</li>
-                      </ul>
-                    </div>
                   </div>
-                </CardContent>
-              </Card>
 
-              <PracticeCard isOpen={false} scenarioId="deep-canvassing" />
-
-              <Card className="border-dialogue-neutral">
-                <CardHeader>
-                  <CardTitle>Example Story</CardTitle>
-                  <CardDescription>
-                    A sample vulnerable story about healthcare
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 rounded p-4">
-                      <p className="text-sm italic">
-                        "I think of my daughter Sarah. She's 28 now, works as a teacher, and has Type 1 diabetes. 
-                        Last year, she had to ration her insulin because even with insurance, she couldn't afford 
-                        her prescription. I remember getting that phone call from her, crying, saying she was 
-                        scared. As her parent, feeling helpless when your child is suffering... it's something 
-                        that stays with you. Sarah is brilliant, caring, and she's dedicating her life to educating 
-                        kids. She shouldn't have to choose between her medication and paying rent."
-                      </p>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      <strong>Why this works:</strong> Personal relationship (daughter), specific moment (phone call), 
+                  <FactCard topic="Why this works">
+                    <p className="text-sm text-muted-foreground">
+                      Personal relationship (daughter), specific moment (phone call),
                       genuine emotion (helplessness, fear), and connects to broader values (healthcare access).
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-dialogue-neutral">
-                <CardHeader>
-                  <CardTitle>Practice Exercise</CardTitle>
-                  <CardDescription>
-                    Develop your own vulnerable story
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <p className="text-muted-foreground">
-                      Think of someone you love who has been affected by a political issue. This could be healthcare, 
-                      education, housing, immigration, or any other topic. Write a 2-3 sentence story following 
-                      the structure above.
                     </p>
-                    <div className="bg-dialogue-neutral p-4 rounded-md border-l-4 border-dialogue-purple">
-                      <p className="font-semibold">Remember:</p>
-                      <p className="text-muted-foreground">
-                        The goal isn't to win an argument, but to show the voter that you care about real people 
-                        and real consequences. Your vulnerability gives them permission to be vulnerable too.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </FactCard>
+                </div>
+
+                <Quiz
+                  questions={[
+                    {
+                      id: 'example_q1',
+                      text: 'Effective vulnerable stories should include specific moments and genuine emotions.',
+                      correctAnswer: true
+                    },
+                    {
+                      id: 'example_q2',
+                      text: 'When telling stories, you should avoid mentioning specific details to keep them general.',
+                      correctAnswer: false
+                    }
+                  ]}
+                  title="Example Analysis Quiz"
+                  description="Test your understanding of what makes an effective vulnerable story."
+                />
+              </ActivityCard>
+
+              <ActivityCard
+                id="practice-exercise"
+                title="Practice Exercise"
+                description="Develop your own vulnerable story"
+              >
+                <div className="space-y-4">
+                  <p className="text-muted-foreground">
+                    Think of someone you love who has been affected by a political issue. This could be healthcare,
+                    education, housing, immigration, or any other topic. Write a 2-3 sentence story following
+                    the structure above.
+                  </p>
+
+                  <FactCard topic="Remember">
+                    <p className="text-muted-foreground">
+                      The goal isn't to win an argument, but to show the voter that you care about real people
+                      and real consequences. Your vulnerability gives them permission to be vulnerable too.
+                    </p>
+                  </FactCard>
+                </div>
+
+                <Quiz
+                  questions={[
+                    {
+                      id: 'practice_q1',
+                      text: 'The primary goal of vulnerable storytelling is to give voters permission to be vulnerable too.',
+                      correctAnswer: true
+                    },
+                    {
+                      id: 'practice_q2',
+                      text: 'You should only share stories about political issues that directly affect you personally.',
+                      correctAnswer: false
+                    }
+                  ]}
+                  title="Practice Exercise Quiz"
+                  description="Test your understanding of the practice exercise principles."
+                />
+              </ActivityCard>
             </div>
           </div>
         </div>

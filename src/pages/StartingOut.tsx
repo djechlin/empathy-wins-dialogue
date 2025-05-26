@@ -6,8 +6,10 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import SliderCard from '@/components/ui/slider-card';
 import PracticeCard from '@/components/learn/PracticeCard';
 import FactCard from '@/components/learn/FactCard';
+import FactCardList from '@/components/learn/FactCardList';
 import ActivityCard from '@/components/learn/ActivityCard';
 import Quiz from '@/components/learn/Quiz';
+import VideoCard from '@/components/learn/VideoCard';
 
 const Learn = () => {
   return <div className="min-h-screen flex flex-col">
@@ -38,75 +40,57 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                   description="Learn how to recognize and appreciate different viewpoints in political conversations"
                 >
                   <div className="space-y-4 mb-6">
-                    {/* Video Section */}
-                    <Card className="border-dialogue-neutral hover:shadow-md transition-shadow overflow-hidden">
-                      <CardHeader className="py-3 px-4 bg-dialogue-neutral/10">
-                        <h3 className="text-lg font-medium">Watch: Deep Canvassing Explained</h3>
-                      </CardHeader>
-                      <CardContent className="py-4">
-                        <div className="mb-4">
-                          <AspectRatio ratio={16/9}>
-                            <iframe
-                              className="w-full h-full rounded-md"
-                              src="https://www.youtube.com/embed/Ip_pjb5_fgA"
-                              title="Deep Canvassing Video"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowFullScreen
-                            ></iframe>
-                          </AspectRatio>
-                          <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-                            <Youtube className="h-4 w-4 text-red-600" />
-                            <span>Watch this video to get an introduction to deep canvassing</span>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <VideoCard
+                      title="Watch: Deep Canvassing Explained"
+                      description="Watch this video to get an introduction to deep canvassing"
+                      url="https://www.youtube.com/embed/Ip_pjb5_fgA"
+                    />
 
                     <FactCard topic="Definition and Purpose">
-                      <ul className="list-disc pl-5 space-y-2">
+                      <FactCardList>
                         <li><strong>Canvassing</strong>: Talking to people to secure their vote or their support.</li>
                         <li><strong>Deep canvassing</strong>: A form of canvassing that involves longer, in-depth conversations in which the canvasser builds a connection with the voter before trying to persuade them on an issue.</li>
-                      </ul>
+                      </FactCardList>
                     </FactCard>
 
                     <FactCard topic="Characteristics of a deep canvassing conversation">
-                      <ul className="list-disc pl-5 space-y-2 text-sm">
+                      <FactCardList>
                         <li>Conversations last up to 20 minutes</li>
                         <li>Canvassers focus on building a connection by sharing stories about loved ones with the voter</li>
                         <li>Instead of explaining the issue to the voter, the canvasser asks the voter how the issue impacts their loves ones or people in their community and nonjudgmentally listens</li>
                         <li>Canvassers assume most opposers are persuadable, and most supporters could use a nudge</li>
                         <li>Canvassers can fall back to traditional canvassing when they feel there's no need to persuade a voter deeply</li>
-                      </ul>
+                      </FactCardList>
                     </FactCard>
 
                     <FactCard topic="Case studies">
-                      <ul className="list-disc pl-5 space-y-2 text-sm">
+                      <FactCardList>
                         <li>Deep canvassing campaigns have focused on gay rights, transgender rights, extending the social safety net to undocumented immigrants, midterm general election turnout and other issues</li>
                         <li>Rigorous studies show 3-8 point increase in support for an issue after a deep canvassing conversation.</li>
                         <li>Furthermore, the effect is long-lasting, seemingly for a year or more</li>
-                      </ul>
+                      </FactCardList>
                     </FactCard>
 
                     <FactCard topic="Persuasion Philosophy">
-                      <ul className="list-disc pl-5 space-y-2 text-sm">
+                      <FactCardList>
                         <li>Political persuasion is possible by creating a safe space to process issues, not by presenting more facts</li>
                         <li>If information flows like an electric current, deep canvassing focuses on lowering emotional resistance, not piling on more information</li>
                         <li>Canvassers always listen nonjudgmentally as voters process conflicting opinions, creating a safe space for cognitive dissonance and for the voter to change their mind</li>
-                      </ul>
+                      </FactCardList>
                     </FactCard>
 
                     <FactCard topic="Conversation flow">
-                      <ul className="list-disc pl-5 space-y-2 text-sm">
+                      <FactCardList>
                         <li>People stay on the phone to chat or keep the door open fairly often.</li>
                         <li>Canvassers get the voter to share their support or opposition to the issue, rating their support 1-10.</li>
                         <li>The canvasser then focuses the conversation on people the voter knows impacted by the issue, or stories of our loved ones more generally. The canvasser often shares a vulnerable story about one of their own loved ones.</li>
                         <li>The canvasser only brings up issues and politics after they and the voter are opening up to each other. They then focus on nonjudgmental listening as the voter processes the issue.</li>
                         <li>The conversation concludes with that same 1-10 scale, so voters say aloud and hear themselves say if they've changed their minds.</li>
-                      </ul>
+                      </FactCardList>
                     </FactCard>
                   </div>
 
-                  <Quiz 
+                  <Quiz
                     questions={[
                       {
                         id: 'question1',
@@ -131,8 +115,8 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                   description="Learn to practice vulnerability with the voter by telling your story"
                 >
                   <p className="mb-6">Active listening is more than just hearing words—it's about understanding the meaning and emotion behind them. This activity covers techniques for demonstrating that you truly understand what someone is saying before responding.</p>
-                  
-                  <Quiz 
+
+                  <Quiz
                     questions={[
                       {
                         id: 'story_q1',
@@ -176,8 +160,8 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                   description="Learn to practice vulnerability with the voter by telling your story"
                 >
                   <p className="mb-6">Active listening is more than just hearing words—it's about understanding the meaning and emotion behind them. This activity covers techniques for demonstrating that you truly understand what someone is saying before responding.</p>
-                  
-                  <Quiz 
+
+                  <Quiz
                     questions={[
                       {
                         id: 'telling_q1',

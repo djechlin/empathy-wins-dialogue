@@ -181,7 +181,7 @@ const LearningCards = () => {
         <VideoCard 
           title="Introduction to Empathetic Political Dialogue"
           description="Watch this short video to learn the basics of having productive political conversations"
-          videoId="zOgCdDJYF4U"
+          url="https://www.youtube.com/embed/zOgCdDJYF4U"
         />
 
         <PracticeCard 

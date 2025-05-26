@@ -3,11 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 interface VideoCardProps {
   title: string;
   description: string;
-  videoId: string;
+  url: string;
   className?: string;
 }
 
-const VideoCard = ({ title, description, videoId, className = "" }: VideoCardProps) => {
+const VideoCard = ({ title, description, url, className = "" }: VideoCardProps) => {
   return (
     <Card className={`shadow-lg border-dialogue-neutral animate-fade-in ${className}`}>
       <CardHeader>
@@ -20,7 +20,7 @@ const VideoCard = ({ title, description, videoId, className = "" }: VideoCardPro
         <div className="aspect-video">
           <iframe
             className="w-full h-full rounded-md"
-            src={`https://www.youtube.com/embed/${videoId}`}
+            src={url}
             title={title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen

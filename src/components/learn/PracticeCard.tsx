@@ -14,14 +14,14 @@ interface PracticeCardProps {
   className?: string;
 }
 
-const PracticeCard = ({ 
-  id, 
-  title, 
-  description, 
+const PracticeCard = ({
+  id,
+  title,
+  description,
   defaultOpen = false,
   scenarioId,
   quiz,
-  className = "" 
+  className = ""
 }: PracticeCardProps) => {
   return (
     <ActivityCard
@@ -39,9 +39,9 @@ const PracticeCard = ({
     >
       <div className="space-y-6">
         <VoiceCallWorkspace callId={scenarioId} />
-        
+
         {quiz && quiz.length > 0 && (
-          <Quiz 
+          <Quiz
             questions={quiz}
             title="Practice Quiz"
             description="Test your understanding of voice practice concepts."
