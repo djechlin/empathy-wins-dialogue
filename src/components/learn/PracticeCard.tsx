@@ -1,4 +1,4 @@
-import { CallWorkspace as VoiceCallWorkspace } from '@/components/voice/CallWorkspace';
+import { CallWorkspace } from '@/components/voice/CallWorkspace';
 import { Phone } from 'lucide-react';
 import { ScenarioId } from '@/lib/scriptData';
 import ActivityCard from './ActivityCard';
@@ -38,7 +38,7 @@ const PracticeCard = ({
       }
     >
       <div className="space-y-6">
-        <VoiceCallWorkspace callId={scenarioId} />
+        <CallWorkspace callId={scenarioId} />
 
         {quiz && quiz.length > 0 && (
           <Quiz
