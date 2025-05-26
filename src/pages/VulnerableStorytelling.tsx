@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Heart, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import PracticeCard from '@/components/learn/PracticeCard';
 
 const VulnerableStorytelling = () => {
   return (
@@ -60,38 +61,7 @@ const VulnerableStorytelling = () => {
                 </CardContent>
               </Card>
 
-              <Card className="border-dialogue-neutral">
-                <CardHeader>
-                  <CardTitle>Warming up: the love list</CardTitle>
-                  <CardDescription>
-                    Getting used to saying "love" by talking about people, experiences and things we love
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="p-4 border rounded-lg">
-                        <h4 className="font-medium text-dialogue-darkblue mb-2">1. The Person</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Introduce someone you love - their relationship to you and what makes them special
-                        </p>
-                      </div>
-                      <div className="p-4 border rounded-lg">
-                        <h4 className="font-medium text-dialogue-darkblue mb-2">2. The Moment</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Describe a specific time when the issue affected them or when you realized something important
-                        </p>
-                      </div>
-                      <div className="p-4 border rounded-lg">
-                        <h4 className="font-medium text-dialogue-darkblue mb-2">3. The Feeling</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Share how it made you feel and why this person matters to you
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <PracticeCard isOpen={false} scenarioId="deep-canvassing" />
 
               <Card className="border-dialogue-neutral">
                 <CardHeader>

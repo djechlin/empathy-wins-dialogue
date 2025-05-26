@@ -11,7 +11,6 @@ import VulnerableStorytelling from "./pages/VulnerableStorytelling";
 import EmpatheticListening from "./pages/EmpatheticListening";
 import WhenToKeepTalking from "./pages/WhenToKeepTalking";
 import LearnChapter from "./pages/LearnChapter";
-import BuildStory from "./pages/BuildStory";
 import Blog from "./pages/Blog";
 import CognitiveDissonance from "./pages/blog/CognitiveDissonance";
 import SwingVoters from "./pages/blog/SwingVoters";
@@ -35,7 +34,6 @@ const App = () => (
           <Route path="/learn/empathetic-listening" element={<EmpatheticListening />} />
           <Route path="/learn/when-to-keep-talking" element={<WhenToKeepTalking />} />
           <Route path="/learn/:chapterId" element={<LearnChapter />} />
-          <Route path="/build-story" element={<BuildStory />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/cognitive-dissonance" element={<CognitiveDissonance />} />
           <Route path="/blog/swing-voters" element={<SwingVoters />} />
