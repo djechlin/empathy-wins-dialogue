@@ -10,6 +10,8 @@ import FactCardList from '@/components/learn/FactCardList';
 import Quiz from '@/components/learn/Quiz';
 import { CallWorkspace } from '@/components/voice/CallWorkspace';
 import { LoveListWidget } from '@/components/voice/LoveListWidget';
+import { AuthenticatingVoiceProvider } from '@/components/voice/AuthenticatingVoiceProvider';
+import { HUME_PERSONAS } from '@/lib/scriptData';
 
 const VulnerableStorytelling = () => {
   return (
@@ -105,7 +107,11 @@ const VulnerableStorytelling = () => {
                     </FactCard>
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <AuthenticatingVoiceProvider
+                    configId={HUME_PERSONAS["deep-canvassing"]}
+                    onMessage={() => {}}
+                    className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+                  >
                     <div className="space-y-4">
                       <h4 className="font-semibold text-dialogue-darkblue">Voice Practice</h4>
                       <CallWorkspace callId="deep-canvassing" />
@@ -115,7 +121,7 @@ const VulnerableStorytelling = () => {
                       <h4 className="font-semibold text-dialogue-darkblue">Your Love List</h4>
                       <LoveListWidget />
                     </div>
-                  </div>
+                  </AuthenticatingVoiceProvider>
                 </div>
               </ActivityCard>
 
