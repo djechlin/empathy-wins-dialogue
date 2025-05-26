@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import { Skeleton } from '@/components/ui/skeleton';
 import PracticeCard from './PracticeCard';
+import VideoCard from './VideoCard';
 
 const LearningCards = () => {
   const [comfortLevel, setComfortLevel] = useState([5]);
@@ -177,32 +178,19 @@ const LearningCards = () => {
           </CardContent>
         </Card>
 
-        {/* Card 2: YouTube Video */}
-        <Card className="shadow-lg border-dialogue-neutral animate-fade-in">
-          <CardHeader>
-            <CardTitle>Introduction to Empathetic Political Dialogue</CardTitle>
-            <CardDescription>
-              Watch this short video to learn the basics of having productive political conversations
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="aspect-video">
-              <iframe
-                className="w-full h-full rounded-md"
-                src="https://www.youtube.com/embed/zOgCdDJYF4U"
-                title="Introduction to Empathetic Political Dialogue"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
-            <p className="mt-4 text-muted-foreground">
-              This video explains key concepts and strategies for engaging in meaningful political discussions
-              with friends, family, and colleagues.
-            </p>
-          </CardContent>
-        </Card>
+        <VideoCard 
+          title="Introduction to Empathetic Political Dialogue"
+          description="Watch this short video to learn the basics of having productive political conversations"
+          videoId="zOgCdDJYF4U"
+        />
 
-        <PracticeCard isOpen={false} scenarioId="deep-canvassing" />
+        <PracticeCard 
+          id="practice-deep-canvassing"
+          title="Practice Deep Canvassing"
+          description="Practice having productive political conversations using deep canvassing techniques"
+          defaultOpen={false} 
+          scenarioId="deep-canvassing" 
+        />
 
         {/* Card 3: Friends List */}
         <Card className="shadow-lg border-dialogue-neutral animate-fade-in">

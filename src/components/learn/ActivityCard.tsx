@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState, Children, isValidElement, cloneElement } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronDown, CheckCircle2 } from 'lucide-react';
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
@@ -8,9 +8,7 @@ export interface ActivityCardProps {
   id: string;
   title: string;
   description: string;
-  isOpen: boolean;
-  isComplete?: boolean;
-  onToggle: () => void;
+  defaultOpen?: boolean;
   children: ReactNode;
   headerExtra?: ReactNode; // For additional elements in header like the phone icon
   className?: string;
@@ -20,21 +18,39 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
   id,
   title,
   description,
-  isOpen,
-  isComplete = false,
-  onToggle,
+  defaultOpen = false,
   children,
   headerExtra,
   className = ""
 }) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [isComplete, setIsComplete] = useState(false);
+
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleQuizComplete = (passed: boolean) => {
+    setIsComplete(passed);
+  };
+
+  // Clone children and pass handleQuizComplete to any Quiz components
+  const enhancedChildren = Children.map(children, (child) => {
+    if (isValidElement(child) && child.type && 
+        (child.type as any).name === 'Quiz') {
+      return cloneElement(child, { onQuizComplete: handleQuizComplete });
+    }
+    return child;
+  });
+
   return (
     <Card
       className={`border-dialogue-neutral hover:shadow-sm transition-shadow cursor-pointer ${
         isComplete ? 'border-dialogue-darkblue border-2' : ''
       } ${className}`}
-      onClick={onToggle}
+      onClick={handleToggle}
     >
-      <Collapsible open={isOpen} onOpenChange={onToggle}>
+      <Collapsible open={isOpen} onOpenChange={handleToggle}>
         <CardHeader className="pt-3 pb-2">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
@@ -87,7 +103,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
                     transition={{ delay: 0.1, duration: 0.3 }}
                     className="prose max-w-none mb-4"
                   >
-                    {children}
+                    {enhancedChildren}
                   </motion.div>
                 </CardContent>
               </motion.div>
