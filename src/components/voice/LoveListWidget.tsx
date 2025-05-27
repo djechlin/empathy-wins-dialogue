@@ -13,13 +13,6 @@ import {
   useDeepgram,
 } from "@/components/voice/DeepgramContextProvider";
 
-import {
-  MicrophoneContextProvider,
-  MicrophoneEvents,
-  MicrophoneState,
-  useMicrophone,
-} from "@/components/voice/MicrophoneContextProvider";
-
 interface LoveItem {
   id: string;
   text: string;
@@ -34,7 +27,6 @@ export const LoveListWidget = () => {
 
   return (
     <DeepgramContextProvider>
-      <MicrophoneContextProvider>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left side: Voice controls and transcript */}
         <div className="space-y-4">
@@ -63,7 +55,6 @@ export const LoveListWidget = () => {
         {/* Right side: Love list */}
         <LoveListWidgetInner ref={innerRef} />
       </div>
-      </MicrophoneContextProvider>
     </DeepgramContextProvider>
   );
 };
@@ -74,15 +65,10 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
   const [editText, setEditText] = useState('');
 
     const { connection, connectToDeepgram, connectionState } = useDeepgram();
-    const { setupMicrophone, microphone, startMicrophone, microphoneState } =
-    useMicrophone();
 
   const captionTimeout = useRef<undefined | ReturnType<typeof setTimeout>>();
-  const [caption, setCaption] = useState<string | undefined>("dg");
-
-  useEffect(() => {
-    setupMicrophone();
-  }, []);
+  const [caption, setCaption] = useState<string>("");
+  const [interimCaption, setInterimCaption] = useState<string>("");
 
   useEffect(() => {
     connectToDeepgram({
@@ -95,24 +81,23 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
   }, [])
 
     useEffect(() => {
-    if (!microphone) return;
     if (!connection) return;
-
-    const onData = (e: BlobEvent) => {
-      // iOS SAFARI FIX:
-      // Prevent packetZero from being sent. If sent at size 0, the connection will close. 
-      if (e.data.size > 0) {
-        connection?.send(e.data);
-      }
-    };
 
     const onTranscript = (data: LiveTranscriptionEvent) => {
       const { is_final: isFinal, speech_final: speechFinal } = data;
       const thisCaption = data.channel.alternatives[0].transcript;
 
       if (thisCaption !== "") {
-        console.log('new caption will be ' + (caption + ' ||| ' + thisCaption));
-        setCaption(prev => prev + ' ' + thisCaption);
+        console.log('transcript:', { isFinal, speechFinal, text: thisCaption });
+        
+        if (isFinal) {
+          // This is a final result - append to the permanent caption
+          setCaption(prev => prev + ' ' + thisCaption);
+          setInterimCaption(""); // Clear interim since it's now final
+        } else {
+          // This is an interim result - just update the interim caption
+          setInterimCaption(thisCaption);
+        }
       }
 
       if (isFinal && speechFinal) {
@@ -125,19 +110,13 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
 
     if (connectionState === LiveConnectionState.OPEN) {
       connection.addListener(LiveTranscriptionEvents.Transcript, onTranscript);
-      microphone.addEventListener(MicrophoneEvents.DataAvailable, onData);
-
-      startMicrophone();
     }
 
     return () => {
-      // prettier-ignore
       connection.removeListener(LiveTranscriptionEvents.Transcript, onTranscript);
-      microphone.removeEventListener(MicrophoneEvents.DataAvailable, onData);
       clearTimeout(captionTimeout.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connectionState]);
+  }, [connection, connectionState]);
 
 
   const addItem = (text: string) => {
@@ -210,7 +189,12 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
               <Heart className="h-8 w-8 mx-auto mb-2 opacity-50" />
               <p>Start talking about things you love!</p>
               <p className="text-sm">Say phrases like "I love..." or "I really like..."</p>
-              <p>{caption}</p>
+              <p>
+                {caption}
+                {interimCaption && (
+                  <span className="text-gray-400 italic"> {interimCaption}</span>
+                )}
+              </p>
             </div>
           ) : (
             items.map((item) => (
