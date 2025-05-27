@@ -49,6 +49,15 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
   const captionTimeout = useRef<undefined | ReturnType<typeof setTimeout>>();
   const [caption, setCaption] = useState<string>("");
   const [interimCaption, setInterimCaption] = useState<string>("");
+  
+  // Track detected entities for goal system
+  const [detectedPeople, setDetectedPeople] = useState<Set<string>>(new Set());
+  const [detectedPlaces, setDetectedPlaces] = useState<Set<string>>(new Set());
+  const [detectedHobbies, setDetectedHobbies] = useState<Set<string>>(new Set());
+  
+  // Goal tracking
+  const totalThings = detectedPlaces.size + detectedHobbies.size;
+  const isGoalMet = totalThings >= 10 && detectedPeople.size >= 3;
 
   // Function to render text with colored entities using compromise.js
   const renderTextWithEntities = (text: string) => {
@@ -63,7 +72,7 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
       const places = doc.places().out('array');
 
       const textWords = text.toLowerCase().split(/[ .,?!]+/);
-      const detectedHobbies = textWords.filter(word => hobbySet.has(word));
+      const foundHobbies = textWords.filter(word => hobbySet.has(word));
 
       // Create a mapping of positions to replace
       const replacements: { original: string; replacement: React.ReactNode; }[] = [];
@@ -85,7 +94,7 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
       });
 
       // Add hobbies/activities replacements (green)
-      detectedHobbies.forEach((hobby: string, index: number) => {
+      foundHobbies.forEach((hobby: string, index: number) => {
         console.log('replacing the hobby: ', hobby);
         replacements.push({
           original: hobby,
@@ -192,6 +201,27 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
         if (isFinal) {
           setCaption(prev => prev + ' ' + thisCaption);
           setInterimCaption(""); // Clear interim since it's now final
+          
+          // Extract entities from the final caption and update state
+          try {
+            const doc = nlp(thisCaption);
+            const people = doc.people().out('array');
+            const places = doc.places().out('array');
+            const textWords = thisCaption.toLowerCase().split(/[ .,?!]+/);
+            const foundHobbies = textWords.filter(word => hobbySet.has(word));
+            
+            if (people.length > 0) {
+              setDetectedPeople(prev => new Set([...prev, ...people.map(p => p.toLowerCase())]));
+            }
+            if (places.length > 0) {
+              setDetectedPlaces(prev => new Set([...prev, ...places.map(p => p.toLowerCase())]));
+            }
+            if (foundHobbies.length > 0) {
+              setDetectedHobbies(prev => new Set([...prev, ...foundHobbies]));
+            }
+          } catch (error) {
+            console.error('Error extracting entities:', error);
+          }
         } else {
           setInterimCaption(thisCaption);
         }
@@ -272,71 +302,103 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
   };
 
   return (
-    <Card className="border-dialogue-neutral bg-white">
+    <Card className={`border-dialogue-neutral bg-white transition-all duration-300 ${isGoalMet ? 'border-purple-500 border-2 shadow-lg' : ''}`}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Heart className="h-5 w-5 text-red-500" />
-          Your Love List
+        <CardTitle className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Heart className="h-5 w-5 text-red-500" />
+            Voice Discovery Challenge
+          </div>
+          <div className="text-sm font-normal text-gray-600">
+            {isGoalMet ? (
+              <span className="text-purple-600 font-semibold">🎉 Goal Complete!</span>
+            ) : (
+              <span>
+                People: {detectedPeople.size}/3 | Things: {totalThings}/10
+              </span>
+            )}
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2 min-h-[200px]">
-          {items.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Heart className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p>Start talking about things you love!</p>
-              <p className="text-sm">Say phrases like "I love..." or "I really like..."</p>
-              <p>
-                {renderTextWithEntities(caption)}
-                {interimCaption && (
-                  <span className="text-gray-400 italic"> {interimCaption}</span>
-                )}
-              </p>
-            </div>
-          ) : (
-            items.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border hover:shadow-sm transition-shadow"
-              >
-                {editingId === item.id ? (
-                  <div className="flex-1 flex items-center gap-2">
-                    <Input
-                      value={editText}
-                      onChange={(e) => setEditText(e.target.value)}
-                      onKeyDown={handleKeyPress}
-                      className="flex-1"
-                      autoFocus
-                    />
-                    <Button size="sm" onClick={handleSaveEdit}>Save</Button>
-                    <Button size="sm" variant="outline" onClick={handleCancelEdit}>Cancel</Button>
-                  </div>
-                ) : (
-                  <>
-                    <span className="flex-1 text-sm">{item.text}</span>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleEdit(item)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Edit3 className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleDelete(item.id)}
-                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left Side: Collected Words */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-gray-700">Discovered Words</h3>
+            
+            {/* People */}
+            <div>
+              <h4 className="text-xs font-medium text-purple-600 mb-2">People ({detectedPeople.size}/3)</h4>
+              <div className="flex flex-wrap gap-1">
+                {Array.from(detectedPeople).map((person, i) => (
+                  <span key={i} className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                    {person}
+                  </span>
+                ))}
+                {detectedPeople.size === 0 && (
+                  <span className="text-xs text-gray-400 italic">Say names of people you love...</span>
                 )}
               </div>
-            ))
-          )}
+            </div>
+
+            {/* Places */}
+            <div>
+              <h4 className="text-xs font-medium text-blue-600 mb-2">Places ({detectedPlaces.size})</h4>
+              <div className="flex flex-wrap gap-1">
+                {Array.from(detectedPlaces).map((place, i) => (
+                  <span key={i} className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                    {place}
+                  </span>
+                ))}
+                {detectedPlaces.size === 0 && (
+                  <span className="text-xs text-gray-400 italic">Mention places you love...</span>
+                )}
+              </div>
+            </div>
+
+            {/* Hobbies */}
+            <div>
+              <h4 className="text-xs font-medium text-green-600 mb-2">Activities ({detectedHobbies.size})</h4>
+              <div className="flex flex-wrap gap-1">
+                {Array.from(detectedHobbies).map((hobby, i) => (
+                  <span key={i} className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                    {hobby}
+                  </span>
+                ))}
+                {detectedHobbies.size === 0 && (
+                  <span className="text-xs text-gray-400 italic">Talk about activities you enjoy...</span>
+                )}
+              </div>
+            </div>
+
+            {isGoalMet && (
+              <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                <p className="text-sm text-purple-700 font-medium">🎉 Congratulations!</p>
+                <p className="text-xs text-purple-600">You've shared at least 3 people and 10 things you love!</p>
+              </div>
+            )}
+          </div>
+
+          {/* Right Side: Raw Transcript */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-gray-700">Live Transcript</h3>
+            <div className="min-h-[300px] max-h-[400px] overflow-y-auto p-3 bg-gray-50 rounded-lg border">
+              {caption ? (
+                <div className="text-sm">
+                  {renderTextWithEntities(caption)}
+                  {interimCaption && (
+                    <span className="text-gray-400 italic"> {interimCaption}</span>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Mic className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">Start talking about things you love!</p>
+                  <p className="text-xs">Names, places, and activities will be highlighted as you speak.</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
