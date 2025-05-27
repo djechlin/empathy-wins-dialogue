@@ -22,37 +22,12 @@ interface LoveListInnerHandle {
   addItem: (item: string) => void;
 }
 
-export const LoveListWidget = () => {
+const LoveListWidgetOuter = () => {
   const innerRef = useRef<LoveListInnerHandle>(null);
 
   return (
     <DeepgramContextProvider>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left side: Voice controls and transcript */}
-        <div className="space-y-4">
-          <Card className="border-dialogue-neutral bg-white">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Mic className="h-5 w-5 text-dialogue-purple" />
-                Voice Recording
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-            </CardContent>
-          </Card>
-
-          <Card className="border-dialogue-neutral bg-white">
-            <CardHeader>
-              <CardTitle>Live Transcript</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="min-h-[300px] max-h-[400px] overflow-y-auto">
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Right side: Love list */}
         <LoveListWidgetInner ref={innerRef} />
       </div>
     </DeepgramContextProvider>
@@ -88,14 +63,10 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
       const thisCaption = data.channel.alternatives[0].transcript;
 
       if (thisCaption !== "") {
-        console.log('transcript:', { isFinal, speechFinal, text: thisCaption });
-        
         if (isFinal) {
-          // This is a final result - append to the permanent caption
           setCaption(prev => prev + ' ' + thisCaption);
           setInterimCaption(""); // Clear interim since it's now final
         } else {
-          // This is an interim result - just update the interim caption
           setInterimCaption(thisCaption);
         }
       }
@@ -245,3 +216,5 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
     </Card>
   );
 });
+
+export const LoveListWidget = LoveListWidgetOuter;
