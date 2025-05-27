@@ -12,7 +12,7 @@ interface AuthenticatingVoiceProviderProps {
   [key: string]: any; // Allow other VoiceProvider props to pass through
 }
 
-export function AuthenticatingVoiceProvider({
+export function HumeVoiceProvider({
   children,
   configId,
   onMessage,

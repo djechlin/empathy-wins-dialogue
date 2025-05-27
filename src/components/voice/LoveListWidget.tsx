@@ -1,107 +1,47 @@
 
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
-import { useVoice, VoiceContextType, ToolCallHandler } from '@humeai/voice-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Heart, User, Dog, Package, MapPin, Trash2, Edit3, Mic } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import ControlPanel from './ControlPanel';
-import MessageList from '../MessageList';
-import { AuthenticatingVoiceProvider } from './AuthenticatingVoiceProvider';
-import { HUME_PERSONAS } from '../../lib/scriptData';
-
-type CategoryType = 'person' | 'pet' | 'things' | 'experiences';
+import { Heart, Trash2, Edit3, Mic, Play, Pause, Square } from 'lucide-react';
+import { AssemblyVoiceProvider, useAssemblyVoice } from './AssemblyVoiceProvider';
 
 interface LoveItem {
   id: string;
   text: string;
-  category: CategoryType;
-}
-
-interface LoveListMessage {
-  type: 'love_item';
-  data: {
-    item: string;
-    category: CategoryType;
-  };
 }
 
 interface LoveListInnerHandle {
-  addItem: (item: HumeLovedItem) => void;
-}
-
-const categoryIcons = {
-  person: <User className="h-4 w-4" />,
-  pet: <Dog className="h-4 w-4" />,
-  things: <Package className="h-4 w-4" />,
-  experiences: <MapPin className="h-4 w-4" />
-};
-
-const categoryColors = {
-  person: 'bg-blue-100 text-blue-800 border-blue-200',
-  pet: 'bg-green-100 text-green-800 border-green-200',
-  things: 'bg-purple-100 text-purple-800 border-purple-200',
-  experiences: 'bg-orange-100 text-orange-800 border-orange-200'
-};
-
-type HumeLovedItem = {
-  category: string;
-  item: string;
+  addItem: (item: string) => void;
 }
 
 export const LoveListWidget = () => {
   const innerRef = useRef<LoveListInnerHandle>(null);
 
-  const handleToolCall: ToolCallHandler = async (toolCall, send) => {
-    console.log('Tool call received:', toolCall);
-    console.log('Tool call name:', toolCall.name);
-    console.log('Tool call parameters:', toolCall.parameters);
+  const handleTranscript = (transcript: string) => {
+    // Simple pattern matching to detect love items
+    // This is a basic implementation - could be enhanced with NLP
+    const lovePatterns = [
+      /i love ([^.!?]+)/gi,
+      /i really like ([^.!?]+)/gi,
+      /i enjoy ([^.!?]+)/gi,
+      /i'm passionate about ([^.!?]+)/gi,
+      /([^.!?]+) means a lot to me/gi,
+      /([^.!?]+) makes me happy/gi
+    ];
 
-    if (toolCall.name === 'streaming_love_list_with_category' && toolCall.parameters) {
-      try {
-        console.log('Parsing parameters...');
-        const parameters = JSON.parse(toolCall.parameters)['love_list'] as HumeLovedItem[];
-        console.log('Parsed parameters:', parameters);
-        console.log('innerRef.current exists:', !!innerRef.current);
-        
-        parameters.forEach((item, index) => {
-          console.log(`Adding item ${index}:`, item);
-          innerRef.current?.addItem(item);
-        });
-        
-        console.log('Items added successfully');
-        
-        // Send trivial success response (required but not used by voice assistant)
-        return send.success({});
-      } catch (error) {
-        console.error('Error parsing parameters:', error);
-        return send.error({
-          error: 'Parse error',
-          code: 'PARSE_ERROR',
-          level: 'error',
-          content: String(error)
-        });
+    lovePatterns.forEach(pattern => {
+      const matches = transcript.matchAll(pattern);
+      for (const match of matches) {
+        if (match[1] && match[1].trim()) {
+          innerRef.current?.addItem(match[1].trim());
+        }
       }
-    }
-    
-    console.log('Unknown tool call:', toolCall.name);
-    // Send trivial error for unknown tool calls
-    return send.error({
-      error: 'Unknown tool',
-      code: 'UNKNOWN',
-      level: 'info',
-      content: ''
     });
   };
 
   return (
-    <AuthenticatingVoiceProvider
-      configId={HUME_PERSONAS['love-list']}
-      onMessage={() => {}}
-      onToolCall={handleToolCall}
-      className="space-y-6"
-    >
+    <AssemblyVoiceProvider onTranscript={handleTranscript}>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left side: Voice controls and transcript */}
         <div className="space-y-4">
@@ -113,7 +53,7 @@ export const LoveListWidget = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ControlPanel />
+              <AssemblyControlPanel />
             </CardContent>
           </Card>
           
@@ -123,7 +63,7 @@ export const LoveListWidget = () => {
             </CardHeader>
             <CardContent>
               <div className="min-h-[300px] max-h-[400px] overflow-y-auto">
-                <MessageList />
+                <AssemblyTranscript />
               </div>
             </CardContent>
           </Card>
@@ -132,7 +72,7 @@ export const LoveListWidget = () => {
         {/* Right side: Love list */}
         <LoveListWidgetInner ref={innerRef} />
       </div>
-    </AuthenticatingVoiceProvider>
+    </AssemblyVoiceProvider>
   );
 };
 
@@ -141,12 +81,15 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
 
-  const addItem = (lovedItem: HumeLovedItem) => {
-    console.log('addItem called with:', lovedItem);
+  const addItem = (text: string) => {
+    // Check if item already exists to avoid duplicates
+    const exists = items.some(item => item.text.toLowerCase() === text.toLowerCase());
+    if (exists) return;
+
+    console.log('addItem called with:', text);
     const newItem: LoveItem = {
       id: Date.now().toString(),
-      text: lovedItem.item,
-      category: lovedItem.category as CategoryType
+      text: text
     };
     console.log('Creating new item:', newItem);
     setItems(prev => {
@@ -207,7 +150,7 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
             <div className="text-center py-8 text-muted-foreground">
               <Heart className="h-8 w-8 mx-auto mb-2 opacity-50" />
               <p>Start talking about things you love!</p>
-              <p className="text-sm">They'll appear here as you mention them.</p>
+              <p className="text-sm">Say phrases like "I love..." or "I really like..."</p>
             </div>
           ) : (
             items.map((item) => (
@@ -215,14 +158,6 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
                 key={item.id}
                 className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border hover:shadow-sm transition-shadow"
               >
-                <div className={cn(
-                  "flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border",
-                  categoryColors[item.category]
-                )}>
-                  {categoryIcons[item.category]}
-                  <span className="capitalize">{item.category}</span>
-                </div>
-
                 {editingId === item.id ? (
                   <div className="flex-1 flex items-center gap-2">
                     <Input
@@ -266,3 +201,76 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
     </Card>
   );
 });
+
+const AssemblyControlPanel = () => {
+  const { isConnected, isRecording, error, startRecording, stopRecording } = useAssemblyVoice();
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <Button
+          onClick={isRecording ? stopRecording : startRecording}
+          variant={isRecording ? "destructive" : "default"}
+          className="flex items-center gap-2"
+          disabled={isConnected && !isRecording}
+        >
+          {isRecording ? (
+            <>
+              <Square className="h-4 w-4" />
+              Stop Recording
+            </>
+          ) : (
+            <>
+              <Play className="h-4 w-4" />
+              Start Recording
+            </>
+          )}
+        </Button>
+        
+        <div className="flex items-center gap-2">
+          <div className={`h-2 w-2 rounded-full ${
+            isConnected ? 'bg-green-500' : 'bg-gray-300'
+          }`} />
+          <span className="text-sm text-muted-foreground">
+            {isConnected ? 'Connected' : 'Disconnected'}
+          </span>
+        </div>
+      </div>
+      
+      {error && (
+        <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
+          {error}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const AssemblyTranscript = () => {
+  const { transcript, clearTranscript } = useAssemblyVoice();
+
+  return (
+    <div className="space-y-2">
+      <div className="flex justify-between items-center">
+        <span className="text-sm font-medium">Transcript</span>
+        <Button
+          onClick={clearTranscript}
+          variant="ghost"
+          size="sm"
+          disabled={!transcript}
+        >
+          Clear
+        </Button>
+      </div>
+      <div className="bg-gray-50 p-3 rounded min-h-[200px] max-h-[300px] overflow-y-auto">
+        {transcript ? (
+          <p className="text-sm whitespace-pre-wrap">{transcript}</p>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            Start recording to see the transcript here...
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};

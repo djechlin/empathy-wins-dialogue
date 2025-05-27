@@ -9,7 +9,7 @@ import FactCard from '@/components/learn/FactCard';
 import FactCardList from '@/components/learn/FactCardList';
 import Quiz from '@/components/learn/Quiz';
 import { LoveListWidget } from '@/components/voice/LoveListWidget';
-import { AuthenticatingVoiceProvider } from '@/components/voice/AuthenticatingVoiceProvider';
+import { HumeVoiceProvider } from '@/components/voice/HumeVoiceProvider';
 import { HUME_PERSONAS } from '@/lib/scriptData';
 
 const VulnerableStorytelling = () => {
