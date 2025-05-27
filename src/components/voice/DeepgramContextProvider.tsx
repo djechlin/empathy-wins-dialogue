@@ -56,6 +56,7 @@ DeepgramContextProviderProps
     * @returns A Promise that resolves when the connection is established.
     */
     const connectToDeepgram = async (options: LiveSchema, endpoint?: string) => {
+        console.log('creating client with whatever supabase gave us');
         const key = await getApiKey();
         const deepgram = createClient(key);
 
@@ -94,13 +95,7 @@ DeepgramContextProviderProps
 };
 
 function useDeepgram(): DeepgramContextType {
-    const context = useContext(DeepgramContext);
-    if (context === undefined) {
-        throw new Error(
-            "useDeepgram must be used within a DeepgramContextProvider"
-        );
-    }
-    return context;
+   return useContext(DeepgramContext);
 }
 
 export {

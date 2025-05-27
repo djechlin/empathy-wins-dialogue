@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -31,28 +31,6 @@ interface LoveListInnerHandle {
 
 export const LoveListWidget = () => {
   const innerRef = useRef<LoveListInnerHandle>(null);
-
-  const handleTranscript = (transcript: string) => {
-    // Simple pattern matching to detect love items
-    // This is a basic implementation - could be enhanced with NLP
-    const lovePatterns = [
-      /i love ([^.!?]+)/gi,
-      /i really like ([^.!?]+)/gi,
-      /i enjoy ([^.!?]+)/gi,
-      /i'm passionate about ([^.!?]+)/gi,
-      /([^.!?]+) means a lot to me/gi,
-      /([^.!?]+) makes me happy/gi
-    ];
-
-    lovePatterns.forEach(pattern => {
-      const matches = transcript.matchAll(pattern);
-      for (const match of matches) {
-        if (match[1] && match[1].trim()) {
-          innerRef.current?.addItem(match[1].trim());
-        }
-      }
-    });
-  };
 
   return (
     <DeepgramContextProvider>
@@ -132,16 +110,14 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
       const { is_final: isFinal, speech_final: speechFinal } = data;
       const thisCaption = data.channel.alternatives[0].transcript;
 
-      console.log("thisCaption", thisCaption);
       if (thisCaption !== "") {
-        console.log('thisCaption !== ""', thisCaption);
-        setCaption(thisCaption);
+        console.log('new caption will be ' + (caption + ' ||| ' + thisCaption));
+        setCaption(prev => prev + ' ' + thisCaption);
       }
 
       if (isFinal && speechFinal) {
         clearTimeout(captionTimeout.current);
         captionTimeout.current = setTimeout(() => {
-          setCaption(undefined);
           clearTimeout(captionTimeout.current);
         }, 3000);
       }
@@ -225,7 +201,6 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
         <CardTitle className="flex items-center gap-2">
           <Heart className="h-5 w-5 text-red-500" />
           Your Love List
-          <span>{caption}</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -235,6 +210,7 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
               <Heart className="h-8 w-8 mx-auto mb-2 opacity-50" />
               <p>Start talking about things you love!</p>
               <p className="text-sm">Say phrases like "I love..." or "I really like..."</p>
+              <p>{caption}</p>
             </div>
           ) : (
             items.map((item) => (

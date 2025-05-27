@@ -54,24 +54,17 @@ const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({
 
     const setupMicrophone = async () => {
         setMicrophoneState(MicrophoneState.SettingUp);
+        const userMedia = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                noiseSuppression: true,
+                echoCancellation: true,
+            },
+        });
 
-        try {
-            const userMedia = await navigator.mediaDevices.getUserMedia({
-                audio: {
-                    noiseSuppression: true,
-                    echoCancellation: true,
-                },
-            });
+        const microphone = new MediaRecorder(userMedia);
 
-            const microphone = new MediaRecorder(userMedia);
-
-            setMicrophoneState(MicrophoneState.Ready);
-            setMicrophone(microphone);
-        } catch (err: any) {
-            console.error(err);
-
-            throw err;
-        }
+        setMicrophoneState(MicrophoneState.Ready);
+        setMicrophone(microphone);
     };
 
     const stopMicrophone = useCallback(() => {
@@ -111,15 +104,7 @@ const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({
 };
 
 function useMicrophone(): MicrophoneContextType {
-    const context = useContext(MicrophoneContext);
-
-    if (context === undefined) {
-        throw new Error(
-            "useMicrophone must be used within a MicrophoneContextProvider"
-        );
-    }
-
-    return context;
+    return useContext(MicrophoneContext);
 }
 
 export { MicrophoneContextProvider, useMicrophone };
