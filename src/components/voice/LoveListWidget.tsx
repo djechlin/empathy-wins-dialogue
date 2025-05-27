@@ -4,7 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Heart, Trash2, Edit3, Mic, Play, Pause, Square } from 'lucide-react';
-import { AssemblyVoiceProvider, useAssemblyVoice } from './AssemblyVoiceProvider';
+import { DeepgramVoiceProvider } from './DeepgramVoiceProvider';
+import {
+  DeepgramContextProvider,
+  LiveConnectionState,
+  LiveTranscriptionEvent,
+  LiveTranscriptionEvents,
+  useDeepgram,
+} from "@/components/voice/DeepgramContextProvider";
+
+import {
+  MicrophoneContextProvider,
+  MicrophoneEvents,
+  MicrophoneState,
+  useMicrophone,
+} from "@/components/voice/MicrophoneContextProvider";
 
 interface LoveItem {
   id: string;
@@ -41,7 +55,8 @@ export const LoveListWidget = () => {
   };
 
   return (
-    <AssemblyVoiceProvider onTranscript={handleTranscript}>
+    <DeepgramContextProvider>
+      <MicrophoneContextProvider>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left side: Voice controls and transcript */}
         <div className="space-y-4">
@@ -53,26 +68,25 @@ export const LoveListWidget = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <AssemblyControlPanel />
             </CardContent>
           </Card>
-          
+
           <Card className="border-dialogue-neutral bg-white">
             <CardHeader>
               <CardTitle>Live Transcript</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="min-h-[300px] max-h-[400px] overflow-y-auto">
-                <AssemblyTranscript />
               </div>
             </CardContent>
           </Card>
         </div>
-        
+
         {/* Right side: Love list */}
         <LoveListWidgetInner ref={innerRef} />
       </div>
-    </AssemblyVoiceProvider>
+      </MicrophoneContextProvider>
+    </DeepgramContextProvider>
   );
 };
 
@@ -80,6 +94,75 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
   const [items, setItems] = useState<LoveItem[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
+
+    const { connection, connectToDeepgram, connectionState } = useDeepgram();
+    const { setupMicrophone, microphone, startMicrophone, microphoneState } =
+    useMicrophone();
+
+  const captionTimeout = useRef<undefined | ReturnType<typeof setTimeout>>();
+  const [caption, setCaption] = useState<string | undefined>("dg");
+
+  useEffect(() => {
+    setupMicrophone();
+  }, []);
+
+  useEffect(() => {
+    connectToDeepgram({
+        model: "nova-3",
+        interim_results: true,
+        smart_format: true,
+        filler_words: true,
+        utterance_end_ms: 3000,
+      });
+  }, [])
+
+    useEffect(() => {
+    if (!microphone) return;
+    if (!connection) return;
+
+    const onData = (e: BlobEvent) => {
+      // iOS SAFARI FIX:
+      // Prevent packetZero from being sent. If sent at size 0, the connection will close. 
+      if (e.data.size > 0) {
+        connection?.send(e.data);
+      }
+    };
+
+    const onTranscript = (data: LiveTranscriptionEvent) => {
+      const { is_final: isFinal, speech_final: speechFinal } = data;
+      const thisCaption = data.channel.alternatives[0].transcript;
+
+      console.log("thisCaption", thisCaption);
+      if (thisCaption !== "") {
+        console.log('thisCaption !== ""', thisCaption);
+        setCaption(thisCaption);
+      }
+
+      if (isFinal && speechFinal) {
+        clearTimeout(captionTimeout.current);
+        captionTimeout.current = setTimeout(() => {
+          setCaption(undefined);
+          clearTimeout(captionTimeout.current);
+        }, 3000);
+      }
+    };
+
+    if (connectionState === LiveConnectionState.OPEN) {
+      connection.addListener(LiveTranscriptionEvents.Transcript, onTranscript);
+      microphone.addEventListener(MicrophoneEvents.DataAvailable, onData);
+
+      startMicrophone();
+    }
+
+    return () => {
+      // prettier-ignore
+      connection.removeListener(LiveTranscriptionEvents.Transcript, onTranscript);
+      microphone.removeEventListener(MicrophoneEvents.DataAvailable, onData);
+      clearTimeout(captionTimeout.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connectionState]);
+
 
   const addItem = (text: string) => {
     // Check if item already exists to avoid duplicates
@@ -142,6 +225,7 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
         <CardTitle className="flex items-center gap-2">
           <Heart className="h-5 w-5 text-red-500" />
           Your Love List
+          <span>{caption}</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -201,76 +285,3 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
     </Card>
   );
 });
-
-const AssemblyControlPanel = () => {
-  const { isConnected, isRecording, error, startRecording, stopRecording } = useAssemblyVoice();
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Button
-          onClick={isRecording ? stopRecording : startRecording}
-          variant={isRecording ? "destructive" : "default"}
-          className="flex items-center gap-2"
-          disabled={isConnected && !isRecording}
-        >
-          {isRecording ? (
-            <>
-              <Square className="h-4 w-4" />
-              Stop Recording
-            </>
-          ) : (
-            <>
-              <Play className="h-4 w-4" />
-              Start Recording
-            </>
-          )}
-        </Button>
-        
-        <div className="flex items-center gap-2">
-          <div className={`h-2 w-2 rounded-full ${
-            isConnected ? 'bg-green-500' : 'bg-gray-300'
-          }`} />
-          <span className="text-sm text-muted-foreground">
-            {isConnected ? 'Connected' : 'Disconnected'}
-          </span>
-        </div>
-      </div>
-      
-      {error && (
-        <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-          {error}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const AssemblyTranscript = () => {
-  const { transcript, clearTranscript } = useAssemblyVoice();
-
-  return (
-    <div className="space-y-2">
-      <div className="flex justify-between items-center">
-        <span className="text-sm font-medium">Transcript</span>
-        <Button
-          onClick={clearTranscript}
-          variant="ghost"
-          size="sm"
-          disabled={!transcript}
-        >
-          Clear
-        </Button>
-      </div>
-      <div className="bg-gray-50 p-3 rounded min-h-[200px] max-h-[300px] overflow-y-auto">
-        {transcript ? (
-          <p className="text-sm whitespace-pre-wrap">{transcript}</p>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Start recording to see the transcript here...
-          </p>
-        )}
-      </div>
-    </div>
-  );
-};

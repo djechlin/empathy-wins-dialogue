@@ -3,7 +3,7 @@ import { ToolCallHandler, VoiceProvider } from '@humeai/voice-react';
 import { ReactNode, useEffect, useState } from 'react';
 import { getHumeAccessToken } from '@/lib/getHumeAccessToken';
 
-interface AuthenticatingVoiceProviderProps {
+interface HumeVoiceProviderProps {
   configId?: string;
   children: ReactNode;
   onMessage?: (message: any) => void;
@@ -19,7 +19,7 @@ export function HumeVoiceProvider({
   className,
   onToolCall,
   ...otherProps
-}: AuthenticatingVoiceProviderProps) {
+}: HumeVoiceProviderProps) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
