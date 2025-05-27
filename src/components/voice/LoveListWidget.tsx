@@ -12,6 +12,11 @@ import {
   LiveTranscriptionEvents,
   useDeepgram,
 } from "@/components/voice/DeepgramContextProvider";
+import nlp from 'compromise';
+import { commonHobbies } from '@/data/hobbies';
+
+// Create a Set for O(1) lookup of hobbies
+const hobbySet = new Set(commonHobbies.map(hobby => hobby.toLowerCase()));
 
 interface LoveItem {
   id: string;
@@ -45,6 +50,125 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
   const [caption, setCaption] = useState<string>("");
   const [interimCaption, setInterimCaption] = useState<string>("");
 
+  // Function to render text with colored entities using compromise.js
+  const renderTextWithEntities = (text: string) => {
+    if (!text || text.trim() === "") {
+      return text;
+    }
+
+    try { 
+      const doc = nlp(text);
+
+      const people = doc.people().out('array');
+      const places = doc.places().out('array');
+
+      const textWords = text.toLowerCase().split(/[ .,?!]+/);
+      const detectedHobbies = textWords.filter(word => hobbySet.has(word));
+
+      // Create a mapping of positions to replace
+      const replacements: { original: string; replacement: React.ReactNode; }[] = [];
+
+      // Add people replacements (purple)
+      people.forEach((person: string, index: number) => {
+        replacements.push({
+          original: person,
+          replacement: <span key={`person-${index}`} className="text-purple-600 font-semibold">{person}</span>
+        });
+      });
+
+      // Add places replacements (blue)
+      places.forEach((place: string, index: number) => {
+        replacements.push({
+          original: place,
+          replacement: <span key={`place-${index}`} className="text-blue-600 font-semibold">{place}</span>
+        });
+      });
+
+      // Add hobbies/activities replacements (green)
+      detectedHobbies.forEach((hobby: string, index: number) => {
+        console.log('replacing the hobby: ', hobby);
+        replacements.push({
+          original: hobby,
+          replacement: <span key={`hobby-${index}`} className="text-green-600 font-semibold">{hobby}</span>
+        });
+      });
+
+      if (replacements.length === 0) {
+        return text;
+      }
+
+      // Split text and replace entities
+      let currentText = text;
+
+      // Sort replacements by length (longest first) to avoid partial replacements
+      replacements.sort((a, b) => b.original.length - a.original.length);
+
+      // Process each replacement
+      for (const replacement of replacements) {
+        const parts = currentText.split(replacement.original);
+        if (parts.length > 1) {
+          const newResult: React.ReactNode[] = [];
+          parts.forEach((part, i) => {
+            if (i > 0) {
+              newResult.push(replacement.replacement);
+            }
+            newResult.push(part);
+          });
+          currentText = newResult.join('|||REPLACEMENT|||'); // Placeholder for reconstruction
+        }
+      }
+
+      // For simplicity, let's rebuild using React fragments
+      const elements: React.ReactNode[] = [];
+      const words = text.split(' ');
+
+      words.forEach((word, i) => {
+        let isReplaced = false;
+
+        // Check if this word is a person
+        for (let j = 0; j < people.length; j++) {
+          if (word.toLowerCase().includes(people[j].toLowerCase()) || people[j].toLowerCase().includes(word.toLowerCase())) {
+            elements.push(<span key={`person-${i}`} className="text-purple-600 font-semibold">{word}</span>);
+            isReplaced = true;
+            break;
+          }
+        }
+
+        // Check if this word is a place
+        if (!isReplaced) {
+          for (let j = 0; j < places.length; j++) {
+            if (word.toLowerCase().includes(places[j].toLowerCase()) || places[j].toLowerCase().includes(word.toLowerCase())) {
+              elements.push(<span key={`place-${i}`} className="text-blue-600 font-semibold">{word}</span>);
+              isReplaced = true;
+              break;
+            }
+          }
+        }
+
+        // Check if this word is a hobby/activity using direct lookup
+        if (!isReplaced && hobbySet.has(word.toLowerCase())) {
+          elements.push(<span key={`hobby-${i}`} className="text-green-600 font-semibold">{word}</span>);
+          isReplaced = true;
+        }
+
+        if (!isReplaced) {
+          elements.push(word);
+        }
+
+        // Add space between words (except for the last word)
+        if (i < words.length - 1) {
+          elements.push(' ');
+        }
+      });
+
+      return elements;
+
+    } catch (error) {
+      console.error('Error processing text with compromise:', error);
+      return text;
+    }
+  };
+
   useEffect(() => {
     connectToDeepgram({
         model: "nova-3",
@@ -61,6 +185,8 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
     const onTranscript = (data: LiveTranscriptionEvent) => {
       const { is_final: isFinal, speech_final: speechFinal } = data;
       const thisCaption = data.channel.alternatives[0].transcript;
+
+      console.log('transcript data:', { isFinal, speechFinal, text: thisCaption });
 
       if (thisCaption !== "") {
         if (isFinal) {
@@ -161,7 +287,7 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
               <p>Start talking about things you love!</p>
               <p className="text-sm">Say phrases like "I love..." or "I really like..."</p>
               <p>
-                {caption}
+                {renderTextWithEntities(caption)}
                 {interimCaption && (
                   <span className="text-gray-400 italic"> {interimCaption}</span>
                 )}
