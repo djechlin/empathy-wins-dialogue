@@ -13,7 +13,7 @@ const FlowStep: React.FC<FlowStepProps> = ({ number, title, description, isLast 
   return (
     <div className="flex items-start gap-4">
       <div className="flex flex-col items-center">
-        <div className="w-8 h-8 bg-dialogue-purple text-white rounded-full flex items-center justify-center font-semibold text-sm">
+        <div className="w-6 h-6 bg-dialogue-purple text-white rounded-full flex items-center justify-center font-semibold text-xs">
           {number}
         </div>
         {!isLast && <div className="w-0.5 h-16 bg-dialogue-purple/30 mt-2"></div>}
