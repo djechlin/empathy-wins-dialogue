@@ -174,6 +174,27 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                       </Donts>
                     </DosAndDonts>
 
+                    {/* Framing Dos and Don'ts Section */}
+                    <DosAndDonts>
+                      <Dos>
+                        <DosAndDontsItem type="do">
+                          Should impact people directly
+                        </DosAndDontsItem>
+                        <DosAndDontsItem type="do">
+                          Should have the potential to impact people positively
+                        </DosAndDontsItem>
+                      </Dos>
+
+                      <Donts>
+                        <DosAndDontsItem type="dont">
+                          Use politics jargon like "filibuster" and "supermajority"
+                        </DosAndDontsItem>
+                        <DosAndDontsItem type="dont">
+                          Use an "attack" issue like "tax the rich" or "vote out corruption"
+                        </DosAndDontsItem>
+                      </Donts>
+                    </DosAndDonts>
+
                     <FactCard topic="Eliciting stories from voters">
                       <FactCardList>
                         <li>Ask open-ended questions about their experiences or loved ones</li>
