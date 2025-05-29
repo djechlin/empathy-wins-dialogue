@@ -34,6 +34,7 @@ interface PhaseHeaderProps {
 
 const PhaseHeader: React.FC<PhaseHeaderProps> = ({ title }) => (
   <div className="my-6">
+    <Separator className="mb-4 bg-dialogue-darkblue" />
     <div className="flex justify-start mb-4">
       <div className="border-2 border-dotted border-dialogue-purple px-3 py-2 rounded-lg bg-dialogue-purple/5">
         <h4 className="font-medium text-dialogue-purple text-sm">{title}</h4>
