@@ -18,6 +18,7 @@ import DosAndDonts, {
   ConversationDosAndDontsItem 
 } from '@/components/learn/DosAndDonts';
 import VideoCard from '@/components/learn/VideoCard';
+import ConversationFlow from '@/components/learn/ConversationFlow';
 
 const Learn = () => {
   return <div className="min-h-screen flex flex-col">
@@ -54,6 +55,8 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                         <li><strong>Deep canvassing</strong>: A form of canvassing that involves longer, in-depth conversations in which the canvasser builds a connection with the voter before trying to persuade them on an issue.</li>
                       </FactCardList>
                     </FactCard>
+
+                    <ConversationFlow />
 
                     <FactCard topic="Characteristics of a deep canvassing conversation">
                       <FactCardList>
