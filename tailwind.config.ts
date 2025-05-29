@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -68,7 +69,7 @@ export default {
 					darkblue: '#414B94',
 					neutral: '#F1F0FB',
 					charcoal: '#403E43',
-					coral: '#FF7F7F'
+					coral: '#FF8C42'
 				}
 			},
 			fontFamily: {
