@@ -176,7 +176,7 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
 
                     {/* Framing Dos and Don'ts Section */}
                     <DosAndDonts>
-                      <Dos>
+                      <Dos title="Issue Dos">
                         <DosAndDontsItem type="do">
                           Should impact people directly
                         </DosAndDontsItem>
@@ -185,7 +185,7 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                         </DosAndDontsItem>
                       </Dos>
 
-                      <Donts>
+                      <Donts title="Issue Don'ts">
                         <DosAndDontsItem type="dont">
                           Use politics jargon like "filibuster" and "supermajority"
                         </DosAndDontsItem>

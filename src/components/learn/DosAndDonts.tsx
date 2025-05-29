@@ -1,21 +1,22 @@
-
 import React, { ReactNode } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Check, X } from 'lucide-react';
 
 interface DosProps {
   children: ReactNode;
+  title?: string;
 }
 
 interface DontsProps {
   children: ReactNode;
+  title?: string;
 }
 
 interface DosAndDontsProps {
   children: ReactNode;
 }
 
-export const Dos: React.FC<DosProps> = ({ children }) => {
+export const Dos: React.FC<DosProps> = ({ children, title = "Story Dos" }) => {
   return (
     <Card className="border-green-200 bg-green-50">
       <CardHeader className="pb-3">
@@ -23,7 +24,7 @@ export const Dos: React.FC<DosProps> = ({ children }) => {
           <div className="p-1 bg-green-500 rounded-full">
             <Check className="h-4 w-4 text-white" />
           </div>
-          <h3 className="text-lg font-semibold text-green-800">Story Dos</h3>
+          <h3 className="text-lg font-semibold text-green-800">{title}</h3>
         </div>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -33,7 +34,7 @@ export const Dos: React.FC<DosProps> = ({ children }) => {
   );
 };
 
-export const Donts: React.FC<DontsProps> = ({ children }) => {
+export const Donts: React.FC<DontsProps> = ({ children, title = "Story Don'ts" }) => {
   return (
     <Card className="border-red-200 bg-red-50">
       <CardHeader className="pb-3">
@@ -41,7 +42,7 @@ export const Donts: React.FC<DontsProps> = ({ children }) => {
           <div className="p-1 bg-red-500 rounded-full">
             <X className="h-4 w-4 text-white" />
           </div>
-          <h3 className="text-lg font-semibold text-red-800">Story Don'ts</h3>
+          <h3 className="text-lg font-semibold text-red-800">{title}</h3>
         </div>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -51,7 +52,7 @@ export const Donts: React.FC<DontsProps> = ({ children }) => {
   );
 };
 
-export const ConversationDos: React.FC<DosProps> = ({ children }) => {
+export const ConversationDos: React.FC<DosProps> = ({ children, title = "Conversation Dos" }) => {
   return (
     <Card className="border-blue-200 bg-blue-50">
       <CardHeader className="pb-3">
@@ -59,7 +60,7 @@ export const ConversationDos: React.FC<DosProps> = ({ children }) => {
           <div className="p-1 bg-blue-500 rounded-full">
             <Check className="h-4 w-4 text-white" />
           </div>
-          <h3 className="text-lg font-semibold text-blue-800">Conversation Dos</h3>
+          <h3 className="text-lg font-semibold text-blue-800">{title}</h3>
         </div>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -69,7 +70,7 @@ export const ConversationDos: React.FC<DosProps> = ({ children }) => {
   );
 };
 
-export const ConversationDonts: React.FC<DontsProps> = ({ children }) => {
+export const ConversationDonts: React.FC<DontsProps> = ({ children, title = "Conversation Don'ts" }) => {
   return (
     <Card className="border-orange-200 bg-orange-50">
       <CardHeader className="pb-3">
@@ -77,7 +78,7 @@ export const ConversationDonts: React.FC<DontsProps> = ({ children }) => {
           <div className="p-1 bg-orange-500 rounded-full">
             <X className="h-4 w-4 text-white" />
           </div>
-          <h3 className="text-lg font-semibold text-orange-800">Conversation Don'ts</h3>
+          <h3 className="text-lg font-semibold text-orange-800">{title}</h3>
         </div>
       </CardHeader>
       <CardContent className="space-y-2">
