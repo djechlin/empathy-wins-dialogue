@@ -1,6 +1,4 @@
-
 import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
 
@@ -188,8 +186,8 @@ const conversationExamples: ConversationExample[] = [
         title: "Elicit voter story",
         messages: [
           { speaker: "voter", message: "My coworker's daughter is... she's transgender. It's been really hard on the family." },
-          { speaker: "canvasser", message: "That sounds challenging for all of them. What's been the hardest part?" },
-          { speaker: "voter", message: "She gets bullied at school constantly. My coworker is always getting calls from the principal. The kid is depressed and has tried to hurt herself." }
+          { speaker: "canvasser", message: "That sounds heartbreaking. It sounds like you really care about your coworker and their family. How do you think stronger protections might help kids like their daughter?" },
+          { speaker: "voter", message: "Maybe she could go to school without being afraid. Maybe she could just be a normal kid instead of a target." }
         ]
       },
       {
@@ -366,46 +364,39 @@ const ConversationFlow: React.FC = () => {
   };
 
   return (
-    <Card className="border-dialogue-neutral">
-      <CardContent className="p-6">
-        <div className="mb-6">
-          <h3 className="font-semibold text-dialogue-darkblue text-lg">Deep Canvassing Conversation Examples</h3>
-          <p className="text-sm text-muted-foreground mt-1">Browse through different conversation scenarios</p>
+    <div className="space-y-6">
+      <Carousel className="w-full">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex gap-2 flex-wrap">
+            {conversationExamples.map((example, index) => (
+              <Button
+                key={index}
+                variant={currentExample === index ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCurrentExample(index)}
+                className="text-xs"
+              >
+                {example.shortLabel}
+              </Button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <CarouselPrevious onClick={() => setCurrentExample((prev) => prev > 0 ? prev - 1 : conversationExamples.length - 1)} />
+            <CarouselNext onClick={() => setCurrentExample((prev) => (prev + 1) % conversationExamples.length)} />
+          </div>
         </div>
 
-        <Carousel className="w-full">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex gap-2 flex-wrap">
-              {conversationExamples.map((example, index) => (
-                <Button
-                  key={index}
-                  variant={currentExample === index ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCurrentExample(index)}
-                  className="text-xs"
-                >
-                  {example.shortLabel}
-                </Button>
-              ))}
+        <CarouselContent>
+          <CarouselItem>
+            <div className="mb-4">
+              <h4 className="font-medium text-dialogue-darkblue mb-1">{conversationExamples[currentExample].title}</h4>
+              <p className="text-sm text-muted-foreground">{conversationExamples[currentExample].description}</p>
             </div>
-            <div className="flex gap-2">
-              <CarouselPrevious onClick={() => setCurrentExample((prev) => prev > 0 ? prev - 1 : conversationExamples.length - 1)} />
-              <CarouselNext onClick={() => setCurrentExample((prev) => (prev + 1) % conversationExamples.length)} />
-            </div>
-          </div>
-
-          <CarouselContent>
-            <CarouselItem>
-              <div className="mb-4">
-                <h4 className="font-medium text-dialogue-darkblue mb-1">{conversationExamples[currentExample].title}</h4>
-                <p className="text-sm text-muted-foreground">{conversationExamples[currentExample].description}</p>
-              </div>
-              {renderConversation(conversationExamples[currentExample])}
-            </CarouselItem>
-          </CarouselContent>
-        </Carousel>
-      </CardContent>
-    </Card>
+            {renderConversation(conversationExamples[currentExample])}
+          </CarouselItem>
+        </CarouselContent>
+      </Carousel>
+    </div>
   );
 };
 
