@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
@@ -24,7 +23,7 @@ const Message: React.FC<MessageProps> = ({ speaker, message, isLast = false }) =
           <p className="text-sm leading-relaxed">{message}</p>
         </div>
       </div>
-      {!isLast && <div className="h-3"></div>}
+      {!isLast && <div className="h-1"></div>}
     </div>
   );
 };
@@ -35,15 +34,15 @@ interface PhaseTimelineProps {
 }
 
 const PhaseTimeline: React.FC<PhaseTimelineProps> = ({ number, title }) => (
-  <div className="flex items-start gap-6 mb-2">
+  <div className="flex items-start gap-6 mb-1">
     <div className="flex flex-col items-center flex-shrink-0">
       <div className="w-8 h-8 rounded-full bg-dialogue-purple text-white flex items-center justify-center text-sm font-semibold">
         {number}
       </div>
-      <div className="w-0.5 h-8 bg-dialogue-purple/30 mt-2"></div>
+      <div className="w-0.5 h-4 bg-dialogue-purple/30 mt-2"></div>
     </div>
     <div className="flex-1 pt-1">
-      <h4 className="font-medium text-dialogue-darkblue text-sm mb-2">{title}</h4>
+      <h4 className="font-medium text-dialogue-darkblue text-sm mb-1">{title}</h4>
     </div>
   </div>
 );
@@ -51,6 +50,7 @@ const PhaseTimeline: React.FC<PhaseTimelineProps> = ({ number, title }) => (
 interface ConversationExample {
   title: string;
   description: string;
+  shortLabel: string;
   phases: Array<{
     number: number;
     title: string;
@@ -65,6 +65,7 @@ const conversationExamples: ConversationExample[] = [
   {
     title: "Universal Preschool Example",
     description: "See how a real conversation flows from opening to closing",
+    shortLabel: "Preschool",
     phases: [
       {
         number: 1,
@@ -113,6 +114,7 @@ const conversationExamples: ConversationExample[] = [
   {
     title: "Healthcare Access Example",
     description: "Conversation about improving healthcare access in the community",
+    shortLabel: "Healthcare",
     phases: [
       {
         number: 1,
@@ -161,6 +163,7 @@ const conversationExamples: ConversationExample[] = [
   {
     title: "LGBTQ+ Rights Example",
     description: "Building support for LGBTQ+ equality through personal connection",
+    shortLabel: "LGBTQ+",
     phases: [
       {
         number: 1,
@@ -209,6 +212,7 @@ const conversationExamples: ConversationExample[] = [
   {
     title: "Clean Air Initiative Example",
     description: "Environmental conversation focusing on family health impacts",
+    shortLabel: "Clean Air",
     phases: [
       {
         number: 1,
@@ -257,6 +261,7 @@ const conversationExamples: ConversationExample[] = [
   {
     title: "Voter Turnout Example",
     description: "Encouraging civic engagement and voting participation",
+    shortLabel: "Voting",
     phases: [
       {
         number: 1,
@@ -305,6 +310,7 @@ const conversationExamples: ConversationExample[] = [
   {
     title: "Strong Supporter Example",
     description: "When a voter is already strongly supportive - early exit strategy",
+    shortLabel: "Early Exit",
     phases: [
       {
         number: 1,
@@ -368,8 +374,8 @@ const ConversationFlow: React.FC = () => {
 
         <Carousel className="w-full">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex gap-2">
-              {conversationExamples.map((_, index) => (
+            <div className="flex gap-2 flex-wrap">
+              {conversationExamples.map((example, index) => (
                 <Button
                   key={index}
                   variant={currentExample === index ? "default" : "outline"}
@@ -377,7 +383,7 @@ const ConversationFlow: React.FC = () => {
                   onClick={() => setCurrentExample(index)}
                   className="text-xs"
                 >
-                  {index + 1}
+                  {example.shortLabel}
                 </Button>
               ))}
             </div>
