@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -18,7 +17,7 @@ const Message: React.FC<MessageProps> = ({ speaker, message, isLast = false }) =
         <div className={`max-w-[80%] px-4 py-3 rounded-lg ${
           isCanvasser 
             ? 'bg-dialogue-purple text-white' 
-            : 'bg-grey-100 border border-dialogue-neutral text-dialogue-darkblue'
+            : 'bg-white border border-dialogue-purple text-dialogue-darkblue'
         }`}>
           <p className="text-sm leading-relaxed">{message}</p>
         </div>
@@ -33,13 +32,9 @@ interface PhaseHeaderProps {
 }
 
 const PhaseHeader: React.FC<PhaseHeaderProps> = ({ title }) => (
-  <div className="my-6">
-    <Separator className="mb-4 bg-dialogue-darkblue" />
-    <div className="flex justify-start mb-4">
-      <div className="border-2 border-dotted border-dialogue-purple px-3 py-2 rounded-lg bg-dialogue-purple/5">
-        <h4 className="font-medium text-dialogue-purple text-sm italic">{title}</h4>
-      </div>
-    </div>
+  <div className="my-8">
+    <Separator className="mb-6 bg-dialogue-darkblue/20" />
+    <h4 className="font-semibold text-dialogue-darkblue text-lg mb-6">{title}</h4>
   </div>
 );
 
