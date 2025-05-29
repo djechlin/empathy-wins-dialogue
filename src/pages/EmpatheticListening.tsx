@@ -376,7 +376,7 @@ const EmpatheticListening = () => {
                       </div>
                     </div>
                     <div className="border rounded-lg p-4">
-                      <VoiceCallWorkspace callId='busy-voter-libraries' />
+                      <VoiceCallWorkspace scenarioId='busy-voter-libraries' />
                     </div>
                   </div>
                 </CardContent>
