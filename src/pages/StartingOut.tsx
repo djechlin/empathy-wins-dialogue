@@ -2,7 +2,7 @@
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Youtube, Check, X } from 'lucide-react';
+import { Youtube, Check, X, MessageCircle, Clock, Heart, Users, TrendingUp, Target, Lightbulb, ArrowRight } from 'lucide-react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import SliderCard from '@/components/ui/slider-card';
 import PracticeCard from '@/components/learn/PracticeCard';
@@ -58,47 +58,151 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                   title="What is deep canvassing?"
                   description="Learn how to recognize and appreciate different viewpoints in political conversations"
                 >
-                  <div className="space-y-4 mb-6">
-                    <FactCard topic="Definition and Purpose">
-                      <FactCardList>
-                        <li><strong>Canvassing</strong>: Talking to people to secure their vote or their support.</li>
-                        <li><strong>Deep canvassing</strong>: A form of canvassing that involves longer, in-depth conversations in which the canvasser builds a connection with the voter before trying to persuade them on an issue.</li>
-                      </FactCardList>
+                  <div className="space-y-6">
+                    {/* Hero Section with Key Stats */}
+                    <div className="bg-gradient-to-r from-dialogue-purple/10 to-dialogue-blue/10 rounded-lg p-6 border border-dialogue-purple/20">
+                      <div className="grid md:grid-cols-3 gap-4 text-center">
+                        <div className="flex flex-col items-center">
+                          <div className="w-12 h-12 bg-dialogue-purple/20 rounded-full flex items-center justify-center mb-2">
+                            <TrendingUp className="h-6 w-6 text-dialogue-purple" />
+                          </div>
+                          <div className="text-2xl font-bold text-dialogue-darkblue">3-8%</div>
+                          <div className="text-sm text-muted-foreground">Increase in support</div>
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <div className="w-12 h-12 bg-dialogue-purple/20 rounded-full flex items-center justify-center mb-2">
+                            <Clock className="h-6 w-6 text-dialogue-purple" />
+                          </div>
+                          <div className="text-2xl font-bold text-dialogue-darkblue">20 min</div>
+                          <div className="text-sm text-muted-foreground">Conversation length</div>
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <div className="w-12 h-12 bg-dialogue-purple/20 rounded-full flex items-center justify-center mb-2">
+                            <Target className="h-6 w-6 text-dialogue-purple" />
+                          </div>
+                          <div className="text-2xl font-bold text-dialogue-darkblue">1+ year</div>
+                          <div className="text-sm text-muted-foreground">Lasting impact</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Definition Section */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <Card className="border-dialogue-neutral/30">
+                        <CardHeader className="pb-3">
+                          <div className="flex items-center gap-2">
+                            <MessageCircle className="h-5 w-5 text-dialogue-purple" />
+                            <h3 className="font-semibold">Traditional Canvassing</h3>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <p className="text-sm text-muted-foreground">Quick conversations focused on securing votes through information sharing and persuasion arguments.</p>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="border-dialogue-purple/30 bg-dialogue-purple/5">
+                        <CardHeader className="pb-3">
+                          <div className="flex items-center gap-2">
+                            <Heart className="h-5 w-5 text-dialogue-purple" />
+                            <h3 className="font-semibold text-dialogue-purple">Deep Canvassing</h3>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <p className="text-sm">Longer, in-depth conversations that build genuine connection through shared stories before attempting persuasion.</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Key Characteristics */}
+                    <FactCard topic="Key Characteristics of Deep Canvassing">
+                      <div className="grid gap-3">
+                        <div className="flex items-start gap-3">
+                          <Clock className="h-5 w-5 text-dialogue-purple mt-0.5 flex-shrink-0" />
+                          <div>
+                            <strong>Extended Conversations:</strong> Up to 20 minutes of meaningful dialogue
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <Heart className="h-5 w-5 text-dialogue-purple mt-0.5 flex-shrink-0" />
+                          <div>
+                            <strong>Story-Based Connection:</strong> Canvassers share vulnerable stories about loved ones to build trust
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <Users className="h-5 w-5 text-dialogue-purple mt-0.5 flex-shrink-0" />
+                          <div>
+                            <strong>Voter-Centered Approach:</strong> Focus on how issues impact the voter's community and loved ones
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <Target className="h-5 w-5 text-dialogue-purple mt-0.5 flex-shrink-0" />
+                          <div>
+                            <strong>Persuasion Through Listening:</strong> Nonjudgmental listening as voters process conflicting opinions
+                          </div>
+                        </div>
+                      </div>
                     </FactCard>
 
-                    <FactCard topic="Characteristics of a deep canvassing conversation">
-                      <FactCardList>
-                        <li>Conversations last up to 20 minutes</li>
-                        <li>Canvassers focus on building a connection by sharing stories about loved ones with the voter</li>
-                        <li>Instead of explaining the issue to the voter, the canvasser asks the voter how the issue impacts their loves ones or people in their community and nonjudgmentally listens</li>
-                        <li>Canvassers assume most opposers are persuadable, and most supporters could use a nudge</li>
-                        <li>Canvassers can fall back to traditional canvassing when they feel there's no need to persuade a voter deeply</li>
-                      </FactCardList>
+                    {/* Philosophy Section */}
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
+                      <div className="flex items-start gap-3 mb-4">
+                        <Lightbulb className="h-6 w-6 text-dialogue-purple mt-1" />
+                        <h3 className="font-semibold text-dialogue-darkblue text-lg">The Philosophy Behind Deep Canvassing</h3>
+                      </div>
+                      <div className="space-y-3 text-sm">
+                        <p className="flex items-start gap-2">
+                          <ArrowRight className="h-4 w-4 text-dialogue-purple mt-0.5 flex-shrink-0" />
+                          Political persuasion happens by creating safe spaces for processing, not by presenting more facts
+                        </p>
+                        <p className="flex items-start gap-2">
+                          <ArrowRight className="h-4 w-4 text-dialogue-purple mt-0.5 flex-shrink-0" />
+                          Focus on lowering emotional resistance rather than piling on information
+                        </p>
+                        <p className="flex items-start gap-2">
+                          <ArrowRight className="h-4 w-4 text-dialogue-purple mt-0.5 flex-shrink-0" />
+                          Create space for cognitive dissonance and natural mind-changing
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Conversation Flow */}
+                    <FactCard topic="Typical Conversation Flow">
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3 p-3 bg-dialogue-neutral/10 rounded-lg">
+                          <div className="w-6 h-6 bg-dialogue-purple text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                          <div>
+                            <strong>Opening & Rating:</strong> Get voter to share their support/opposition on a 1-10 scale
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3 p-3 bg-dialogue-neutral/10 rounded-lg">
+                          <div className="w-6 h-6 bg-dialogue-purple text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                          <div>
+                            <strong>Story Sharing:</strong> Focus on people impacted by the issue, share vulnerable personal stories
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3 p-3 bg-dialogue-neutral/10 rounded-lg">
+                          <div className="w-6 h-6 bg-dialogue-purple text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                          <div>
+                            <strong>Deep Listening:</strong> Nonjudgmental listening as voter processes the issue
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3 p-3 bg-dialogue-neutral/10 rounded-lg">
+                          <div className="w-6 h-6 bg-dialogue-purple text-white rounded-full flex items-center justify-center text-xs font-bold">4</div>
+                          <div>
+                            <strong>Closing Rating:</strong> Return to 1-10 scale so voter hears themselves articulate any change
+                          </div>
+                        </div>
+                      </div>
                     </FactCard>
 
-                    <FactCard topic="Case studies">
+                    {/* Case Studies */}
+                    <FactCard topic="Proven Impact Across Issues">
                       <FactCardList>
-                        <li>Deep canvassing campaigns have focused on gay rights, transgender rights, extending the social safety net to undocumented immigrants, midterm general election turnout and other issues</li>
-                        <li>Rigorous studies show 3-8 point increase in support for an issue after a deep canvassing conversation.</li>
-                        <li>Furthermore, the effect is long-lasting, seemingly for a year or more</li>
-                      </FactCardList>
-                    </FactCard>
-
-                    <FactCard topic="Persuasion Philosophy">
-                      <FactCardList>
-                        <li>Political persuasion is possible by creating a safe space to process issues, not by presenting more facts</li>
-                        <li>If information flows like an electric current, deep canvassing focuses on lowering emotional resistance, not piling on more information</li>
-                        <li>Canvassers always listen nonjudgmentally as voters process conflicting opinions, creating a safe space for cognitive dissonance and for the voter to change their mind</li>
-                      </FactCardList>
-                    </FactCard>
-
-                    <FactCard topic="Conversation flow">
-                      <FactCardList>
-                        <li>People stay on the phone to chat or keep the door open fairly often.</li>
-                        <li>Canvassers get the voter to share their support or opposition to the issue, rating their support 1-10.</li>
-                        <li>The canvasser then focuses the conversation on people the voter knows impacted by the issue, or stories of our loved ones more generally. The canvasser often shares a vulnerable story about one of their own loved ones.</li>
-                        <li>The canvasser only brings up issues and politics after they and the voter are opening up to each other. They then focus on nonjudgmental listening as the voter processes the issue.</li>
-                        <li>The conversation concludes with that same 1-10 scale, so voters say aloud and hear themselves say if they've changed their minds.</li>
+                        <li>Gay rights and transgender rights campaigns</li>
+                        <li>Extending social safety net to undocumented immigrants</li>
+                        <li>Midterm general election turnout initiatives</li>
+                        <li>Rigorous studies show 3-8 point increase in support</li>
+                        <li>Effects last for a year or more after conversation</li>
                       </FactCardList>
                     </FactCard>
                   </div>
