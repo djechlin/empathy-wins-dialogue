@@ -117,22 +117,22 @@ const Quiz: React.FC<QuizProps> = ({
 
   return (
     <Card className="border-dialogue-neutral hover:shadow-md transition-shadow overflow-hidden bg-gradient-to-br from-white to-slate-50">
-      <CardHeader className="py-3 px-4 bg-gradient-to-r from-dialogue-purple/10 to-dialogue-blue/10 border-b border-dialogue-neutral/20">
+      <CardHeader className="py-4 px-6 bg-gradient-to-r from-dialogue-purple/10 to-dialogue-blue/10 border-b border-dialogue-neutral/20">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-semibold text-dialogue-darkblue">{title}</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+            <h3 className="text-lg font-semibold text-dialogue-darkblue">{title}</h3>
+            <p className="text-sm text-muted-foreground mt-1">{description}</p>
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <div className="bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full border border-dialogue-neutral/30">
+          <div className="flex items-center gap-2 text-sm">
+            <div className="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full border border-dialogue-neutral/30">
               <span className="font-medium text-dialogue-darkblue">
                 {answeredCount}/{questions.length}
               </span>
             </div>
             {correctCount > 0 && (
-              <div className="bg-green-100 text-green-700 px-2 py-1 rounded-full border border-green-200">
+              <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full border border-green-200">
                 <span className="font-medium">
-                  {correctCount} ✓
+                  {correctCount} correct
                 </span>
               </div>
             )}
@@ -140,38 +140,38 @@ const Quiz: React.FC<QuizProps> = ({
         </div>
       </CardHeader>
       
-      <CardContent className="py-3 px-4">
-        <div className="space-y-3">
+      <CardContent className="py-4 px-6">
+        <div className="space-y-4">
           {questions.map((question, index) => (
-            <div key={question.id} className="bg-white/60 backdrop-blur-sm rounded-md p-3 border border-dialogue-neutral/20 hover:border-dialogue-purple/30 transition-colors">
-              <div className="flex items-start gap-2">
-                <div className="flex-shrink-0 w-5 h-5 rounded-full bg-dialogue-purple/15 border border-dialogue-purple/25 flex items-center justify-center text-xs font-medium text-dialogue-purple mt-0.5">
+            <div key={question.id} className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-dialogue-neutral/20 hover:border-dialogue-purple/30 transition-colors">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-dialogue-purple/10 border border-dialogue-purple/20 flex items-center justify-center text-xs font-medium text-dialogue-purple mt-0.5">
                   {index + 1}
                 </div>
-                <div className="flex-grow min-w-0">
-                  <div className="font-medium text-dialogue-darkblue text-xs mb-2 leading-relaxed">
+                <div className="flex-grow">
+                  <div className="font-medium text-dialogue-darkblue text-sm mb-3 leading-relaxed">
                     {question.text}
                   </div>
 
-                  <div className="flex gap-1.5">
+                  <div className="flex gap-2">
                     <Toggle
                       pressed={quizAnswers[question.id] === "true"}
                       onPressedChange={() => handleQuizToggle(question.id, "true")}
                       variant="outline"
                       size="sm"
-                      className={`px-3 py-1.5 text-xs font-semibold transition-all duration-200 border-2 ${
+                      className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
                         quizAnswers[question.id] === "true"
                           ? isCorrectAnswer(question.id, "true")
-                            ? "bg-green-100 border-green-400 text-green-800 hover:bg-green-150 shadow-sm"
-                            : "bg-red-100 border-red-400 text-red-800 hover:bg-red-150 shadow-sm"
-                          : "hover:bg-slate-100 border-slate-300 text-slate-700 hover:border-slate-400 bg-white"
+                            ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100"
+                            : "bg-red-50 border-red-300 text-red-700 hover:bg-red-100"
+                          : "hover:bg-dialogue-neutral/50 border-dialogue-neutral/40"
                       }`}
                     >
                       <span>True</span>
                       {quizAnswers[question.id] === "true" && (
                         isCorrectAnswer(question.id, "true")
-                          ? <Check className="ml-1.5 h-3 w-3" />
-                          : <X className="ml-1.5 h-3 w-3" />
+                          ? <Check className="ml-2 h-3 w-3" />
+                          : <X className="ml-2 h-3 w-3" />
                       )}
                     </Toggle>
 
@@ -180,26 +180,26 @@ const Quiz: React.FC<QuizProps> = ({
                       onPressedChange={() => handleQuizToggle(question.id, "false")}
                       variant="outline"
                       size="sm"
-                      className={`px-3 py-1.5 text-xs font-semibold transition-all duration-200 border-2 ${
+                      className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
                         quizAnswers[question.id] === "false"
                           ? isCorrectAnswer(question.id, "false")
-                            ? "bg-green-100 border-green-400 text-green-800 hover:bg-green-150 shadow-sm"
-                            : "bg-red-100 border-red-400 text-red-800 hover:bg-red-150 shadow-sm"
-                          : "hover:bg-slate-100 border-slate-300 text-slate-700 hover:border-slate-400 bg-white"
+                            ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100"
+                            : "bg-red-50 border-red-300 text-red-700 hover:bg-red-100"
+                          : "hover:bg-dialogue-neutral/50 border-dialogue-neutral/40"
                       }`}
                     >
                       <span>False</span>
                       {quizAnswers[question.id] === "false" && (
                         isCorrectAnswer(question.id, "false")
-                          ? <Check className="ml-1.5 h-3 w-3" />
-                          : <X className="ml-1.5 h-3 w-3" />
+                          ? <Check className="ml-2 h-3 w-3" />
+                          : <X className="ml-2 h-3 w-3" />
                       )}
                     </Toggle>
                   </div>
 
                   {quizAnswers[question.id] !== null && !isCorrectAnswer(question.id, quizAnswers[question.id]) && (
-                    <div className="mt-2 text-xs p-2 bg-red-50/80 text-red-800 rounded border border-red-200/50">
-                      <p>Correct: <span className="font-semibold">{question.correctAnswer ? "True" : "False"}</span></p>
+                    <div className="mt-3 text-xs p-2 bg-red-50/80 text-red-800 rounded-md border border-red-200/50">
+                      <p>Correct answer: <span className="font-medium">{question.correctAnswer ? "True" : "False"}</span></p>
                     </div>
                   )}
                 </div>
@@ -209,13 +209,13 @@ const Quiz: React.FC<QuizProps> = ({
         </div>
 
         {isQuizComplete() && allQuestionsAnswered() && (
-          <div className="mt-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-md">
-            <div className="flex items-center gap-2">
-              <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle2 className="h-3 w-3 text-green-600" />
+          <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
               </div>
               <div>
-                <h4 className="font-semibold text-green-800 text-xs">Excellent work!</h4>
+                <h4 className="font-semibold text-green-800 text-sm">Excellent work!</h4>
                 <p className="text-xs text-green-700 mt-0.5">
                   You've successfully completed this knowledge check.
                 </p>
@@ -224,12 +224,12 @@ const Quiz: React.FC<QuizProps> = ({
           </div>
         )}
 
-        <div className="flex justify-end mt-3 pt-2 border-t border-dialogue-neutral/20">
+        <div className="flex justify-end mt-4 pt-3 border-t border-dialogue-neutral/20">
           <Button
             onClick={resetQuiz}
             variant="outline"
             size="sm"
-            className="text-xs flex items-center gap-1 px-2.5 py-1 h-auto border-slate-300 hover:border-slate-400 hover:bg-slate-100 bg-white text-slate-700 font-medium"
+            className="text-xs flex items-center gap-1.5 px-3 py-1.5 h-auto border-dialogue-neutral/40 hover:border-dialogue-purple/40 hover:bg-dialogue-neutral/30"
           >
             <RotateCcw className="h-3 w-3" />
             Reset
