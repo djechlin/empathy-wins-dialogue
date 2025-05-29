@@ -144,66 +144,66 @@ const Quiz: React.FC<QuizProps> = ({
         <div className="space-y-4">
           {questions.map((question, index) => (
             <div key={question.id} className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-dialogue-neutral/20 hover:border-dialogue-purple/30 transition-colors">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-dialogue-purple/10 border border-dialogue-purple/20 flex items-center justify-center text-xs font-medium text-dialogue-purple mt-0.5">
-                  {index + 1}
-                </div>
-                <div className="flex-grow">
-                  <div className="font-medium text-dialogue-darkblue text-sm mb-3 leading-relaxed">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3 flex-1">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-dialogue-purple/10 border border-dialogue-purple/20 flex items-center justify-center text-xs font-medium text-dialogue-purple mt-0.5">
+                    {index + 1}
+                  </div>
+                  <div className="font-medium text-dialogue-darkblue text-sm leading-relaxed">
                     {question.text}
                   </div>
+                </div>
 
-                  <div className="flex gap-2">
-                    <Toggle
-                      pressed={quizAnswers[question.id] === "true"}
-                      onPressedChange={() => handleQuizToggle(question.id, "true")}
-                      variant="outline"
-                      size="sm"
-                      className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
-                        quizAnswers[question.id] === "true"
-                          ? isCorrectAnswer(question.id, "true")
-                            ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100"
-                            : "bg-red-50 border-red-300 text-red-700 hover:bg-red-100"
-                          : "hover:bg-dialogue-neutral/50 border-dialogue-neutral/40"
-                      }`}
-                    >
-                      <span>True</span>
-                      {quizAnswers[question.id] === "true" && (
-                        isCorrectAnswer(question.id, "true")
-                          ? <Check className="ml-2 h-3 w-3" />
-                          : <X className="ml-2 h-3 w-3" />
-                      )}
-                    </Toggle>
+                <div className="flex gap-2 flex-shrink-0">
+                  <Toggle
+                    pressed={quizAnswers[question.id] === "true"}
+                    onPressedChange={() => handleQuizToggle(question.id, "true")}
+                    variant="outline"
+                    size="sm"
+                    className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                      quizAnswers[question.id] === "true"
+                        ? isCorrectAnswer(question.id, "true")
+                          ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100"
+                          : "bg-red-50 border-red-300 text-red-700 hover:bg-red-100"
+                        : "hover:bg-dialogue-neutral/50 border-dialogue-neutral/40"
+                    }`}
+                  >
+                    <span>True</span>
+                    {quizAnswers[question.id] === "true" && (
+                      isCorrectAnswer(question.id, "true")
+                        ? <Check className="ml-2 h-3 w-3" />
+                        : <X className="ml-2 h-3 w-3" />
+                    )}
+                  </Toggle>
 
-                    <Toggle
-                      pressed={quizAnswers[question.id] === "false"}
-                      onPressedChange={() => handleQuizToggle(question.id, "false")}
-                      variant="outline"
-                      size="sm"
-                      className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
-                        quizAnswers[question.id] === "false"
-                          ? isCorrectAnswer(question.id, "false")
-                            ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100"
-                            : "bg-red-50 border-red-300 text-red-700 hover:bg-red-100"
-                          : "hover:bg-dialogue-neutral/50 border-dialogue-neutral/40"
-                      }`}
-                    >
-                      <span>False</span>
-                      {quizAnswers[question.id] === "false" && (
-                        isCorrectAnswer(question.id, "false")
-                          ? <Check className="ml-2 h-3 w-3" />
-                          : <X className="ml-2 h-3 w-3" />
-                      )}
-                    </Toggle>
-                  </div>
-
-                  {quizAnswers[question.id] !== null && !isCorrectAnswer(question.id, quizAnswers[question.id]) && (
-                    <div className="mt-3 text-xs p-2 bg-red-50/80 text-red-800 rounded-md border border-red-200/50">
-                      <p>Correct answer: <span className="font-medium">{question.correctAnswer ? "True" : "False"}</span></p>
-                    </div>
-                  )}
+                  <Toggle
+                    pressed={quizAnswers[question.id] === "false"}
+                    onPressedChange={() => handleQuizToggle(question.id, "false")}
+                    variant="outline"
+                    size="sm"
+                    className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                      quizAnswers[question.id] === "false"
+                        ? isCorrectAnswer(question.id, "false")
+                          ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100"
+                          : "bg-red-50 border-red-300 text-red-700 hover:bg-red-100"
+                        : "hover:bg-dialogue-neutral/50 border-dialogue-neutral/40"
+                    }`}
+                  >
+                    <span>False</span>
+                    {quizAnswers[question.id] === "false" && (
+                      isCorrectAnswer(question.id, "false")
+                        ? <Check className="ml-2 h-3 w-3" />
+                        : <X className="ml-2 h-3 w-3" />
+                    )}
+                  </Toggle>
                 </div>
               </div>
+
+              {quizAnswers[question.id] !== null && !isCorrectAnswer(question.id, quizAnswers[question.id]) && (
+                <div className="mt-3 text-xs p-2 bg-red-50/80 text-red-800 rounded-md border border-red-200/50">
+                  <p>Correct answer: <span className="font-medium">{question.correctAnswer ? "True" : "False"}</span></p>
+                </div>
+              )}
             </div>
           ))}
         </div>
