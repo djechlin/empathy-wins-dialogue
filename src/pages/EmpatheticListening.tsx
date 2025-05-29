@@ -6,7 +6,7 @@ import { Ear, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { CallWorkspace as VoiceCallWorkspace } from '@/components/voice/CallWorkspace';
-import PracticeCard from '@/components/voice/PracticeCard';
+import PracticeCard from '@/components/learn/PracticeCard';
 
 const EmpatheticListening = () => {
   return (
