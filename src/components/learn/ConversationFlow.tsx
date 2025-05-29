@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -32,9 +33,12 @@ interface PhaseHeaderProps {
 }
 
 const PhaseHeader: React.FC<PhaseHeaderProps> = ({ title }) => (
-  <div className="my-8">
-    <Separator className="mb-6 bg-dialogue-darkblue/20" />
-    <h4 className="font-semibold text-dialogue-darkblue text-lg mb-6">{title}</h4>
+  <div className="my-6">
+    <div className="flex justify-center mb-4">
+      <span className="text-xs text-dialogue-purple/70 italic font-medium px-3 py-1 bg-dialogue-purple/5 rounded-full">
+        {title}
+      </span>
+    </div>
   </div>
 );
 
