@@ -17,6 +17,7 @@ import SwingVoters from "./pages/blog/SwingVoters";
 import TurningOutTheBase from "./pages/blog/TurningOutTheBase";
 import TheNameType2Dialogue from "./pages/blog/TheNameType2Dialogue";
 import Auth from "./pages/Auth";
+import Challenge from "./pages/Challenge";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/blog/cognitive-dissonance" element={<CognitiveDissonance />} />
           <Route path="/blog/swing-voters" element={<SwingVoters />} />
           <Route path="/blog/turning-out-the-base" element={<TurningOutTheBase />} />
+          <Route path="/challenge" element={<Challenge />} />
           <Route path="/auth" element={<Auth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
