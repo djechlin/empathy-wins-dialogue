@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -123,8 +122,6 @@ const ConversationFlow: React.FC = () => {
             message="Definitely a 9 now. I hadn't really thought about how much it would help families like my sister's."
             isLast={true}
           />
-
-          <PhaseHeader title="Phase 6: Closing & Reassessment" />
         </div>
       </CardContent>
     </Card>
