@@ -1,3 +1,4 @@
+
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -37,7 +38,7 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
             <SliderCard
               id="deep-canvassing-assessment"
               title="How do you feel about deep canvassing?"
-              question="I am interested in having vulnerable political conversations with voters with different perspectives than mine."
+              question="I can persuade swing voters on issues important to me."
             />
           </div>
 

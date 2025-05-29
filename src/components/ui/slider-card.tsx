@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,7 +21,7 @@ const SliderCard = ({ id, title, question, defaultOpen = true }: SliderCardProps
     <ActivityCard
       id={id}
       title={title}
-      description={`"${question}"`}
+      description=""
       defaultOpen={defaultOpen}
       isComplete={isCompleted}
       headerExtra={isCompleted ? (
