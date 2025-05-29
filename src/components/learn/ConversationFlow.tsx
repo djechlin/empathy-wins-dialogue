@@ -21,7 +21,11 @@ const Message: React.FC<MessageProps> = ({ speaker, message, isLast = false }) =
     <div className="flex items-start gap-4">
       {/* Timeline line */}
       <div className="flex flex-col items-center">
-        <div className="w-3 h-3 rounded-full bg-dialogue-purple flex-shrink-0 mt-3"></div>
+        <div className={`w-3 h-3 rounded-full flex-shrink-0 mt-3 ${
+          isCanvasser 
+            ? 'bg-dialogue-purple' 
+            : 'border-2 border-dialogue-purple bg-white'
+        }`}></div>
         {!isLast && <div className="w-0.5 bg-dialogue-purple/30 flex-grow min-h-[60px] mt-2"></div>}
       </div>
       
