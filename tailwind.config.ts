@@ -63,12 +63,12 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				dialogue: {
-					blue: '#586BA4',
-					purple: '#324376',
-					darkblue: '#324376',
-					neutral: '#586BA4',
-					charcoal: '#324376',
-					coral: '#F68E5F'
+					blue: '#DAE0F2',
+					purple: '#52154E',
+					darkblue: '#111344',
+					neutral: '#DAE0F2',
+					charcoal: '#111344',
+					coral: '#F9CFF2'
 				}
 			},
 			fontFamily: {
