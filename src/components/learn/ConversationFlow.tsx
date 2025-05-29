@@ -2,69 +2,89 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 
-interface FlowStepProps {
-  number: number;
-  title: string;
-  description: string;
+interface MessageProps {
+  speaker: 'canvasser' | 'voter';
+  message: string;
   isLast?: boolean;
 }
 
-const FlowStep: React.FC<FlowStepProps> = ({ number, title, description, isLast = false }) => {
+const Message: React.FC<MessageProps> = ({ speaker, message, isLast = false }) => {
+  const isCanvasser = speaker === 'canvasser';
+  
   return (
-    <div className="flex items-start gap-4">
-      <div className="flex flex-col items-center">
-        <div className="w-6 h-6 bg-dialogue-purple text-white rounded-full flex items-center justify-center font-semibold text-xs">
-          {number}
+    <div className="flex flex-col gap-2">
+      <div className={`flex ${isCanvasser ? 'justify-start' : 'justify-end'} gap-2`}>
+        <div className={`max-w-[80%] px-4 py-3 rounded-lg ${
+          isCanvasser 
+            ? 'bg-dialogue-purple text-white' 
+            : 'bg-grey-100 border border-dialogue-neutral text-dialogue-darkblue'
+        }`}>
+          <p className="text-sm leading-relaxed">{message}</p>
         </div>
-        {!isLast && <div className="w-0.5 h-16 bg-dialogue-purple/30 mt-2"></div>}
       </div>
-      <div className="flex-1 pb-8">
-        <h4 className="font-semibold text-dialogue-darkblue mb-2">{title}</h4>
-        <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-      </div>
+      {!isLast && <div className="h-3"></div>}
     </div>
   );
 };
 
 const ConversationFlow: React.FC = () => {
-  const steps = [
+  const dialogue = [
     {
-      title: "Opening & Scale Rating",
-      description: "Canvasser opens with their name, what issue they're supporting, and asks the voter to rate their support on a scale of 1-10."
+      speaker: 'canvasser' as const,
+      message: "Hi, I'm Frank, and I'm talking to voters about universal preschool. On a scale of 1-10, how much do you support making preschool available to all families?"
     },
     {
-      title: "Explore Personal Connections",
-      description: "Canvasser asks the voter who they know who's affected by the issue and begins exploring the issue with them."
+      speaker: 'voter' as const,
+      message: "Oh, I'd say I'm about a 7."
     },
     {
-      title: "Share Personal Stories",
-      description: "If needed, canvasser shares their story unrelated to politics, just about a time a loved one was there for them, and elicits a similar story from the voter."
+      speaker: 'canvasser' as const,
+      message: "That's great! Do kids in your neighborhood usually go to preschool? What's that like for families around you?"
     },
     {
-      title: "Support & Community Exploration",
-      description: "Canvasser gives the voter support as they explore the issue and how it relates to people in their community."
+      speaker: 'voter' as const,
+      message: "Not really. Most parents I know struggle with childcare costs. My sister has to work two jobs just to afford daycare for her daughter."
     },
     {
-      title: "Second Rating & Reflection",
-      description: "Canvasser asks the voter to rate their support a second time, giving the voter a chance to notice if their number has changed."
+      speaker: 'canvasser' as const,
+      message: "That sounds really tough for your sister. I know how hard that can be - my mom raised three kids mostly on her own, and I remember her always worrying about finding good care we could afford. Can you tell me more about how this affects your sister?"
+    },
+    {
+      speaker: 'voter' as const,
+      message: "She's always stressed about money and finding reliable care. She really wants her daughter to be ready for kindergarten, but quality preschool is just too expensive."
+    },
+    {
+      speaker: 'canvasser' as const,
+      message: "It sounds like you really care about your sister and your niece. How do you think universal preschool might change things for families like hers?"
+    },
+    {
+      speaker: 'voter' as const,
+      message: "It would be life-changing, honestly. She could focus on one job instead of two, and her daughter would get the early education she deserves."
+    },
+    {
+      speaker: 'canvasser' as const,
+      message: "Now, thinking about everything we've discussed, if I asked you again to rate your support for universal preschool on that same 1-10 scale, where would you be?"
+    },
+    {
+      speaker: 'voter' as const,
+      message: "Definitely a 9 now. I hadn't really thought about how much it would help families like my sister's."
     }
   ];
 
   return (
     <Card className="border-dialogue-neutral">
       <CardContent className="p-6">
-        <div className="mb-4">
-          <h3 className="font-semibold text-dialogue-darkblue text-lg">Deep Canvassing Conversation Flow</h3>
-          <p className="text-sm text-muted-foreground mt-1">A step-by-step guide to conducting effective deep canvassing conversations</p>
+        <div className="mb-6">
+          <h3 className="font-semibold text-dialogue-darkblue text-lg">Deep Canvassing Conversation Example</h3>
+          <p className="text-sm text-muted-foreground mt-1">See how a real conversation flows from opening to closing</p>
         </div>
         <div className="space-y-0">
-          {steps.map((step, index) => (
-            <FlowStep
+          {dialogue.map((item, index) => (
+            <Message
               key={index}
-              number={index + 1}
-              title={step.title}
-              description={step.description}
-              isLast={index === steps.length - 1}
+              speaker={item.speaker}
+              message={item.message}
+              isLast={index === dialogue.length - 1}
             />
           ))}
         </div>
