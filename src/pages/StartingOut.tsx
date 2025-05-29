@@ -10,6 +10,14 @@ import FactCardList from '@/components/learn/FactCardList';
 import ActivityCard from '@/components/learn/ActivityCard';
 import Quiz from '@/components/learn/Quiz';
 import VideoCard from '@/components/learn/VideoCard';
+import DosAndDonts, { 
+  Dos, 
+  Donts, 
+  ConversationDos, 
+  ConversationDonts, 
+  DosAndDontsItem, 
+  ConversationDosAndDontsItem 
+} from '@/components/learn/DosAndDonts';
 
 const Learn = () => {
   return <div className="min-h-screen flex flex-col">
@@ -134,65 +142,37 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                     </FactCard>
 
                     {/* Dos and Don'ts Section */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <Card className="border-green-200 bg-green-50">
-                        <CardHeader className="pb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="p-1 bg-green-500 rounded-full">
-                              <Check className="h-4 w-4 text-white" />
-                            </div>
-                            <h3 className="text-lg font-semibold text-green-800">Story Dos</h3>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                          <div className="flex items-start gap-2">
-                            <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-green-800">Share specific, personal details that create emotional connection</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-green-800">Focus on how the issue affects people you care about</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-green-800">Use everyday language that anyone can understand</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-green-800">Show vulnerability and authentic emotion</span>
-                          </div>
-                        </CardContent>
-                      </Card>
+                    <DosAndDonts>
+                      <Dos>
+                        <DosAndDontsItem type="do">
+                          Share specific, personal details that create emotional connection
+                        </DosAndDontsItem>
+                        <DosAndDontsItem type="do">
+                          Focus on how the issue affects people you care about
+                        </DosAndDontsItem>
+                        <DosAndDontsItem type="do">
+                          Use everyday language that anyone can understand
+                        </DosAndDontsItem>
+                        <DosAndDontsItem type="do">
+                          Show vulnerability and authentic emotion
+                        </DosAndDontsItem>
+                      </Dos>
 
-                      <Card className="border-red-200 bg-red-50">
-                        <CardHeader className="pb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="p-1 bg-red-500 rounded-full">
-                              <X className="h-4 w-4 text-white" />
-                            </div>
-                            <h3 className="text-lg font-semibold text-red-800">Story Don'ts</h3>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                          <div className="flex items-start gap-2">
-                            <X className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-red-800">Use political jargon or partisan talking points</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <X className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-red-800">Make it about statistics or policy details</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <X className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-red-800">Tell a generic story that could apply to anyone</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <X className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-red-800">Rush through it or make it too long</span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
+                      <Donts>
+                        <DosAndDontsItem type="dont">
+                          Use political jargon or partisan talking points
+                        </DosAndDontsItem>
+                        <DosAndDontsItem type="dont">
+                          Make it about statistics or policy details
+                        </DosAndDontsItem>
+                        <DosAndDontsItem type="dont">
+                          Tell a generic story that could apply to anyone
+                        </DosAndDontsItem>
+                        <DosAndDontsItem type="dont">
+                          Rush through it or make it too long
+                        </DosAndDontsItem>
+                      </Donts>
+                    </DosAndDonts>
 
                     <FactCard topic="Eliciting stories from voters">
                       <FactCardList>
@@ -205,65 +185,37 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                     </FactCard>
 
                     {/* Conversation Dos and Don'ts */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <Card className="border-blue-200 bg-blue-50">
-                        <CardHeader className="pb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="p-1 bg-blue-500 rounded-full">
-                              <Check className="h-4 w-4 text-white" />
-                            </div>
-                            <h3 className="text-lg font-semibold text-blue-800">Conversation Dos</h3>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                          <div className="flex items-start gap-2">
-                            <Check className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-blue-800">Ask "Tell me about a time when..." to get stories</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <Check className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-blue-800">Listen for emotional moments and explore them</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <Check className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-blue-800">Give them space to think and process</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <Check className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-blue-800">Let them make connections themselves</span>
-                          </div>
-                        </CardContent>
-                      </Card>
+                    <DosAndDonts>
+                      <ConversationDos>
+                        <ConversationDosAndDontsItem type="do">
+                          Ask "Tell me about a time when..." to get stories
+                        </ConversationDosAndDontsItem>
+                        <ConversationDosAndDontsItem type="do">
+                          Listen for emotional moments and explore them
+                        </ConversationDosAndDontsItem>
+                        <ConversationDosAndDontsItem type="do">
+                          Give them space to think and process
+                        </ConversationDosAndDontsItem>
+                        <ConversationDosAndDontsItem type="do">
+                          Let them make connections themselves
+                        </ConversationDosAndDontsItem>
+                      </ConversationDos>
 
-                      <Card className="border-orange-200 bg-orange-50">
-                        <CardHeader className="pb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="p-1 bg-orange-500 rounded-full">
-                              <X className="h-4 w-4 text-white" />
-                            </div>
-                            <h3 className="text-lg font-semibold text-orange-800">Conversation Don'ts</h3>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                          <div className="flex items-start gap-2">
-                            <X className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-orange-800">Jump straight into political arguments</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <X className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-orange-800">Tell them how their story connects to the issue</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <X className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-orange-800">Rush them or fill silence immediately</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <X className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-orange-800">Judge or dismiss their experiences</span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
+                      <ConversationDonts>
+                        <ConversationDosAndDontsItem type="dont">
+                          Jump straight into political arguments
+                        </ConversationDosAndDontsItem>
+                        <ConversationDosAndDontsItem type="dont">
+                          Tell them how their story connects to the issue
+                        </ConversationDosAndDontsItem>
+                        <ConversationDosAndDontsItem type="dont">
+                          Rush them or fill silence immediately
+                        </ConversationDosAndDontsItem>
+                        <ConversationDosAndDontsItem type="dont">
+                          Judge or dismiss their experiences
+                        </ConversationDosAndDontsItem>
+                      </ConversationDonts>
+                    </DosAndDonts>
 
                     <FactCard topic="Connecting stories to the issue">
                       <FactCardList>
