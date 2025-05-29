@@ -1,10 +1,7 @@
 
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useCallback } from 'react';
+import React, { useState, useEffect, useRef, forwardRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Heart, Trash2, Edit3, Mic, Play, Pause, Square } from 'lucide-react';
-import { DeepgramVoiceProvider } from './DeepgramVoiceProvider';
+import { Heart, Mic } from 'lucide-react';
 import {
   DeepgramContextProvider,
   LiveConnectionState,
@@ -28,33 +25,28 @@ interface LoveListInnerHandle {
 }
 
 const LoveListWidgetOuter = () => {
-  const innerRef = useRef<LoveListInnerHandle>(null);
-
   return (
     <DeepgramContextProvider>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <LoveListWidgetInner ref={innerRef} />
+        <LoveListWidgetInner />
       </div>
     </DeepgramContextProvider>
   );
 };
 
 const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
-  const [items, setItems] = useState<LoveItem[]>([]);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editText, setEditText] = useState('');
 
     const { connection, connectToDeepgram, connectionState } = useDeepgram();
 
   const captionTimeout = useRef<undefined | ReturnType<typeof setTimeout>>();
   const [caption, setCaption] = useState<string>("");
   const [interimCaption, setInterimCaption] = useState<string>("");
-  
+
   // Track detected entities for goal system
   const [detectedPeople, setDetectedPeople] = useState<Set<string>>(new Set());
   const [detectedPlaces, setDetectedPlaces] = useState<Set<string>>(new Set());
   const [detectedHobbies, setDetectedHobbies] = useState<Set<string>>(new Set());
-  
+
   // Goal tracking
   const totalThings = detectedPlaces.size + detectedHobbies.size;
   const isGoalMet = totalThings >= 10 && detectedPeople.size >= 3;
@@ -65,7 +57,7 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
       return text;
     }
 
-    try { 
+    try {
       const doc = nlp(text);
 
       const people = doc.people().out('array');
@@ -73,11 +65,8 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
 
       const textWords = text.toLowerCase().split(/[ .,?!]+/);
       const foundHobbies = textWords.filter(word => hobbySet.has(word));
-
-      // Create a mapping of positions to replace
       const replacements: { original: string; replacement: React.ReactNode; }[] = [];
 
-      // Add people replacements (purple)
       people.forEach((person: string, index: number) => {
         replacements.push({
           original: person,
@@ -85,7 +74,6 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
         });
       });
 
-      // Add places replacements (blue)
       places.forEach((place: string, index: number) => {
         replacements.push({
           original: place,
@@ -93,7 +81,6 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
         });
       });
 
-      // Add hobbies/activities replacements (green)
       foundHobbies.forEach((hobby: string, index: number) => {
         console.log('replacing the hobby: ', hobby);
         replacements.push({
@@ -106,13 +93,11 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
         return text;
       }
 
-      // Split text and replace entities
       let currentText = text;
 
       // Sort replacements by length (longest first) to avoid partial replacements
       replacements.sort((a, b) => b.original.length - a.original.length);
 
-      // Process each replacement
       for (const replacement of replacements) {
         const parts = currentText.split(replacement.original);
         if (parts.length > 1) {
@@ -127,14 +112,12 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
         }
       }
 
-      // For simplicity, let's rebuild using React fragments
       const elements: React.ReactNode[] = [];
       const words = text.split(' ');
 
       words.forEach((word, i) => {
         let isReplaced = false;
 
-        // Check if this word is a person
         for (let j = 0; j < people.length; j++) {
           if (word.toLowerCase().includes(people[j].toLowerCase()) || people[j].toLowerCase().includes(word.toLowerCase())) {
             elements.push(<span key={`person-${i}`} className="text-purple-600 font-semibold">{word}</span>);
@@ -143,7 +126,6 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
           }
         }
 
-        // Check if this word is a place
         if (!isReplaced) {
           for (let j = 0; j < places.length; j++) {
             if (word.toLowerCase().includes(places[j].toLowerCase()) || places[j].toLowerCase().includes(word.toLowerCase())) {
@@ -154,7 +136,6 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
           }
         }
 
-        // Check if this word is a hobby/activity using direct lookup
         if (!isReplaced && hobbySet.has(word.toLowerCase())) {
           elements.push(<span key={`hobby-${i}`} className="text-green-600 font-semibold">{word}</span>);
           isReplaced = true;
@@ -164,7 +145,6 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
           elements.push(word);
         }
 
-        // Add space between words (except for the last word)
         if (i < words.length - 1) {
           elements.push(' ');
         }
@@ -201,7 +181,7 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
         if (isFinal) {
           setCaption(prev => prev + ' ' + thisCaption);
           setInterimCaption(""); // Clear interim since it's now final
-          
+
           // Extract entities from the final caption and update state
           try {
             const doc = nlp(thisCaption);
@@ -209,7 +189,7 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
             const places = doc.places().out('array');
             const textWords = thisCaption.toLowerCase().split(/[ .,?!]+/);
             const foundHobbies = textWords.filter(word => hobbySet.has(word));
-            
+
             if (people.length > 0) {
               setDetectedPeople(prev => new Set([...prev, ...people.map(p => p.toLowerCase())]));
             }
@@ -245,69 +225,13 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
     };
   }, [connection, connectionState]);
 
-
-  const addItem = (text: string) => {
-    // Check if item already exists to avoid duplicates
-    const exists = items.some(item => item.text.toLowerCase() === text.toLowerCase());
-    if (exists) return;
-
-    console.log('addItem called with:', text);
-    const newItem: LoveItem = {
-      id: Date.now().toString(),
-      text: text
-    };
-    console.log('Creating new item:', newItem);
-    setItems(prev => {
-      const newItems = [...prev, newItem];
-      console.log('Updated items array:', newItems);
-      return newItems;
-    });
-  };
-
-  useImperativeHandle(ref, () => ({
-    addItem
-  }));
-
-
-  const handleEdit = (item: LoveItem) => {
-    setEditingId(item.id);
-    setEditText(item.text);
-  };
-
-  const handleSaveEdit = () => {
-    if (editingId && editText.trim()) {
-      setItems(prev => prev.map(item =>
-        item.id === editingId ? { ...item, text: editText.trim() } : item
-      ));
-    }
-    setEditingId(null);
-    setEditText('');
-  };
-
-  const handleCancelEdit = () => {
-    setEditingId(null);
-    setEditText('');
-  };
-
-  const handleDelete = (id: string) => {
-    setItems(prev => prev.filter(item => item.id !== id));
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSaveEdit();
-    } else if (e.key === 'Escape') {
-      handleCancelEdit();
-    }
-  };
-
   return (
     <Card className={`border-dialogue-neutral bg-white transition-all duration-300 ${isGoalMet ? 'border-purple-500 border-2 shadow-lg' : ''}`}>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Heart className="h-5 w-5 text-red-500" />
-            Voice Discovery Challenge
+            Love List
           </div>
           <div className="text-sm font-normal text-gray-600">
             {isGoalMet ? (
@@ -325,7 +249,7 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
           {/* Left Side: Collected Words */}
           <div className="space-y-4">
             <h3 className="font-semibold text-sm text-gray-700">Discovered Words</h3>
-            
+
             {/* People */}
             <div>
               <h4 className="text-xs font-medium text-purple-600 mb-2">People ({detectedPeople.size}/3)</h4>

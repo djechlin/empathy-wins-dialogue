@@ -38,7 +38,7 @@ const PracticeCard = ({
       }
     >
       <div className="space-y-6">
-        <CallWorkspace callId={scenarioId} />
+        <CallWorkspace scenarioId={scenarioId} />
 
         {quiz && quiz.length > 0 && (
           <Quiz

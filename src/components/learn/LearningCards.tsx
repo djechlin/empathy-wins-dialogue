@@ -178,18 +178,18 @@ const LearningCards = () => {
           </CardContent>
         </Card>
 
-        <VideoCard 
+        <VideoCard
           title="Introduction to Empathetic Political Dialogue"
           description="Watch this short video to learn the basics of having productive political conversations"
           url="https://www.youtube.com/embed/zOgCdDJYF4U"
         />
 
-        <PracticeCard 
+        <PracticeCard
           id="practice-deep-canvassing"
           title="Practice Deep Canvassing"
           description="Practice having productive political conversations using deep canvassing techniques"
-          defaultOpen={false} 
-          scenarioId="deep-canvassing" 
+          defaultOpen={false}
+          scenarioId="deep-canvassing"
         />
 
         {/* Card 3: Friends List */}

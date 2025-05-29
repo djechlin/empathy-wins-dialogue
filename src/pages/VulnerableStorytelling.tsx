@@ -11,6 +11,7 @@ import Quiz from '@/components/learn/Quiz';
 import { LoveListWidget } from '@/components/voice/LoveListWidget';
 import { HumeVoiceProvider } from '@/components/voice/HumeVoiceProvider';
 import { HUME_PERSONAS } from '@/lib/scriptData';
+import VideoCard from '@/components/learn/VideoCard';
 
 const VulnerableStorytelling = () => {
   return (
@@ -32,21 +33,20 @@ const VulnerableStorytelling = () => {
                   <Heart className="h-6 w-6 text-red-600" />
                 </div>
                 <h1 className="text-3xl md:text-4xl font-bold text-dialogue-darkblue">
-                  Vulnerable Storytelling
+                  Sharing your story
                 </h1>
-              </div>
+              </div>  
               <p className="text-muted-foreground text-lg">
-                Master the art of sharing personal stories to build genuine connection with voters.
+                Learn to share a vulnerable 2 minute story with a voter in this lesson.
               </p>
             </div>
 
             <div className="space-y-8">
               <ActivityCard
                 id="vulnerable-storytelling-intro"
-                title="Opening up to the voter by sharing a story about a loved one"
-                description="Learn the fundamentals of vulnerable storytelling in deep canvassing"
+                title="Qualities of a deep canvassing story"
+                description=""
               >
-                <div className="space-y-4">
                   <p className="text-muted-foreground">
                     When we speak of our loved ones, we communicate to the voter that we really are here
                     talking to them, first and foremost, because of the people in our lives. Voters often respond
@@ -54,7 +54,7 @@ const VulnerableStorytelling = () => {
                     before moving on to exploring the issue.
                   </p>
 
-                  <FactCard topic="Key Principles">
+                  <FactCard topic="Key qualities of a deep canvassing story">
                     <FactCardList>
                       <li>Use the person's name and say that you love them</li>
                       <li>Share what makes them lovable and how they make you feel</li>
@@ -62,7 +62,6 @@ const VulnerableStorytelling = () => {
                       <li>Now is the time to focus on relationships, not issues</li>
                     </FactCardList>
                   </FactCard>
-                </div>
 
                 <Quiz
                   questions={[
@@ -88,27 +87,20 @@ const VulnerableStorytelling = () => {
                 description="Practice talking about things you love to build your vulnerable storytelling skills"
                 defaultOpen={false}
               >
-                <div className="space-y-6">
-                  <div className="space-y-4">
                     <p className="text-muted-foreground">
                       In this exercise, you'll practice talking about people, pets, things, and experiences you love.
                       The AI will listen and capture what you mention, building your personal love list that you can
                       use in future conversations.
                     </p>
 
-                    <FactCard topic="How it works">
-                      <FactCardList>
-                        <li>Start a voice conversation and talk about things you love</li>
-                        <li>The AI will identify and categorize what you mention</li>
-                        <li>Items will appear in your love list with category icons</li>
-                        <li>You can edit or remove items if the AI misheard something</li>
-                      </FactCardList>
-                    </FactCard>
-                  </div>
+                         <VideoCard 
+          title="Example love list"
+          description="how to example love list"
+          url="https://www.youtube.com/embed/zOgCdDJYF4U"
+        />
 
 
                       <LoveListWidget />
-                </div>
               </ActivityCard>
 
               <ActivityCard

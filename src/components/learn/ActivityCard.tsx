@@ -28,7 +28,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [internalIsComplete, setInternalIsComplete] = useState(false);
-  
+
   // Use external isComplete if provided, otherwise use internal state
   const isComplete = externalIsComplete || internalIsComplete;
 
@@ -42,7 +42,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
 
   // Clone children and pass handleQuizComplete to any Quiz components
   const enhancedChildren = Children.map(children, (child) => {
-    if (isValidElement(child) && child.type && 
+    if (isValidElement(child) && child.type &&
         (child.type as any).name === 'Quiz') {
       return cloneElement(child as any, { onQuizComplete: handleQuizComplete });
     }
@@ -71,10 +71,10 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
               )}
             </div>
             <div className="p-2 hover:bg-muted rounded-full transition-colors">
-              <motion.div 
+              <motion.div
                 animate={{
                   rotate: isOpen ? -180 : 0
-                }} 
+                }}
                 transition={{
                   duration: 0.3,
                   ease: "easeInOut"

@@ -18,9 +18,9 @@ export type QuizProps = {
   onScoreChange?: (score: number, total: number) => void;
 }
 
-const Quiz: React.FC<QuizProps> = ({ 
-  questions, 
-  title = "Quiz", 
+const Quiz: React.FC<QuizProps> = ({
+  questions,
+  title = "Quiz",
   description = "Select your answers to test your knowledge.",
   onQuizComplete,
   onScoreChange
@@ -51,7 +51,7 @@ const Quiz: React.FC<QuizProps> = ({
 
       // Calculate score and check completion
       const answeredQuestions = Object.values(newAnswers).filter(answer => answer !== null).length;
-      const correctAnswers = questions.filter(question => 
+      const correctAnswers = questions.filter(question =>
         isCorrectAnswer(question.id, newAnswers[question.id])
       ).length;
 
@@ -98,7 +98,7 @@ const Quiz: React.FC<QuizProps> = ({
 
   // Check if all questions are answered correctly
   const isQuizComplete = (): boolean => {
-    return questions.every(question => 
+    return questions.every(question =>
       isCorrectAnswer(question.id, quizAnswers[question.id])
     );
   };

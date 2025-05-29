@@ -107,33 +107,7 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                     description="Select your answers to test your knowledge of deep canvassing concepts."
                   />
                 </ActivityCard>
-
-                {/* Activity 2: Learning to talk about someone we love */}
-                <ActivityCard
-                  id="story"
-                  title="Learning to talk about someone we love"
-                  description="Learn to practice vulnerability with the voter by telling your story"
-                >
-                  <p className="mb-6">Active listening is more than just hearing words—it's about understanding the meaning and emotion behind them. This activity covers techniques for demonstrating that you truly understand what someone is saying before responding.</p>
-
-                  <Quiz
-                    questions={[
-                      {
-                        id: 'story_q1',
-                        text: 'Sharing personal stories about loved ones helps create emotional connection with voters.',
-                        correctAnswer: true
-                      },
-                      {
-                        id: 'story_q2',
-                        text: 'You should only share positive stories about your loved ones, never any struggles or challenges.',
-                        correctAnswer: false
-                      }
-                    ]}
-                    title="Quiz"
-                    description="Test your understanding of sharing personal stories."
-                  />
-                </ActivityCard>
-
+                
                 <PracticeCard
                   id="practice"
                   title="Practice deep canvassing"
