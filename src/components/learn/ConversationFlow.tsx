@@ -52,7 +52,7 @@ const ConversationFlow: React.FC = () => {
         </div>
         
         <div className="space-y-0">
-          <PhaseHeader title="Phase 1: Opening & Initial Assessment" />
+          <PhaseHeader title="Canvasser introduces the issue and establishes voter interest" />
           
           <Message
             speaker="canvasser"
@@ -74,7 +74,7 @@ const ConversationFlow: React.FC = () => {
             message="Look I work hard, I'm not married or anything, other people's kids are just other people's problems."
           />
 
-          <PhaseHeader title="Phase 2: Exploration & Understanding" />
+          <PhaseHeader title="The voter doesn't sound interested in other people's family, but they're still engaging, and a 3 means they're open to it. So, the canvasser makes themselves vulnerable by opening up about their own experiences." />
 
           <Message
             speaker="canvasser"
@@ -86,7 +86,7 @@ const ConversationFlow: React.FC = () => {
             message="Not really. Most parents I know struggle with childcare costs. My sister has to work two jobs just to afford daycare for her daughter."
           />
 
-          <PhaseHeader title="Phase 3: Connection Building" />
+          <PhaseHeader title="The canvasser elicits the voter for a similar story." />
 
           <Message
             speaker="canvasser"
@@ -98,7 +98,7 @@ const ConversationFlow: React.FC = () => {
             message="She's always stressed about money and finding reliable care. She really wants her daughter to be ready for kindergarten, but quality preschool is just too expensive."
           />
 
-          <PhaseHeader title="Phase 4: Vulnerable Storytelling" />
+          <PhaseHeader title="The canvasser gives the voter space to explore the issue, with both of their loved ones in mind." />
 
           <Message
             speaker="canvasser"
@@ -110,7 +110,7 @@ const ConversationFlow: React.FC = () => {
             message="It would be life-changing, honestly. She could focus on one job instead of two, and her daughter would get the early education she deserves."
           />
 
-          <PhaseHeader title="Phase 5: Processing & Reflection" />
+          <PhaseHeader title="The canvasser asks where they stand a second time, to let the voter hear themselves say if they changed their minds." />
 
           <Message
             speaker="canvasser"
