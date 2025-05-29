@@ -6,6 +6,7 @@ import { Ear, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { CallWorkspace as VoiceCallWorkspace } from '@/components/voice/CallWorkspace';
+import PracticeCard from '@/components/voice/PracticeCard';
 
 const EmpatheticListening = () => {
   return (
@@ -380,6 +381,25 @@ const EmpatheticListening = () => {
                   </div>
                 </CardContent>
               </Card>
+
+              <PracticeCard
+                id="practice"
+                title="Practice empathetic listening"
+                description="Start a phone call with a virtual voice assistant who will roleplay the voter"
+                scenarioId="empathetic-listening"
+                quiz={[
+                  {
+                    id: 'practice_q1',
+                    text: 'In voice practice, it\'s important to listen for emotional cues and respond with empathy.',
+                    correctAnswer: true
+                  },
+                  {
+                    id: 'practice_q2',
+                    text: 'You should always stick exactly to the script during practice conversations.',
+                    correctAnswer: false
+                  }
+                ]}
+              />
             </div>
           </div>
         </div>

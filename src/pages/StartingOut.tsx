@@ -1,5 +1,3 @@
-
-
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -282,18 +280,33 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                     questions={[
                       {
                         id: 'story_q1',
-                        text: 'When telling your personal story, you should focus on vulnerability and emotion rather than political arguments.',
-                        correctAnswer: true
+                        text: 'Make sure you\'re talking to the right person before getting to the 1-10 scale.',
+                        correctAnswer: false
                       },
                       {
                         id: 'story_q2',
-                        text: 'You should tell voters how their story connects to the issue rather than letting them make the connection themselves.',
+                        text: 'If they say they\'re a 0 or a 10, you should wrap up right away.',
                         correctAnswer: false
                       },
                       {
                         id: 'story_q3',
-                        text: 'Effective issue framing focuses on human impact rather than policy details.',
+                        text: '"Healthcare" is a good way to frame issues about healthcare.',
+                        correctAnswer: false
+                      },
+                      {
+                        id: 'story_q4',
+                        text: 'It\'s okay if your story has nothing to do about issues or politics.',
                         correctAnswer: true
+                      },
+                      {
+                        id: 'story_q5',
+                        text: 'Voters share stories about their loved ones too.',
+                        correctAnswer: true
+                      },
+                      {
+                        id: 'story_q6',
+                        text: 'Share facts when the conversation is vulnerable.',
+                        correctAnswer: false
                       }
                     ]}
                     title="Quiz"
