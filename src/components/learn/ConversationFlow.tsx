@@ -36,10 +36,10 @@ interface PhaseTimelineProps {
 const PhaseTimeline: React.FC<PhaseTimelineProps> = ({ number, title }) => (
   <div className="flex items-start gap-6 mb-1">
     <div className="flex flex-col items-center flex-shrink-0">
-      <div className="w-8 h-8 rounded-full bg-dialogue-purple text-white flex items-center justify-center text-sm font-semibold">
+      <div className="w-8 h-8 rounded-full bg-dialogue-coral text-white flex items-center justify-center text-sm font-semibold">
         {number}
       </div>
-      <div className="w-0.5 h-4 bg-dialogue-purple/30 mt-2"></div>
+      <div className="w-0.5 h-4 bg-dialogue-coral/30 mt-2"></div>
     </div>
     <div className="flex-1 pt-1">
       <h4 className="font-medium text-dialogue-darkblue text-sm mb-1">{title}</h4>
@@ -381,7 +381,11 @@ const ConversationFlow: React.FC = () => {
                   variant={currentExample === index ? "default" : "outline"}
                   size="sm"
                   onClick={() => setCurrentExample(index)}
-                  className="text-xs"
+                  className={`text-xs ${
+                    currentExample === index 
+                      ? 'bg-dialogue-coral hover:bg-dialogue-coral/90 text-white border-dialogue-coral' 
+                      : 'border-dialogue-coral/30 text-dialogue-coral hover:bg-dialogue-coral/10'
+                  }`}
                 >
                   {example.shortLabel}
                 </Button>

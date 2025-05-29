@@ -1,4 +1,3 @@
-
 import React, { ReactNode, useState, Children, isValidElement, cloneElement } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronDown, CheckCircle2 } from 'lucide-react';
@@ -52,7 +51,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
   return (
     <Card
       className={`border-dialogue-neutral hover:shadow-sm transition-shadow ${
-        isComplete ? 'border-dialogue-darkblue border-2' : ''
+        isComplete ? 'border-dialogue-coral border-2 shadow-dialogue-coral/20' : ''
       } ${className}`}
     >
       <Collapsible open={isOpen} onOpenChange={handleToggle}>
@@ -63,7 +62,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
                 {title}
               </CardTitle>
               {isComplete && (
-                <div className="flex items-center bg-dialogue-purple text-white px-2 py-1 rounded-full gap-1">
+                <div className="flex items-center bg-dialogue-coral text-white px-2 py-1 rounded-full gap-1">
                   <CheckCircle2 className="h-4 w-4" />
                   <span className="text-xs font-medium">Complete</span>
                 </div>
