@@ -51,13 +51,12 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
 
   return (
     <Card
-      className={`border-dialogue-neutral hover:shadow-sm transition-shadow cursor-pointer ${
+      className={`border-dialogue-neutral hover:shadow-sm transition-shadow ${
         isComplete ? 'border-dialogue-darkblue border-2' : ''
       } ${className}`}
-      onClick={handleToggle}
     >
       <Collapsible open={isOpen} onOpenChange={handleToggle}>
-        <CardHeader className="pt-3 pb-2">
+        <CardHeader className="pt-3 pb-2 cursor-pointer" onClick={handleToggle}>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <CardTitle className="text-xl">
