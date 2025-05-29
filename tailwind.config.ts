@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -64,12 +63,12 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				dialogue: {
-					blue: '#95B2B8',
-					purple: '#70163C',
-					darkblue: '#2E0F15',
-					neutral: '#95B2B8',
-					charcoal: '#120309',
-					coral: '#307351'
+					blue: '#586BA4',
+					purple: '#324376',
+					darkblue: '#324376',
+					neutral: '#586BA4',
+					charcoal: '#324376',
+					coral: '#F68E5F'
 				}
 			},
 			fontFamily: {
