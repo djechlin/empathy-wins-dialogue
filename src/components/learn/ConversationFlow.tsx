@@ -35,7 +35,15 @@ const ConversationFlow: React.FC = () => {
     },
     {
       speaker: 'voter' as const,
-      message: "Oh, I'd say I'm about a 7."
+      message: "Oh, I'd say I'm about a 3."
+    },
+    {
+      speaker: 'canvasser' as const,
+      message: "Thanks for sharing that! Why is that the right number for you?"
+    },
+    {
+      speaker: 'voter' as const,
+      message: "Look I work hard, I'm not married or anything, other people's kids are just other people's problems."
     },
     {
       speaker: 'canvasser' as const,
