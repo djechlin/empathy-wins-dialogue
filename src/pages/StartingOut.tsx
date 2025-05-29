@@ -9,7 +9,6 @@ import FactCard from '@/components/learn/FactCard';
 import FactCardList from '@/components/learn/FactCardList';
 import ActivityCard from '@/components/learn/ActivityCard';
 import Quiz from '@/components/learn/Quiz';
-import VideoCard from '@/components/learn/VideoCard';
 import DosAndDonts, { 
   Dos, 
   Donts, 
@@ -18,6 +17,7 @@ import DosAndDonts, {
   DosAndDontsItem, 
   ConversationDosAndDontsItem 
 } from '@/components/learn/DosAndDonts';
+import VideoCard from '@/components/learn/VideoCard';
 
 const Learn = () => {
   return <div className="min-h-screen flex flex-col">
@@ -48,12 +48,6 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                   description="Learn how to recognize and appreciate different viewpoints in political conversations"
                 >
                   <div className="space-y-4 mb-6">
-                    <VideoCard
-                      title="Watch: Deep Canvassing Explained"
-                      description="Watch this video to get an introduction to deep canvassing"
-                      url="https://www.youtube.com/embed/Ip_pjb5_fgA"
-                    />
-
                     <FactCard topic="Definition and Purpose">
                       <FactCardList>
                         <li><strong>Canvassing</strong>: Talking to people to secure their vote or their support.</li>
