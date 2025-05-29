@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -19,7 +20,7 @@ const Message: React.FC<MessageProps> = ({ speaker, message, isLast = false }) =
             ? 'bg-dialogue-purple text-white' 
             : 'bg-grey-100 border border-dialogue-neutral text-dialogue-darkblue'
         }`}>
-          <p className="text-sm leading-relaxed">{message}</p>
+          <p className="text-sm leading-relaxed italic">{message}</p>
         </div>
       </div>
       {!isLast && <div className="h-3"></div>}
