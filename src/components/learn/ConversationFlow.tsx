@@ -30,20 +30,20 @@ const Message: React.FC<MessageProps> = ({ speaker, message, isLast = false }) =
 };
 
 interface PhaseTimelineProps {
-  number: number;
+  label: string;
   title: string;
 }
 
-const PhaseTimeline: React.FC<PhaseTimelineProps> = ({ number, title }) => (
+const PhaseTimeline: React.FC<PhaseTimelineProps> = ({ label, title }) => (
   <div className="flex items-start gap-6 mb-2">
     <div className="flex flex-col items-center flex-shrink-0">
-      <div className="w-8 h-8 rounded-full bg-dialogue-purple text-white flex items-center justify-center text-sm font-semibold">
-        {number}
+      <div className="w-12 h-8 rounded-full bg-dialogue-purple text-white flex items-center justify-center text-xs font-semibold px-2">
+        {label}
       </div>
-      <div className="w-0.5 h-8 bg-dialogue-purple/30 mt-2"></div>
+      <div className="w-0.5 h-4 bg-dialogue-purple/30 mt-2"></div>
     </div>
     <div className="flex-1 pt-1">
-      <h4 className="font-medium text-dialogue-darkblue text-sm mb-2">{title}</h4>
+      <h4 className="font-medium text-dialogue-darkblue text-sm mb-1">{title}</h4>
     </div>
   </div>
 );
@@ -52,7 +52,7 @@ interface ConversationExample {
   title: string;
   description: string;
   phases: Array<{
-    number: number;
+    label: string;
     title: string;
     messages: Array<{
       speaker: 'canvasser' | 'voter';
@@ -67,7 +67,7 @@ const conversationExamples: ConversationExample[] = [
     description: "See how a real conversation flows from opening to closing",
     phases: [
       {
-        number: 1,
+        label: "Intro",
         title: "Introduce the issue",
         messages: [
           { speaker: "canvasser", message: "Hi, I'm Frank, and I'm talking to voters about universal preschool. On a scale of 1-10, how much do you support making preschool available to all families?" },
@@ -77,7 +77,7 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 2,
+        label: "Share",
         title: "Share canvasser story",
         messages: [
           { speaker: "canvasser", message: "That's great! Do kids in your neighborhood usually go to preschool? What's that like for families around you?" },
@@ -85,7 +85,7 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 3,
+        label: "Listen",
         title: "Elicit voter story",
         messages: [
           { speaker: "canvasser", message: "That sounds really tough for your sister. I know how hard that can be - my mom raised three kids mostly on her own, and I remember her always worrying about finding good care we could afford. Can you tell me more about how this affects your sister?" },
@@ -93,7 +93,7 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 4,
+        label: "Explore",
         title: "Explore the issue",
         messages: [
           { speaker: "canvasser", message: "It sounds like you really care about your sister and your niece. How do you think universal preschool might change things for families like hers?" },
@@ -101,7 +101,7 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 5,
+        label: "Close",
         title: "Conclude and reflect",
         messages: [
           { speaker: "canvasser", message: "Now, thinking about everything we've discussed, if I asked you again to rate your support for universal preschool on that same 1-10 scale, where would you be?" },
@@ -115,7 +115,7 @@ const conversationExamples: ConversationExample[] = [
     description: "Conversation about improving healthcare access in the community",
     phases: [
       {
-        number: 1,
+        label: "Intro",
         title: "Introduce the issue",
         messages: [
           { speaker: "canvasser", message: "Hi, I'm Sarah. I'm talking to folks about expanding healthcare access in our community. On a scale of 1-10, how important is it to you that everyone has access to affordable healthcare?" },
@@ -125,14 +125,14 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 2,
+        label: "Share",
         title: "Share canvasser story",
         messages: [
           { speaker: "canvasser", message: "I understand that perspective. My dad actually lost his job and health insurance when he was 58, right before he needed surgery. Even though he'd worked his whole life, he couldn't afford the care he needed. Have you ever known someone who struggled with healthcare costs?" }
         ]
       },
       {
-        number: 3,
+        label: "Listen",
         title: "Elicit voter story",
         messages: [
           { speaker: "voter", message: "Actually, yeah. My neighbor is diabetic and sometimes skips his insulin because it's so expensive. He works part-time jobs that don't offer insurance." },
@@ -141,7 +141,7 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 4,
+        label: "Explore",
         title: "Explore the issue",
         messages: [
           { speaker: "canvasser", message: "It sounds like you really care about your neighbors. How do you think better healthcare access might change things for families like his?" },
@@ -149,7 +149,7 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 5,
+        label: "Close",
         title: "Conclude and reflect",
         messages: [
           { speaker: "canvasser", message: "Thinking about your neighbor and everything we've talked about, where would you be now on that 1-10 scale for healthcare access?" },
@@ -163,7 +163,7 @@ const conversationExamples: ConversationExample[] = [
     description: "Building support for LGBTQ+ equality through personal connection",
     phases: [
       {
-        number: 1,
+        label: "Intro",
         title: "Introduce the issue",
         messages: [
           { speaker: "canvasser", message: "Hi, I'm Alex. I'm talking to voters about protecting LGBTQ+ rights in our state. On a scale of 1-10, how important is it to you that LGBTQ+ people have equal rights and protections?" },
@@ -173,14 +173,14 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 2,
+        label: "Share",
         title: "Share canvasser story",
         messages: [
           { speaker: "canvasser", message: "I can understand prioritizing issues. My younger brother actually came out as gay in high school. I remember how scared he was, and how some kids at school made his life really difficult. Do you know anyone who's LGBTQ+?" }
         ]
       },
       {
-        number: 3,
+        label: "Listen",
         title: "Elicit voter story",
         messages: [
           { speaker: "voter", message: "My coworker's daughter is... she's transgender. It's been really hard on the family." },
@@ -189,7 +189,7 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 4,
+        label: "Explore",
         title: "Explore the issue",
         messages: [
           { speaker: "canvasser", message: "That's heartbreaking. It sounds like you really care about your coworker and their family. How do you think stronger protections might help kids like their daughter?" },
@@ -197,7 +197,7 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 5,
+        label: "Close",
         title: "Conclude and reflect",
         messages: [
           { speaker: "canvasser", message: "Thinking about that young girl and other kids like her, where would you be now on supporting LGBTQ+ protections?" },
@@ -211,7 +211,7 @@ const conversationExamples: ConversationExample[] = [
     description: "Environmental conversation focusing on family health impacts",
     phases: [
       {
-        number: 1,
+        label: "Intro",
         title: "Introduce the issue",
         messages: [
           { speaker: "canvasser", message: "Hi, I'm Maria. I'm talking to residents about the clean air initiative to reduce pollution in our area. On a scale of 1-10, how important is cleaner air to you?" },
@@ -221,14 +221,14 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 2,
+        label: "Share",
         title: "Share canvasser story",
         messages: [
           { speaker: "canvasser", message: "I used to think the same way until my daughter developed asthma. The doctor said air pollution was making it worse. Now I notice every smoggy day because she can't play outside. Do you have kids or grandkids who spend time outdoors?" }
         ]
       },
       {
-        number: 3,
+        label: "Listen",
         title: "Elicit voter story",
         messages: [
           { speaker: "voter", message: "My grandson plays soccer. Now that you mention it, there have been days when practice gets cancelled because of air quality alerts." },
@@ -237,7 +237,7 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 4,
+        label: "Explore",
         title: "Explore the issue",
         messages: [
           { speaker: "canvasser", message: "It sounds like air quality is already affecting your grandson's life. How do you think cleaner air might change things for kids like him?" },
@@ -245,7 +245,7 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 5,
+        label: "Close",
         title: "Conclude and reflect",
         messages: [
           { speaker: "canvasser", message: "Thinking about your grandson and all the kids who want to play outside safely, where would you be now on supporting the clean air initiative?" },
@@ -259,7 +259,7 @@ const conversationExamples: ConversationExample[] = [
     description: "Encouraging civic engagement and voting participation",
     phases: [
       {
-        number: 1,
+        label: "Intro",
         title: "Introduce the issue",
         messages: [
           { speaker: "canvasser", message: "Hi, I'm David. I'm talking to folks about the importance of voting in local elections. On a scale of 1-10, how important do you think it is for people to vote in every election?" },
@@ -269,14 +269,14 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 2,
+        label: "Share",
         title: "Share canvasser story",
         messages: [
           { speaker: "canvasser", message: "I used to feel the same way until the city council voted to close the library near my mom's house. She'd been going there for 20 years, and suddenly it was gone because not enough people voted in that election. Have you ever been affected by a local decision?" }
         ]
       },
       {
-        number: 3,
+        label: "Listen",
         title: "Elicit voter story",
         messages: [
           { speaker: "voter", message: "Actually, they just changed the bus route in my neighborhood. Now I have to walk an extra 15 minutes to get to work." },
@@ -285,7 +285,7 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 4,
+        label: "Explore",
         title: "Explore the issue",
         messages: [
           { speaker: "canvasser", message: "That decision probably went through the city council. How do you think more people voting in local elections might change decisions like that?" },
@@ -293,7 +293,7 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 5,
+        label: "Close",
         title: "Conclude and reflect",
         messages: [
           { speaker: "canvasser", message: "Thinking about that bus route and other local decisions that affect your daily life, how important does voting in local elections feel now?" },
@@ -307,7 +307,7 @@ const conversationExamples: ConversationExample[] = [
     description: "When a voter is already strongly supportive - early exit strategy",
     phases: [
       {
-        number: 1,
+        label: "Intro",
         title: "Introduce the issue",
         messages: [
           { speaker: "canvasser", message: "Hi, I'm Jennifer. I'm talking to voters about funding for public schools. On a scale of 1-10, how much do you support increasing funding for our local schools?" },
@@ -317,7 +317,7 @@ const conversationExamples: ConversationExample[] = [
         ]
       },
       {
-        number: 2,
+        label: "Exit",
         title: "Early exit with strong supporter",
         messages: [
           { speaker: "canvasser", message: "It's clear you really understand the importance of this issue. Since you're already such a strong supporter, I won't take up more of your time. Can I count on your vote for the school funding measure?" },
@@ -336,13 +336,13 @@ const ConversationFlow: React.FC = () => {
     return (
       <div className="space-y-0">
         {example.phases.map((phase, phaseIndex) => (
-          <div key={phase.number}>
+          <div key={phase.label}>
             <PhaseTimeline 
-              number={phase.number}
+              label={phase.label}
               title={phase.title}
             />
             
-            <div className="ml-14 space-y-0 mb-8">
+            <div className="ml-18 space-y-0 mb-8">
               {phase.messages.map((msg, msgIndex) => (
                 <Message
                   key={msgIndex}
