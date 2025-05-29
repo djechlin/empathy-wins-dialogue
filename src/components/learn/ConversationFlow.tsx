@@ -30,15 +30,13 @@ const Message: React.FC<MessageProps> = ({ speaker, message, isLast = false }) =
 
 interface PhaseHeaderProps {
   title: string;
-  description: string;
 }
 
-const PhaseHeader: React.FC<PhaseHeaderProps> = ({ title, description }) => (
+const PhaseHeader: React.FC<PhaseHeaderProps> = ({ title }) => (
   <div className="my-6">
-    <Separator className="mb-4" />
+    <Separator className="mb-4 bg-dialogue-darkblue" />
     <div className="text-center mb-4">
-      <h4 className="font-semibold text-dialogue-darkblue text-base mb-1">{title}</h4>
-      <p className="text-xs text-muted-foreground">{description}</p>
+      <h4 className="font-medium text-dialogue-darkblue text-sm opacity-70">{title}</h4>
     </div>
   </div>
 );
@@ -53,10 +51,7 @@ const ConversationFlow: React.FC = () => {
         </div>
         
         <div className="space-y-0">
-          <PhaseHeader 
-            title="Phase 1: Opening & Initial Assessment" 
-            description="Introduce yourself and get their initial position"
-          />
+          <PhaseHeader title="Phase 1: Opening & Initial Assessment" />
           
           <Message
             speaker="canvasser"
@@ -68,10 +63,7 @@ const ConversationFlow: React.FC = () => {
             message="Oh, I'd say I'm about a 3."
           />
 
-          <PhaseHeader 
-            title="Phase 2: Exploration & Understanding" 
-            description="Ask why and listen to their reasoning"
-          />
+          <PhaseHeader title="Phase 2: Exploration & Understanding" />
 
           <Message
             speaker="canvasser"
@@ -83,10 +75,7 @@ const ConversationFlow: React.FC = () => {
             message="Look I work hard, I'm not married or anything, other people's kids are just other people's problems."
           />
 
-          <PhaseHeader 
-            title="Phase 3: Connection Building" 
-            description="Find common ground and shared experiences"
-          />
+          <PhaseHeader title="Phase 3: Connection Building" />
 
           <Message
             speaker="canvasser"
@@ -98,10 +87,7 @@ const ConversationFlow: React.FC = () => {
             message="Not really. Most parents I know struggle with childcare costs. My sister has to work two jobs just to afford daycare for her daughter."
           />
 
-          <PhaseHeader 
-            title="Phase 4: Vulnerable Storytelling" 
-            description="Share personal stories to deepen the connection"
-          />
+          <PhaseHeader title="Phase 4: Vulnerable Storytelling" />
 
           <Message
             speaker="canvasser"
@@ -113,10 +99,7 @@ const ConversationFlow: React.FC = () => {
             message="She's always stressed about money and finding reliable care. She really wants her daughter to be ready for kindergarten, but quality preschool is just too expensive."
           />
 
-          <PhaseHeader 
-            title="Phase 5: Processing & Reflection" 
-            description="Help them connect their values to the issue"
-          />
+          <PhaseHeader title="Phase 5: Processing & Reflection" />
 
           <Message
             speaker="canvasser"
@@ -128,10 +111,7 @@ const ConversationFlow: React.FC = () => {
             message="It would be life-changing, honestly. She could focus on one job instead of two, and her daughter would get the early education she deserves."
           />
 
-          <PhaseHeader 
-            title="Phase 6: Closing & Reassessment" 
-            description="Return to the scale to measure attitude change"
-          />
+          <PhaseHeader title="Phase 6: Closing & Reassessment" />
 
           <Message
             speaker="canvasser"
