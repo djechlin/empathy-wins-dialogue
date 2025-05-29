@@ -1,4 +1,3 @@
-
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -44,15 +43,6 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
 
           <div className="max-w-6xl mx-auto mb-16">
             <div className="space-y-6">
-                {/* Real Conversation Examples - As Activity Card */}
-                <ActivityCard
-                  id="conversation-examples"
-                  title="Real Deep Canvassing Conversations"
-                  description="See how actual conversations unfold from first contact to successful persuasion. These examples show the power of personal stories and genuine listening."
-                >
-                  <ConversationFlow />
-                </ActivityCard>
-
                 <ActivityCard
                   id="activity1"
                   title="What is deep canvassing?"
@@ -223,6 +213,15 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                     title="Quiz"
                     description="Select your answers to test your knowledge of deep canvassing concepts."
                   />
+                </ActivityCard>
+
+                {/* Real Conversation Examples - As Activity Card */}
+                <ActivityCard
+                  id="conversation-examples"
+                  title="Real Deep Canvassing Conversations"
+                  description="See how actual conversations unfold from first contact to successful persuasion. These examples show the power of personal stories and genuine listening."
+                >
+                  <ConversationFlow />
                 </ActivityCard>
 
                 <ActivityCard
