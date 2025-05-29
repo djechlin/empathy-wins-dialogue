@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -141,7 +140,7 @@ const Quiz: React.FC<QuizProps> = ({
       </CardHeader>
       
       <CardContent className="py-4 px-6">
-        <div className="space-y-4">
+        <div className="space-y-2">
           {questions.map((question, index) => (
             <div key={question.id} className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-dialogue-neutral/20 hover:border-dialogue-purple/30 transition-colors">
               <div className="flex items-start justify-between gap-4">
