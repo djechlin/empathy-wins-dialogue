@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
-import { Check, X, CheckCircle2 } from 'lucide-react';
+import { Check, X, CheckCircle2, RotateCcw } from 'lucide-react';
 
 export type QuizQuestion = {
   id: string;
@@ -108,100 +109,131 @@ const Quiz: React.FC<QuizProps> = ({
     return questions.every(question => quizAnswers[question.id] !== null);
   };
 
+  // Calculate progress
+  const answeredCount = Object.values(quizAnswers).filter(answer => answer !== null).length;
+  const correctCount = questions.filter(question =>
+    isCorrectAnswer(question.id, quizAnswers[question.id])
+  ).length;
+
   return (
-    <Card className="border-dialogue-neutral hover:shadow-md transition-shadow overflow-hidden">
-      <CardHeader className="py-3 px-4 bg-dialogue-neutral/10">
-        <h3 className="text-lg font-medium">{title}</h3>
-      </CardHeader>
-      <CardContent className="py-4">
-        <div className="space-y-6">
-          <div className="text-sm text-muted-foreground mb-4">
-            {description}
+    <Card className="border-dialogue-neutral hover:shadow-md transition-shadow overflow-hidden bg-gradient-to-br from-white to-slate-50">
+      <CardHeader className="py-4 px-6 bg-gradient-to-r from-dialogue-purple/10 to-dialogue-blue/10 border-b border-dialogue-neutral/20">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-dialogue-darkblue">{title}</h3>
+            <p className="text-sm text-muted-foreground mt-1">{description}</p>
           </div>
+          <div className="flex items-center gap-2 text-sm">
+            <div className="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full border border-dialogue-neutral/30">
+              <span className="font-medium text-dialogue-darkblue">
+                {answeredCount}/{questions.length}
+              </span>
+            </div>
+            {correctCount > 0 && (
+              <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full border border-green-200">
+                <span className="font-medium">
+                  {correctCount} correct
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="py-4 px-6">
+        <div className="space-y-4">
+          {questions.map((question, index) => (
+            <div key={question.id} className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-dialogue-neutral/20 hover:border-dialogue-purple/30 transition-colors">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-dialogue-purple/10 border border-dialogue-purple/20 flex items-center justify-center text-xs font-medium text-dialogue-purple mt-0.5">
+                  {index + 1}
+                </div>
+                <div className="flex-grow">
+                  <div className="font-medium text-dialogue-darkblue text-sm mb-3 leading-relaxed">
+                    {question.text}
+                  </div>
 
-          <div className="space-y-8">
-            {questions.map((question) => (
-              <div key={question.id} className="space-y-3">
-                <div className="font-medium">{question.text}</div>
-
-                <div className="flex flex-wrap gap-3">
-                  <div className="flex items-center gap-2">
+                  <div className="flex gap-2">
                     <Toggle
                       pressed={quizAnswers[question.id] === "true"}
                       onPressedChange={() => handleQuizToggle(question.id, "true")}
                       variant="outline"
-                      className={`border ${
+                      size="sm"
+                      className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
                         quizAnswers[question.id] === "true"
                           ? isCorrectAnswer(question.id, "true")
-                            ? "bg-green-100 border-green-500 text-green-700"
-                            : "bg-red-100 border-red-500 text-red-700"
-                          : ""
+                            ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100"
+                            : "bg-red-50 border-red-300 text-red-700 hover:bg-red-100"
+                          : "hover:bg-dialogue-neutral/50 border-dialogue-neutral/40"
                       }`}
                     >
                       <span>True</span>
                       {quizAnswers[question.id] === "true" && (
                         isCorrectAnswer(question.id, "true")
-                          ? <Check className="ml-2 h-4 w-4 text-green-600" />
-                          : <X className="ml-2 h-4 w-4 text-red-600" />
+                          ? <Check className="ml-2 h-3 w-3" />
+                          : <X className="ml-2 h-3 w-3" />
                       )}
                     </Toggle>
-                  </div>
 
-                  <div className="flex items-center gap-2">
                     <Toggle
                       pressed={quizAnswers[question.id] === "false"}
                       onPressedChange={() => handleQuizToggle(question.id, "false")}
                       variant="outline"
-                      className={`border ${
+                      size="sm"
+                      className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
                         quizAnswers[question.id] === "false"
                           ? isCorrectAnswer(question.id, "false")
-                            ? "bg-green-100 border-green-500 text-green-700"
-                            : "bg-red-100 border-red-500 text-red-700"
-                          : ""
+                            ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100"
+                            : "bg-red-50 border-red-300 text-red-700 hover:bg-red-100"
+                          : "hover:bg-dialogue-neutral/50 border-dialogue-neutral/40"
                       }`}
                     >
                       <span>False</span>
                       {quizAnswers[question.id] === "false" && (
                         isCorrectAnswer(question.id, "false")
-                          ? <Check className="ml-2 h-4 w-4 text-green-600" />
-                          : <X className="ml-2 h-4 w-4 text-red-600" />
+                          ? <Check className="ml-2 h-3 w-3" />
+                          : <X className="ml-2 h-3 w-3" />
                       )}
                     </Toggle>
                   </div>
+
+                  {quizAnswers[question.id] !== null && !isCorrectAnswer(question.id, quizAnswers[question.id]) && (
+                    <div className="mt-3 text-xs p-2 bg-red-50/80 text-red-800 rounded-md border border-red-200/50">
+                      <p>Correct answer: <span className="font-medium">{question.correctAnswer ? "True" : "False"}</span></p>
+                    </div>
+                  )}
                 </div>
-
-                {quizAnswers[question.id] !== null && !isCorrectAnswer(question.id, quizAnswers[question.id]) && (
-                  <div className="text-sm p-2 bg-red-50 text-red-800 rounded-md">
-                    <p>The correct answer is: {question.correctAnswer ? "True" : "False"}</p>
-                  </div>
-                )}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
+        </div>
 
-          {isQuizComplete() && allQuestionsAnswered() && (
-            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md flex items-center gap-3">
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
+        {isQuizComplete() && allQuestionsAnswered() && (
+          <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+              </div>
               <div>
-                <h4 className="font-medium text-green-800">Quiz Complete!</h4>
-                <p className="text-sm text-green-700">
+                <h4 className="font-semibold text-green-800 text-sm">Excellent work!</h4>
+                <p className="text-xs text-green-700 mt-0.5">
                   You've successfully completed this knowledge check.
                 </p>
               </div>
             </div>
-          )}
-
-          <div className="flex justify-end pt-4 border-t">
-            <Button
-              onClick={resetQuiz}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1"
-            >
-              <X className="h-4 w-4" />
-              Reset Answers
-            </Button>
           </div>
+        )}
+
+        <div className="flex justify-end mt-4 pt-3 border-t border-dialogue-neutral/20">
+          <Button
+            onClick={resetQuiz}
+            variant="outline"
+            size="sm"
+            className="text-xs flex items-center gap-1.5 px-3 py-1.5 h-auto border-dialogue-neutral/40 hover:border-dialogue-purple/40 hover:bg-dialogue-neutral/30"
+          >
+            <RotateCcw className="h-3 w-3" />
+            Reset
+          </Button>
         </div>
       </CardContent>
     </Card>
