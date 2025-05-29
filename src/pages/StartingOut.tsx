@@ -1,3 +1,4 @@
+
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -41,6 +42,19 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
             />
           </div>
 
+          {/* Real Conversation Examples - Top Level */}
+          <div className="max-w-6xl mx-auto mb-12">
+            <div className="mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-dialogue-darkblue mb-4">
+                Real Deep Canvassing Conversations
+              </h2>
+              <p className="text-muted-foreground">
+                See how actual conversations unfold from first contact to successful persuasion. These examples show the power of personal stories and genuine listening.
+              </p>
+            </div>
+            <ConversationFlow />
+          </div>
+
           <div className="max-w-6xl mx-auto mb-16">
             <div className="space-y-6">
                 <ActivityCard
@@ -55,8 +69,6 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                         <li><strong>Deep canvassing</strong>: A form of canvassing that involves longer, in-depth conversations in which the canvasser builds a connection with the voter before trying to persuade them on an issue.</li>
                       </FactCardList>
                     </FactCard>
-
-                    <ConversationFlow />
 
                     <FactCard topic="Characteristics of a deep canvassing conversation">
                       <FactCardList>
