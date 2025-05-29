@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
@@ -17,7 +18,7 @@ const Message: React.FC<MessageProps> = ({ speaker, message, isLast = false }) =
       <div className={`flex ${isCanvasser ? 'justify-start' : 'justify-end'} gap-2`}>
         <div className={`max-w-[80%] px-4 py-3 rounded-lg ${
           isCanvasser 
-            ? 'bg-dialogue-purple text-white' 
+            ? 'bg-dialogue-darkblue text-white' 
             : 'bg-white border border-dialogue-purple text-dialogue-darkblue'
         }`}>
           <p className="text-sm leading-relaxed">{message}</p>
