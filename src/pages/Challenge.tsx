@@ -25,7 +25,7 @@ const Challenge = () => {
                 title="Deep Canvassing Challenge"
                 description="Practice your conversation skills in this challenging scenario. Apply everything you've learned about vulnerable storytelling and empathetic listening."
                 defaultOpen={true}
-                scenarioId="starting-out"
+                scenarioId="deep-canvassing"
               />
             </div>
           </div>
