@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
@@ -18,7 +19,7 @@ const Message: React.FC<MessageProps> = ({ speaker, message, isLast = false }) =
       <div className={`flex ${isCanvasser ? 'justify-start' : 'justify-end'} gap-2`}>
         <div className={`max-w-[80%] px-4 py-3 rounded-lg ${
           isCanvasser 
-            ? 'bg-dialogue-darkblue text-white' 
+            ? 'bg-dialogue-purple text-white' 
             : 'bg-white border border-dialogue-purple text-dialogue-darkblue'
         }`}>
           <p className="text-sm leading-relaxed">{message}</p>
@@ -37,7 +38,7 @@ interface PhaseTimelineProps {
 const PhaseTimeline: React.FC<PhaseTimelineProps> = ({ number, title }) => (
   <div className="flex items-start gap-6 mb-1">
     <div className="flex flex-col items-center flex-shrink-0">
-      <div className="w-8 h-8 rounded-full bg-dialogue-purple text-white flex items-center justify-center text-sm font-semibold">
+      <div className="w-8 h-8 rounded-full bg-dialogue-darkblue text-white flex items-center justify-center text-sm font-semibold">
         {number}
       </div>
       <div className="w-0.5 h-4 bg-dialogue-purple/30 mt-2"></div>
@@ -410,3 +411,4 @@ const ConversationFlow: React.FC = () => {
 };
 
 export default ConversationFlow;
+
