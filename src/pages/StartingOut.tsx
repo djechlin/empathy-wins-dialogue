@@ -1,3 +1,4 @@
+
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -105,6 +106,75 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                     ]}
                     title="Quiz"
                     description="Select your answers to test your knowledge of deep canvassing concepts."
+                  />
+                </ActivityCard>
+
+                <ActivityCard
+                  id="preparing-story"
+                  title="Preparing your story"
+                  description="Learn how to craft compelling personal narratives for deep canvassing conversations"
+                >
+                  <div className="space-y-4 mb-6">
+                    <FactCard topic="Framing the issue">
+                      <FactCardList>
+                        <li>Start by clearly defining the issue you're canvassing about in your own words</li>
+                        <li>Focus on the human impact rather than policy details or statistics</li>
+                        <li>Think about how this issue connects to values like fairness, safety, opportunity, or community</li>
+                        <li>Practice explaining the issue in 1-2 sentences that anyone could understand</li>
+                      </FactCardList>
+                    </FactCard>
+
+                    <FactCard topic="Crafting your personal story">
+                      <FactCardList>
+                        <li>Choose a story about someone you love - family member, friend, or community member</li>
+                        <li>Focus on vulnerability and emotion, not political arguments</li>
+                        <li>Avoid partisan language or policy jargon</li>
+                        <li>Make it personal and specific - details help create connection</li>
+                        <li>Practice telling it in 60-90 seconds</li>
+                      </FactCardList>
+                    </FactCard>
+
+                    <FactCard topic="Eliciting stories from voters">
+                      <FactCardList>
+                        <li>Ask open-ended questions about their experiences or loved ones</li>
+                        <li>Use phrases like "Tell me about a time when..." or "Have you or someone you care about ever..."</li>
+                        <li>Listen for emotional moments and ask follow-up questions</li>
+                        <li>Show genuine curiosity and empathy</li>
+                        <li>Don't rush - give them space to think and share</li>
+                      </FactCardList>
+                    </FactCard>
+
+                    <FactCard topic="Connecting stories to the issue">
+                      <FactCardList>
+                        <li>Help voters see how their personal experiences relate to the broader issue</li>
+                        <li>Ask questions like "How do you think this connects to...?" or "What would it mean if...?"</li>
+                        <li>Let them make the connection themselves rather than telling them</li>
+                        <li>Validate their feelings and experiences</li>
+                        <li>Stay focused on shared values and common ground</li>
+                      </FactCardList>
+                    </FactCard>
+                  </div>
+
+                  <Quiz
+                    questions={[
+                      {
+                        id: 'story_q1',
+                        text: 'When telling your personal story, you should focus on vulnerability and emotion rather than political arguments.',
+                        correctAnswer: true
+                      },
+                      {
+                        id: 'story_q2',
+                        text: 'You should tell voters how their story connects to the issue rather than letting them make the connection themselves.',
+                        correctAnswer: false
+                      },
+                      {
+                        id: 'story_q3',
+                        text: 'Effective issue framing focuses on human impact rather than policy details.',
+                        correctAnswer: true
+                      }
+                    ]}
+                    title="Quiz"
+                    description="Test your understanding of story preparation for deep canvassing."
                   />
                 </ActivityCard>
                 
