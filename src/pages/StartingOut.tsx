@@ -128,6 +128,9 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                         <li>Focus on the human impact rather than policy details or statistics</li>
                         <li>Think about how this issue connects to values like fairness, safety, opportunity, or community</li>
                         <li>Practice explaining the issue in 1-2 sentences that anyone could understand</li>
+                        <li>Issues that affect people directly and can impact people positively are best for deep canvass conversations</li>
+                        <li>Right after introducing yourself, ask them how they feel about the issue on a scale of 1-10 as soon as possible. This tells the voter why you're here, and sparks their interest</li>
+                        <li>Always ask why that number is right for them, no matter if they're a 1, a 5 or a 10</li>
                       </FactCardList>
                     </FactCard>
 
