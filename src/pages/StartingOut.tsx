@@ -131,6 +131,27 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                       </FactCardList>
                     </FactCard>
 
+                    {/* Issue Dos and Don'ts Section */}
+                    <DosAndDonts>
+                      <Dos title="Issue Dos">
+                        <DosAndDontsItem type="do">
+                          Should impact people directly
+                        </DosAndDontsItem>
+                        <DosAndDontsItem type="do">
+                          Should have the potential to impact people positively
+                        </DosAndDontsItem>
+                      </Dos>
+
+                      <Donts title="Issue Don'ts">
+                        <DosAndDontsItem type="dont">
+                          Use politics jargon like "filibuster" and "supermajority"
+                        </DosAndDontsItem>
+                        <DosAndDontsItem type="dont">
+                          Use an "attack" issue like "tax the rich" or "vote out corruption"
+                        </DosAndDontsItem>
+                      </Donts>
+                    </DosAndDonts>
+
                     <FactCard topic="Crafting your personal story">
                       <FactCardList>
                         <li>Choose a story about someone you love - family member, friend, or community member</li>
@@ -170,27 +191,6 @@ Do you think the canvasser and possible voters will get into arguments? Maybe th
                         </DosAndDontsItem>
                         <DosAndDontsItem type="dont">
                           Rush through it or make it too long
-                        </DosAndDontsItem>
-                      </Donts>
-                    </DosAndDonts>
-
-                    {/* Framing Dos and Don'ts Section */}
-                    <DosAndDonts>
-                      <Dos title="Issue Dos">
-                        <DosAndDontsItem type="do">
-                          Should impact people directly
-                        </DosAndDontsItem>
-                        <DosAndDontsItem type="do">
-                          Should have the potential to impact people positively
-                        </DosAndDontsItem>
-                      </Dos>
-
-                      <Donts title="Issue Don'ts">
-                        <DosAndDontsItem type="dont">
-                          Use politics jargon like "filibuster" and "supermajority"
-                        </DosAndDontsItem>
-                        <DosAndDontsItem type="dont">
-                          Use an "attack" issue like "tax the rich" or "vote out corruption"
                         </DosAndDontsItem>
                       </Donts>
                     </DosAndDonts>
