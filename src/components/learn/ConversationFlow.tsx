@@ -20,7 +20,7 @@ const Message: React.FC<MessageProps> = ({ speaker, message, isLast = false }) =
             ? 'bg-dialogue-purple text-white' 
             : 'bg-grey-100 border border-dialogue-neutral text-dialogue-darkblue'
         }`}>
-          <p className="text-sm leading-relaxed italic">{message}</p>
+          <p className="text-sm leading-relaxed">{message}</p>
         </div>
       </div>
       {!isLast && <div className="h-3"></div>}
@@ -37,7 +37,7 @@ const PhaseHeader: React.FC<PhaseHeaderProps> = ({ title }) => (
     <Separator className="mb-4 bg-dialogue-darkblue" />
     <div className="flex justify-start mb-4">
       <div className="border-2 border-dotted border-dialogue-purple px-3 py-2 rounded-lg bg-dialogue-purple/5">
-        <h4 className="font-medium text-dialogue-purple text-sm">{title}</h4>
+        <h4 className="font-medium text-dialogue-purple text-sm italic">{title}</h4>
       </div>
     </div>
   </div>
