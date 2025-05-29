@@ -68,7 +68,7 @@ export default {
 					darkblue: '#111344',
 					neutral: '#DAE0F2',
 					charcoal: '#111344',
-					coral: '#F9CFF2'
+					coral: '#D946EF'
 				}
 			},
 			fontFamily: {
