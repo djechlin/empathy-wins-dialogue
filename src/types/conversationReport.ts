@@ -2,9 +2,7 @@
 export interface ConversationReport {
   baseScore: number; // 1-10 (starting score)
   currentScore: number; // 1-10 (current score after conversation)
-  conversationLength: string;
   completedSteps: number;
-  totalSteps: number;
   categories: CategoryScore[];
   keyMoments: KeyMoment[];
   improvements: string[];

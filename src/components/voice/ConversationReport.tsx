@@ -73,20 +73,9 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
         </CardHeader>
         <CardContent>
           <div className="bg-white/80 rounded-lg p-4 space-y-3">
-            <div className="flex items-center gap-2 text-sm">
-              <Clock className="h-4 w-4 text-dialogue-purple" />
-              <span className="font-medium">Duration:</span>
-              <span>{report.conversationLength}</span>
-              <span className="text-gray-500">•</span>
-              <span className="font-medium">Progress:</span>
-              <span>{report.completedSteps}/{report.totalSteps} steps completed</span>
-            </div>
             <div className="text-sm text-gray-700">
-              <span className="font-medium">Key insight:</span> {report.strengths[0]}
-            </div>
-            <div className="text-sm text-gray-700">
-              <span className="font-medium">Primary opportunity:</span> {report.improvements[0]}
-            </div>
+              <span className="font-medium">TODO</span>
+          </div>
           </div>
         </CardContent>
       </Card>

@@ -4,9 +4,7 @@ import { ConversationReport } from '@/types/conversationReport';
 export const mockConversationReport: ConversationReport = {
   baseScore: 3,
   currentScore: 7,
-  conversationLength: "8m 32s",
   completedSteps: 3,
-  totalSteps: 4,
   categories: [
     {
       id: 'grabbedAttention',
