@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, AlertCircle, XCircle, TrendingUp, Clock, Target, User, Heart } from 'lucide-react';
@@ -62,7 +61,7 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
               </div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-medium text-orange-600 mb-1">
+              <div className="text-2xl font-bold text-dialogue-purple mb-1">
                 Eager
               </div>
               <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
