@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, AlertCircle, XCircle, TrendingUp, Clock, Target } from 'lucide-react';
@@ -11,8 +10,8 @@ interface ConversationReportProps {
 
 const ConversationReport = ({ report }: ConversationReportProps) => {
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
+    if (score >= 4) return 'text-green-600';
+    if (score >= 1) return 'text-yellow-600';
     return 'text-red-600';
   };
 
@@ -51,11 +50,11 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className={`text-3xl font-bold ${getScoreColor(report.overallScore)} mb-1`}>
-                {report.overallScore}%
+                {report.overallScore}/10
               </div>
               <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
                 <TrendingUp className="h-4 w-4" />
-                Overall Performance
+                Persuasion
               </div>
             </div>
             <div className="text-center">
@@ -64,7 +63,7 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
               </div>
               <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
                 <Target className="h-4 w-4" />
-                Strongest Area ({topCategory.score}%)
+                Strongest Area ({topCategory.score}/10)
               </div>
             </div>
             <div className="text-center">
@@ -73,7 +72,7 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
               </div>
               <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
                 <AlertCircle className="h-4 w-4" />
-                Focus Area ({lowestCategory.score}%)
+                Focus Area ({lowestCategory.score}/10)
               </div>
             </div>
           </div>
@@ -97,7 +96,6 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
           </div>
         </CardContent>
       </Card>
-
 
       {/* Category Scores */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

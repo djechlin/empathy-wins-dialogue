@@ -10,8 +10,8 @@ interface CategoryCardProps {
 
 const CategoryCard = ({ category }: CategoryCardProps) => {
   const getScoreBadgeVariant = (score: number) => {
-    if (score >= 80) return 'default';
-    if (score >= 60) return 'secondary';
+    if (score >= 4) return 'default';
+    if (score >= 1) return 'secondary';
     return 'destructive';
   };
 
@@ -31,7 +31,7 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
           variant={getScoreBadgeVariant(category.score)}
           className="ml-auto"
         >
-          {category.score}%
+          {category.score}/10
         </Badge>
       </CardHeader>
       <CardContent>

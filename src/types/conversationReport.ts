@@ -1,6 +1,6 @@
 
 export interface ConversationReport {
-  overallScore: number; // 0-100
+  overallScore: number; // 1-10
   conversationLength: string;
   completedSteps: number;
   totalSteps: number;
@@ -15,7 +15,7 @@ export interface CategoryScore {
   id: string;
   name: string;
   icon: string; // lucide icon name
-  score: number; // 0-100
+  score: number; // 1-10
   feedback: string;
   examples: string[];
 }

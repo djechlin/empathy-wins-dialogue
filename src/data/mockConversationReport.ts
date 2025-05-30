@@ -2,7 +2,7 @@
 import { ConversationReport } from '@/types/conversationReport';
 
 export const mockConversationReport: ConversationReport = {
-  overallScore: 72,
+  overallScore: 7,
   conversationLength: "8m 32s",
   completedSteps: 3,
   totalSteps: 4,
@@ -11,7 +11,7 @@ export const mockConversationReport: ConversationReport = {
       id: 'grabbedAttention',
       name: 'Grabbed their attention',
       icon: 'BookOpen',
-      score: 75,
+      score: 8,
       feedback: "Successfully grabbed their attention and kept them engaged throughout the conversation.",
       examples: [
         "Asked about voting likelihood on 1-10 scale",
@@ -19,10 +19,10 @@ export const mockConversationReport: ConversationReport = {
       ]
     },
     {
-      id: 'storyTelling',
-      name: 'Vulnerable Storytelling',
+      id: 'vulnerability',
+      name: 'Vulnerability',
       icon: 'Heart',
-      score: 85,
+      score: 9,
       feedback: "Excellent use of vulnerable storytelling! You shared a personal connection and used the word 'love' effectively.",
       examples: [
         "I vote because I love my daughter and want her to have good healthcare",
@@ -33,7 +33,7 @@ export const mockConversationReport: ConversationReport = {
       id: 'empathicListening',
       name: 'Empathetic Listening',
       icon: 'MessageCircle',
-      score: 68,
+      score: 7,
       feedback: "Good listening skills, but could have asked more follow-up questions about their personal experiences.",
       examples: [
         "That sounds really difficult for you",
@@ -44,7 +44,7 @@ export const mockConversationReport: ConversationReport = {
       id: 'exploredIssueTogether',
       name: 'Explored the issue together',
       icon: 'Users',
-      score: 60,
+      score: 6,
       feedback: "Made some personal connections but could have drawn more explicit parallels between your stories.",
       examples: [
         "We both have family members we care about",
