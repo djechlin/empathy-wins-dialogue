@@ -7,6 +7,14 @@ export const mockConversationReport: ConversationReport = {
   completedSteps: 3,
   totalSteps: 4,
   categories: {
+    scriptAdherence: {
+      score: 75,
+      feedback: "Successfully grabbed their attention and kept them engaged throughout the conversation.",
+      examples: [
+        "Asked about voting likelihood on 1-10 scale",
+        "Successfully elicited their story about their father"
+      ]
+    },
     storyTelling: {
       score: 85,
       feedback: "Excellent use of vulnerable storytelling! You shared a personal connection and used the word 'love' effectively.",
@@ -21,14 +29,6 @@ export const mockConversationReport: ConversationReport = {
       examples: [
         "That sounds really difficult for you",
         "Tell me more about that situation"
-      ]
-    },
-    scriptAdherence: {
-      score: 75,
-      feedback: "Successfully grabbed their attention and kept them engaged throughout the conversation.",
-      examples: [
-        "Asked about voting likelihood on 1-10 scale",
-        "Successfully elicited their story about their father"
       ]
     },
     connectionBuilding: {

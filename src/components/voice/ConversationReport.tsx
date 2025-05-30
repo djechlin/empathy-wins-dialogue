@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, AlertCircle, XCircle, Heart, MessageCircle, BookOpen, Users, TrendingUp, Clock, Target } from 'lucide-react';
@@ -32,16 +33,16 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
   };
 
   const categoryIcons = {
+    scriptAdherence: <BookOpen className="h-5 w-5" />,
     storyTelling: <Heart className="h-5 w-5" />,
     empathicListening: <MessageCircle className="h-5 w-5" />,
-    scriptAdherence: <BookOpen className="h-5 w-5" />,
     connectionBuilding: <Users className="h-5 w-5" />
   };
 
   const categoryNames = {
+    scriptAdherence: 'Grabbed their attention',
     storyTelling: 'Vulnerable Storytelling',
     empathicListening: 'Empathetic Listening',
-    scriptAdherence: 'Grabbed their attention',
     connectionBuilding: 'Explored the issue together'
   };
 
@@ -65,6 +66,9 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
 
   const topCategory = getTopCategory();
   const mainArea = getMainArea();
+
+  // Define the display order for categories
+  const categoryOrder = ['scriptAdherence', 'storyTelling', 'empathicListening', 'connectionBuilding'] as const;
 
   return (
     <div className="space-y-6">
@@ -155,37 +159,40 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
 
       {/* Category Scores */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {Object.entries(report.categories).map(([key, category]) => (
-          <Card key={key}>
-            <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-              <div className="flex items-center gap-2">
-                {categoryIcons[key as keyof typeof categoryIcons]}
-                <CardTitle className="text-lg">
-                  {categoryNames[key as keyof typeof categoryNames]}
-                </CardTitle>
-              </div>
-              <Badge 
-                variant={getScoreBadgeVariant(category.score)}
-                className="ml-auto"
-              >
-                {category.score}%
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600 mb-3">{category.feedback}</p>
-              {category.examples.length > 0 && (
-                <div className="space-y-1">
-                  <p className="text-xs font-medium text-gray-700">Examples:</p>
-                  {category.examples.map((example, index) => (
-                    <p key={index} className="text-xs text-gray-500 italic">
-                      "{example}"
-                    </p>
-                  ))}
+        {categoryOrder.map((key) => {
+          const category = report.categories[key];
+          return (
+            <Card key={key}>
+              <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+                <div className="flex items-center gap-2">
+                  {categoryIcons[key]}
+                  <CardTitle className="text-lg">
+                    {categoryNames[key]}
+                  </CardTitle>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+                <Badge 
+                  variant={getScoreBadgeVariant(category.score)}
+                  className="ml-auto"
+                >
+                  {category.score}%
+                </Badge>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600 mb-3">{category.feedback}</p>
+                {category.examples.length > 0 && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-gray-700">Examples:</p>
+                    {category.examples.map((example, index) => (
+                      <p key={index} className="text-xs text-gray-500 italic">
+                        "{example}"
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {/* Key Moments */}
