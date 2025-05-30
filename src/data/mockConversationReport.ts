@@ -6,8 +6,11 @@ export const mockConversationReport: ConversationReport = {
   conversationLength: "8m 32s",
   completedSteps: 3,
   totalSteps: 4,
-  categories: {
-    grabbedAttention: {
+  categories: [
+    {
+      id: 'grabbedAttention',
+      name: 'Grabbed their attention',
+      icon: 'BookOpen',
       score: 75,
       feedback: "Successfully grabbed their attention and kept them engaged throughout the conversation.",
       examples: [
@@ -15,7 +18,10 @@ export const mockConversationReport: ConversationReport = {
         "Successfully elicited their story about their father"
       ]
     },
-    storyTelling: {
+    {
+      id: 'storyTelling',
+      name: 'Vulnerable Storytelling',
+      icon: 'Heart',
       score: 85,
       feedback: "Excellent use of vulnerable storytelling! You shared a personal connection and used the word 'love' effectively.",
       examples: [
@@ -23,7 +29,10 @@ export const mockConversationReport: ConversationReport = {
         "That reminds me of when my mom was sick and couldn't afford her medication"
       ]
     },
-    empathicListening: {
+    {
+      id: 'empathicListening',
+      name: 'Empathetic Listening',
+      icon: 'MessageCircle',
       score: 68,
       feedback: "Good listening skills, but could have asked more follow-up questions about their personal experiences.",
       examples: [
@@ -31,7 +40,10 @@ export const mockConversationReport: ConversationReport = {
         "Tell me more about that situation"
       ]
     },
-    exploredIssueTogether: {
+    {
+      id: 'exploredIssueTogether',
+      name: 'Explored the issue together',
+      icon: 'Users',
       score: 60,
       feedback: "Made some personal connections but could have drawn more explicit parallels between your stories.",
       examples: [
@@ -39,7 +51,7 @@ export const mockConversationReport: ConversationReport = {
         "It sounds like family is important to both of us"
       ]
     }
-  },
+  ],
   keyMoments: [
     {
       timestamp: "2:15",

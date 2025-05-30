@@ -1,8 +1,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, AlertCircle, XCircle, Heart, MessageCircle, BookOpen, Users, TrendingUp, Clock, Target } from 'lucide-react';
+import { CheckCircle, AlertCircle, XCircle, TrendingUp, Clock, Target } from 'lucide-react';
 import { ConversationReport as ReportType, KeyMoment } from '@/types/conversationReport';
+import CategoryCard from './CategoryCard';
 
 interface ConversationReportProps {
   report: ReportType;
@@ -13,12 +14,6 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
     if (score >= 80) return 'text-green-600';
     if (score >= 60) return 'text-yellow-600';
     return 'text-red-600';
-  };
-
-  const getScoreBadgeVariant = (score: number) => {
-    if (score >= 80) return 'default';
-    if (score >= 60) return 'secondary';
-    return 'destructive';
   };
 
   const getMomentIcon = (type: KeyMoment['type']) => {
@@ -32,43 +27,18 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
     }
   };
 
-  const categoryIcons = {
-    grabbedAttention: <BookOpen className="h-5 w-5" />,
-    storyTelling: <Heart className="h-5 w-5" />,
-    empathicListening: <MessageCircle className="h-5 w-5" />,
-    exploredIssueTogether: <Users className="h-5 w-5" />
-  };
-
-  const categoryNames = {
-    grabbedAttention: 'Grabbed their attention',
-    storyTelling: 'Vulnerable Storytelling',
-    empathicListening: 'Empathetic Listening',
-    exploredIssueTogether: 'Explored the issue together'
-  };
-
   const getTopCategory = () => {
-    const categories = Object.entries(report.categories);
-    const sorted = categories.sort((a, b) => b[1].score - a[1].score);
-    return {
-      name: categoryNames[sorted[0][0] as keyof typeof categoryNames],
-      score: sorted[0][1].score
-    };
+    const sorted = [...report.categories].sort((a, b) => b.score - a.score);
+    return sorted[0];
   };
 
-  const getMainArea = () => {
-    const categories = Object.entries(report.categories);
-    const sorted = categories.sort((a, b) => a[1].score - b[1].score);
-    return {
-      name: categoryNames[sorted[0][0] as keyof typeof categoryNames],
-      score: sorted[0][1].score
-    };
+  const getLowestCategory = () => {
+    const sorted = [...report.categories].sort((a, b) => a.score - b.score);
+    return sorted[0];
   };
 
   const topCategory = getTopCategory();
-  const mainArea = getMainArea();
-
-  // Define the display order for categories
-  const categoryOrder = ['grabbedAttention', 'storyTelling', 'empathicListening', 'exploredIssueTogether'] as const;
+  const lowestCategory = getLowestCategory();
 
   return (
     <div className="space-y-6">
@@ -99,11 +69,11 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
             </div>
             <div className="text-center">
               <div className="text-lg font-medium text-orange-600 mb-1">
-                {mainArea.name}
+                {lowestCategory.name}
               </div>
               <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
                 <AlertCircle className="h-4 w-4" />
-                Focus Area ({mainArea.score}%)
+                Focus Area ({lowestCategory.score}%)
               </div>
             </div>
           </div>
@@ -159,40 +129,9 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
 
       {/* Category Scores */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {categoryOrder.map((key) => {
-          const category = report.categories[key];
-          return (
-            <Card key={key}>
-              <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                <div className="flex items-center gap-2">
-                  {categoryIcons[key]}
-                  <CardTitle className="text-lg">
-                    {categoryNames[key]}
-                  </CardTitle>
-                </div>
-                <Badge 
-                  variant={getScoreBadgeVariant(category.score)}
-                  className="ml-auto"
-                >
-                  {category.score}%
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600 mb-3">{category.feedback}</p>
-                {category.examples.length > 0 && (
-                  <div className="space-y-1">
-                    <p className="text-xs font-medium text-gray-700">Examples:</p>
-                    {category.examples.map((example, index) => (
-                      <p key={index} className="text-xs text-gray-500 italic">
-                        "{example}"
-                      </p>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
+        {report.categories.map((category) => (
+          <CategoryCard key={category.id} category={category} />
+        ))}
       </div>
 
       {/* Key Moments */}
