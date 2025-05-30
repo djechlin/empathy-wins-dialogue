@@ -33,17 +33,17 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
   };
 
   const categoryIcons = {
-    scriptAdherence: <BookOpen className="h-5 w-5" />,
+    grabbedAttention: <BookOpen className="h-5 w-5" />,
     storyTelling: <Heart className="h-5 w-5" />,
     empathicListening: <MessageCircle className="h-5 w-5" />,
-    connectionBuilding: <Users className="h-5 w-5" />
+    exploredIssueTogether: <Users className="h-5 w-5" />
   };
 
   const categoryNames = {
-    scriptAdherence: 'Grabbed their attention',
+    grabbedAttention: 'Grabbed their attention',
     storyTelling: 'Vulnerable Storytelling',
     empathicListening: 'Empathetic Listening',
-    connectionBuilding: 'Explored the issue together'
+    exploredIssueTogether: 'Explored the issue together'
   };
 
   const getTopCategory = () => {
@@ -68,7 +68,7 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
   const mainArea = getMainArea();
 
   // Define the display order for categories
-  const categoryOrder = ['scriptAdherence', 'storyTelling', 'empathicListening', 'connectionBuilding'] as const;
+  const categoryOrder = ['grabbedAttention', 'storyTelling', 'empathicListening', 'exploredIssueTogether'] as const;
 
   return (
     <div className="space-y-6">
