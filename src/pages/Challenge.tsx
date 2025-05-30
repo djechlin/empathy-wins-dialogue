@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import PracticeCard from '@/components/learn/PracticeCard';
+import { CallWorkspace } from '@/components/voice/CallWorkspace';
 import { Button } from '@/components/ui/button';
 
 const Challenge = () => {
@@ -50,13 +50,15 @@ const Challenge = () => {
                 </div>
               </div>
 
-              <PracticeCard
-                id="challenge-practice"
-                title="Deep Canvassing Challenge"
-                description="Practice your conversation skills in this challenging scenario. Apply everything you've learned about vulnerable storytelling and empathetic listening."
-                defaultOpen={true}
-                scenarioId="deep-canvassing"
-              />
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <h3 className="text-2xl font-bold mb-4 text-dialogue-darkblue">
+                  Deep Canvassing Challenge
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Practice your conversation skills in this challenging scenario. Apply everything you've learned about vulnerable storytelling and empathetic listening.
+                </p>
+                <CallWorkspace scenarioId="deep-canvassing" />
+              </div>
             </div>
           </div>
         </div>
