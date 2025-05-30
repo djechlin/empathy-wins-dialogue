@@ -98,34 +98,6 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
         </CardContent>
       </Card>
 
-      {/* Overall Score */}
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">
-            Detailed Analysis
-          </CardTitle>
-          <div className="flex items-center justify-center gap-4 mt-4">
-            <div className="text-center">
-              <div className={`text-4xl font-bold ${getScoreColor(report.overallScore)}`}>
-                {report.overallScore}%
-              </div>
-              <div className="text-sm text-gray-600">Overall Score</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-semibold text-dialogue-darkblue">
-                {report.completedSteps}/{report.totalSteps}
-              </div>
-              <div className="text-sm text-gray-600">Steps Completed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-medium text-dialogue-purple">
-                {report.conversationLength}
-              </div>
-              <div className="text-sm text-gray-600">Duration</div>
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
 
       {/* Category Scores */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
