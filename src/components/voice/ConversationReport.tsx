@@ -42,7 +42,7 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
   const categoryNames = {
     storyTelling: 'Vulnerable Storytelling',
     empathicListening: 'Empathetic Listening',
-    scriptAdherence: 'Script Adherence',
+    scriptAdherence: 'Grabbed their attention',
     connectionBuilding: 'Connection Building'
   };
 

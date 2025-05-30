@@ -25,7 +25,7 @@ export const mockConversationReport: ConversationReport = {
     },
     scriptAdherence: {
       score: 75,
-      feedback: "Followed most script elements but missed asking for their person's name in step 3.",
+      feedback: "Successfully grabbed their attention and kept them engaged throughout the conversation.",
       examples: [
         "Asked about voting likelihood on 1-10 scale",
         "Successfully elicited their story about their father"
