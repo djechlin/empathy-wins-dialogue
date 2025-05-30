@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, AlertCircle, XCircle, TrendingUp, Clock, Target } from 'lucide-react';
+import { CheckCircle, AlertCircle, XCircle, TrendingUp, Clock, Target, User } from 'lucide-react';
 import { ConversationReport as ReportType, KeyMoment } from '@/types/conversationReport';
 import CategoryCard from './CategoryCard';
 
@@ -26,17 +26,11 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
     }
   };
 
-  const getTopCategory = () => {
-    const sorted = [...report.categories].sort((a, b) => b.score - a.score);
-    return sorted[0];
-  };
-
   const getLowestCategory = () => {
     const sorted = [...report.categories].sort((a, b) => a.score - b.score);
     return sorted[0];
   };
 
-  const topCategory = getTopCategory();
   const lowestCategory = getLowestCategory();
 
   return (
@@ -59,11 +53,11 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-dialogue-purple mb-1">
-                {topCategory.name}
+                Engaging
               </div>
               <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
-                <Target className="h-4 w-4" />
-                Strongest Area ({topCategory.score}/10)
+                <User className="h-4 w-4" />
+                Your style
               </div>
             </div>
             <div className="text-center">
