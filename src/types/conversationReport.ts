@@ -5,10 +5,10 @@ export interface ConversationReport {
   completedSteps: number;
   totalSteps: number;
   categories: {
+    grabbedAttention: CategoryScore;
     storyTelling: CategoryScore;
     empathicListening: CategoryScore;
-    scriptAdherence: CategoryScore;
-    connectionBuilding: CategoryScore;
+    exploredIssueTogether: CategoryScore;
   };
   keyMoments: KeyMoment[];
   improvements: string[];

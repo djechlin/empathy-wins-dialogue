@@ -7,7 +7,7 @@ export const mockConversationReport: ConversationReport = {
   completedSteps: 3,
   totalSteps: 4,
   categories: {
-    scriptAdherence: {
+    grabbedAttention: {
       score: 75,
       feedback: "Successfully grabbed their attention and kept them engaged throughout the conversation.",
       examples: [
@@ -31,7 +31,7 @@ export const mockConversationReport: ConversationReport = {
         "Tell me more about that situation"
       ]
     },
-    connectionBuilding: {
+    exploredIssueTogether: {
       score: 60,
       feedback: "Made some personal connections but could have drawn more explicit parallels between your stories.",
       examples: [
