@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, AlertCircle, XCircle, Heart, MessageCircle, BookOpen, Users } from 'lucide-react';
+import { CheckCircle, AlertCircle, XCircle, Heart, MessageCircle, BookOpen, Users, TrendingUp, Clock, Target } from 'lucide-react';
 import { ConversationReport as ReportType, KeyMoment } from '@/types/conversationReport';
 
 interface ConversationReportProps {
@@ -46,13 +46,90 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
     connectionBuilding: 'Connection Building'
   };
 
+  const getTopCategory = () => {
+    const categories = Object.entries(report.categories);
+    const sorted = categories.sort((a, b) => b[1].score - a[1].score);
+    return {
+      name: categoryNames[sorted[0][0] as keyof typeof categoryNames],
+      score: sorted[0][1].score
+    };
+  };
+
+  const getMainArea = () => {
+    const categories = Object.entries(report.categories);
+    const sorted = categories.sort((a, b) => a[1].score - b[1].score);
+    return {
+      name: categoryNames[sorted[0][0] as keyof typeof categoryNames],
+      score: sorted[0][1].score
+    };
+  };
+
+  const topCategory = getTopCategory();
+  const mainArea = getMainArea();
+
   return (
     <div className="space-y-6">
+      {/* Summary Section */}
+      <Card className="bg-gradient-to-r from-dialogue-blue/10 to-dialogue-purple/10 border-dialogue-blue/20">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-dialogue-darkblue mb-4">
+            Conversation Summary
+          </CardTitle>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className={`text-3xl font-bold ${getScoreColor(report.overallScore)} mb-1`}>
+                {report.overallScore}%
+              </div>
+              <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
+                <TrendingUp className="h-4 w-4" />
+                Overall Performance
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-dialogue-purple mb-1">
+                {topCategory.name}
+              </div>
+              <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
+                <Target className="h-4 w-4" />
+                Strongest Area ({topCategory.score}%)
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-medium text-orange-600 mb-1">
+                {mainArea.name}
+              </div>
+              <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
+                <AlertCircle className="h-4 w-4" />
+                Focus Area ({mainArea.score}%)
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="bg-white/80 rounded-lg p-4 space-y-3">
+            <div className="flex items-center gap-2 text-sm">
+              <Clock className="h-4 w-4 text-dialogue-purple" />
+              <span className="font-medium">Duration:</span>
+              <span>{report.conversationLength}</span>
+              <span className="text-gray-500">•</span>
+              <span className="font-medium">Progress:</span>
+              <span>{report.completedSteps}/{report.totalSteps} steps completed</span>
+            </div>
+            <div className="text-sm text-gray-700">
+              <span className="font-medium">Key insight:</span> {report.strengths[0]}
+            </div>
+            <div className="text-sm text-gray-700">
+              <span className="font-medium">Primary opportunity:</span> {report.improvements[0]}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Overall Score */}
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold">
-            Conversation Report
+            Detailed Analysis
           </CardTitle>
           <div className="flex items-center justify-center gap-4 mt-4">
             <div className="text-center">
