@@ -3,10 +3,13 @@ import { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { CallWorkspace } from '@/components/voice/CallWorkspace';
+import ConversationReport from '@/components/voice/ConversationReport';
 import { Button } from '@/components/ui/button';
+import { mockConversationReport } from '@/data/mockConversationReport';
 
 const Challenge = () => {
   const [selectedTopic, setSelectedTopic] = useState<string>('');
+  const [showReport, setShowReport] = useState(false);
 
   const topics = [
     'Protect healthcare',
@@ -32,33 +35,61 @@ const Challenge = () => {
             </div>
 
             <div className="max-w-4xl mx-auto">
-              <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4 text-center text-dialogue-darkblue">
-                  Choose your topic:
-                </h2>
-                <div className="flex flex-wrap justify-center gap-3">
-                  {topics.map((topic) => (
-                    <Button
-                      key={topic}
-                      variant={selectedTopic === topic ? "default" : "outline"}
-                      onClick={() => setSelectedTopic(topic)}
-                      className={selectedTopic === topic ? "bg-dialogue-purple hover:bg-dialogue-darkblue" : ""}
-                    >
-                      {topic}
-                    </Button>
-                  ))}
-                </div>
-              </div>
+              {!showReport ? (
+                <>
+                  <div className="mb-8">
+                    <h2 className="text-xl font-semibold mb-4 text-center text-dialogue-darkblue">
+                      Choose your topic:
+                    </h2>
+                    <div className="flex flex-wrap justify-center gap-3">
+                      {topics.map((topic) => (
+                        <Button
+                          key={topic}
+                          variant={selectedTopic === topic ? "default" : "outline"}
+                          onClick={() => setSelectedTopic(topic)}
+                          className={selectedTopic === topic ? "bg-dialogue-purple hover:bg-dialogue-darkblue" : ""}
+                        >
+                          {topic}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-2xl font-bold mb-4 text-dialogue-darkblue">
-                  Deep Canvassing Challenge
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  Practice your conversation skills in this challenging scenario. Apply everything you've learned about vulnerable storytelling and empathetic listening.
-                </p>
-                <CallWorkspace scenarioId="deep-canvassing" />
-              </div>
+                  <div className="bg-white rounded-lg shadow-lg p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-2xl font-bold text-dialogue-darkblue">
+                        Deep Canvassing Challenge
+                      </h3>
+                      <Button 
+                        onClick={() => setShowReport(true)}
+                        variant="outline"
+                        className="text-sm"
+                      >
+                        View Sample Report
+                      </Button>
+                    </div>
+                    <p className="text-gray-600 mb-6">
+                      Practice your conversation skills in this challenging scenario. Apply everything you've learned about vulnerable storytelling and empathetic listening.
+                    </p>
+                    <CallWorkspace scenarioId="deep-canvassing" />
+                  </div>
+                </>
+              ) : (
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-2xl font-bold text-dialogue-darkblue">
+                      Conversation Report
+                    </h3>
+                    <Button 
+                      onClick={() => setShowReport(false)}
+                      variant="outline"
+                    >
+                      Back to Challenge
+                    </Button>
+                  </div>
+                  <ConversationReport report={mockConversationReport} />
+                </div>
+              )}
             </div>
           </div>
         </div>
