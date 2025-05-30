@@ -49,8 +49,8 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
           </CardTitle>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className={`text-3xl font-bold ${getScoreColor(report.overallScore)} mb-1`}>
-                {report.overallScore}/10
+              <div className={`text-3xl font-bold ${getScoreColor(report.currentScore)} mb-1`}>
+                {report.baseScore} → {report.currentScore}
               </div>
               <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
                 <TrendingUp className="h-4 w-4" />

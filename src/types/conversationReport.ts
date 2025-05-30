@@ -1,6 +1,7 @@
 
 export interface ConversationReport {
-  overallScore: number; // 1-10
+  baseScore: number; // 1-10 (starting score)
+  currentScore: number; // 1-10 (current score after conversation)
   conversationLength: string;
   completedSteps: number;
   totalSteps: number;
