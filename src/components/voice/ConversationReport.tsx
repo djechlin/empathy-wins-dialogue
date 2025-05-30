@@ -1,6 +1,7 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, AlertCircle, XCircle, TrendingUp, Clock, Target, User } from 'lucide-react';
+import { CheckCircle, AlertCircle, XCircle, TrendingUp, Clock, Target, User, Heart } from 'lucide-react';
 import { ConversationReport as ReportType, KeyMoment } from '@/types/conversationReport';
 import CategoryCard from './CategoryCard';
 
@@ -62,11 +63,11 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
             </div>
             <div className="text-center">
               <div className="text-lg font-medium text-orange-600 mb-1">
-                {lowestCategory.name}
+                Eager
               </div>
               <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
-                <AlertCircle className="h-4 w-4" />
-                Focus Area ({lowestCategory.score}/10)
+                <Heart className="h-4 w-4" />
+                Voter mood
               </div>
             </div>
           </div>
