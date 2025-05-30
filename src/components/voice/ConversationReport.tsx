@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, AlertCircle, XCircle, Heart, MessageCircle, BookOpen, Users, TrendingUp, Clock, Target } from 'lucide-react';
@@ -43,7 +42,7 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
     storyTelling: 'Vulnerable Storytelling',
     empathicListening: 'Empathetic Listening',
     scriptAdherence: 'Grabbed their attention',
-    connectionBuilding: 'Connection Building'
+    connectionBuilding: 'Explored the issue together'
   };
 
   const getTopCategory = () => {
