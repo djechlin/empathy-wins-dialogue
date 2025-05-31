@@ -155,7 +155,7 @@ export default function ControlPanel({ onReportGenerated }: ControlPanelProps) {
                 {isGeneratingReport ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
-                    <span>Generating Report...</span>
+                    <span>Generating Report (takes about a minute)...</span>
                   </>
                 ) : (
                   <>
