@@ -5,6 +5,7 @@ export const mockConversationReport: ConversationReport = {
   baseScore: 3,
   currentScore: 7,
   completedSteps: 3,
+  summary: "Great progress! You successfully moved this voter from a 3 to a 7 - that's significant change. Your vulnerability when sharing personal stories was powerful and created real connection. To deepen your impact even further, focus on drawing more explicit parallels between your stories and asking for names of the people voters mention.",
   categories: [
     {
       id: 'grabbedAttention',
