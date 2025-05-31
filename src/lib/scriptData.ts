@@ -321,6 +321,26 @@ export type Scenario = {
 };
 
 export const SCENARIOS: { [key in ScenarioId]: Scenario } = {
+  'challenge-lgbt': {
+    title: 'LGBT Rights Challenge',
+    description: ['Practice persuading a swing voter on LGBT rights issues using deep canvassing techniques.']
+  },
+  'challenge-climate': {
+    title: 'Climate Resilience Challenge', 
+    description: ['Practice persuading a swing voter on climate issues using deep canvassing techniques.']
+  },
+  'challenge-healthcare': {
+    title: 'Healthcare Protection Challenge',
+    description: ['Practice persuading a swing voter on healthcare issues using deep canvassing techniques.']
+  },
+  'challenge-voting': {
+    title: 'Voter Turnout Challenge',
+    description: ['Practice persuading a swing voter on voting participation using deep canvassing techniques.']
+  },
+  'challenge-bikes': {
+    title: 'Bike Access Challenge',
+    description: ['Practice persuading a swing voter on bike access issues using deep canvassing techniques.']
+  },
   'love-list': {
     title: 'Love list',
     description: ['Love list exercise']
