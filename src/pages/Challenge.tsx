@@ -5,7 +5,7 @@ import Footer from '@/components/layout/Footer';
 import { CallWorkspace } from '@/components/voice/CallWorkspace';
 import ConversationReport from '@/components/voice/ConversationReport';
 import { Button } from '@/components/ui/button';
-import { mockConversationReport } from '@/data/mockConversationReport';
+import { sampleReport } from '@/lib/report';
 
 const Challenge = () => {
   const [selectedTopic, setSelectedTopic] = useState<string>('');
@@ -13,10 +13,9 @@ const Challenge = () => {
 
   const topics = [
     'Protect healthcare',
-    'Climate change',
+    'Climate resilience (hard)',
     'LGBT rights',
-    'Voter turnout',
-    'Social safety net for undocumented immigrants'
+    'Voter turnout (hard)',
   ];
 
   return (
@@ -60,13 +59,15 @@ const Challenge = () => {
                       <h3 className="text-2xl font-bold text-dialogue-darkblue">
                         Deep Canvassing Challenge
                       </h3>
-                      <Button 
-                        onClick={() => setShowReport(true)}
-                        variant="outline"
-                        className="text-sm"
-                      >
-                        View Sample Report
-                      </Button>
+                      {window.location.hostname === 'localhost' && (
+                        <Button
+                          onClick={() => setShowReport(true)}
+                          variant="outline"
+                          className="text-sm"
+                        >
+                          View Sample Report
+                        </Button>
+                      )}
                     </div>
                     <p className="text-gray-600 mb-6">
                       Practice your conversation skills in this challenging scenario. Apply everything you've learned about vulnerable storytelling and empathetic listening.
@@ -87,7 +88,7 @@ const Challenge = () => {
                       Back to Challenge
                     </Button>
                   </div>
-                  <ConversationReport report={mockConversationReport} />
+                  <ConversationReport report={sampleReport} />
                 </div>
               )}
             </div>

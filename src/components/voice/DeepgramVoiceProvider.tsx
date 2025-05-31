@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { ToolCallHandler, VoiceProvider } from '@humeai/voice-react';
 import { ReactNode, useEffect, useState } from 'react';

@@ -48,10 +48,12 @@ export function HumeVoiceProvider({
 
   return (
     <div className={className}>
-      <VoiceProvider onToolCall={onToolCall}
+      <VoiceProvider 
+        onToolCall={onToolCall}
         auth={{ type: 'accessToken', value: accessToken }}
         configId={configId}
         onMessage={onMessage}
+        debug={true}
         {...otherProps}
       >
         {children}

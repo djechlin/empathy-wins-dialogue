@@ -1,13 +1,25 @@
 import { useVoice, VoiceContextType } from '@humeai/voice-react';
 import { Button } from '@/components/ui/button';
-import { Mic, MicOff, Phone } from 'lucide-react';
+import { Mic, MicOff, Phone, FileText, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toggle } from '@/components/ui/toggle';
 import MicFFT from './MicFFT';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import { generateReport } from '@/lib/claudeReport';
+import { ConversationReport } from '@/types/conversationReport';
 
-export default function ControlPanel() {
-  const { disconnect, connect, status, isMuted, unmute, mute, micFft }: VoiceContextType =
+
+interface ControlPanelProps {
+  onReportGenerated?: (report: ConversationReport) => void;
+}
+
+export default function ControlPanel({ onReportGenerated }: ControlPanelProps) {
+  const [hasEndedCall, setHasEndedCall] = useState(false);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [capturedMessages, setCapturedMessages] = useState<any[]>([]);
+
+  const { disconnect, connect, status, isMuted, unmute, mute, micFft, messages }: VoiceContextType =
     useVoice();
 
   const handleStartCall = () => {
@@ -19,6 +31,46 @@ export default function ControlPanel() {
         console.error('Failed to connect to voice:', error);
       });
   };
+
+  const generateConversationReport = async () => {
+    // Use captured messages from when call ended
+    console.log('capturedMessages? ', capturedMessages);
+    if (!capturedMessages || capturedMessages.length === 0) {
+      console.warn('No messages to analyze');
+      return;
+    }
+
+    // Extract conversation transcript from captured messages
+    const transcript = capturedMessages
+      .filter(msg => msg.type === 'user_message' || msg.type === 'assistant_message')
+      .map(msg => {
+        const role = msg.message.role === 'user' ? 'Canvasser' : 'Voter';
+        return `${role}: ${msg.message.content}`;
+      })
+      .join('\n\n');
+
+    console.log('Generating report for transcript:', transcript);
+    try {
+      const generatedReport = await generateReport(transcript);
+      onReportGenerated?.(generatedReport);
+    } catch (error) {
+      console.error('Failed to generate report:', error);
+    }
+  };
+
+
+  const handleDisconnect = async () => {
+      setCapturedMessages(messages); // Capture messages before clearing
+      disconnect();
+      setHasEndedCall(true);
+  };
+
+  const handleGenerateReport = async () => {
+    console.log('handle generate report');
+    setIsGeneratingReport(true);
+    await generateConversationReport();
+    setIsGeneratingReport(false);
+  }
 
   return (
     <div
@@ -66,7 +118,7 @@ export default function ControlPanel() {
 
             <Button
               className={'flex items-center gap-1'}
-              onClick={disconnect}
+              onClick={handleDisconnect}
               variant={'destructive'}
             >
               <span>
@@ -94,13 +146,33 @@ export default function ControlPanel() {
               'p-4 bg-card border border-border rounded-lg shadow-sm flex items-center gap-4'
             }
           >
-            <Button
-              className={'flex items-center gap-2 bg-green-600 hover:bg-green-700'}
-              onClick={handleStartCall}
-            >
-              <Phone className={'size-4'} strokeWidth={2} stroke={'currentColor'} />
-              <span>Start Call</span>
-            </Button>
+            {hasEndedCall ? (
+              <Button
+                onClick={handleGenerateReport}
+                disabled={isGeneratingReport}
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isGeneratingReport ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    <span>Generating Report...</span>
+                  </>
+                ) : (
+                  <>
+                    <FileText className="size-4" />
+                    <span>View Results</span>
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                className={'flex items-center gap-2 bg-green-600 hover:bg-green-700'}
+                onClick={handleStartCall}
+              >
+                <Phone className={'size-4'} strokeWidth={2} stroke={'currentColor'} />
+                <span>Start Call</span>
+              </Button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
