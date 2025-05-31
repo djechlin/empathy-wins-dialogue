@@ -1,11 +1,16 @@
 export type Step = {
   name: string;
-  description: Array<{ text: string; triggers?: string[]; isScript: boolean }>;
+  description: Array<{ text: string; triggers?: string[]; isScript: boolean, hint?: string }>;
 };
 
 export type Script = Step[];
 
 export type ScenarioId =
+  | 'challenge-lgbt'
+  | 'challenge-climate'
+  | 'challenge-healthcare'
+  | 'challenge-voting'
+  | 'challenge-bikes'
   | 'deep-canvassing'
   | 'law-order-voter'
   | 'code-review-junior-feedback'
@@ -15,6 +20,11 @@ export type ScenarioId =
   | 'love-list';
 
 export const SCRIPT_TITLES: { [key in ScenarioId]: string } = {
+  'challenge-lgbt': 'Script',
+  'challenge-climate': 'Script',
+  'challenge-healthcare': 'Script',
+  'challenge-voting': 'Script',
+  'challenge-bikes': 'Script',
   'deep-canvassing': 'Script',
   'law-order-voter': 'Law & Order Voter Script',
   'code-review-junior-feedback': 'Code Review Feedback Script',
@@ -25,6 +35,11 @@ export const SCRIPT_TITLES: { [key in ScenarioId]: string } = {
 };
 
 export const HUME_PERSONAS: { [key in ScenarioId]: string } = {
+    'challenge-lgbt': '2befee5d-0661-403a-98d7-65e515f05e22',
+  'challenge-climate': '2befee5d-0661-403a-98d7-65e515f05e22',
+  'challenge-healthcare': '2befee5d-0661-403a-98d7-65e515f05e22',
+  'challenge-voting': '2befee5d-0661-403a-98d7-65e515f05e22',
+  'challenge-bikes': '2befee5d-0661-403a-98d7-65e515f05e22',
   'deep-canvassing': 'ad21affc-6037-4af2-b7c0-95f04279169a',
   'law-order-voter': '419a04ee-8457-4f9b-8e2f-d5ae4f632597',
   'code-review-junior-feedback': 'ba08f302-361f-43fa-886b-4eacd2691fe3',
@@ -34,7 +49,41 @@ export const HUME_PERSONAS: { [key in ScenarioId]: string } = {
   'love-list': 'd3b113c7-3e87-49a2-b400-1b155b514d0a'
 };
 
+function challengeScript(hint: string): Script {
+  return [
+    {
+      name: 'You knock on the door - they answer',
+      description: [
+        {
+          text: 'Try to gauge their support for your issue early. Ask them how they feel on a scale of 1-10.',
+          triggers: ['scale', '10', 'ten'],
+          isScript: true
+        }
+      ]
+    },
+    {
+      name: 'Try to persuade them'!,
+      description: [
+        {
+          text: 'Persuade as you normally would. As you roleplay feel free to improvise any details about the issue or your background.',
+          isScript: true
+        },
+        {
+          text: 'Check for a hint',
+          hint: hint,
+          isScript: false
+        }
+      ]
+    }
+  ]
+}
+
 export const SCRIPTS: { [key in ScenarioId]: Script } = {
+  'challenge-bikes': challengeScript('Share a fond memory you have of your city, like your first date or a memorable day in the park. Describe the person you spent it with, if you can.'),
+  'challenge-healthcare': challengeScript('Ask if they know anyone who has lost their job recently, or had trouble seeing a doctor.'),
+  'challenge-climate': challengeScript('Ask who in their community was impacted by the recent weather event. Improvise a hurricane or wildfire.'),
+  'challenge-lgbt': challengeScript('Ask if they know any LGBT people. Ask how they know them, what they\'re like, etc.'),
+  'challenge-voting': challengeScript('This one\'s hard! But if you share a story of your loved one and ask them for a similar story, they may start thinking of how voting connects them to people around them.'),
   'love-list': [
 
   ],
