@@ -74,7 +74,7 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
         <CardContent>
           <div className="bg-white/80 rounded-lg p-4 space-y-3">
             <div className="text-sm text-gray-700">
-              <span className="font-medium">Great progress!</span> You successfully moved this voter from a {report.baseScore} to a {report.currentScore} - that's meaningful change. Your vulnerability when sharing about your daughter was powerful and created real connection. To deepen your impact even further, focus on drawing more explicit parallels between your stories and asking for names of the people voters mention. These approaches will help you create even stronger bonds and drive greater persuasion.
+              {report.summary}
             </div>
           </div>
         </CardContent>

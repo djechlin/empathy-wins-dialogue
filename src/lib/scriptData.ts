@@ -74,6 +74,15 @@ function challengeScript(hint: string): Script {
           isScript: false
         }
       ]
+    },
+    {
+      name: 'End the conversation when you\'re ready',
+      description: [
+        {
+          text: 'The roleplayer won\'t hang up, so you have to. Before you go, ask them how they feel about the issue on that 1-10 scale again and see if they\'ve changed their mind at all.',
+          isScript: true
+        }
+      ]
     }
   ]
 }
@@ -117,6 +126,7 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
           text: 'Learn what issues matter to the voter.',
           triggers: ['landlord', 'housing', 'rent', 'apartment'],
           isScript: true,
+          hint: 'Ask about her landlord situation to hear her personal housing story.'
         },
       ],
     },
@@ -149,6 +159,7 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
           text: 'Try to find a constructive solution to the feedback.',
           triggers: ['pair program', 'pair coding', 'work together'],
           isScript: false,
+          hint: 'When you offer to pair program the junior colleague will be happy.'
         },
       ],
     },
@@ -185,6 +196,13 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
         {
           text: 'Use the word "love"! And say the person\'s name.',
           isScript: false,
+          hint: `Here's an example story:
+
+"I think of my husband Jim. We were barely making ends meet back in the 90s - still had teen band posters but didn't know how to make rent. That first Christmas together, I was determined to get him a present.
+
+I remember standing in that dusty record shop, hands shaking a little as I slid my rare vinyl across the counter. 'You sure about this?' the dealer asked, eyebrows raised. I nodded, thinking of Jim's face when he'd open the guitar case I'd bought with that money. The leather smell of that handcrafted strap, how perfectly it would match his uncle's vintage guitar. Worth it.
+
+Christmas Eve came, and Jim handed me a wrapped package. Inside was a record by the same band I'd just sold. His eyes sparkled as he told me he'd been secretly giving guitar lessons on weekends to save up. I burst out laughing right there - couldn't help it. And you know, we felt pretty good that Christmas. It was just the two of us, like we wanted it. We didn't have much, but I loved him and I really knew he loved me."`
         },
       ],
     },
@@ -296,12 +314,6 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
     },
   ],
 };
-
-export const EXAMPLE_STORY = `"I think of my husband Jim. We were barely making ends meet back in the 90s - still had teen band posters but didn't know how to make rent. That first Christmas together, I was determined to get him a present.
-
-I remember standing in that dusty record shop, hands shaking a little as I slid my rare vinyl across the counter. 'You sure about this?' the dealer asked, eyebrows raised. I nodded, thinking of Jim's face when he'd open the guitar case I'd bought with that money. The leather smell of that handcrafted strap, how perfectly it would match his uncle's vintage guitar. Worth it.
-
-Christmas Eve came, and Jim handed me a wrapped package. Inside was a record by the same band I'd just sold. His eyes sparkled as he told me he'd been secretly giving guitar lessons on weekends to save up. I burst out laughing right there - couldn't help it. And you know, we felt pretty good that Christmas. It was just the two of us, like we wanted it. We didn't have much, but I loved him and I really knew he loved me."`;
 
 export type Scenario = {
   title: string;

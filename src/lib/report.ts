@@ -4,6 +4,7 @@ export const sampleReport: ConversationReport = {
   "baseScore": 3,
   "currentScore": 6,
   "completedSteps": 3,
+  "summary": "Great progress! You successfully moved this voter from a 3 to a 6 - that's meaningful change. Your vulnerability when sharing about Karen was powerful and created real connection. To deepen your impact even further, focus on drawing more explicit parallels between your stories and asking for names of the people voters mention. These approaches will help you create even stronger bonds and drive greater persuasion.",
   "categories": [
     {
       "id": "attention",

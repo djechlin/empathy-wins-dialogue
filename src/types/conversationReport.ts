@@ -3,6 +3,7 @@ export interface ConversationReport {
   baseScore: number; // 1-10 (starting score)
   currentScore: number; // 1-10 (current score after conversation)
   completedSteps: number;
+  summary: string; // AI-generated personalized summary
   categories: CategoryScore[];
   keyMoments: KeyMoment[];
   improvements: string[];

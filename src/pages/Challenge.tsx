@@ -18,6 +18,13 @@ const Challenge = () => {
     'Voter turnout (hard)',
   ];
 
+  const scenarioIds = {
+    'Protect healthcare': 'challenge-healthcare',
+    'Climate resilience (hard)': 'challenge-climate',
+    'LGBT rights': 'challenge-lgbt',
+    'Voter turnout (hard)': 'challenge-voting'
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
@@ -72,7 +79,7 @@ const Challenge = () => {
                     <p className="text-gray-600 mb-6">
                       Practice your conversation skills in this challenging scenario. Apply everything you've learned about vulnerable storytelling and empathetic listening.
                     </p>
-                    <CallWorkspace scenarioId="deep-canvassing" />
+                    <CallWorkspace scenarioId={scenarioIds[selectedTopic]} />
                   </div>
                 </>
               ) : (

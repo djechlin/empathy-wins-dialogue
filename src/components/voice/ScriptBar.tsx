@@ -13,8 +13,17 @@ export default function ScriptBar({
 
     const { messages }: VoiceContextType = useVoice();
 
-  const [showCodeReviewHint, setShowCodeReviewHint] = useState(false);
-  const [showLandlordHint, setShowLandlordHint] = useState(false);
+  const [expandedHints, setExpandedHints] = useState<Set<string>>(new Set());
+
+  const toggleHint = (hintId: string) => {
+    const newExpanded = new Set(expandedHints);
+    if (newExpanded.has(hintId)) {
+      newExpanded.delete(hintId);
+    } else {
+      newExpanded.add(hintId);
+    }
+    setExpandedHints(newExpanded);
+  };
 
 
   const [triggeredSteps, triggeredItems] = useMemo(() => {
@@ -59,62 +68,43 @@ export default function ScriptBar({
               <h3 className="text-md font-medium mb-2 text-primary">{step.name}</h3>
               <div className="space-y-2 text-sm">
                 {step.description.map((item, itemIndex) => (
-                  <p
-                    key={itemIndex}
-                    className={cn(
-                      item.isScript
-                        ? 'p-2 rounded border transition-colors duration-300'
-                        : 'italic text-xs mt-1',
-                      triggeredItems.has(`${stepIndex}-${itemIndex}`)
-                        ? 'bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-500/50'
-                        : item.isScript
-                          ? 'bg-background border-border'
-                          : ''
+                  <div key={itemIndex}>
+                    <p
+                      className={cn(
+                        item.isScript
+                          ? 'p-2 rounded border transition-colors duration-300'
+                          : 'italic text-xs mt-1',
+                        triggeredItems.has(`${stepIndex}-${itemIndex}`)
+                          ? 'bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-500/50'
+                          : item.isScript
+                            ? 'bg-background border-border'
+                            : ''
+                      )}
+                    >
+                      {item.text}
+                    </p>
+                    {item.hint && (
+                      <>
+                        <button
+                          onClick={() => toggleHint(`${stepIndex}-${itemIndex}`)}
+                          className="flex items-center gap-1 text-xs mt-2 text-primary hover:text-primary/80 transition-colors"
+                        >
+                          {expandedHints.has(`${stepIndex}-${itemIndex}`) ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                          <span>{expandedHints.has(`${stepIndex}-${itemIndex}`) ? 'Hide hint' : 'Show hint'}</span>
+                        </button>
+
+                        {expandedHints.has(`${stepIndex}-${itemIndex}`) && (
+                          <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded text-xs">
+                            <p className="text-blue-800 dark:text-blue-300 whitespace-pre-wrap">
+                              {item.hint}
+                            </p>
+                          </div>
+                        )}
+                      </>
                     )}
-                  >
-                    {item.text}
-                  </p>
+                  </div>
                 ))}
 
-                {stepIndex === 1 && callId === 'intro-canvassing' && (
-                  <>
-                    <button
-                      onClick={() => setShowLandlordHint(!showLandlordHint)}
-                      className="flex items-center gap-1 text-xs mt-3 text-primary hover:text-primary/80 transition-colors"
-                    >
-                      {showLandlordHint ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                      <span>{showLandlordHint ? 'Hide hint' : 'Show hint'}</span>
-                    </button>
-
-                    {showLandlordHint && (
-                      <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded text-xs">
-                        <p className="text-blue-800 dark:text-blue-300">
-                          Ask about her landlord situation to hear her personal housing story.
-                        </p>
-                      </div>
-                    )}
-                  </>
-                )}
-
-                {stepIndex === 1 && callId === 'code-review-junior-feedback' && (
-                  <>
-                    <button
-                      onClick={() => setShowCodeReviewHint(!showCodeReviewHint)}
-                      className="flex items-center gap-1 text-xs mt-3 text-primary hover:text-primary/80 transition-colors"
-                    >
-                      {showCodeReviewHint ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                      <span>{showCodeReviewHint ? 'Hide hint' : 'Show hint'}</span>
-                    </button>
-
-                    {showCodeReviewHint && (
-                      <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded text-xs">
-                        <p className="text-blue-800 dark:text-blue-300">
-                          When you offer to pair program the junior colleague will be happy.
-                        </p>
-                      </div>
-                    )}
-                  </>
-                )}
 
                 {stepIndex === 1 && callId === 'deep-canvassing' && (
                   <>
