@@ -6,6 +6,7 @@ import { CallWorkspace } from '@/components/voice/CallWorkspace';
 import ConversationReport from '@/components/voice/ConversationReport';
 import { Button } from '@/components/ui/button';
 import { sampleReport } from '@/lib/report';
+import SliderCard from '@/components/ui/slider-card';
 
 const Challenge = () => {
   const [selectedTopic, setSelectedTopic] = useState<string>('');
@@ -40,7 +41,13 @@ const Challenge = () => {
               </p>
             </div>
 
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto space-y-8">
+              <SliderCard
+                id="pre-challenge-empathy"
+                title="Before You Start"
+                question="I'm interested in having more empathetic conversations with people who disagree with me about political topics."
+              />
+
               {!showReport ? (
                 <>
                   <div className="mb-8">
@@ -98,6 +105,12 @@ const Challenge = () => {
                   <ConversationReport report={sampleReport} />
                 </div>
               )}
+
+              <SliderCard
+                id="post-challenge-empathy"
+                title="After the Challenge"
+                question="I'm interested in having more empathetic conversations with people who disagree with me about political topics."
+              />
             </div>
           </div>
         </div>
