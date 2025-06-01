@@ -31,14 +31,14 @@ interface BehaviorCardData {
 }
 
 const behaviorCardConfigs: BehaviorCardConfig[] = [
-    { id: 'ask-feelings', icon: 'Heart', title: 'Ask How They Feel', subtitle: 'Show genuine interest in their emotions', sense: 'do' },
-    { id: 'dig-deeper', icon: 'Search', title: 'Dig Deeper', subtitle: 'Ask follow-up questions to understand better', sense: 'do' },
-    { id: 'share-story', icon: 'Book', title: 'Share Your Story', subtitle: 'Be vulnerable and authentic', sense: 'do' },
-    { id: 'listen-actively', icon: 'Ear', title: 'Listen Actively', subtitle: 'Focus on understanding, not responding', sense: 'do' },
+    { id: 'nice-things-framing', icon: 'Blocks', title: '"Nice things" framing', subtitle: 'Frame the issue about how life can get better', sense: 'do' },
+    { id: 'share-story', icon: 'Book', title: 'Share your story', subtitle: 'Share who you care about, and get vulnerable.', sense: 'do' },
+    { id: 'dig-deeper', icon: 'Search', title: 'Dig deeper', subtitle: 'Learn more about the voter\'s life and concerns', sense: 'do' },
+    { id: 'explore-together', icon: 'Ear', title: 'Explore together', subtitle: 'Listen actively as the voter thinks things through.', sense: 'do' },
     { id: 'find-common-ground', icon: 'Handshake', title: 'Find Common Ground', subtitle: 'Look for shared values and experiences', sense: 'do' },
     { id: 'show-empathy', icon: 'Users', title: 'Show Empathy', subtitle: 'Acknowledge their perspective without judgment', sense: 'do' },
-    { id: 'lecture-politics', icon: 'MegaphoneOff', title: 'Lecture on Politics', subtitle: 'Avoid giving political speeches', sense: 'dont' },
-    { id: 'get-defensive', icon: 'ShieldOff', title: 'Get Defensive', subtitle: 'Don\'t take disagreement personally', sense: 'dont' },
+    { id: 'dont-persuade-informing', icon: 'MegaphoneOff', title: 'Don\'t persuade by informing', subtitle: 'Avoid giving political speeches', sense: 'dont' },
+    { id: 'dont-correct-them', icon: 'ShieldOff', title: 'Don\'t correct them.', subtitle: 'Remember to stay vulnerable even when they get things wrong.', sense: 'dont' },
 ];
 
 function Timer() {
@@ -155,10 +155,10 @@ function BehaviorGrid() {
         const initialData: Record<string, BehaviorCardData> = {};
         behaviorCardConfigs.forEach(config => {
             // Mock data showing various states
-            if (config.id === 'ask-feelings') {
+            if (config.id === 'nice-things-framing') {
                 initialData[config.id] = {
                     status: 'great',
-                    examples: ['How are you feeling about this issue?', 'What emotions come up when you think about that?']
+                    examples: ['Think about how much easier it would be for families like yours', 'Imagine if you didn\'t have to worry about these costs']
                 };
             } else if (config.id === 'dig-deeper') {
                 initialData[config.id] = {
@@ -170,7 +170,7 @@ function BehaviorGrid() {
                     status: 'good',
                     examples: ['I remember when my grandmother needed healthcare and we struggled with the costs']
                 };
-            } else if (config.id === 'listen-actively') {
+            } else if (config.id === 'explore-together') {
                 initialData[config.id] = {
                     status: 'to-do',
                     examples: []
@@ -185,12 +185,12 @@ function BehaviorGrid() {
                     status: 'great',
                     examples: ['That sounds really challenging for your family', 'I can understand why you would feel frustrated about that']
                 };
-            } else if (config.id === 'lecture-politics') {
+            } else if (config.id === 'dont-persuade-informing') {
                 initialData[config.id] = {
                     status: 1,
                     examples: ['The data clearly shows that universal healthcare is the only solution']
                 };
-            } else if (config.id === 'get-defensive') {
+            } else if (config.id === 'dont-correct-them') {
                 initialData[config.id] = {
                     status: 0,
                     examples: []
