@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import * as Icons from 'lucide-react';
@@ -23,6 +23,24 @@ interface ScoreCardProps {
 }
 
 const ScoreCard = ({ config, data, onClick }: ScoreCardProps) => {
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [prevStatus, setPrevStatus] = useState(data.status);
+
+  // Trigger animation when status changes
+  useEffect(() => {
+    if (data.status !== prevStatus) {
+      setIsAnimating(true);
+      setPrevStatus(data.status);
+      
+      // Reset animation after it completes
+      const timer = setTimeout(() => {
+        setIsAnimating(false);
+      }, 200);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [data.status, prevStatus]);
+
   const IconComponent = Icons[config.icon as keyof typeof Icons] as React.ComponentType<{ className?: string }>;
   
   const getCardStyles = () => {
@@ -127,6 +145,7 @@ const ScoreCard = ({ config, data, onClick }: ScoreCardProps) => {
       className={cn(
         "aspect-square p-4 rounded-lg border-2 transition-all duration-200 flex flex-col justify-between relative",
         config.sense === 'do' && onClick ? "cursor-pointer" : "",
+        isAnimating ? "scale-110 z-10" : "scale-100",
         getCardStyles()
       )}
     >
