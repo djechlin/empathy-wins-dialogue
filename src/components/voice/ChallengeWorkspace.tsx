@@ -1,6 +1,7 @@
 import ControlPanel from './ControlPanel';
 import ConversationReport from './ConversationReport';
 import ScoreCard from './ScoreCard';
+import ExpandedScoreCard from './ExpandedScoreCard';
 import { ComponentRef, useRef, useState, useEffect } from 'react';
 import type { Challenge } from '@/types';
 import { HumeVoiceProvider, useVoice } from './HumeVoiceProvider';
@@ -204,18 +205,37 @@ function BehaviorGrid() {
         return initialData;
     });
 
+    const [expandedCard, setExpandedCard] = useState<string | null>(null);
+
+    // Handle ESC key to close expanded card
+    useEffect(() => {
+        const handleEscKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && expandedCard) {
+                setExpandedCard(null);
+            }
+        };
+
+        document.addEventListener('keydown', handleEscKey);
+        return () => document.removeEventListener('keydown', handleEscKey);
+    }, [expandedCard]);
+
     const handleCardClick = (cardId: string) => {
         const config = behaviorCardConfigs.find(c => c.id === cardId);
-        if (!config || config.sense !== 'do') return;
+        if (!config) return;
 
-        setCardsData(prev => ({
-            ...prev,
-            [cardId]: {
-                ...prev[cardId],
-                status: prev[cardId].status === 'to-do' ? 'good' : 
-                       prev[cardId].status === 'good' ? 'great' : 'great'
-            }
-        }));
+        if (config.sense === 'do') {
+            setCardsData(prev => ({
+                ...prev,
+                [cardId]: {
+                    ...prev[cardId],
+                    status: prev[cardId].status === 'to-do' ? 'good' : 
+                           prev[cardId].status === 'good' ? 'great' : 'great'
+                }
+            }));
+        }
+        
+        // Expand the card regardless of sense
+        setExpandedCard(cardId);
     };
 
     // Separate do and don't cards
@@ -223,43 +243,54 @@ function BehaviorGrid() {
     const dontConfigs = behaviorCardConfigs.filter(config => config.sense === 'dont');
 
     return (
-        <div className="p-4">
-            <div className="grid grid-cols-4 grid-rows-2 gap-3">
-                {/* First 3 do cards in top row */}
-                {doConfigs.slice(0, 3).map((config) => (
+        <>
+            <div className="p-4">
+                <div className="grid grid-cols-4 grid-rows-2 gap-3">
+                    {/* First 3 do cards in top row */}
+                    {doConfigs.slice(0, 3).map((config) => (
+                        <ScoreCard
+                            key={config.id}
+                            config={config}
+                            data={cardsData[config.id]}
+                            onClick={() => handleCardClick(config.id)}
+                        />
+                    ))}
+                    
+                    {/* First don't card in top right */}
                     <ScoreCard
-                        key={config.id}
-                        config={config}
-                        data={cardsData[config.id]}
-                        onClick={() => handleCardClick(config.id)}
+                        key={dontConfigs[0].id}
+                        config={dontConfigs[0]}
+                        data={cardsData[dontConfigs[0].id]}
                     />
-                ))}
-                
-                {/* First don't card in top right */}
-                <ScoreCard
-                    key={dontConfigs[0].id}
-                    config={dontConfigs[0]}
-                    data={cardsData[dontConfigs[0].id]}
-                />
 
-                {/* Last 3 do cards in bottom row */}
-                {doConfigs.slice(3, 6).map((config) => (
+                    {/* Last 3 do cards in bottom row */}
+                    {doConfigs.slice(3, 6).map((config) => (
+                        <ScoreCard
+                            key={config.id}
+                            config={config}
+                            data={cardsData[config.id]}
+                            onClick={() => handleCardClick(config.id)}
+                        />
+                    ))}
+
+                    {/* Second don't card in bottom right */}
                     <ScoreCard
-                        key={config.id}
-                        config={config}
-                        data={cardsData[config.id]}
-                        onClick={() => handleCardClick(config.id)}
+                        key={dontConfigs[1].id}
+                        config={dontConfigs[1]}
+                        data={cardsData[dontConfigs[1].id]}
                     />
-                ))}
-
-                {/* Second don't card in bottom right */}
-                <ScoreCard
-                    key={dontConfigs[1].id}
-                    config={dontConfigs[1]}
-                    data={cardsData[dontConfigs[1].id]}
-                />
+                </div>
             </div>
-        </div>
+
+            {/* Expanded Card Overlay */}
+            {expandedCard && (
+                <ExpandedScoreCard
+                    config={behaviorCardConfigs.find(c => c.id === expandedCard)!}
+                    data={cardsData[expandedCard]}
+                    onClose={() => setExpandedCard(null)}
+                />
+            )}
+        </>
     );
 }
 
