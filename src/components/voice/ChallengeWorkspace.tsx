@@ -100,6 +100,7 @@ function RecentMessages() {
                 {recentMessages.map((msg, index) => {
                     // Calculate opacity based on message age (newer messages are more opaque)
                     const opacity = Math.max(0.3, 1 - (recentMessages.length - index - 1) * 0.2);
+                    const speaker = msg.message.role === 'user' ? 'You' : 'Voter';
                     
                     return (
                         <div
@@ -112,10 +113,10 @@ function RecentMessages() {
                             )}
                             style={{ opacity }}
                         >
-                            <div className="text-xs font-medium mb-1 opacity-70">
-                                {msg.message.role === 'user' ? 'You' : 'Voter'}
+                            <div className="text-sm">
+                                <span className="font-medium opacity-70">{speaker}: </span>
+                                {msg.message.content}
                             </div>
-                            <div className="text-sm">{msg.message.content}</div>
                         </div>
                     );
                 })}
