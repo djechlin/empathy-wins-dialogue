@@ -1,4 +1,3 @@
-
 import ControlPanel from './ControlPanel';
 import ScriptBar from './ScriptBar';
 import ConversationReport from './ConversationReport';
@@ -93,10 +92,6 @@ function RecentMessages() {
 
     return (
         <div className="p-4">
-            <h3 className="font-medium text-gray-700 mb-4 flex items-center gap-2">
-                <MessageCircle className="size-4" />
-                Recent Messages
-            </h3>
             <div 
                 ref={containerRef}
                 className="space-y-3 max-h-32 overflow-y-auto"
