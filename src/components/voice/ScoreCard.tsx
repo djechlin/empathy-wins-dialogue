@@ -65,7 +65,16 @@ const ScoreCard = ({ config, data, onClick }: ScoreCardProps) => {
     }
     
     if (data.status === 'good' || data.status === 'great') {
-      return "bg-gray-800";
+      // Dark versions of the original colors
+      const iconColorMap: Record<string, string> = {
+        Heart: 'bg-pink-800',
+        Search: 'bg-blue-800',
+        Book: 'bg-green-800',
+        Ear: 'bg-purple-800',
+        Handshake: 'bg-orange-800',
+        Users: 'bg-indigo-800'
+      };
+      return iconColorMap[config.icon] || 'bg-gray-800';
     }
     
     // Default icon colors based on the icon type
