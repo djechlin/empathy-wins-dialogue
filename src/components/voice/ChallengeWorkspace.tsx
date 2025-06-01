@@ -5,7 +5,7 @@ import type { Challenge } from '@/types';
 import { HumeVoiceProvider, useVoice } from './HumeVoiceProvider';
 import { ConversationReport as ReportType } from '@/types/conversationReport';
 import { Button } from '@/components/ui/button';
-import { Clock, MessageCircle, CheckSquare, FileText, Check, X, Heart, Ear, Book, Search, Users, Handshake } from 'lucide-react';
+import { Clock, MessageCircle, CheckSquare, FileText, Check, X, Heart, Ear, Book, Search, Users, Handshake, FootballHelmet, Podium } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { VoiceContextType } from '@humeai/voice-react';
 import { Badge } from '@/components/ui/badge';
@@ -31,8 +31,8 @@ const behaviorCards: BehaviorCard[] = [
     { id: 'listen-actively', title: 'Listen Actively', description: 'Focus on understanding, not responding', type: 'do', status: 'none', icon: 'Ear' },
     { id: 'find-common-ground', title: 'Find Common Ground', description: 'Look for shared values and experiences', type: 'do', status: 'none', icon: 'Handshake' },
     { id: 'show-empathy', title: 'Show Empathy', description: 'Acknowledge their perspective without judgment', type: 'do', status: 'none', icon: 'Users' },
-    { id: 'lecture-politics', title: 'Lecture on Politics', description: 'Avoid giving political speeches', type: 'dont', status: 'none' },
-    { id: 'get-defensive', title: 'Get Defensive', description: 'Don\'t take disagreement personally', type: 'dont', status: 'none' },
+    { id: 'lecture-politics', title: 'Lecture on Politics', description: 'Avoid giving political speeches', type: 'dont', status: 'none', icon: 'Podium' },
+    { id: 'get-defensive', title: 'Get Defensive', description: 'Don\'t take disagreement personally', type: 'dont', status: 'none', icon: 'FootballHelmet' },
 ];
 
 function Timer() {
@@ -166,7 +166,9 @@ function BehaviorGrid() {
             Book,
             Ear,
             Handshake,
-            Users
+            Users,
+            Podium,
+            FootballHelmet
         };
         return iconMap[iconName];
     };
@@ -261,7 +263,10 @@ function BehaviorGrid() {
                     <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
                             <div className="p-2 rounded-full flex-shrink-0 bg-red-100">
-                                <X className="h-4 w-4 text-red-600" />
+                                {dontCards[0].icon && getIconComponent(dontCards[0].icon) ? 
+                                    React.createElement(getIconComponent(dontCards[0].icon), { className: "h-4 w-4 text-red-600" }) :
+                                    <X className="h-4 w-4 text-red-600" />
+                                }
                             </div>
                         </div>
                         <h4 className="font-medium text-sm mb-1 text-amber-800">
@@ -329,7 +334,10 @@ function BehaviorGrid() {
                     <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
                             <div className="p-2 rounded-full flex-shrink-0 bg-red-100">
-                                <X className="h-4 w-4 text-red-600" />
+                                {dontCards[1].icon && getIconComponent(dontCards[1].icon) ? 
+                                    React.createElement(getIconComponent(dontCards[1].icon), { className: "h-4 w-4 text-red-600" }) :
+                                    <X className="h-4 w-4 text-red-600" />
+                                }
                             </div>
                         </div>
                         <h4 className="font-medium text-sm mb-1 text-amber-800">
