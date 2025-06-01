@@ -1,20 +1,38 @@
 import ControlPanel from './ControlPanel';
-import ScriptBar from './ScriptBar';
 import ConversationReport from './ConversationReport';
-import DeepCanvassingChecklist from './DeepCanvassingChecklist';
 import { ComponentRef, useRef, useState, useEffect } from 'react';
 import type { Challenge } from '@/types';
 import { HumeVoiceProvider, useVoice } from './HumeVoiceProvider';
 import { ConversationReport as ReportType } from '@/types/conversationReport';
 import { Button } from '@/components/ui/button';
-import { Clock, MessageCircle, CheckSquare, FileText } from 'lucide-react';
+import { Clock, MessageCircle, CheckSquare, FileText, Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { VoiceContextType } from '@humeai/voice-react';
+import { Badge } from '@/components/ui/badge';
 
 interface ChallengeWorkspaceProps {
     challenge: Challenge;
     isMock?: boolean;
 }
+
+interface BehaviorCard {
+    id: string;
+    title: string;
+    description: string;
+    type: 'do' | 'dont';
+    status: 'none' | 'good' | 'great';
+}
+
+const behaviorCards: BehaviorCard[] = [
+    { id: 'ask-feelings', title: 'Ask How They Feel', description: 'Show genuine interest in their emotions', type: 'do', status: 'none' },
+    { id: 'dig-deeper', title: 'Dig Deeper', description: 'Ask follow-up questions to understand better', type: 'do', status: 'none' },
+    { id: 'share-story', title: 'Share Your Story', description: 'Be vulnerable and authentic', type: 'do', status: 'none' },
+    { id: 'listen-actively', title: 'Listen Actively', description: 'Focus on understanding, not responding', type: 'do', status: 'none' },
+    { id: 'find-common-ground', title: 'Find Common Ground', description: 'Look for shared values and experiences', type: 'do', status: 'none' },
+    { id: 'show-empathy', title: 'Show Empathy', description: 'Acknowledge their perspective without judgment', type: 'do', status: 'none' },
+    { id: 'lecture-politics', title: 'Lecture on Politics', description: 'Avoid giving political speeches', type: 'dont', status: 'none' },
+    { id: 'get-defensive', title: 'Get Defensive', description: 'Don\'t take disagreement personally', type: 'dont', status: 'none' },
+];
 
 function Timer() {
     const [timeElapsed, setTimeElapsed] = useState(0);
@@ -125,6 +143,84 @@ function RecentMessages() {
     );
 }
 
+function BehaviorGrid() {
+    const [cards, setCards] = useState<BehaviorCard[]>(behaviorCards);
+
+    const handleCardClick = (cardId: string) => {
+        setCards(prev => prev.map(card => {
+            if (card.id === cardId && card.type === 'do') {
+                // Cycle through: none -> good -> great
+                const newStatus = card.status === 'none' ? 'good' : 
+                                card.status === 'good' ? 'great' : 'great';
+                return { ...card, status: newStatus };
+            }
+            return card;
+        }));
+    };
+
+    return (
+        <div className="p-4">
+            <div className="grid grid-cols-4 gap-3">
+                {cards.map((card) => (
+                    <div
+                        key={card.id}
+                        onClick={() => handleCardClick(card.id)}
+                        className={cn(
+                            "aspect-square p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between relative",
+                            card.type === 'do' ? (
+                                card.status === 'none' 
+                                    ? "bg-white border-gray-200 hover:bg-gray-50"
+                                    : "bg-dialogue-neutral border-dialogue-purple"
+                            ) : "bg-red-50 border-red-200 hover:bg-red-100"
+                        )}
+                    >
+                        <div className="flex-1">
+                            <div className="flex items-start justify-between mb-2">
+                                <div className={cn(
+                                    "p-1 rounded-full flex-shrink-0",
+                                    card.type === 'do' ? "bg-green-100" : "bg-red-100"
+                                )}>
+                                    {card.type === 'do' ? (
+                                        <Check className={cn(
+                                            "h-3 w-3",
+                                            card.status !== 'none' ? "text-green-600" : "text-gray-400"
+                                        )} />
+                                    ) : (
+                                        <X className="h-3 w-3 text-red-600" />
+                                    )}
+                                </div>
+                                {card.type === 'do' && card.status !== 'none' && (
+                                    <Badge 
+                                        variant="secondary" 
+                                        className={cn(
+                                            "text-xs",
+                                            card.status === 'good' ? "bg-dialogue-purple text-white" : "bg-green-500 text-white"
+                                        )}
+                                    >
+                                        {card.status}
+                                    </Badge>
+                                )}
+                            </div>
+                            <h4 className={cn(
+                                "font-medium text-sm mb-1",
+                                card.type === 'do' ? "text-gray-800" : "text-red-800"
+                            )}>
+                                {card.title}
+                            </h4>
+                            <p className={cn(
+                                "text-xs leading-tight",
+                                card.type === 'do' ? "text-gray-600" : "text-red-600"
+                            )}>
+                                {card.description}
+                            </p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 function ChallengeWorkspaceContent({ challenge }: ChallengeWorkspaceProps) {
     const [report, setReport] = useState<ReportType | null>(null);
 
@@ -150,26 +246,18 @@ function ChallengeWorkspaceContent({ challenge }: ChallengeWorkspaceProps) {
     return (
         <div className="flex flex-col h-full">
             <Timer />
-            <div className="flex flex-1 min-h-0">
-                {/* Left Side: Script - Takes up 60% of width */}
-                <div className="w-3/5 border-r">
-                    <ScriptBar script={challenge.script} />
-                </div>
-                
-                {/* Right Side: Checklist - Takes up 40% of width */}
-                <div className="w-2/5 flex flex-col">
-                    <div className="flex-1 overflow-y-auto">
-                        <DeepCanvassingChecklist />
-                    </div>
-                </div>
+            
+            {/* Behavior Cards Grid */}
+            <div className="flex-1 overflow-y-auto">
+                <BehaviorGrid />
             </div>
             
-            {/* Recent Messages at bottom - full width */}
+            {/* Recent Messages at bottom */}
             <div className="border-t bg-white">
                 <RecentMessages />
             </div>
             
-            {/* Control Panel at bottom - full width */}
+            {/* Control Panel at bottom */}
             <div className="border-t bg-gray-50">
                 <ControlPanel onReportGenerated={setReport} />
             </div>
