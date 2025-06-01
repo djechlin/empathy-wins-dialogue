@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -66,7 +65,7 @@ const ScoreCard = ({ config, data, onClick }: ScoreCardProps) => {
     }
     
     if (data.status === 'good' || data.status === 'great') {
-      return "bg-dialogue-purple";
+      return "bg-gray-800";
     }
     
     // Default icon colors based on the icon type
@@ -87,7 +86,16 @@ const ScoreCard = ({ config, data, onClick }: ScoreCardProps) => {
     }
     
     if (data.status === 'good' || data.status === 'great') {
-      return "text-white";
+      // Keep the original cute colors but make them lighter for dark background
+      const iconColorMap: Record<string, string> = {
+        Heart: 'text-pink-300',
+        Search: 'text-blue-300',
+        Book: 'text-green-300',
+        Ear: 'text-purple-300',
+        Handshake: 'text-orange-300',
+        Users: 'text-indigo-300'
+      };
+      return iconColorMap[config.icon] || 'text-gray-300';
     }
     
     const iconColorMap: Record<string, string> = {
