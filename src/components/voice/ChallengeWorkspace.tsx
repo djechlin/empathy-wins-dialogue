@@ -1,14 +1,14 @@
 import ControlPanel from './ControlPanel';
 import ConversationReport from './ConversationReport';
+import ScoreCard from './ScoreCard';
 import { ComponentRef, useRef, useState, useEffect } from 'react';
 import type { Challenge } from '@/types';
 import { HumeVoiceProvider, useVoice } from './HumeVoiceProvider';
 import { ConversationReport as ReportType } from '@/types/conversationReport';
 import { Button } from '@/components/ui/button';
-import { Clock, MessageCircle, CheckSquare, FileText, Check, X, Heart, Ear, Book, Search, Users, Handshake, ShieldOff, MegaphoneOff } from 'lucide-react';
+import { Clock, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { VoiceContextType } from '@humeai/voice-react';
-import { Badge } from '@/components/ui/badge';
 import React from 'react';
 
 interface ChallengeWorkspaceProps {
@@ -16,24 +16,28 @@ interface ChallengeWorkspaceProps {
     isMock?: boolean;
 }
 
-interface BehaviorCard {
+interface BehaviorCardConfig {
     id: string;
+    icon: string;
     title: string;
-    description: string;
-    type: 'do' | 'dont';
-    status: 'none' | 'good' | 'great';
-    icon?: string;
+    subtitle: string;
+    sense: 'do' | 'dont';
 }
 
-const behaviorCards: BehaviorCard[] = [
-    { id: 'ask-feelings', title: 'Ask How They Feel', description: 'Show genuine interest in their emotions', type: 'do', status: 'none', icon: 'Heart' },
-    { id: 'dig-deeper', title: 'Dig Deeper', description: 'Ask follow-up questions to understand better', type: 'do', status: 'none', icon: 'Search' },
-    { id: 'share-story', title: 'Share Your Story', description: 'Be vulnerable and authentic', type: 'do', status: 'none', icon: 'Book' },
-    { id: 'listen-actively', title: 'Listen Actively', description: 'Focus on understanding, not responding', type: 'do', status: 'none', icon: 'Ear' },
-    { id: 'find-common-ground', title: 'Find Common Ground', description: 'Look for shared values and experiences', type: 'do', status: 'none', icon: 'Handshake' },
-    { id: 'show-empathy', title: 'Show Empathy', description: 'Acknowledge their perspective without judgment', type: 'do', status: 'none', icon: 'Users' },
-    { id: 'lecture-politics', title: 'Lecture on Politics', description: 'Avoid giving political speeches', type: 'dont', status: 'none', icon: 'MegaphoneOff' },
-    { id: 'get-defensive', title: 'Get Defensive', description: 'Don\'t take disagreement personally', type: 'dont', status: 'none', icon: 'ShieldOff' },
+interface BehaviorCardData {
+    status: 'to-do' | 'good' | 'great' | number;
+    examples: string[];
+}
+
+const behaviorCardConfigs: BehaviorCardConfig[] = [
+    { id: 'ask-feelings', icon: 'Heart', title: 'Ask How They Feel', subtitle: 'Show genuine interest in their emotions', sense: 'do' },
+    { id: 'dig-deeper', icon: 'Search', title: 'Dig Deeper', subtitle: 'Ask follow-up questions to understand better', sense: 'do' },
+    { id: 'share-story', icon: 'Book', title: 'Share Your Story', subtitle: 'Be vulnerable and authentic', sense: 'do' },
+    { id: 'listen-actively', icon: 'Ear', title: 'Listen Actively', subtitle: 'Focus on understanding, not responding', sense: 'do' },
+    { id: 'find-common-ground', icon: 'Handshake', title: 'Find Common Ground', subtitle: 'Look for shared values and experiences', sense: 'do' },
+    { id: 'show-empathy', icon: 'Users', title: 'Show Empathy', subtitle: 'Acknowledge their perspective without judgment', sense: 'do' },
+    { id: 'lecture-politics', icon: 'MegaphoneOff', title: 'Lecture on Politics', subtitle: 'Avoid giving political speeches', sense: 'dont' },
+    { id: 'get-defensive', icon: 'ShieldOff', title: 'Get Defensive', subtitle: 'Don\'t take disagreement personally', sense: 'dont' },
 ];
 
 function Timer() {
@@ -146,209 +150,71 @@ function RecentMessages() {
 }
 
 function BehaviorGrid() {
-    const [cards, setCards] = useState<BehaviorCard[]>(behaviorCards);
+    const [cardsData, setCardsData] = useState<Record<string, BehaviorCardData>>(() => {
+        const initialData: Record<string, BehaviorCardData> = {};
+        behaviorCardConfigs.forEach(config => {
+            initialData[config.id] = {
+                status: config.sense === 'do' ? 'to-do' : 0,
+                examples: []
+            };
+        });
+        return initialData;
+    });
 
     const handleCardClick = (cardId: string) => {
-        setCards(prev => prev.map(card => {
-            if (card.id === cardId && card.type === 'do') {
-                // Cycle through: none -> good -> great
-                const newStatus = card.status === 'none' ? 'good' : 
-                                card.status === 'good' ? 'great' : 'great';
-                return { ...card, status: newStatus };
+        const config = behaviorCardConfigs.find(c => c.id === cardId);
+        if (!config || config.sense !== 'do') return;
+
+        setCardsData(prev => ({
+            ...prev,
+            [cardId]: {
+                ...prev[cardId],
+                status: prev[cardId].status === 'to-do' ? 'good' : 
+                       prev[cardId].status === 'good' ? 'great' : 'great'
             }
-            return card;
         }));
     };
 
-    const getIconComponent = (iconName: string) => {
-        const iconMap: Record<string, any> = {
-            Heart,
-            Search,
-            Book,
-            Ear,
-            Handshake,
-            Users,
-            MegaphoneOff,
-            ShieldOff
-        };
-        return iconMap[iconName];
-    };
-
-    const getIconBgColor = (iconName: string) => {
-        const colorMap: Record<string, string> = {
-            Heart: 'bg-pink-100',
-            Search: 'bg-blue-100',
-            Book: 'bg-green-100',
-            Ear: 'bg-purple-100',
-            Handshake: 'bg-orange-100',
-            Users: 'bg-indigo-100'
-        };
-        return colorMap[iconName] || 'bg-gray-100';
-    };
-
-    const getIconColor = (iconName: string, status: string) => {
-        if (status === 'none') {
-            const colorMap: Record<string, string> = {
-                Heart: 'text-pink-600',
-                Search: 'text-blue-600',
-                Book: 'text-green-600',
-                Ear: 'text-purple-600',
-                Handshake: 'text-orange-600',
-                Users: 'text-indigo-600'
-            };
-            return colorMap[iconName] || 'text-gray-600';
-        }
-        return 'text-dialogue-purple';
-    };
-
     // Separate do and don't cards
-    const doCards = cards.filter(card => card.type === 'do');
-    const dontCards = cards.filter(card => card.type === 'dont');
+    const doConfigs = behaviorCardConfigs.filter(config => config.sense === 'do');
+    const dontConfigs = behaviorCardConfigs.filter(config => config.sense === 'dont');
 
     return (
         <div className="p-4">
             <div className="grid grid-cols-4 grid-rows-2 gap-3">
                 {/* First 3 do cards in top row */}
-                {doCards.slice(0, 3).map((card) => {
-                    const IconComponent = getIconComponent(card.icon || 'Check');
-                    return (
-                        <div
-                            key={card.id}
-                            onClick={() => handleCardClick(card.id)}
-                            className={cn(
-                                "aspect-square p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between relative",
-                                card.status === 'none' 
-                                    ? "bg-white border-gray-200 hover:bg-gray-50"
-                                    : "bg-dialogue-neutral border-dialogue-purple"
-                            )}
-                        >
-                            <div className="flex-1">
-                                <div className="flex items-start justify-between mb-2">
-                                    <div className={cn(
-                                        "p-2 rounded-full flex-shrink-0",
-                                        card.status !== 'none' ? "bg-dialogue-purple" : getIconBgColor(card.icon || '')
-                                    )}>
-                                        {IconComponent && <IconComponent className={cn(
-                                            "h-4 w-4",
-                                            card.status !== 'none' ? "text-white" : getIconColor(card.icon || '', card.status)
-                                        )} />}
-                                    </div>
-                                    <Badge 
-                                        variant="secondary" 
-                                        className={cn(
-                                            "text-xs",
-                                            card.status === 'none' ? "bg-white text-dialogue-purple border border-dialogue-purple" :
-                                            card.status === 'good' ? "bg-dialogue-purple text-white" : 
-                                            "bg-dialogue-purple text-white"
-                                        )}
-                                    >
-                                        {card.status === 'none' ? 'To-do' : card.status}
-                                    </Badge>
-                                </div>
-                                <h4 className="font-medium text-sm mb-1 text-gray-800">
-                                    {card.title}
-                                </h4>
-                                <p className="text-xs leading-tight text-gray-600">
-                                    {card.description}
-                                </p>
-                            </div>
-                        </div>
-                    );
-                })}
+                {doConfigs.slice(0, 3).map((config) => (
+                    <ScoreCard
+                        key={config.id}
+                        config={config}
+                        data={cardsData[config.id]}
+                        onClick={() => handleCardClick(config.id)}
+                    />
+                ))}
                 
                 {/* First don't card in top right */}
-                <div
-                    key={dontCards[0].id}
-                    className="aspect-square p-4 rounded-lg border-2 transition-all duration-200 flex flex-col justify-between relative bg-amber-50 border-amber-200 hover:bg-amber-100"
-                >
-                    <div className="flex-1">
-                        <div className="flex items-start justify-between mb-2">
-                            <div className="p-2 rounded-full flex-shrink-0 bg-red-100">
-                                {dontCards[0].icon && getIconComponent(dontCards[0].icon) ? 
-                                    React.createElement(getIconComponent(dontCards[0].icon), { className: "h-4 w-4 text-red-600" }) :
-                                    <X className="h-4 w-4 text-red-600" />
-                                }
-                            </div>
-                        </div>
-                        <h4 className="font-medium text-sm mb-1 text-amber-800">
-                            {dontCards[0].title}
-                        </h4>
-                        <p className="text-xs leading-tight text-amber-700">
-                            {dontCards[0].description}
-                        </p>
-                    </div>
-                </div>
+                <ScoreCard
+                    key={dontConfigs[0].id}
+                    config={dontConfigs[0]}
+                    data={cardsData[dontConfigs[0].id]}
+                />
 
                 {/* Last 3 do cards in bottom row */}
-                {doCards.slice(3, 6).map((card) => {
-                    const IconComponent = getIconComponent(card.icon || 'Check');
-                    return (
-                        <div
-                            key={card.id}
-                            onClick={() => handleCardClick(card.id)}
-                            className={cn(
-                                "aspect-square p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between relative",
-                                card.status === 'none' 
-                                    ? "bg-white border-gray-200 hover:bg-gray-50"
-                                    : "bg-dialogue-neutral border-dialogue-purple"
-                            )}
-                        >
-                            <div className="flex-1">
-                                <div className="flex items-start justify-between mb-2">
-                                    <div className={cn(
-                                        "p-2 rounded-full flex-shrink-0",
-                                        card.status !== 'none' ? "bg-dialogue-purple" : getIconBgColor(card.icon || '')
-                                    )}>
-                                        {IconComponent && <IconComponent className={cn(
-                                            "h-4 w-4",
-                                            card.status !== 'none' ? "text-white" : getIconColor(card.icon || '', card.status)
-                                        )} />}
-                                    </div>
-                                    <Badge 
-                                        variant="secondary" 
-                                        className={cn(
-                                            "text-xs",
-                                            card.status === 'none' ? "bg-white text-dialogue-purple border border-dialogue-purple" :
-                                            card.status === 'good' ? "bg-dialogue-purple text-white" : 
-                                            "bg-dialogue-purple text-white"
-                                        )}
-                                    >
-                                        {card.status === 'none' ? 'To-do' : card.status}
-                                    </Badge>
-                                </div>
-                                <h4 className="font-medium text-sm mb-1 text-gray-800">
-                                    {card.title}
-                                </h4>
-                                <p className="text-xs leading-tight text-gray-600">
-                                    {card.description}
-                                </p>
-                            </div>
-                        </div>
-                    );
-                })}
+                {doConfigs.slice(3, 6).map((config) => (
+                    <ScoreCard
+                        key={config.id}
+                        config={config}
+                        data={cardsData[config.id]}
+                        onClick={() => handleCardClick(config.id)}
+                    />
+                ))}
 
                 {/* Second don't card in bottom right */}
-                <div
-                    key={dontCards[1].id}
-                    className="aspect-square p-4 rounded-lg border-2 transition-all duration-200 flex flex-col justify-between relative bg-amber-50 border-amber-200 hover:bg-amber-100"
-                >
-                    <div className="flex-1">
-                        <div className="flex items-start justify-between mb-2">
-                            <div className="p-2 rounded-full flex-shrink-0 bg-red-100">
-                                {dontCards[1].icon && getIconComponent(dontCards[1].icon) ? 
-                                    React.createElement(getIconComponent(dontCards[1].icon), { className: "h-4 w-4 text-red-600" }) :
-                                    <X className="h-4 w-4 text-red-600" />
-                                }
-                            </div>
-                        </div>
-                        <h4 className="font-medium text-sm mb-1 text-amber-800">
-                            {dontCards[1].title}
-                        </h4>
-                        <p className="text-xs leading-tight text-amber-700">
-                            {dontCards[1].description}
-                        </p>
-                    </div>
-                </div>
+                <ScoreCard
+                    key={dontConfigs[1].id}
+                    config={dontConfigs[1]}
+                    data={cardsData[dontConfigs[1].id]}
+                />
             </div>
         </div>
     );
