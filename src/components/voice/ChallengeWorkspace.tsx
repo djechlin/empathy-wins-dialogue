@@ -76,42 +76,50 @@ function Timer() {
 function RecentMessages() {
     const { messages } = useVoice();
     
-    // Get last 4 messages (2 exchanges)
+    // Get last 6 messages (3 exchanges)
     const recentMessages = messages
         .filter(msg => msg.type === 'user_message' || msg.type === 'assistant_message')
-        .slice(-4);
+        .slice(-6);
 
     if (recentMessages.length === 0) {
         return (
             <div className="p-6 text-center text-gray-500">
-                <MessageCircle className="size-12 mx-auto mb-3 opacity-50" />
+                <MessageCircle className="size-8 mx-auto mb-2 opacity-50" />
                 <p className="text-sm">Start the conversation to see recent messages</p>
             </div>
         );
     }
 
     return (
-        <div className="p-4 space-y-4">
+        <div className="p-4">
             <h3 className="font-medium text-gray-700 mb-4 flex items-center gap-2">
                 <MessageCircle className="size-4" />
                 Recent Messages
             </h3>
-            {recentMessages.map((msg, index) => (
-                <div
-                    key={index}
-                    className={cn(
-                        'p-4 rounded-lg border',
-                        msg.type === 'user_message' 
-                            ? 'bg-blue-50 border-blue-200 ml-6' 
-                            : 'bg-gray-50 border-gray-200 mr-6'
-                    )}
-                >
-                    <div className="text-xs font-medium mb-2 opacity-70">
-                        {msg.message.role === 'user' ? 'You' : 'Voter'}
-                    </div>
-                    <div className="text-sm">{msg.message.content}</div>
-                </div>
-            ))}
+            <div className="space-y-3 max-h-32 overflow-y-auto">
+                {recentMessages.map((msg, index) => {
+                    // Calculate opacity based on message age (newer messages are more opaque)
+                    const opacity = Math.max(0.3, 1 - (recentMessages.length - index - 1) * 0.2);
+                    
+                    return (
+                        <div
+                            key={index}
+                            className={cn(
+                                'p-3 rounded-lg border transition-all duration-500 ease-in-out',
+                                msg.type === 'user_message' 
+                                    ? 'bg-blue-50 border-blue-200 ml-8' 
+                                    : 'bg-gray-50 border-gray-200 mr-8'
+                            )}
+                            style={{ opacity }}
+                        >
+                            <div className="text-xs font-medium mb-1 opacity-70">
+                                {msg.message.role === 'user' ? 'You' : 'Voter'}
+                            </div>
+                            <div className="text-sm">{msg.message.content}</div>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 }
@@ -142,27 +150,25 @@ function ChallengeWorkspaceContent({ challenge }: ChallengeWorkspaceProps) {
         <div className="flex flex-col h-full">
             <Timer />
             <div className="flex flex-1 min-h-0">
-                {/* Left Side: Script - Takes up 40% of width */}
-                <div className="w-2/5 border-r">
+                {/* Left Side: Script - Takes up 60% of width */}
+                <div className="w-3/5 border-r">
                     <ScriptBar script={challenge.script} />
                 </div>
                 
-                {/* Middle: Messages - Takes up 35% of width */}
-                <div className="w-1/3 border-r">
-                    <div className="h-full overflow-y-auto">
-                        <RecentMessages />
-                    </div>
-                </div>
-                
-                {/* Right Side: Checklist - Takes up 25% of width */}
-                <div className="w-1/4 flex flex-col">
+                {/* Right Side: Checklist - Takes up 40% of width */}
+                <div className="w-2/5 flex flex-col">
                     <div className="flex-1 overflow-y-auto">
                         <DeepCanvassingChecklist />
                     </div>
                 </div>
             </div>
             
-            {/* Control Panel at bottom - full width, no interactive elements during conversation */}
+            {/* Recent Messages at bottom - full width */}
+            <div className="border-t bg-white">
+                <RecentMessages />
+            </div>
+            
+            {/* Control Panel at bottom - full width */}
             <div className="border-t bg-gray-50">
                 <ControlPanel onReportGenerated={setReport} />
             </div>
