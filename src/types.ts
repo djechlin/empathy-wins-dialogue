@@ -1,3 +1,4 @@
+
 export type StepItem = {
     text: string;
     triggers?: string[];
@@ -31,6 +32,7 @@ export type Challenge = {
     id: ChallengeId;
     title: string;
     debate?: string;
+    voterAction?: string;
     humePersona?: string
     disabled?: boolean;
     script?: Script;

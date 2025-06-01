@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -18,6 +17,7 @@ const ChallengePage = () => {
       id: 'healthcare',
       title: 'Expand healthcare',
       debate: 'Your home state of Kentucky is debating HB16, which expands maternal healthcare benefits into the first year of childhood.',
+      voterAction: 'Practice your conversation skills',
       script: [
         {
           name: 'first script item',
