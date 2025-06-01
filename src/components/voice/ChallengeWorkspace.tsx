@@ -1,7 +1,7 @@
-
 import ControlPanel from './ControlPanel';
 import ScriptBar from './ScriptBar';
 import ConversationReport from './ConversationReport';
+import DeepCanvassingChecklist from './DeepCanvassingChecklist';
 import { ComponentRef, useRef, useState, useEffect } from 'react';
 import type { Challenge } from '@/types';
 import { HumeVoiceProvider, useVoice } from './HumeVoiceProvider';
@@ -141,14 +141,21 @@ function ChallengeWorkspaceContent({ challenge }: ChallengeWorkspaceProps) {
         <div className="flex flex-col h-full">
             <Timer />
             <div className="flex flex-1 min-h-0">
-                {/* Script Section - Takes up 60% of width */}
-                <div className="w-3/5 border-r">
+                {/* Script Section - Takes up 40% of width */}
+                <div className="w-2/5 border-r">
                     <ScriptBar script={challenge.script} />
                 </div>
                 
-                {/* Messages and Controls Section - Takes up 40% of width */}
-                <div className="w-2/5 flex flex-col">
+                {/* Middle Section: Messages - Takes up 30% of width */}
+                <div className="w-3/10 border-r flex flex-col">
                     <RecentMessages />
+                </div>
+                
+                {/* Right Section: Checklist and Controls - Takes up 30% of width */}
+                <div className="w-3/10 flex flex-col">
+                    <div className="flex-1 overflow-hidden">
+                        <DeepCanvassingChecklist />
+                    </div>
                     <ControlPanel onReportGenerated={setReport} />
                 </div>
             </div>
