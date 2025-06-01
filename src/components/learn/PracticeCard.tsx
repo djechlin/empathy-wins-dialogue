@@ -1,6 +1,6 @@
 import { CallWorkspace } from '@/components/voice/CallWorkspace';
 import { Phone } from 'lucide-react';
-import { ScenarioId } from '@/lib/scriptData';
+import { ScenarioId } from '@/types';
 import ActivityCard from './ActivityCard';
 import Quiz, { QuizQuestion } from './Quiz';
 
