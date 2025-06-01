@@ -2,29 +2,49 @@
 import { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { CallWorkspace } from '@/components/voice/CallWorkspace';
+import { ChallengeWorkspace } from '@/components/voice/ChallengeWorkspace';
 import ConversationReport from '@/components/voice/ConversationReport';
 import { Button } from '@/components/ui/button';
 import { sampleReport } from '@/lib/report';
 import SliderCard from '@/components/ui/slider-card';
+import type { Challenge } from '@/types';
 
-const Challenge = () => {
+const ChallengePage = () => {
   const [selectedTopic, setSelectedTopic] = useState<string>('');
   const [showReport, setShowReport] = useState(false);
 
-  const topics = [
-    'Protect healthcare',
-    'Climate resilience (hard)',
-    'LGBT rights',
-    'Voter turnout (hard)',
+  const challenges: Challenge[] = [
+    {
+      id: 'healthcare',
+      title: 'Expand healthcare',
+      debate: 'Your home state of Kentucky is debating HB16, which expands maternal healthcare benefits into the first year of childhood.',
+      script: [
+        {
+          name: 'first script item',
+          items: [{
+            text: 'first item text',
+          }]
+        }
+      ],
+      humePersona: '2befee5d-0661-403a-98d7-65e515f05e22'
+    },
+    {
+      id: 'climate',
+      title: 'Protect the climate',
+      debate: 'Your home state of Washington is considering a program to increase grizzly bear populations, which is really good for the environment, but understandably has some citizens a little concerned.',
+      disabled: true,
+    },
+    {
+      id: 'lgbt',
+      title: 'Support LGBT rights',
+      disabled: true,
+    },
+    {
+      id: 'voting',
+      title: 'Increase midterm turnout',
+      disabled: true
+    }
   ];
-
-  const scenarioIds = {
-    'Protect healthcare': 'challenge-healthcare',
-    'Climate resilience (hard)': 'challenge-climate',
-    'LGBT rights': 'challenge-lgbt',
-    'Voter turnout (hard)': 'challenge-voting'
-  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -55,14 +75,15 @@ const Challenge = () => {
                       Choose your topic:
                     </h2>
                     <div className="flex flex-wrap justify-center gap-3">
-                      {topics.map((topic) => (
+                      {challenges.map((challenge) => (
                         <Button
-                          key={topic}
-                          variant={selectedTopic === topic ? "default" : "outline"}
-                          onClick={() => setSelectedTopic(topic)}
-                          className={selectedTopic === topic ? "bg-dialogue-purple hover:bg-dialogue-darkblue" : ""}
+                          disabled={challenge.disabled}
+                          key={challenge.id}
+                          variant={selectedTopic === challenge.id ? "default" : "outline"}
+                          onClick={() => setSelectedTopic(challenge.id)}
+                          className={selectedTopic === challenge.id ? "bg-dialogue-purple hover:bg-dialogue-darkblue" : ""}
                         >
-                          {topic}
+                          {challenge.title + (challenge.disabled ? ' (Coming soon!)' : '')}
                         </Button>
                       ))}
                     </div>
@@ -86,7 +107,7 @@ const Challenge = () => {
                     <p className="text-gray-600 mb-6">
                       Practice your conversation skills in this challenging scenario. Apply everything you've learned about vulnerable storytelling and empathetic listening.
                     </p>
-                    <CallWorkspace scenarioId={scenarioIds[selectedTopic]} />
+                    <ChallengeWorkspace challenge={challenges[0]} />
                   </div>
                 </>
               ) : (
@@ -120,4 +141,5 @@ const Challenge = () => {
   );
 };
 
-export default Challenge;
+
+export default ChallengePage;

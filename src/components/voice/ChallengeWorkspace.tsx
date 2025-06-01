@@ -3,18 +3,16 @@ import ControlPanel from './ControlPanel';
 import ScriptBar from './ScriptBar';
 import ConversationReport from './ConversationReport';
 import { ComponentRef, useRef, useState } from 'react';
-import { HUME_PERSONAS, SCRIPTS } from '@/lib/scriptData';
-import type { ScenarioId } from '@/types';
+import type { Challenge } from '@/types';
 import { HumeVoiceProvider } from './HumeVoiceProvider';
 import { ConversationReport as ReportType } from '@/types/conversationReport';
 import { Button } from '@/components/ui/button';
 
-interface CallWorkspaceProps {
-    scenarioId: ScenarioId;
-    configId?: string;
+interface ChallengeWorkspaceProps {
+    challenge: Challenge;
 }
 
-function CallWorkspaceContent({ scenarioId }: CallWorkspaceProps) {
+function ChallengeWorkspaceContent({ challenge }: ChallengeWorkspaceProps) {
     const ref = useRef<ComponentRef<typeof MessageList> | null>(null);
     const [report, setReport] = useState<ReportType | null>(null);
 
@@ -40,7 +38,7 @@ function CallWorkspaceContent({ scenarioId }: CallWorkspaceProps) {
     return (
         <>
             <div className="w-1/2 h-full flex-shrink-0">
-                <ScriptBar script={SCRIPTS[scenarioId]} />
+                <ScriptBar script={challenge.script} />
             </div>
             <div className="w-1/2 flex flex-col min-w-0">
                 <MessageList ref={ref} />
@@ -50,14 +48,14 @@ function CallWorkspaceContent({ scenarioId }: CallWorkspaceProps) {
     );
 }
 
-export function CallWorkspace({ scenarioId }: CallWorkspaceProps) {
+export function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProps) {
     return (
         <HumeVoiceProvider
-            configId={HUME_PERSONAS[scenarioId]}
+            configId={challenge.humePersona}
             onMessage={() => {}}
             className="flex flex-row w-full min-h-[800px] h-fit"
         >
-            <CallWorkspaceContent scenarioId={scenarioId} />
+            <ChallengeWorkspaceContent challenge={challenge} />
         </HumeVoiceProvider>
     );
 }

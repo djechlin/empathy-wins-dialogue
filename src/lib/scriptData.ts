@@ -1,30 +1,6 @@
-export type Step = {
-  name: string;
-  description: Array<{ text: string; triggers?: string[]; isScript: boolean, hint?: string }>;
-};
-
-export type Script = Step[];
-
-export type ScenarioId =
-  | 'challenge-lgbt'
-  | 'challenge-climate'
-  | 'challenge-healthcare'
-  | 'challenge-voting'
-  | 'challenge-bikes'
-  | 'deep-canvassing'
-  | 'law-order-voter'
-  | 'code-review-junior-feedback'
-  | 'intro-canvassing'
-  | 'busy-voter-libraries'
-  | 'empathetic-listening'
-  | 'love-list';
+import {Script, Step, Scenario, ScenarioId} from '@/types';
 
 export const SCRIPT_TITLES: { [key in ScenarioId]: string } = {
-  'challenge-lgbt': 'Script',
-  'challenge-climate': 'Script',
-  'challenge-healthcare': 'Script',
-  'challenge-voting': 'Script',
-  'challenge-bikes': 'Script',
   'deep-canvassing': 'Script',
   'law-order-voter': 'Law & Order Voter Script',
   'code-review-junior-feedback': 'Code Review Feedback Script',
@@ -35,11 +11,6 @@ export const SCRIPT_TITLES: { [key in ScenarioId]: string } = {
 };
 
 export const HUME_PERSONAS: { [key in ScenarioId]: string } = {
-    'challenge-lgbt': '2befee5d-0661-403a-98d7-65e515f05e22',
-  'challenge-climate': '2befee5d-0661-403a-98d7-65e515f05e22',
-  'challenge-healthcare': '2befee5d-0661-403a-98d7-65e515f05e22',
-  'challenge-voting': '2befee5d-0661-403a-98d7-65e515f05e22',
-  'challenge-bikes': '2befee5d-0661-403a-98d7-65e515f05e22',
   'deep-canvassing': 'ad21affc-6037-4af2-b7c0-95f04279169a',
   'law-order-voter': '419a04ee-8457-4f9b-8e2f-d5ae4f632597',
   'code-review-junior-feedback': 'ba08f302-361f-43fa-886b-4eacd2691fe3',
@@ -53,34 +24,30 @@ function challengeScript(hint: string): Script {
   return [
     {
       name: 'You knock on the door - they answer',
-      description: [
+      items: [
         {
           text: 'Try to gauge their support for your issue early. Ask them how they feel on a scale of 1-10.',
           triggers: ['scale', '10', 'ten'],
-          isScript: true
         }
       ]
     },
     {
       name: 'Try to persuade them'!,
-      description: [
+      items: [
         {
           text: 'Persuade as you normally would. As you roleplay feel free to improvise any details about the issue or your background.',
-          isScript: true
         },
         {
-          text: 'Check for a hint',
+          text: 'Click for a hint',
           hint: hint,
-          isScript: false
         }
       ]
     },
     {
       name: 'End the conversation when you\'re ready',
-      description: [
+      items: [
         {
           text: 'The roleplayer won\'t hang up, so you have to. Before you go, ask them how they feel about the issue on that 1-10 scale again and see if they\'ve changed their mind at all.',
-          isScript: true
         }
       ]
     }
@@ -88,22 +55,16 @@ function challengeScript(hint: string): Script {
 }
 
 export const SCRIPTS: { [key in ScenarioId]: Script } = {
-  'challenge-bikes': challengeScript('Share a fond memory you have of your city, like your first date or a memorable day in the park. Describe the person you spent it with, if you can.'),
-  'challenge-healthcare': challengeScript('Ask if they know anyone who has lost their job recently, or had trouble seeing a doctor.'),
-  'challenge-climate': challengeScript('Ask who in their community was impacted by the recent weather event. Improvise a hurricane or wildfire.'),
-  'challenge-lgbt': challengeScript('Ask if they know any LGBT people. Ask how they know them, what they\'re like, etc.'),
-  'challenge-voting': challengeScript('This one\'s hard! But if you share a story of your loved one and ask them for a similar story, they may start thinking of how voting connects them to people around them.'),
   'love-list': [
 
   ],
   'empathetic-listening': [
     {
       name: '1. Practice empathetic listening',
-      description: [
+      items: [
         {
           text: 'Practice using the HEAR method and empathetic listening techniques with a voter.',
           triggers: ['empathetic', 'listening', 'HEAR'],
-          isScript: true,
         },
       ],
     },
@@ -111,32 +72,29 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
   'intro-canvassing': [
     {
       name: '1. Introduce the candidate',
-      description: [
+      items: [
         {
           text: 'Introduce yourself as a canvasser and talk about the candidate you represent. Explain briefly what makes your candidate special.',
           triggers: ['introducing', 'candidate', 'canvassing', 'represent'],
-          isScript: true,
         },
       ],
     },
     {
       name: "2. Elicit about the voter's concerns",
-      description: [
+      items: [
         {
           text: 'Learn what issues matter to the voter.',
           triggers: ['landlord', 'housing', 'rent', 'apartment'],
-          isScript: true,
           hint: 'Ask about her landlord situation to hear her personal housing story.'
         },
       ],
     },
     {
       name: '3. Invite to campaign office',
-      description: [
+      items: [
         {
           text: 'Ask the voter to swing by the campaign office. Give a specific day or time if possible.',
           triggers: ['campaign office', 'stop by', 'swing by', 'visit'],
-          isScript: true,
         },
       ],
     },
@@ -144,21 +102,19 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
   'code-review-junior-feedback': [
     {
       name: '1. Receiving feedback',
-      description: [
+      items: [
         {
           text: "Your junior colleague is giving you feedback. They think you've been too nitpicky on code reviews. They'll be quite standoffish.",
           triggers: ['nitpicky', 'feedback', 'code reviews'],
-          isScript: true,
         },
       ],
     },
     {
       name: '2. Finding solutions',
-      description: [
+      items: [
         {
           text: 'Try to find a constructive solution to the feedback.',
           triggers: ['pair program', 'pair coding', 'work together'],
-          isScript: false,
           hint: 'When you offer to pair program the junior colleague will be happy.'
         },
       ],
@@ -167,35 +123,33 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
   'deep-canvassing': [
     {
       name: "1. Why you're here",
-      description: [
+      items: [
         {
           text: '"Hi, I\'m [name], talking to voters today about expanding bike access in the city. How do you feel about that?"',
           triggers: ['bike', 'access', 'city'],
-          isScript: true,
+
         },
         {
           text: '"Thanks for sharing that. And you know there\'s a primary election this June, on a scale of 1 to 10, how likely are you to vote?"',
           triggers: ['june', 'scale', '1 to 10', 'one to ten'],
-          isScript: true,
+
         },
         {
           text: '"Gotcha. And why is that the right number for you?"',
           triggers: ['right number'],
-          isScript: true,
         },
       ],
     },
     {
       name: '2. Share your story',
-      description: [
+      items: [
         {
           text: '"Thanks so much. For me, voting isn\'t just political, it\'s also personal. I vote because I love [share your personal connection]..."',
           triggers: ["isn't just political", 'personal', 'love'],
-          isScript: true,
         },
         {
           text: 'Use the word "love"! And say the person\'s name.',
-          isScript: false,
+
           hint: `Here's an example story:
 
 "I think of my husband Jim. We were barely making ends meet back in the 90s - still had teen band posters but didn't know how to make rent. That first Christmas together, I was determined to get him a present.
@@ -208,50 +162,42 @@ Christmas Eve came, and Jim handed me a wrapped package. Inside was a record by 
     },
     {
       name: '3. Elicit their personal story',
-      description: [
+      items: [
         {
           text: '"Is there someone who comes to mind who you love?',
           triggers: ['comes to mind', 'who you love'],
-          isScript: true,
         },
         {
           text: '[Idea 2] "Is there someone who\'s been there for you, or who you\'ve been there for?"',
           triggers: ['there for you', "you've been there for"],
-          isScript: true,
         },
         {
           text: '[Idea 3]"Have there been any big changes in your life lately? Who was around when you were going through that?"',
           triggers: ['big changes', 'who was around'],
-          isScript: true,
         },
         {
           text: "Don't give up, this part's hard. Make sure to ask their person's name.",
-          isScript: false,
         },
       ],
     },
     {
       name: '4. Finish up',
-      description: [
+      items: [
         {
           text: '"So the people we both love are very important to us. I want to ask, does that change how you think about voting at all?"',
           triggers: ['we both love', 'change how you think'],
-          isScript: true,
         },
         {
           text: '"Now going back to that 1-10 scale, where would you say you are now?"',
           triggers: ['going back', 'you are now'],
-          isScript: true,
         },
         {
           text: '"Is there anything about our conversation you thought was interesting?"',
           triggers: ['our conversation', 'was interesting'],
-          isScript: true,
         },
         {
           text: 'Thanks so much! Have a great day.',
           triggers: ['have a great day'],
-          isScript: true,
         },
       ],
     },
@@ -259,35 +205,31 @@ Christmas Eve came, and Jim handed me a wrapped package. Inside was a record by 
   'law-order-voter': [
     {
       name: '1. Introduce yourself and elicit',
-      description: [
+      items: [
         {
           text: '"I\'m with Shashi, the Democratic candidate for mayor, in the neighborhood today to ask voters what issues matter most to them this fall. What\'s on your mind?"',
           triggers: ['shashi', 'democratic candidate', 'mayor', 'issues'],
-          isScript: true,
         },
       ],
     },
     {
       name: '2. Discuss immigration and law enforcement',
-      description: [
+      items: [
         {
           text: 'In this roleplay, the voter is looking for specific commitments from the Democratic candidate. Give a specific commitment with the word "enforce" for this step.',
           triggers: ['enforce', 'enforcement'],
-          isScript: true,
         },
       ],
     },
     {
       name: '3. Ask about other issues',
-      description: [
+      items: [
         {
           text: '"Are there any other issues on your mind today?"',
           triggers: ['other issues', 'on your mind'],
-          isScript: true,
         },
         {
           text: 'For this roleplay, the voter is open to hearing about the Democrat after hearing about an immigration commitment. Share one more reason to vote for the Democrat here.',
-          isScript: false,
         },
       ],
     },
@@ -295,52 +237,26 @@ Christmas Eve came, and Jim handed me a wrapped package. Inside was a record by 
   'busy-voter-libraries': [
     {
       name: 'Starting the conversation',
-      description: [
+      items: [
         {
           text: '"My name\'s Jill, I\'m talking to voters about increase funding for our libraries, is this Adam?"',
           triggers: ['jill', 'increase funding', 'libraries', 'adam'],
-          isScript: true,
         },
         {
           text: 'If the voter says they\'re busy, continue',
-          isScript: false,
         },
         {
           text: '"Great, real quick on a scale of 1-10, where 1 means you\'re opposed and 10 means you definitely support increasing library funding, what number is right for you?"',
           triggers: ['scale', '1-10', 'opposed', 'support increasing', 'library funding', 'right for you'],
-          isScript: true,
         },
       ],
     },
   ],
 };
 
-export type Scenario = {
-  title: string;
-  description: string[];
-};
+
 
 export const SCENARIOS: { [key in ScenarioId]: Scenario } = {
-  'challenge-lgbt': {
-    title: 'LGBT Rights Challenge',
-    description: ['Practice persuading a swing voter on LGBT rights issues using deep canvassing techniques.']
-  },
-  'challenge-climate': {
-    title: 'Climate Resilience Challenge', 
-    description: ['Practice persuading a swing voter on climate issues using deep canvassing techniques.']
-  },
-  'challenge-healthcare': {
-    title: 'Healthcare Protection Challenge',
-    description: ['Practice persuading a swing voter on healthcare issues using deep canvassing techniques.']
-  },
-  'challenge-voting': {
-    title: 'Voter Turnout Challenge',
-    description: ['Practice persuading a swing voter on voting participation using deep canvassing techniques.']
-  },
-  'challenge-bikes': {
-    title: 'Bike Access Challenge',
-    description: ['Practice persuading a swing voter on bike access issues using deep canvassing techniques.']
-  },
   'love-list': {
     title: 'Love list',
     description: ['Love list exercise']
