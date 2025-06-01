@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -20,9 +21,12 @@ interface ScoreCardProps {
   config: ScoreCardConfig;
   data: ScoreCardData;
   onClick?: () => void;
+  stepNumber?: number;
+  isCurrentStep?: boolean;
+  isPreviousStep?: boolean;
 }
 
-const ScoreCard = ({ config, data, onClick }: ScoreCardProps) => {
+const ScoreCard = ({ config, data, onClick, stepNumber, isCurrentStep, isPreviousStep }: ScoreCardProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [prevStatus, setPrevStatus] = useState(data.status);
 
@@ -46,6 +50,14 @@ const ScoreCard = ({ config, data, onClick }: ScoreCardProps) => {
   const getCardStyles = () => {
     if (config.sense === 'dont') {
       return "bg-amber-50 border-amber-200 hover:bg-amber-100";
+    }
+    
+    // Purple outline for current and previous steps
+    if (isCurrentStep || isPreviousStep) {
+      if (data.status === 'great') {
+        return "bg-dialogue-neutral border-dialogue-purple";
+      }
+      return "bg-white border-dialogue-purple";
     }
     
     if (data.status === 'great') {
@@ -72,7 +84,8 @@ const ScoreCard = ({ config, data, onClick }: ScoreCardProps) => {
         Book: 'bg-green-800',
         Ear: 'bg-purple-800',
         Handshake: 'bg-orange-800',
-        Users: 'bg-indigo-800'
+        Users: 'bg-indigo-800',
+        Blocks: 'bg-gray-800'
       };
       return iconColorMap[config.icon] || 'bg-gray-800';
     }
@@ -84,7 +97,8 @@ const ScoreCard = ({ config, data, onClick }: ScoreCardProps) => {
       Book: 'bg-green-100',
       Ear: 'bg-purple-100',
       Handshake: 'bg-orange-100',
-      Users: 'bg-indigo-100'
+      Users: 'bg-indigo-100',
+      Blocks: 'bg-gray-100'
     };
     return iconColorMap[config.icon] || 'bg-gray-100';
   };
@@ -102,7 +116,8 @@ const ScoreCard = ({ config, data, onClick }: ScoreCardProps) => {
         Book: 'text-green-100',
         Ear: 'text-purple-100',
         Handshake: 'text-orange-100',
-        Users: 'text-indigo-100'
+        Users: 'text-indigo-100',
+        Blocks: 'text-gray-100'
       };
       return iconColorMap[config.icon] || 'text-white';
     }
@@ -114,7 +129,8 @@ const ScoreCard = ({ config, data, onClick }: ScoreCardProps) => {
       Book: 'text-green-600',
       Ear: 'text-purple-600',
       Handshake: 'text-orange-600',
-      Users: 'text-indigo-600'
+      Users: 'text-indigo-600',
+      Blocks: 'text-gray-600'
     };
     return iconColorMap[config.icon] || 'text-gray-600';
   };
@@ -127,6 +143,11 @@ const ScoreCard = ({ config, data, onClick }: ScoreCardProps) => {
         return '2+ mistakes';
       }
       return null;
+    }
+    
+    // Show step number instead of status for 'do' cards
+    if (stepNumber) {
+      return `Step ${stepNumber}`;
     }
     
     if (data.status === 'to-do') return 'To-do';

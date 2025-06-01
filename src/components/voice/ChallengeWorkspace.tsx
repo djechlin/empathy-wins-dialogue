@@ -206,6 +206,7 @@ function BehaviorGrid() {
     });
 
     const [expandedCard, setExpandedCard] = useState<string | null>(null);
+    const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
     // Handle ESC key to close expanded card
     useEffect(() => {
@@ -224,6 +225,8 @@ function BehaviorGrid() {
         if (!config) return;
 
         if (config.sense === 'do') {
+            const cardIndex = doConfigs.findIndex(c => c.id === cardId);
+            
             setCardsData(prev => ({
                 ...prev,
                 [cardId]: {
@@ -232,6 +235,11 @@ function BehaviorGrid() {
                            prev[cardId].status === 'good' ? 'great' : 'great'
                 }
             }));
+
+            // Update current step - move to next step if this one is completed
+            if (cardIndex === currentStepIndex) {
+                setCurrentStepIndex(prev => Math.min(prev + 1, doConfigs.length - 1));
+            }
         }
         
         // Expand the card regardless of sense
@@ -247,12 +255,15 @@ function BehaviorGrid() {
             <div className="p-4">
                 <div className="grid grid-cols-3 grid-rows-2 gap-3">
                     {/* First 2 do cards in top row */}
-                    {doConfigs.slice(0, 2).map((config) => (
+                    {doConfigs.slice(0, 2).map((config, index) => (
                         <ScoreCard
                             key={config.id}
                             config={config}
                             data={cardsData[config.id]}
                             onClick={() => handleCardClick(config.id)}
+                            stepNumber={index + 1}
+                            isCurrentStep={index === currentStepIndex}
+                            isPreviousStep={index < currentStepIndex}
                         />
                     ))}
                     
@@ -264,12 +275,15 @@ function BehaviorGrid() {
                     />
 
                     {/* Last 2 do cards in bottom row */}
-                    {doConfigs.slice(2, 4).map((config) => (
+                    {doConfigs.slice(2, 4).map((config, index) => (
                         <ScoreCard
                             key={config.id}
                             config={config}
                             data={cardsData[config.id]}
                             onClick={() => handleCardClick(config.id)}
+                            stepNumber={index + 3}
+                            isCurrentStep={index + 2 === currentStepIndex}
+                            isPreviousStep={index + 2 < currentStepIndex}
                         />
                     ))}
 
