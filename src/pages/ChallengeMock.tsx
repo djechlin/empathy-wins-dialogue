@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -17,6 +18,7 @@ const ChallengeMockPage = () => {
       id: 'healthcare',
       title: 'Expand healthcare',
       debate: 'Your home state of Kentucky is debating HB16, which expands maternal healthcare benefits into the first year of childhood.',
+      voterAction: 'Practice your conversation skills',
       script: [
         {
           name: 'first script item',
@@ -53,7 +55,7 @@ const ChallengeMockPage = () => {
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-4xl mx-auto text-center mb-12">
               <h1 className="text-4xl md:text-5xl font-bold mb-6 text-dialogue-darkblue">
-                Can You Persuade a Swing Voter? (Mock Mode)
+                Can You Persuade a Swing Voter?
               </h1>
               <p className="text-xl text-gray-700 max-w-3xl mx-auto">
                 Put your deep canvassing skills to the test with this interactive practice session using mock conversations.
@@ -91,7 +93,7 @@ const ChallengeMockPage = () => {
                   <div className="bg-white rounded-lg shadow-lg p-6">
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-2xl font-bold text-dialogue-darkblue">
-                        Deep Canvassing Challenge (Mock Mode)
+                        Deep Canvassing Challenge
                       </h3>
                       {window.location.hostname === 'localhost' && (
                         <Button
@@ -104,7 +106,7 @@ const ChallengeMockPage = () => {
                       )}
                     </div>
                     <p className="text-gray-600 mb-6">
-                      Practice your conversation skills in this challenging scenario using mock conversations. Apply everything you've learned about vulnerable storytelling and empathetic listening.
+                      {challenges[0].voterAction}. Apply everything you've learned about vulnerable storytelling and empathetic listening.
                     </p>
                     <ChallengeWorkspace challenge={challenges[0]} isMock={true} />
                   </div>
