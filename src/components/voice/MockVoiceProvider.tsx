@@ -207,7 +207,7 @@ export function MockVoiceProvider({ children, className }: MockVoiceProviderProp
       setIsConnected(false);
       setMessages([]);
     },
-    readyState: isConnected ? VoiceReadyState.Open : VoiceReadyState.Connecting,
+    readyState: isConnected ? VoiceReadyState.OPEN : VoiceReadyState.CONNECTING,
     micFft: Array.from(new Uint8Array(0)),
     sendAssistantInput: () => {},
     sendUserInput: () => {},
