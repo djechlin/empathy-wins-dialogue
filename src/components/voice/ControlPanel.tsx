@@ -1,4 +1,5 @@
-import { useVoice, VoiceContextType } from '@humeai/voice-react';
+import { VoiceContextType } from '@humeai/voice-react';
+import { useVoice } from './HumeVoiceProvider';
 import { Button } from '@/components/ui/button';
 import { Mic, MicOff, Phone, FileText, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

@@ -18,6 +18,7 @@ import TurningOutTheBase from "./pages/blog/TurningOutTheBase";
 import TheNameType2Dialogue from "./pages/blog/TheNameType2Dialogue";
 import Auth from "./pages/Auth";
 import Challenge from "./pages/Challenge";
+import ChallengeMock from "./pages/ChallengeMock";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/blog/swing-voters" element={<SwingVoters />} />
           <Route path="/blog/turning-out-the-base" element={<TurningOutTheBase />} />
           <Route path="/challenge" element={<Challenge />} />
+          <Route path="/challenge/mock" element={<ChallengeMock />} />
           <Route path="/auth" element={<Auth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

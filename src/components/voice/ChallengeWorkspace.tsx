@@ -13,6 +13,7 @@ import { VoiceContextType } from '@humeai/voice-react';
 
 interface ChallengeWorkspaceProps {
     challenge: Challenge;
+    isMock?: boolean;
 }
 
 function Timer() {
@@ -155,12 +156,13 @@ function ChallengeWorkspaceContent({ challenge }: ChallengeWorkspaceProps) {
     );
 }
 
-export function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProps) {
+export function ChallengeWorkspace({ challenge, isMock = false }: ChallengeWorkspaceProps) {
     return (
         <HumeVoiceProvider
             configId={challenge.humePersona}
             onMessage={() => {}}
             className="flex flex-col w-full min-h-[800px] h-fit bg-white rounded-lg overflow-hidden"
+            isMock={isMock}
         >
             <ChallengeWorkspaceContent challenge={challenge} />
         </HumeVoiceProvider>
