@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -145,12 +144,10 @@ const ScoreCard = ({ config, data, onClick, stepNumber, isCurrentStep, isPreviou
       return null;
     }
     
-    // Show step number instead of status for 'do' cards
-    if (stepNumber) {
+    // For 'do' cards: Step N -> Good -> Great progression
+    if (data.status === 'to-do' && stepNumber) {
       return `Step ${stepNumber}`;
     }
-    
-    if (data.status === 'to-do') return 'To-do';
     if (data.status === 'good') return 'Good';
     if (data.status === 'great') return 'Great';
     
