@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { VoiceContextType } from '@humeai/voice-react';
+import { VoiceContextType, VoiceReadyState } from '@humeai/voice-react';
 
 interface MockVoiceProviderProps {
   children: ReactNode;
@@ -207,7 +207,7 @@ export function MockVoiceProvider({ children, className }: MockVoiceProviderProp
       setIsConnected(false);
       setMessages([]);
     },
-    readyState: isConnected ? 1 as const : 0 as const,
+    readyState: isConnected ? VoiceReadyState.Open : VoiceReadyState.Connecting,
     micFft: Array.from(new Uint8Array(0)),
     sendAssistantInput: () => {},
     sendUserInput: () => {},
