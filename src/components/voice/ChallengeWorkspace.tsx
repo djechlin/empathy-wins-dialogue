@@ -153,10 +153,53 @@ function BehaviorGrid() {
     const [cardsData, setCardsData] = useState<Record<string, BehaviorCardData>>(() => {
         const initialData: Record<string, BehaviorCardData> = {};
         behaviorCardConfigs.forEach(config => {
-            initialData[config.id] = {
-                status: config.sense === 'do' ? 'to-do' : 0,
-                examples: []
-            };
+            // Mock data showing various states
+            if (config.id === 'ask-feelings') {
+                initialData[config.id] = {
+                    status: 'great',
+                    examples: ['How are you feeling about this issue?', 'What emotions come up when you think about that?']
+                };
+            } else if (config.id === 'dig-deeper') {
+                initialData[config.id] = {
+                    status: 'good', 
+                    examples: ['Can you tell me more about that experience?']
+                };
+            } else if (config.id === 'share-story') {
+                initialData[config.id] = {
+                    status: 'good',
+                    examples: ['I remember when my grandmother needed healthcare and we struggled with the costs']
+                };
+            } else if (config.id === 'listen-actively') {
+                initialData[config.id] = {
+                    status: 'to-do',
+                    examples: []
+                };
+            } else if (config.id === 'find-common-ground') {
+                initialData[config.id] = {
+                    status: 'to-do',
+                    examples: []
+                };
+            } else if (config.id === 'show-empathy') {
+                initialData[config.id] = {
+                    status: 'great',
+                    examples: ['That sounds really challenging for your family', 'I can understand why you would feel frustrated about that']
+                };
+            } else if (config.id === 'lecture-politics') {
+                initialData[config.id] = {
+                    status: 1,
+                    examples: ['The data clearly shows that universal healthcare is the only solution']
+                };
+            } else if (config.id === 'get-defensive') {
+                initialData[config.id] = {
+                    status: 0,
+                    examples: []
+                };
+            } else {
+                initialData[config.id] = {
+                    status: config.sense === 'do' ? 'to-do' : 0,
+                    examples: []
+                };
+            }
         });
         return initialData;
     });
