@@ -95,16 +95,16 @@ const ScoreCard = ({ config, data, onClick }: ScoreCardProps) => {
     }
     
     if (data.status === 'good' || data.status === 'great') {
-      // Keep the original cute colors but make them lighter for dark background
+      // Much lighter colors, almost white for dark background
       const iconColorMap: Record<string, string> = {
-        Heart: 'text-pink-300',
-        Search: 'text-blue-300',
-        Book: 'text-green-300',
-        Ear: 'text-purple-300',
-        Handshake: 'text-orange-300',
-        Users: 'text-indigo-300'
+        Heart: 'text-pink-100',
+        Search: 'text-blue-100',
+        Book: 'text-green-100',
+        Ear: 'text-purple-100',
+        Handshake: 'text-orange-100',
+        Users: 'text-indigo-100'
       };
-      return iconColorMap[config.icon] || 'text-gray-300';
+      return iconColorMap[config.icon] || 'text-white';
     }
     
     const iconColorMap: Record<string, string> = {
