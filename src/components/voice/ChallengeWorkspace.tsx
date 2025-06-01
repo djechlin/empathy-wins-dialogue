@@ -75,6 +75,7 @@ function Timer() {
 
 function RecentMessages() {
     const { messages } = useVoice();
+    const containerRef = useRef<HTMLDivElement>(null);
     
     // Get last 6 messages (3 exchanges)
     const recentMessages = messages
@@ -96,10 +97,14 @@ function RecentMessages() {
                 <MessageCircle className="size-4" />
                 Recent Messages
             </h3>
-            <div className="space-y-3 max-h-32 overflow-y-auto">
+            <div 
+                ref={containerRef}
+                className="space-y-3 max-h-32 overflow-y-auto"
+            >
                 {recentMessages.map((msg, index) => {
-                    // Calculate opacity based on message age (newer messages are more opaque)
-                    const opacity = Math.max(0.3, 1 - (recentMessages.length - index - 1) * 0.2);
+                    // Calculate opacity based on position from bottom (0 = bottom, higher = further up)
+                    const positionFromBottom = recentMessages.length - index - 1;
+                    const opacity = Math.max(0.3, 1 - positionFromBottom * 0.15);
                     const speaker = msg.message.role === 'user' ? 'You' : 'Voter';
                     
                     return (
