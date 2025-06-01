@@ -1,3 +1,4 @@
+
 import ControlPanel from './ControlPanel';
 import ConversationReport from './ConversationReport';
 import { ComponentRef, useRef, useState, useEffect } from 'react';
@@ -158,64 +159,136 @@ function BehaviorGrid() {
         }));
     };
 
+    // Separate do and don't cards
+    const doCards = cards.filter(card => card.type === 'do');
+    const dontCards = cards.filter(card => card.type === 'dont');
+
     return (
         <div className="p-4">
-            <div className="grid grid-cols-4 gap-3">
-                {cards.map((card) => (
+            <div className="grid grid-cols-4 grid-rows-2 gap-3">
+                {/* First 3 do cards in top row */}
+                {doCards.slice(0, 3).map((card) => (
                     <div
                         key={card.id}
                         onClick={() => handleCardClick(card.id)}
                         className={cn(
                             "aspect-square p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between relative",
-                            card.type === 'do' ? (
-                                card.status === 'none' 
-                                    ? "bg-white border-gray-200 hover:bg-gray-50"
-                                    : "bg-dialogue-neutral border-dialogue-purple"
-                            ) : "bg-red-50 border-red-200 hover:bg-red-100"
+                            card.status === 'none' 
+                                ? "bg-white border-gray-200 hover:bg-gray-50"
+                                : "bg-dialogue-neutral border-dialogue-purple"
                         )}
                     >
                         <div className="flex-1">
                             <div className="flex items-start justify-between mb-2">
-                                <div className={cn(
-                                    "p-1 rounded-full flex-shrink-0",
-                                    card.type === 'do' ? "bg-green-100" : "bg-red-100"
-                                )}>
-                                    {card.type === 'do' ? (
-                                        <Check className={cn(
-                                            "h-3 w-3",
-                                            card.status !== 'none' ? "text-green-600" : "text-gray-400"
-                                        )} />
-                                    ) : (
-                                        <X className="h-3 w-3 text-red-600" />
-                                    )}
+                                <div className="p-1 rounded-full flex-shrink-0 bg-purple-100">
+                                    <Check className={cn(
+                                        "h-3 w-3",
+                                        card.status !== 'none' ? "text-dialogue-purple" : "text-gray-400"
+                                    )} />
                                 </div>
-                                {card.type === 'do' && card.status !== 'none' && (
-                                    <Badge 
-                                        variant="secondary" 
-                                        className={cn(
-                                            "text-xs",
-                                            card.status === 'good' ? "bg-dialogue-purple text-white" : "bg-green-500 text-white"
-                                        )}
-                                    >
-                                        {card.status}
-                                    </Badge>
-                                )}
+                                <Badge 
+                                    variant="secondary" 
+                                    className={cn(
+                                        "text-xs",
+                                        card.status === 'none' ? "bg-white text-dialogue-purple border border-dialogue-purple" :
+                                        card.status === 'good' ? "bg-dialogue-purple text-white" : 
+                                        "bg-dialogue-purple text-white"
+                                    )}
+                                >
+                                    {card.status === 'none' ? 'To-do' : card.status}
+                                </Badge>
                             </div>
-                            <h4 className={cn(
-                                "font-medium text-sm mb-1",
-                                card.type === 'do' ? "text-gray-800" : "text-red-800"
-                            )}>
+                            <h4 className="font-medium text-sm mb-1 text-gray-800">
                                 {card.title}
                             </h4>
-                            <p className={cn(
-                                "text-xs leading-tight",
-                                card.type === 'do' ? "text-gray-600" : "text-red-600"
-                            )}>
+                            <p className="text-xs leading-tight text-gray-600">
                                 {card.description}
                             </p>
                         </div>
                     </div>
                 ))}
+                
+                {/* First don't card in top right */}
+                <div
+                    key={dontCards[0].id}
+                    className="aspect-square p-4 rounded-lg border-2 transition-all duration-200 flex flex-col justify-between relative bg-red-50 border-red-200 hover:bg-red-100"
+                >
+                    <div className="flex-1">
+                        <div className="flex items-start justify-between mb-2">
+                            <div className="p-1 rounded-full flex-shrink-0 bg-red-100">
+                                <X className="h-3 w-3 text-red-600" />
+                            </div>
+                        </div>
+                        <h4 className="font-medium text-sm mb-1 text-red-800">
+                            {dontCards[0].title}
+                        </h4>
+                        <p className="text-xs leading-tight text-red-600">
+                            {dontCards[0].description}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Last 3 do cards in bottom row */}
+                {doCards.slice(3, 6).map((card) => (
+                    <div
+                        key={card.id}
+                        onClick={() => handleCardClick(card.id)}
+                        className={cn(
+                            "aspect-square p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between relative",
+                            card.status === 'none' 
+                                ? "bg-white border-gray-200 hover:bg-gray-50"
+                                : "bg-dialogue-neutral border-dialogue-purple"
+                        )}
+                    >
+                        <div className="flex-1">
+                            <div className="flex items-start justify-between mb-2">
+                                <div className="p-1 rounded-full flex-shrink-0 bg-purple-100">
+                                    <Check className={cn(
+                                        "h-3 w-3",
+                                        card.status !== 'none' ? "text-dialogue-purple" : "text-gray-400"
+                                    )} />
+                                </div>
+                                <Badge 
+                                    variant="secondary" 
+                                    className={cn(
+                                        "text-xs",
+                                        card.status === 'none' ? "bg-white text-dialogue-purple border border-dialogue-purple" :
+                                        card.status === 'good' ? "bg-dialogue-purple text-white" : 
+                                        "bg-dialogue-purple text-white"
+                                    )}
+                                >
+                                    {card.status === 'none' ? 'To-do' : card.status}
+                                </Badge>
+                            </div>
+                            <h4 className="font-medium text-sm mb-1 text-gray-800">
+                                {card.title}
+                            </h4>
+                            <p className="text-xs leading-tight text-gray-600">
+                                {card.description}
+                            </p>
+                        </div>
+                    </div>
+                ))}
+
+                {/* Second don't card in bottom right */}
+                <div
+                    key={dontCards[1].id}
+                    className="aspect-square p-4 rounded-lg border-2 transition-all duration-200 flex flex-col justify-between relative bg-red-50 border-red-200 hover:bg-red-100"
+                >
+                    <div className="flex-1">
+                        <div className="flex items-start justify-between mb-2">
+                            <div className="p-1 rounded-full flex-shrink-0 bg-red-100">
+                                <X className="h-3 w-3 text-red-600" />
+                            </div>
+                        </div>
+                        <h4 className="font-medium text-sm mb-1 text-red-800">
+                            {dontCards[1].title}
+                        </h4>
+                        <p className="text-xs leading-tight text-red-600">
+                            {dontCards[1].description}
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     );
