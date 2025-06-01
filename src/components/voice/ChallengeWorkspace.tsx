@@ -173,7 +173,7 @@ function BehaviorGrid() {
 
     const getIconBgColor = (iconName: string) => {
         const colorMap: Record<string, string> = {
-            Heart: 'bg-magenta-100',
+            Heart: 'bg-pink-100',
             Search: 'bg-blue-100',
             Book: 'bg-green-100',
             Ear: 'bg-purple-100',
@@ -186,7 +186,7 @@ function BehaviorGrid() {
     const getIconColor = (iconName: string, status: string) => {
         if (status === 'none') {
             const colorMap: Record<string, string> = {
-                Heart: 'text-magenta-600',
+                Heart: 'text-pink-600',
                 Search: 'text-blue-600',
                 Book: 'text-green-600',
                 Ear: 'text-purple-600',
@@ -222,11 +222,11 @@ function BehaviorGrid() {
                             <div className="flex-1">
                                 <div className="flex items-start justify-between mb-2">
                                     <div className={cn(
-                                        "p-3 rounded-full flex-shrink-0",
+                                        "p-2 rounded-full flex-shrink-0",
                                         card.status !== 'none' ? "bg-dialogue-purple" : getIconBgColor(card.icon || '')
                                     )}>
                                         {IconComponent && <IconComponent className={cn(
-                                            "h-5 w-5",
+                                            "h-4 w-4",
                                             card.status !== 'none' ? "text-white" : getIconColor(card.icon || '', card.status)
                                         )} />}
                                     </div>
@@ -260,8 +260,8 @@ function BehaviorGrid() {
                 >
                     <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
-                            <div className="p-3 rounded-full flex-shrink-0 bg-red-100">
-                                <X className="h-5 w-5 text-red-600" />
+                            <div className="p-2 rounded-full flex-shrink-0 bg-red-100">
+                                <X className="h-4 w-4 text-red-600" />
                             </div>
                         </div>
                         <h4 className="font-medium text-sm mb-1 text-amber-800">
@@ -290,11 +290,11 @@ function BehaviorGrid() {
                             <div className="flex-1">
                                 <div className="flex items-start justify-between mb-2">
                                     <div className={cn(
-                                        "p-3 rounded-full flex-shrink-0",
+                                        "p-2 rounded-full flex-shrink-0",
                                         card.status !== 'none' ? "bg-dialogue-purple" : getIconBgColor(card.icon || '')
                                     )}>
                                         {IconComponent && <IconComponent className={cn(
-                                            "h-5 w-5",
+                                            "h-4 w-4",
                                             card.status !== 'none' ? "text-white" : getIconColor(card.icon || '', card.status)
                                         )} />}
                                     </div>
@@ -328,8 +328,8 @@ function BehaviorGrid() {
                 >
                     <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
-                            <div className="p-3 rounded-full flex-shrink-0 bg-red-100">
-                                <X className="h-5 w-5 text-red-600" />
+                            <div className="p-2 rounded-full flex-shrink-0 bg-red-100">
+                                <X className="h-4 w-4 text-red-600" />
                             </div>
                         </div>
                         <h4 className="font-medium text-sm mb-1 text-amber-800">
