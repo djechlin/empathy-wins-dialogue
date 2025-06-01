@@ -168,7 +168,34 @@ function BehaviorGrid() {
             Handshake,
             Users
         };
-        return iconMap[iconName] || Check;
+        return iconMap[iconName];
+    };
+
+    const getIconBgColor = (iconName: string) => {
+        const colorMap: Record<string, string> = {
+            Heart: 'bg-pink-100',
+            Search: 'bg-blue-100',
+            Book: 'bg-green-100',
+            Ear: 'bg-purple-100',
+            Handshake: 'bg-orange-100',
+            Users: 'bg-indigo-100'
+        };
+        return colorMap[iconName] || 'bg-gray-100';
+    };
+
+    const getIconColor = (iconName: string, status: string) => {
+        if (status === 'none') {
+            const colorMap: Record<string, string> = {
+                Heart: 'text-pink-600',
+                Search: 'text-blue-600',
+                Book: 'text-green-600',
+                Ear: 'text-purple-600',
+                Handshake: 'text-orange-600',
+                Users: 'text-indigo-600'
+            };
+            return colorMap[iconName] || 'text-gray-600';
+        }
+        return 'text-dialogue-purple';
     };
 
     // Separate do and don't cards
@@ -194,11 +221,14 @@ function BehaviorGrid() {
                         >
                             <div className="flex-1">
                                 <div className="flex items-start justify-between mb-2">
-                                    <div className="p-1 rounded-full flex-shrink-0 bg-purple-100">
-                                        <IconComponent className={cn(
-                                            "h-3 w-3",
-                                            card.status !== 'none' ? "text-dialogue-purple" : "text-gray-400"
-                                        )} />
+                                    <div className={cn(
+                                        "p-2 rounded-full flex-shrink-0",
+                                        card.status !== 'none' ? "bg-dialogue-purple" : getIconBgColor(card.icon || '')
+                                    )}>
+                                        {IconComponent && <IconComponent className={cn(
+                                            "h-4 w-4",
+                                            card.status !== 'none' ? "text-white" : getIconColor(card.icon || '', card.status)
+                                        )} />}
                                     </div>
                                     <Badge 
                                         variant="secondary" 
@@ -230,8 +260,8 @@ function BehaviorGrid() {
                 >
                     <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
-                            <div className="p-1 rounded-full flex-shrink-0 bg-amber-100">
-                                <X className="h-3 w-3 text-amber-600" />
+                            <div className="p-2 rounded-full flex-shrink-0 bg-red-100">
+                                <X className="h-4 w-4 text-red-600" />
                             </div>
                         </div>
                         <h4 className="font-medium text-sm mb-1 text-amber-800">
@@ -259,11 +289,14 @@ function BehaviorGrid() {
                         >
                             <div className="flex-1">
                                 <div className="flex items-start justify-between mb-2">
-                                    <div className="p-1 rounded-full flex-shrink-0 bg-purple-100">
-                                        <IconComponent className={cn(
-                                            "h-3 w-3",
-                                            card.status !== 'none' ? "text-dialogue-purple" : "text-gray-400"
-                                        )} />
+                                    <div className={cn(
+                                        "p-2 rounded-full flex-shrink-0",
+                                        card.status !== 'none' ? "bg-dialogue-purple" : getIconBgColor(card.icon || '')
+                                    )}>
+                                        {IconComponent && <IconComponent className={cn(
+                                            "h-4 w-4",
+                                            card.status !== 'none' ? "text-white" : getIconColor(card.icon || '', card.status)
+                                        )} />}
                                     </div>
                                     <Badge 
                                         variant="secondary" 
@@ -295,8 +328,8 @@ function BehaviorGrid() {
                 >
                     <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
-                            <div className="p-1 rounded-full flex-shrink-0 bg-amber-100">
-                                <X className="h-3 w-3 text-amber-600" />
+                            <div className="p-2 rounded-full flex-shrink-0 bg-red-100">
+                                <X className="h-4 w-4 text-red-600" />
                             </div>
                         </div>
                         <h4 className="font-medium text-sm mb-1 text-amber-800">
