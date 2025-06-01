@@ -211,18 +211,18 @@ function BehaviorGrid() {
                 {/* First don't card in top right */}
                 <div
                     key={dontCards[0].id}
-                    className="aspect-square p-4 rounded-lg border-2 transition-all duration-200 flex flex-col justify-between relative bg-red-50 border-red-200 hover:bg-red-100"
+                    className="aspect-square p-4 rounded-lg border-2 transition-all duration-200 flex flex-col justify-between relative bg-amber-50 border-amber-200 hover:bg-amber-100"
                 >
                     <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
-                            <div className="p-1 rounded-full flex-shrink-0 bg-red-100">
-                                <X className="h-3 w-3 text-red-600" />
+                            <div className="p-1 rounded-full flex-shrink-0 bg-amber-100">
+                                <X className="h-3 w-3 text-amber-600" />
                             </div>
                         </div>
-                        <h4 className="font-medium text-sm mb-1 text-red-800">
+                        <h4 className="font-medium text-sm mb-1 text-amber-800">
                             {dontCards[0].title}
                         </h4>
-                        <p className="text-xs leading-tight text-red-600">
+                        <p className="text-xs leading-tight text-amber-700">
                             {dontCards[0].description}
                         </p>
                     </div>
@@ -273,18 +273,18 @@ function BehaviorGrid() {
                 {/* Second don't card in bottom right */}
                 <div
                     key={dontCards[1].id}
-                    className="aspect-square p-4 rounded-lg border-2 transition-all duration-200 flex flex-col justify-between relative bg-red-50 border-red-200 hover:bg-red-100"
+                    className="aspect-square p-4 rounded-lg border-2 transition-all duration-200 flex flex-col justify-between relative bg-amber-50 border-amber-200 hover:bg-amber-100"
                 >
                     <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
-                            <div className="p-1 rounded-full flex-shrink-0 bg-red-100">
-                                <X className="h-3 w-3 text-red-600" />
+                            <div className="p-1 rounded-full flex-shrink-0 bg-amber-100">
+                                <X className="h-3 w-3 text-amber-600" />
                             </div>
                         </div>
-                        <h4 className="font-medium text-sm mb-1 text-red-800">
+                        <h4 className="font-medium text-sm mb-1 text-amber-800">
                             {dontCards[1].title}
                         </h4>
-                        <p className="text-xs leading-tight text-red-600">
+                        <p className="text-xs leading-tight text-amber-700">
                             {dontCards[1].description}
                         </p>
                     </div>
