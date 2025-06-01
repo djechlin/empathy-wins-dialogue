@@ -5,10 +5,11 @@ import type { Challenge } from '@/types';
 import { HumeVoiceProvider, useVoice } from './HumeVoiceProvider';
 import { ConversationReport as ReportType } from '@/types/conversationReport';
 import { Button } from '@/components/ui/button';
-import { Clock, MessageCircle, CheckSquare, FileText, Check, X, Heart, Ear, Book, Search, Users, Handshake, FootballHelmet, Podium } from 'lucide-react';
+import { Clock, MessageCircle, CheckSquare, FileText, Check, X, Heart, Ear, Book, Search, Users, Handshake, Shield, Megaphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { VoiceContextType } from '@humeai/voice-react';
 import { Badge } from '@/components/ui/badge';
+import React from 'react';
 
 interface ChallengeWorkspaceProps {
     challenge: Challenge;
@@ -31,8 +32,8 @@ const behaviorCards: BehaviorCard[] = [
     { id: 'listen-actively', title: 'Listen Actively', description: 'Focus on understanding, not responding', type: 'do', status: 'none', icon: 'Ear' },
     { id: 'find-common-ground', title: 'Find Common Ground', description: 'Look for shared values and experiences', type: 'do', status: 'none', icon: 'Handshake' },
     { id: 'show-empathy', title: 'Show Empathy', description: 'Acknowledge their perspective without judgment', type: 'do', status: 'none', icon: 'Users' },
-    { id: 'lecture-politics', title: 'Lecture on Politics', description: 'Avoid giving political speeches', type: 'dont', status: 'none', icon: 'Podium' },
-    { id: 'get-defensive', title: 'Get Defensive', description: 'Don\'t take disagreement personally', type: 'dont', status: 'none', icon: 'FootballHelmet' },
+    { id: 'lecture-politics', title: 'Lecture on Politics', description: 'Avoid giving political speeches', type: 'dont', status: 'none', icon: 'Megaphone' },
+    { id: 'get-defensive', title: 'Get Defensive', description: 'Don\'t take disagreement personally', type: 'dont', status: 'none', icon: 'Shield' },
 ];
 
 function Timer() {
@@ -167,8 +168,8 @@ function BehaviorGrid() {
             Ear,
             Handshake,
             Users,
-            Podium,
-            FootballHelmet
+            Megaphone,
+            Shield
         };
         return iconMap[iconName];
     };
