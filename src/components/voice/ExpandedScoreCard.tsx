@@ -33,8 +33,8 @@ const ExpandedScoreCard = ({ config, data, onClose }: ExpandedScoreCardProps) =>
       return "bg-red-100";
     }
     
-    if (data.status === 'good' || data.status === 'great') {
-      // Dark versions of the original colors
+    if (data.status === 'great') {
+      // Dark versions of the original colors (only for great state)
       const iconColorMap: Record<string, string> = {
         Heart: 'bg-pink-800',
         Search: 'bg-blue-800',
@@ -46,6 +46,7 @@ const ExpandedScoreCard = ({ config, data, onClose }: ExpandedScoreCardProps) =>
       return iconColorMap[config.icon] || 'bg-gray-800';
     }
     
+    // Default icon colors for to-do and good states
     const iconColorMap: Record<string, string> = {
       Heart: 'bg-pink-100',
       Search: 'bg-blue-100',
@@ -62,8 +63,8 @@ const ExpandedScoreCard = ({ config, data, onClose }: ExpandedScoreCardProps) =>
       return "text-red-600";
     }
     
-    if (data.status === 'good' || data.status === 'great') {
-      // Much lighter colors, almost white for dark background
+    if (data.status === 'great') {
+      // Much lighter colors, almost white for dark background (only for great state)
       const iconColorMap: Record<string, string> = {
         Heart: 'text-pink-100',
         Search: 'text-blue-100',
@@ -75,6 +76,7 @@ const ExpandedScoreCard = ({ config, data, onClose }: ExpandedScoreCardProps) =>
       return iconColorMap[config.icon] || 'text-white';
     }
     
+    // Keep original colors for to-do and good states
     const iconColorMap: Record<string, string> = {
       Heart: 'text-pink-600',
       Search: 'text-blue-600',
@@ -117,7 +119,7 @@ const ExpandedScoreCard = ({ config, data, onClose }: ExpandedScoreCardProps) =>
     }
     
     if (data.status === 'great') {
-      return "bg-dialogue-purple text-white";
+      return "bg-dialogue-darkblue text-white";
     }
     
     return "bg-gray-100 text-gray-600";
