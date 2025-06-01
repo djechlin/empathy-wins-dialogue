@@ -10,7 +10,6 @@ import { ConversationReport as ReportType } from '@/types/conversationReport';
 import { Button } from '@/components/ui/button';
 import { Clock, MessageCircle, CheckSquare, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VoiceContextType } from '@humeai/voice-react';
 
 interface ChallengeWorkspaceProps {
@@ -143,43 +142,29 @@ function ChallengeWorkspaceContent({ challenge }: ChallengeWorkspaceProps) {
         <div className="flex flex-col h-full">
             <Timer />
             <div className="flex flex-1 min-h-0">
-                {/* Left Side: Script - Takes up 50% of width */}
-                <div className="w-1/2 border-r">
+                {/* Left Side: Script - Takes up 40% of width */}
+                <div className="w-2/5 border-r">
                     <ScriptBar script={challenge.script} />
                 </div>
                 
-                {/* Right Side: Tabbed Interface - Takes up 50% of width */}
-                <div className="w-1/2 flex flex-col">
-                    <Tabs defaultValue="messages" className="flex flex-col h-full">
-                        <TabsList className="grid w-full grid-cols-2 m-4 mb-0">
-                            <TabsTrigger value="messages" className="flex items-center gap-2">
-                                <MessageCircle className="size-4" />
-                                Messages
-                            </TabsTrigger>
-                            <TabsTrigger value="checklist" className="flex items-center gap-2">
-                                <CheckSquare className="size-4" />
-                                Checklist
-                            </TabsTrigger>
-                        </TabsList>
-                        
-                        <TabsContent value="messages" className="flex-1 m-0 overflow-hidden">
-                            <div className="h-full overflow-y-auto">
-                                <RecentMessages />
-                            </div>
-                        </TabsContent>
-                        
-                        <TabsContent value="checklist" className="flex-1 m-4 mt-0 overflow-hidden">
-                            <div className="h-full overflow-y-auto">
-                                <DeepCanvassingChecklist />
-                            </div>
-                        </TabsContent>
-                    </Tabs>
-                    
-                    {/* Control Panel at bottom */}
-                    <div className="border-t">
-                        <ControlPanel onReportGenerated={setReport} />
+                {/* Middle: Messages - Takes up 35% of width */}
+                <div className="w-1/3 border-r">
+                    <div className="h-full overflow-y-auto">
+                        <RecentMessages />
                     </div>
                 </div>
+                
+                {/* Right Side: Checklist - Takes up 25% of width */}
+                <div className="w-1/4 flex flex-col">
+                    <div className="flex-1 overflow-y-auto">
+                        <DeepCanvassingChecklist />
+                    </div>
+                </div>
+            </div>
+            
+            {/* Control Panel at bottom - full width, no interactive elements during conversation */}
+            <div className="border-t bg-gray-50">
+                <ControlPanel onReportGenerated={setReport} />
             </div>
         </div>
     );
