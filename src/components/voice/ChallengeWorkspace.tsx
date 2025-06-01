@@ -245,9 +245,9 @@ function BehaviorGrid() {
     return (
         <>
             <div className="p-4">
-                <div className="grid grid-cols-4 grid-rows-2 gap-3">
-                    {/* First 3 do cards in top row */}
-                    {doConfigs.slice(0, 3).map((config) => (
+                <div className="grid grid-cols-3 grid-rows-2 gap-3">
+                    {/* First 2 do cards in top row */}
+                    {doConfigs.slice(0, 2).map((config) => (
                         <ScoreCard
                             key={config.id}
                             config={config}
@@ -263,8 +263,8 @@ function BehaviorGrid() {
                         data={cardsData[dontConfigs[0].id]}
                     />
 
-                    {/* Last 3 do cards in bottom row */}
-                    {doConfigs.slice(3, 6).map((config) => (
+                    {/* Last 2 do cards in bottom row */}
+                    {doConfigs.slice(2, 4).map((config) => (
                         <ScoreCard
                             key={config.id}
                             config={config}
