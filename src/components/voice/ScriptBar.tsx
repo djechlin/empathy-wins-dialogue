@@ -1,9 +1,9 @@
-
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight, CheckCircle, Circle } from 'lucide-react';
 import type { Script, Step, StepItem} from '@/types';
-import { useVoice, VoiceContextType, UserTranscriptMessage } from '@humeai/voice-react';
+import { useVoice } from './HumeVoiceProvider';
+import type { UserTranscriptMessage } from '@humeai/voice-react';
 
 interface HintProps {
   hint: string;
@@ -100,7 +100,7 @@ function Step({ step, stepIndex, isTriggered, triggeredItems, isCurrentStep }: S
 }
 
 export default function ScriptBar({ script }: { script: Script }) {
-  const { messages }: VoiceContextType = useVoice();
+  const { messages } = useVoice();
 
   const [triggeredSteps, triggeredItems, currentStepIndex] = useMemo<[Set<number>, Set<string>, number]>(() => {
     const userMessages = messages?.filter((msg): msg is UserTranscriptMessage => msg.type === 'user_message');

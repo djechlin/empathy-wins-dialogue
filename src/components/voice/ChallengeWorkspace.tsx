@@ -1,13 +1,11 @@
-
 import ControlPanel from './ControlPanel';
 import ScriptBar from './ScriptBar';
 import ConversationReport from './ConversationReport';
 import { ComponentRef, useRef, useState, useEffect } from 'react';
 import type { Challenge } from '@/types';
-import { HumeVoiceProvider } from './HumeVoiceProvider';
+import { HumeVoiceProvider, useVoice } from './HumeVoiceProvider';
 import { ConversationReport as ReportType } from '@/types/conversationReport';
 import { Button } from '@/components/ui/button';
-import { useVoice, VoiceContextType } from '@humeai/voice-react';
 import { Clock, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

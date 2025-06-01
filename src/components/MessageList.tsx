@@ -1,12 +1,13 @@
+
 import { cn } from '@/lib/utils';
-import { useVoice, VoiceContextType } from '@humeai/voice-react';
+import { useVoice } from '@/components/voice/HumeVoiceProvider';
 import ExpressionChipBar from './ExpressionChipBar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ComponentRef, forwardRef } from 'react';
 
 const MessageList = forwardRef<ComponentRef<typeof motion.div>, Record<never, never>>(
   function MessageList(_, ref) {
-    const { messages }: VoiceContextType = useVoice();
+    const { messages } = useVoice();
 
     return (
       <motion.div layoutScroll className={'flex-1 rounded-md overflow-y-auto p-4'} ref={ref}>

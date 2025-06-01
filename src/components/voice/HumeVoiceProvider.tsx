@@ -1,7 +1,8 @@
 
-import { ToolCallHandler, VoiceProvider } from '@humeai/voice-react';
+import { ToolCallHandler, VoiceProvider, useVoice as useHumeVoice } from '@humeai/voice-react';
 import { ReactNode, useEffect, useState } from 'react';
 import { getHumeAccessToken } from '@/lib/getHumeAccessToken';
+import { MockVoiceProvider, useMockVoice } from './MockVoiceProvider';
 
 interface HumeVoiceProviderProps {
   configId?: string;
@@ -12,7 +13,19 @@ interface HumeVoiceProviderProps {
   [key: string]: any; // Allow other VoiceProvider props to pass through
 }
 
-export function HumeVoiceProvider({
+// Hook that switches between real and mock voice
+export function useVoice() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const isMock = urlParams.get('mock') === 'true';
+  
+  if (isMock) {
+    return useMockVoice();
+  } else {
+    return useHumeVoice();
+  }
+}
+
+function RealHumeVoiceProvider({
   children,
   configId,
   onMessage,
@@ -60,4 +73,17 @@ export function HumeVoiceProvider({
       </VoiceProvider>
     </div>
   );
+}
+
+export function HumeVoiceProvider(props: HumeVoiceProviderProps) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const isMock = urlParams.get('mock') === 'true';
+  
+  console.log('HumeVoiceProvider: Mock mode', isMock);
+  
+  if (isMock) {
+    return <MockVoiceProvider className={props.className}>{props.children}</MockVoiceProvider>;
+  } else {
+    return <RealHumeVoiceProvider {...props} />;
+  }
 }
