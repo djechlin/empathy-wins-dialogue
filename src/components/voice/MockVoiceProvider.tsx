@@ -200,15 +200,15 @@ export function MockVoiceProvider({ children, className }: MockVoiceProviderProp
       value: isConnected ? 'connected' : 'disconnected'
     },
     isMuted: false,
-    unmute: () => {},
-    mute: () => {},
+    unmute: async () => {},
+    mute: async () => {},
     connect: () => setIsConnected(true),
     disconnect: () => {
       setIsConnected(false);
       setMessages([]);
     },
-    readyState: isConnected ? 1 : 0,
-    micFft: new Uint8Array(0),
+    readyState: isConnected ? 1 as const : 0 as const,
+    micFft: Array.from(new Uint8Array(0)),
     sendAssistantInput: () => {},
     sendUserInput: () => {},
     sendSessionSettings: () => {},

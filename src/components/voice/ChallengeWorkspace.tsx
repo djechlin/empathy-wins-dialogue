@@ -1,3 +1,4 @@
+
 import ControlPanel from './ControlPanel';
 import ScriptBar from './ScriptBar';
 import ConversationReport from './ConversationReport';
@@ -8,6 +9,7 @@ import { ConversationReport as ReportType } from '@/types/conversationReport';
 import { Button } from '@/components/ui/button';
 import { Clock, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { VoiceContextType } from '@humeai/voice-react';
 
 interface ChallengeWorkspaceProps {
     challenge: Challenge;
@@ -70,7 +72,7 @@ function Timer() {
 }
 
 function RecentMessages() {
-    const { messages }: VoiceContextType = useVoice();
+    const { messages } = useVoice();
     
     // Get last 4 messages (2 exchanges)
     const recentMessages = messages
