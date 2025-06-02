@@ -15,7 +15,7 @@ const ChallengePage = () => {
     {
       id: 'healthcare',
       title: 'Expand healthcare',
-      voterAction: 'Your home state of Kentucky is debating HB16, which will cut maternal healthcare for certain low-income women. You\'re opposing the cut.',
+      voterAction: 'Your home state might cut parental leave benefits. Persuade the voter to call their representative to oppose the cuts.',
       script: [
         {
           name: 'first script item',
@@ -63,7 +63,7 @@ const ChallengePage = () => {
               <SliderCard
                 id="pre-challenge-empathy"
                 title="Before You Start"
-                question="I'm interested in having more empathetic conversations with people who disagree with me about political topics."
+                question="I'm interested in having more empathetic sations with people who disagree with me about political topics."
               />
 
               {!showReport ? (

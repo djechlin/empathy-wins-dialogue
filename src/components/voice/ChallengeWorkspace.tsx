@@ -6,7 +6,7 @@ import type { Challenge } from '@/types';
 import { HumeVoiceProvider, useVoice } from './HumeVoiceProvider';
 import { ConversationReport as ReportType } from '@/types/conversationReport';
 import { Button } from '@/components/ui/button';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { expressionLabels } from '@/lib/expressionLabels';
 import { generateRealtimeReport } from '@/lib/claudeReport';
@@ -358,8 +358,45 @@ function ChallengeWorkspaceContent({ challenge, mock = false }: ChallengeWorkspa
                     <span className="font-semibold">Your scenario:</span> {challenge.voterAction}
                 </p>
                 <p className="text-sm text-gray-700 mt-2">
-                    <span>Converse naturally with the voice assistant. The main thing is: prioritize asking questions and letting them talk, over informing them.</span>
+                    <span>Converse naturally with the voice assistant. Try to listen actively, and not overwhelm them with facts.</span>
                 </p>
+            </div>
+
+            {/* Voter Card */}
+            <div className="bg-gray-50 border border-gray-200 p-4 mx-6 mt-4 rounded-lg">
+                <h3 className="font-semibold text-sm text-gray-800 mb-3 font-sans">Voter Card</h3>
+                <div className="flex gap-4 items-start">
+                    <div className="flex-1">
+                        <div className="space-y-1 text-sm text-gray-700">
+                            <p><span className="font-medium">Name:</span> Frank Hilltop, 52M</p>
+                            <p><span className="font-medium">Address:</span> 123 Oak Ln, Suburbville</p>
+                            <div className="flex items-center gap-2">
+                                <span className="font-medium">Voting record:</span>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-1">
+                                        <Check className="h-3 w-3 text-green-600" />
+                                        <span className="text-xs">2016</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <Check className="h-3 w-3 text-green-600" />
+                                        <span className="text-xs">2020</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <X className="h-3 w-3 text-red-600" />
+                                        <span className="text-xs">2024</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="w-80 flex-shrink-0 self-start">
+                        <img 
+                            src="/house-sketch.png" 
+                            alt="House sketch" 
+                            className="w-full rounded border"
+                        />
+                    </div>
+                </div>
             </div>
 
             {/* Control Section - Only show when active */}

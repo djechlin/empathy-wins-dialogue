@@ -144,7 +144,7 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep }: 
       {/* Main content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-1">
-          <h4 className="font-medium text-base text-gray-800">
+          <h4 className="font-medium text-base text-gray-800 font-sans">
             {config.title}
           </h4>
           {badgeContent && (
@@ -162,41 +162,47 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep }: 
         </p>
         
         <div className="space-y-2">
-          {data.examples.map((example, index) => {
-            // Handle both string and FeedbackItem formats
-            if (typeof example === 'string') {
-              return (
-                <p 
-                  key={index} 
-                  className="text-xs italic text-gray-500 leading-relaxed"
-                >
-                  {example}
-                </p>
-              );
-            } else {
-              // FeedbackItem format with icon
-              return (
-                <div 
-                  key={index} 
-                  className="flex items-start gap-2"
-                >
-                  <span className={cn(
-                    "text-xs font-medium flex-shrink-0 mt-0.5",
-                    example.type === 'positive' ? "text-green-600" : 
-                    example.type === 'negative' ? "text-red-600" :
-                    example.type === 'hint' ? "text-blue-600" : "text-gray-500"
-                  )}>
-                    {example.type === 'positive' ? '✓' : 
-                     example.type === 'negative' ? '!' :
-                     example.type === 'hint' ? '?' : ''}
-                  </span>
-                  <p className="text-xs italic text-gray-500 leading-relaxed">
-                    {example.text}
+          {data.examples.length === 0 ? (
+            <p className="text-xs italic text-gray-500 leading-relaxed">
+              {data.status === 'to-do' ? 'Step not started yet' : 'No feedback yet'}
+            </p>
+          ) : (
+            data.examples.map((example, index) => {
+              // Handle both string and FeedbackItem formats
+              if (typeof example === 'string') {
+                return (
+                  <p 
+                    key={index} 
+                    className="text-xs italic text-gray-500 leading-relaxed"
+                  >
+                    {example}
                   </p>
-                </div>
-              );
-            }
-          })}
+                );
+              } else {
+                // FeedbackItem format with icon
+                return (
+                  <div 
+                    key={index} 
+                    className="flex items-start gap-2"
+                  >
+                    <span className={cn(
+                      "text-xs font-medium flex-shrink-0 mt-0.5",
+                      example.type === 'positive' ? "text-green-600" : 
+                      example.type === 'negative' ? "text-red-600" :
+                      example.type === 'hint' ? "text-blue-600" : "text-gray-500"
+                    )}>
+                      {example.type === 'positive' ? '✓' : 
+                       example.type === 'negative' ? '!' :
+                       example.type === 'hint' ? '?' : ''}
+                    </span>
+                    <p className="text-xs italic text-gray-500 leading-relaxed">
+                      {example.text}
+                    </p>
+                  </div>
+                );
+              }
+            })
+          )}
         </div>
       </div>
     </div>
