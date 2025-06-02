@@ -31,7 +31,6 @@ export type ChallengeId = 'healthcare'|'climate'|'lgbt'|'voting';
 export type Challenge = {
     id: ChallengeId;
     title: string;
-    debate?: string;
     voterAction?: string;
     humePersona?: string
     disabled?: boolean;

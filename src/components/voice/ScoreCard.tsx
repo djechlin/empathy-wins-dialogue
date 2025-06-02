@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import * as Icons from 'lucide-react';
@@ -8,73 +8,39 @@ interface ScoreCardConfig {
   icon: string;
   title: string;
   subtitle: string;
-  sense: 'do' | 'dont';
+}
+
+interface FeedbackItem {
+  type: 'positive' | 'negative' | 'hint' | 'neutral';
+  text: string;
+  icon: string;
 }
 
 interface ScoreCardData {
-  status: 'to-do' | 'good' | 'great' | number;
-  examples: string[]; // up to 2
+  status: 'to-do' | 'good' | 'great';
+  examples: string[] | FeedbackItem[]; // up to 2
 }
 
 interface ScoreCardProps {
   config: ScoreCardConfig;
   data: ScoreCardData;
-  onClick?: () => void;
   stepNumber?: number;
   isCurrentStep?: boolean;
   isPreviousStep?: boolean;
 }
 
-const ScoreCard = ({ config, data, onClick, stepNumber, isCurrentStep, isPreviousStep }: ScoreCardProps) => {
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [prevStatus, setPrevStatus] = useState(data.status);
-
-  // Trigger animation when status changes
-  useEffect(() => {
-    if (data.status !== prevStatus) {
-      setIsAnimating(true);
-      setPrevStatus(data.status);
-      
-      // Reset animation after it completes
-      const timer = setTimeout(() => {
-        setIsAnimating(false);
-      }, 200);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [data.status, prevStatus]);
+const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep }: ScoreCardProps) => {
 
   const IconComponent = Icons[config.icon as keyof typeof Icons] as React.ComponentType<{ className?: string }>;
   
   const getCardStyles = () => {
-    if (config.sense === 'dont') {
-      return "bg-amber-50 border-amber-200 hover:bg-amber-100";
-    }
+    const borderClass = isCurrentStep ? "border-dialogue-purple border-2" : "border-gray-200 border-2";
+    const bgClass = data.status === 'great' ? "bg-dialogue-neutral" : "bg-white";
     
-    // Purple outline for current and previous steps
-    if (isCurrentStep || isPreviousStep) {
-      if (data.status === 'great') {
-        return "bg-dialogue-neutral border-dialogue-purple";
-      }
-      return "bg-white border-dialogue-purple";
-    }
-    
-    if (data.status === 'great') {
-      return "bg-dialogue-neutral border-dialogue-purple";
-    }
-    
-    if (data.status === 'good') {
-      return "bg-white border-dialogue-purple";
-    }
-    
-    return "bg-white border-gray-200 hover:bg-gray-50";
+    return `${bgClass} ${borderClass}`;
   };
 
   const getIconStyles = () => {
-    if (config.sense === 'dont') {
-      return "bg-red-100";
-    }
-    
     if (data.status === 'great') {
       // Dark versions of the original colors (only for great state)
       const iconColorMap: Record<string, string> = {
@@ -84,7 +50,8 @@ const ScoreCard = ({ config, data, onClick, stepNumber, isCurrentStep, isPreviou
         Ear: 'bg-purple-800',
         Handshake: 'bg-orange-800',
         Users: 'bg-indigo-800',
-        Blocks: 'bg-gray-800'
+        Blocks: 'bg-gray-800',
+        Sun: 'bg-yellow-800'
       };
       return iconColorMap[config.icon] || 'bg-gray-800';
     }
@@ -97,16 +64,13 @@ const ScoreCard = ({ config, data, onClick, stepNumber, isCurrentStep, isPreviou
       Ear: 'bg-purple-100',
       Handshake: 'bg-orange-100',
       Users: 'bg-indigo-100',
-      Blocks: 'bg-gray-100'
+      Blocks: 'bg-gray-100',
+      Sun: 'bg-yellow-100'
     };
     return iconColorMap[config.icon] || 'bg-gray-100';
   };
 
   const getIconColor = () => {
-    if (config.sense === 'dont') {
-      return "text-red-600";
-    }
-    
     if (data.status === 'great') {
       // Much lighter colors, almost white for dark background (only for great state)
       const iconColorMap: Record<string, string> = {
@@ -116,7 +80,8 @@ const ScoreCard = ({ config, data, onClick, stepNumber, isCurrentStep, isPreviou
         Ear: 'text-purple-100',
         Handshake: 'text-orange-100',
         Users: 'text-indigo-100',
-        Blocks: 'text-gray-100'
+        Blocks: 'text-gray-100',
+        Sun: 'text-yellow-100'
       };
       return iconColorMap[config.icon] || 'text-white';
     }
@@ -129,24 +94,16 @@ const ScoreCard = ({ config, data, onClick, stepNumber, isCurrentStep, isPreviou
       Ear: 'text-purple-600',
       Handshake: 'text-orange-600',
       Users: 'text-indigo-600',
-      Blocks: 'text-gray-600'
+      Blocks: 'text-gray-600',
+      Sun: 'text-yellow-600'
     };
     return iconColorMap[config.icon] || 'text-gray-600';
   };
 
   const getBadgeContent = () => {
-    if (config.sense === 'dont') {
-      if (typeof data.status === 'number') {
-        if (data.status === 0) return 'Good so far';
-        if (data.status === 1) return '1 mistake';
-        return '2+ mistakes';
-      }
-      return null;
-    }
-    
-    // For 'do' cards: Step N -> Good -> Great progression
     if (data.status === 'to-do' && stepNumber) {
-      return `Step ${stepNumber}`;
+      const durations = ['30 seconds', '2 minutes', '2 minutes'];
+      return durations[stepNumber - 1] || `Step ${stepNumber}`;
     }
     if (data.status === 'good') return 'Good';
     if (data.status === 'great') return 'Great';
@@ -155,10 +112,6 @@ const ScoreCard = ({ config, data, onClick, stepNumber, isCurrentStep, isPreviou
   };
 
   const getBadgeStyles = () => {
-    if (config.sense === 'dont') {
-      return "bg-white text-amber-800 border border-amber-300";
-    }
-    
     if (data.status === 'to-do') {
       return "bg-white text-dialogue-purple border border-dialogue-purple";
     }
@@ -178,57 +131,72 @@ const ScoreCard = ({ config, data, onClick, stepNumber, isCurrentStep, isPreviou
 
   return (
     <div
-      onClick={onClick}
       className={cn(
-        "aspect-square p-4 rounded-lg border-2 transition-all duration-200 flex flex-col justify-between relative",
-        config.sense === 'do' && onClick ? "cursor-pointer" : "",
-        isAnimating ? "scale-110 z-10" : "scale-100",
+        "w-full p-3 rounded-lg transition-colors duration-200 flex items-start gap-3 relative",
         getCardStyles()
       )}
     >
-      <div className="flex-1">
-        <div className="flex items-start justify-between mb-2">
-          <div className={cn("p-2 rounded-full flex-shrink-0", getIconStyles())}>
-            {IconComponent && <IconComponent className={cn("h-4 w-4", getIconColor())} />}
-          </div>
+      {/* Icon */}
+      <div className={cn("p-2 rounded-full flex-shrink-0", getIconStyles())}>
+        {IconComponent && <IconComponent className={cn("h-4 w-4", getIconColor())} />}
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-1">
+          <h4 className="font-medium text-base text-gray-800">
+            {config.title}
+          </h4>
           {badgeContent && (
             <Badge 
               variant="secondary" 
-              className={cn("text-xs", getBadgeStyles())}
+              className={cn("text-xs ml-2 flex-shrink-0", getBadgeStyles())}
             >
               {badgeContent}
             </Badge>
           )}
         </div>
-        <h4 className={cn(
-          "font-medium text-sm mb-1",
-          config.sense === 'dont' ? "text-amber-800" : "text-gray-800"
-        )}>
-          {config.title}
-        </h4>
-        <p className={cn(
-          "text-xs leading-tight mb-2",
-          config.sense === 'dont' ? "text-amber-700" : "text-gray-600"
-        )}>
+        <p className="text-sm text-gray-600 mb-2">
           {config.subtitle}
         </p>
         
-        {data.examples.length > 0 && (
-          <div className="space-y-1">
-            {data.examples.slice(0, 2).map((example, index) => (
-              <p 
-                key={index} 
-                className={cn(
-                  "text-xs italic truncate",
-                  config.sense === 'dont' ? "text-amber-600" : "text-gray-500"
-                )}
-                title={example}
-              >
-                "{example}"
-              </p>
-            ))}
-          </div>
-        )}
+        <div className="space-y-2">
+          {data.examples.map((example, index) => {
+            // Handle both string and FeedbackItem formats
+            if (typeof example === 'string') {
+              return (
+                <p 
+                  key={index} 
+                  className="text-xs italic text-gray-500 leading-relaxed"
+                >
+                  {example}
+                </p>
+              );
+            } else {
+              // FeedbackItem format with icon
+              return (
+                <div 
+                  key={index} 
+                  className="flex items-start gap-2"
+                >
+                  <span className={cn(
+                    "text-xs font-medium flex-shrink-0 mt-0.5",
+                    example.type === 'positive' ? "text-green-600" : 
+                    example.type === 'negative' ? "text-red-600" :
+                    example.type === 'hint' ? "text-blue-600" : "text-gray-500"
+                  )}>
+                    {example.type === 'positive' ? '✓' : 
+                     example.type === 'negative' ? '!' :
+                     example.type === 'hint' ? '?' : ''}
+                  </span>
+                  <p className="text-xs italic text-gray-500 leading-relaxed">
+                    {example.text}
+                  </p>
+                </div>
+              );
+            }
+          })}
+        </div>
       </div>
     </div>
   );

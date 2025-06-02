@@ -10,15 +10,13 @@ import SliderCard from '@/components/ui/slider-card';
 import type { Challenge } from '@/types';
 
 const ChallengeMockPage = () => {
-  const [selectedTopic, setSelectedTopic] = useState<string>('');
   const [showReport, setShowReport] = useState(false);
 
   const challenges: Challenge[] = [
     {
       id: 'healthcare',
       title: 'Expand healthcare',
-      debate: 'Your home state of Kentucky is debating HB16, which expands maternal healthcare benefits into the first year of childhood.',
-      voterAction: 'Practice your conversation skills',
+      voterAction: 'Your home state of Kentucky is debating HB16, which expands maternal healthcare benefits into the first year of childhood.',
       script: [
         {
           name: 'first script item',
@@ -32,7 +30,7 @@ const ChallengeMockPage = () => {
     {
       id: 'climate',
       title: 'Protect the climate',
-      debate: 'Your home state of Washington is considering a program to increase grizzly bear populations, which is really good for the environment, but understandably has some citizens a little concerned.',
+      voterAction: 'Your home state of Washington is considering a program to increase grizzly bear populations, which is really good for the environment, but understandably has some citizens a little concerned.',
       disabled: true,
     },
     {
@@ -70,47 +68,26 @@ const ChallengeMockPage = () => {
               />
 
               {!showReport ? (
-                <>
-                  <div className="mb-8">
-                    <h2 className="text-xl font-semibold mb-4 text-center text-dialogue-darkblue">
-                      Choose your topic:
-                    </h2>
-                    <div className="flex flex-wrap justify-center gap-3">
-                      {challenges.map((challenge) => (
-                        <Button
-                          disabled={challenge.disabled}
-                          key={challenge.id}
-                          variant={selectedTopic === challenge.id ? "default" : "outline"}
-                          onClick={() => setSelectedTopic(challenge.id)}
-                          className={selectedTopic === challenge.id ? "bg-dialogue-purple hover:bg-dialogue-darkblue" : ""}
-                        >
-                          {challenge.title + (challenge.disabled ? ' (Coming soon!)' : '')}
-                        </Button>
-                      ))}
-                    </div>
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-2xl font-bold text-dialogue-darkblue">
+                      Deep Canvassing Challenge
+                    </h3>
+                    {window.location.hostname === 'localhost' && (
+                      <Button
+                        onClick={() => setShowReport(true)}
+                        variant="outline"
+                        className="text-sm"
+                      >
+                        View Sample Report
+                      </Button>
+                    )}
                   </div>
-
-                  <div className="bg-white rounded-lg shadow-lg p-6">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-2xl font-bold text-dialogue-darkblue">
-                        Deep Canvassing Challenge
-                      </h3>
-                      {window.location.hostname === 'localhost' && (
-                        <Button
-                          onClick={() => setShowReport(true)}
-                          variant="outline"
-                          className="text-sm"
-                        >
-                          View Sample Report
-                        </Button>
-                      )}
-                    </div>
-                    <p className="text-gray-600 mb-6">
-                      {challenges[0].voterAction}. Apply everything you've learned about vulnerable storytelling and empathetic listening.
-                    </p>
-                    <ChallengeWorkspace challenge={challenges[0]} isMock={true} />
-                  </div>
-                </>
+                  <p className="text-gray-600 mb-6">
+                    {challenges[0].voterAction}. Apply everything you've learned about vulnerable storytelling and empathetic listening.
+                  </p>
+                  <ChallengeWorkspace challenge={challenges[0]} isMock={true} />
+                </div>
               ) : (
                 <div className="bg-white rounded-lg shadow-lg p-6">
                   <div className="flex justify-between items-center mb-6">

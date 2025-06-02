@@ -1,27 +1,67 @@
 import { VoiceContextType } from '@humeai/voice-react';
 import { useVoice } from './HumeVoiceProvider';
 import { Button } from '@/components/ui/button';
-import { Mic, MicOff, Phone, FileText, Loader2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Mic, MicOff, Phone, Clock, Pause, Play } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import MicFFT from './MicFFT';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
-import { generateReport } from '@/lib/claudeReport';
-import { ConversationReport } from '@/types/conversationReport';
+import { useState, useEffect } from 'react';
 
+
+interface StepInfo {
+  stepIndex: number;
+  stepId: string;
+  timeInStep: number;
+  timeRemaining: number;
+}
+
+interface StepConfig {
+  id: string;
+  title: string;
+  duration: number;
+  icon: string;
+  subtitle: string;
+}
 
 interface ControlPanelProps {
   onReportGenerated?: (report: ConversationReport) => void;
+  isTimerActive?: boolean;
+  timeElapsed?: number;
+  onTimeChange?: (timeElapsed: number) => void;
+  currentStepInfo?: StepInfo;
+  currentStep?: StepConfig;
 }
 
-export default function ControlPanel({ onReportGenerated }: ControlPanelProps) {
-  const [hasEndedCall, setHasEndedCall] = useState(false);
-  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
-  const [capturedMessages, setCapturedMessages] = useState<any[]>([]);
+export default function ControlPanel({ onReportGenerated, isTimerActive = false, timeElapsed = 0, onTimeChange, currentStepInfo, currentStep }: ControlPanelProps) {
 
-  const { disconnect, connect, status, isMuted, unmute, mute, micFft, messages }: VoiceContextType =
+  const { disconnect, connect, status, isMuted, unmute, mute, micFft, messages, isPaused, pauseAssistant, resumeAssistant }: VoiceContextType =
     useVoice();
+
+  // Internal timer state
+  const [internalTimeElapsed, setInternalTimeElapsed] = useState(0);
+
+  // Use external time if provided, otherwise use internal
+  const currentTime = timeElapsed || internalTimeElapsed;
+
+  useEffect(() => {
+    if (!isTimerActive) {
+      setInternalTimeElapsed(0);
+    }
+  }, [isTimerActive]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (isTimerActive && !isPaused && currentTime < 300) { // 5 minutes = 300 seconds
+      interval = setInterval(() => {
+        const newTime = currentTime + 1;
+        setInternalTimeElapsed(newTime);
+        onTimeChange?.(newTime);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isTimerActive, isPaused, currentTime, onTimeChange]);
 
   const handleStartCall = () => {
     connect()
@@ -33,69 +73,14 @@ export default function ControlPanel({ onReportGenerated }: ControlPanelProps) {
       });
   };
 
-  const generateConversationReport = async () => {
-    // Use captured messages from when call ended
-    console.log('capturedMessages? ', capturedMessages);
-    if (!capturedMessages || capturedMessages.length === 0) {
-      console.warn('No messages to analyze');
-      return;
-    }
-
-    // Extract conversation transcript from captured messages
-    const transcript = capturedMessages
-      .filter(msg => msg.type === 'user_message' || msg.type === 'assistant_message')
-      .map(msg => {
-        const role = msg.message.role === 'user' ? 'Canvasser' : 'Voter';
-        return `${role}: ${msg.message.content}`;
-      })
-      .join('\n\n');
-
-    console.log('Generating report for transcript:', transcript);
-    try {
-      const generatedReport = await generateReport(transcript);
-      onReportGenerated?.(generatedReport);
-    } catch (error) {
-      console.error('Failed to generate report:', error);
-    }
-  };
-
-
   const handleDisconnect = async () => {
-      setCapturedMessages(messages); // Capture messages before clearing
       disconnect();
-      setHasEndedCall(true);
   };
-
-  const handleGenerateReport = async () => {
-    console.log('handle generate report');
-    setIsGeneratingReport(true);
-    await generateConversationReport();
-    setIsGeneratingReport(false);
-  }
 
   return (
-    <div
-      className={cn(
-        'fixed bottom-0 left-0 w-full p-4 flex items-center justify-center',
-        'bg-gradient-to-t from-card via-card/90 to-card/0'
-      )}
-    >
-      <AnimatePresence mode="wait">
+    <div className="flex items-center justify-center">
         {status.value === 'connected' ? (
-          <motion.div
-            key="connected"
-            initial={{
-              y: '100%',
-              opacity: 0,
-            }}
-            animate={{
-              y: 0,
-              opacity: 1,
-            }}
-            exit={{
-              y: '100%',
-              opacity: 0,
-            }}
+          <div
             className={
               'p-4 bg-card border border-border rounded-lg shadow-sm flex items-center gap-4'
             }
@@ -113,70 +98,67 @@ export default function ControlPanel({ onReportGenerated }: ControlPanelProps) {
               {isMuted ? <MicOff className={'size-4'} /> : <Mic className={'size-4'} />}
             </Toggle>
 
+            <Toggle
+              pressed={isPaused}
+              onPressedChange={() => {
+                if (isPaused) {
+                  resumeAssistant();
+                } else {
+                  pauseAssistant();
+                }
+              }}
+            >
+              {isPaused ? <Play className={'size-4'} /> : <Pause className={'size-4'} />}
+            </Toggle>
+
             <div className={'relative grid h-8 w-48 shrink grow-0'}>
               <MicFFT fft={micFft} className={'fill-current'} />
             </div>
 
-            <Button
-              className={'flex items-center gap-1'}
-              onClick={handleDisconnect}
-              variant={'destructive'}
-            >
-              <span>
-                <Phone className={'size-4 opacity-50'} strokeWidth={2} stroke={'currentColor'} />
-              </span>
-              <span>End Call</span>
-            </Button>
-          </motion.div>
+            <div className="flex items-center gap-4">
+              <Button
+                className={cn(
+                  'flex items-center gap-1',
+                  currentTime >= 300 
+                    ? 'bg-dialogue-darkblue hover:bg-dialogue-darkblue/90 text-white' 
+                    : 'bg-purple-300 hover:bg-purple-400 text-purple-800'
+                )}
+                onClick={handleDisconnect}
+                variant={currentTime >= 300 ? 'default' : 'default'}
+              >
+                <span>
+                  <Phone className={'size-4 opacity-50'} strokeWidth={2} stroke={'currentColor'} />
+                </span>
+                <span>End Roleplay</span>
+              </Button>
+              
+              <div className="flex items-center gap-2">
+                <Clock className="size-4 text-gray-500" />
+                <span className="text-sm font-medium">
+                  {currentStepInfo && currentStep ? (
+                    `${Math.floor(currentStepInfo.timeInStep / 60)}:${(Math.floor(currentStepInfo.timeInStep) % 60).toString().padStart(2, '0')}/${Math.floor(currentStep.duration / 60)}:${(currentStep.duration % 60).toString().padStart(2, '0')}`
+                  ) : (
+                    `${Math.floor(currentTime / 60)}:${(currentTime % 60).toString().padStart(2, '0')}/5:00`
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
         ) : (
-          <motion.div
-            key="disconnected"
-            initial={{
-              y: '100%',
-              opacity: 0,
-            }}
-            animate={{
-              y: 0,
-              opacity: 1,
-            }}
-            exit={{
-              y: '100%',
-              opacity: 0,
-            }}
+          <div
             className={
               'p-4 bg-card border border-border rounded-lg shadow-sm flex items-center gap-4'
             }
           >
-            {hasEndedCall ? (
-              <Button
-                onClick={handleGenerateReport}
-                disabled={isGeneratingReport}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                {isGeneratingReport ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" />
-                    <span>Generating Report (takes about a minute)...</span>
-                  </>
-                ) : (
-                  <>
-                    <FileText className="size-4" />
-                    <span>View Results</span>
-                  </>
-                )}
-              </Button>
-            ) : (
-              <Button
-                className={'flex items-center gap-2 bg-green-600 hover:bg-green-700'}
-                onClick={handleStartCall}
-              >
-                <Phone className={'size-4'} strokeWidth={2} stroke={'currentColor'} />
-                <span>Start Call</span>
-              </Button>
-            )}
-          </motion.div>
+            <Button
+              className={'flex items-center gap-2 bg-dialogue-darkblue hover:bg-dialogue-darkblue/90'}
+              onClick={handleStartCall}
+            >
+              <Phone className={'size-4'} strokeWidth={2} stroke={'currentColor'} />
+              <span>Begin Roleplay</span>
+            </Button>
+          </div>
         )}
-      </AnimatePresence>
     </div>
   );
 }
