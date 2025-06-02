@@ -10,6 +10,7 @@ import { MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { expressionLabels } from '@/lib/expressionLabels';
 import { supabase } from '@/integrations/supabase/client';
+import { generateRealtimeReport } from '@/lib/claudeReport';
 
 interface ChallengeWorkspaceProps {
     challenge: Challenge;
@@ -39,28 +40,6 @@ interface BehaviorCardData {
 interface RealtimeFeedback {
     [key: string]: string; // e.g. { "askQuestions": "✓ Good job", "noLecturing": "! Too much info" }
 }
-
-async function getRealtimeFeedback(transcript: string, step: string): Promise<RealtimeFeedback | null> {
-    try {
-        const response = await supabase.functions.invoke('realtime-feedback', {
-            body: {
-                transcript,
-                step
-            }
-        });
-
-        if (response.error) {
-            console.error('Error getting realtime feedback:', response.error);
-            return null;
-        }
-
-        return response.data as RealtimeFeedback;
-    } catch (error) {
-        console.error('Failed to get realtime feedback:', error);
-        return null;
-    }
-}
-
 interface StepConfig {
     id: string;
     title: string;
@@ -325,7 +304,7 @@ function ChallengeWorkspaceContent({ challenge, mock = false }: ChallengeWorkspa
                     .join('\n\n');
 
                 // Call realtime feedback
-                getRealtimeFeedback(transcript, currentStepInfo.stepId)
+                generateRealtimeReport(transcript, currentStepInfo.stepId)
                     .then(feedback => {
                         if (feedback) {
                             // Filter out feedback keys we've already received

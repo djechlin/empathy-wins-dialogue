@@ -19,4 +19,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  test: {
+    include: ['**/*.{test,spec,e2e}.?(c|m)[jt]s?(x)'],
+  },
 }));
