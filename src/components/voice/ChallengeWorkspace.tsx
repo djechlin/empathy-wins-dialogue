@@ -45,12 +45,14 @@ interface StepConfig {
     duration: number; // in seconds
     icon: string;
     subtitle: string;
+    tip?: string;
 }
 
 const stepConfigs: StepConfig[] = [
     { id: 'framing', title: 'Frame the issue', duration: 30, icon: 'Sun', subtitle: 'How will you frame the issue?' },
-    { id: 'listening', title: 'Listen vulnerably', duration: 120, icon: 'Heart', subtitle: 'Can you dig deep as the voter opens up?' },
+    { id: 'listening', title: 'Listen vulnerably', duration: 180, icon: 'Heart', subtitle: 'Can you dig deep as the voter opens up?', tip: 'Getting the voter to open up can be challenging! You can say, "Can you give me a hint?" at any time.' },
     { id: 'exploring', title: 'Explore together', duration: 120, icon: 'Book', subtitle: 'How can you lead the voter to a new perspective?' },
+    { id: 'calling', title: 'Call their representative', duration: 30, icon: 'Phone', subtitle: 'Ask them to take their phone right now and call their representative listed on the voter card' },
 ];
 
 const behaviorCardConfigs: BehaviorCardConfig[] = stepConfigs;
@@ -163,8 +165,17 @@ function RecentMessages() {
     );
 }
 
-function BehaviorGrid({ mock = false, realtimeFeedback, timeElapsed = 0 }: { mock?: boolean; realtimeFeedback?: RealtimeFeedback | null; timeElapsed?: number }) {
+function BehaviorGrid({ mock = false, realtimeFeedback, timeElapsed = 0, activatedFeedback = new Set() }: { mock?: boolean; realtimeFeedback?: RealtimeFeedback | null; timeElapsed?: number; activatedFeedback?: Set<import('@/types').FeedbackId> }) {
     const currentStepInfo = getCurrentStep(timeElapsed);
+    
+    // Mock activated feedback to show different badge states
+    const mockActivatedFeedback = mock ? new Set<import('@/types').FeedbackId>([
+        'framed-uplifting',
+        'framed-simple-language',
+        'listened-asked-about-relationship',
+        'listened-shared-own-relationship'
+    ]) : activatedFeedback;
+
     const mockData: Record<string, BehaviorCardData> = {
         'framing': {
             status: 'great',
@@ -175,6 +186,10 @@ function BehaviorGrid({ mock = false, realtimeFeedback, timeElapsed = 0 }: { moc
             examples: ['I remember when my grandmother needed healthcare and we struggled with the costs']
         },
         'exploring': {
+            status: 'to-do',
+            examples: []
+        },
+        'calling': {
             status: 'to-do',
             examples: []
         }
@@ -192,6 +207,10 @@ function BehaviorGrid({ mock = false, realtimeFeedback, timeElapsed = 0 }: { moc
         'exploring': {
             status: 'to-do',
             examples: ['Try asking: After talking about people close to us, do you see things differently?']
+        },
+        'calling': {
+            status: 'to-do',
+            examples: []
         }
     };
 
@@ -266,6 +285,7 @@ function BehaviorGrid({ mock = false, realtimeFeedback, timeElapsed = 0 }: { moc
             data={cardsData[config.id]}
             stepNumber={index + 1}
             isCurrentStep={currentStepInfo.stepIndex === index}
+            activatedFeedback={mockActivatedFeedback}
             />
         ))}
         </div>
@@ -278,6 +298,7 @@ function ChallengeWorkspaceContent({ challenge, mock = false }: ChallengeWorkspa
     const [timeElapsed, setTimeElapsed] = useState(0);
     const [realtimeFeedback, setRealtimeFeedback] = useState<RealtimeFeedback | null>(null);
     const [receivedFeedbackKeys, setReceivedFeedbackKeys] = useState<Set<string>>(new Set());
+    const [activatedFeedback, setActivatedFeedback] = useState<Set<import('@/types').FeedbackId>>(new Set());
     const { status, messages } = useVoice();
     const isTimerActive = status.value === 'connected';
 
@@ -367,24 +388,32 @@ function ChallengeWorkspaceContent({ challenge, mock = false }: ChallengeWorkspa
                 <h3 className="font-semibold text-sm text-gray-800 mb-3 font-sans">Voter Card</h3>
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="flex-[1.2] min-w-0 md:min-w-80">
-                        <div className="space-y-1 text-sm text-gray-700">
-                            <p><span className="font-medium">Name:</span> Frank Hilltop, 52M</p>
-                            <p><span className="font-medium">Address:</span> 123 Oak Ln, Suburbville</p>
-                            <div>
-                                <span className="font-medium">Voting record:</span>
-                                <div className="flex md:flex-col items-center md:items-start gap-3 md:gap-1 mt-1">
-                                    <div className="flex items-center gap-1">
-                                        <Check className="h-3 w-3 text-green-600" />
-                                        <span className="text-xs">2016</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <Check className="h-3 w-3 text-green-600" />
-                                        <span className="text-xs">2020</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <X className="h-3 w-3 text-red-600" />
-                                        <span className="text-xs">2024</span>
-                                    </div>
+                        <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm text-gray-700">
+                            <span className="font-medium">Name:</span>
+                            <span>Frank Flatland</span>
+                            
+                            <span className="font-medium">Demographic:</span>
+                            <span>46 year old man</span>
+                            
+                            <span className="font-medium">Voter registration:</span>
+                            <span>Registered Independent</span>
+                            
+                            <span className="font-medium">State representative:</span>
+                            <span>Peter Daffodiland (555-4567)</span>
+                            
+                            <span className="font-medium">Voting record:</span>
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-1">
+                                    <Check className="h-3 w-3 text-green-600" />
+                                    <span className="text-xs">2016</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <Check className="h-3 w-3 text-green-600" />
+                                    <span className="text-xs">2020</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <X className="h-3 w-3 text-red-600" />
+                                    <span className="text-xs">2024</span>
                                 </div>
                             </div>
                         </div>
@@ -405,7 +434,7 @@ function ChallengeWorkspaceContent({ challenge, mock = false }: ChallengeWorkspa
                     <div className="text-center space-y-1">
                         <div className="flex items-center justify-center gap-2">
                             <span className="text-lg">
-                                {currentStep.icon === 'Sun' ? '☀️' : currentStep.icon === 'Heart' ? '❤️' : '📖'}
+                                {currentStep.icon === 'Sun' ? '☀️' : currentStep.icon === 'Heart' ? '❤️' : currentStep.icon === 'Book' ? '📖' : '📞'}
                             </span>
                             <h3 className="font-medium text-dialogue-darkblue font-sans">
                                 Step {currentStepInfo.stepIndex + 1}: {currentStep.title}
@@ -417,7 +446,7 @@ function ChallengeWorkspaceContent({ challenge, mock = false }: ChallengeWorkspa
 
             {/* Behavior Cards Grid */}
             <div className="flex-1 overflow-y-auto">
-                <BehaviorGrid mock={mock} realtimeFeedback={realtimeFeedback} timeElapsed={timeElapsed} />
+                <BehaviorGrid mock={mock} realtimeFeedback={realtimeFeedback} timeElapsed={timeElapsed} activatedFeedback={activatedFeedback} />
             </div>
 
             {/* Recent Messages */}
@@ -441,10 +470,25 @@ function ChallengeWorkspaceContent({ challenge, mock = false }: ChallengeWorkspa
 }
 
 export function ChallengeWorkspace({ challenge, isMock = false, mock = false }: ChallengeWorkspaceProps) {
+    // Tool handler for Hume voice tools
+    const handleToolCall = async (toolCall: any, sendToolResponse: any) => {
+        console.log('Tool call received:', toolCall);
+        
+        // Alert the full output for demo purposes
+        alert(`Tool Call Received:\n\nTool: ${toolCall.name}\nParameters: ${JSON.stringify(toolCall.parameters, null, 2)}`);
+        
+        // Send a simple acknowledgment response
+        await sendToolResponse({
+            tool_call_id: toolCall.tool_call_id,
+            content: "Acknowledged"
+        });
+    };
+
     return (
         <HumeVoiceProvider
         configId={challenge.humePersona}
         onMessage={() => {}}
+        onToolCall={handleToolCall}
         className="flex flex-col w-full min-h-[800px] h-fit bg-white rounded-lg overflow-hidden"
         isMock={isMock}
         >

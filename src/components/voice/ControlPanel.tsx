@@ -51,7 +51,7 @@ export default function ControlPanel({ onReportGenerated, isTimerActive = false,
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-    if (isTimerActive && !isPaused && currentTime < 300) { // 5 minutes = 300 seconds
+    if (isTimerActive && !isPaused && currentTime < 360) { // 6:00 minutes = 360 seconds
       interval = setInterval(() => {
         const newTime = currentTime + 1;
         setInternalTimeElapsed(newTime);
@@ -119,10 +119,10 @@ export default function ControlPanel({ onReportGenerated, isTimerActive = false,
               <Button
                 className={cn(
                   'flex items-center gap-1',
-                  currentTime >= 300 && 'bg-dialogue-darkblue hover:bg-dialogue-darkblue/90 text-white'
+                  currentTime >= 360 && 'bg-dialogue-darkblue hover:bg-dialogue-darkblue/90 text-white'
                 )}
                 onClick={handleDisconnect}
-                variant={currentTime >= 300 ? 'default' : 'secondary'}
+                variant={currentTime >= 360 ? 'default' : 'secondary'}
               >
                 <span>
                   <Phone className={'size-4 opacity-50'} strokeWidth={2} stroke={'currentColor'} />
@@ -136,7 +136,7 @@ export default function ControlPanel({ onReportGenerated, isTimerActive = false,
                   {currentStepInfo && currentStep ? (
                     `${Math.floor(currentStepInfo.timeInStep / 60)}:${(Math.floor(currentStepInfo.timeInStep) % 60).toString().padStart(2, '0')}/${Math.floor(currentStep.duration / 60)}:${(currentStep.duration % 60).toString().padStart(2, '0')}`
                   ) : (
-                    `${Math.floor(currentTime / 60)}:${(currentTime % 60).toString().padStart(2, '0')}/5:00`
+                    `${Math.floor(currentTime / 60)}:${(currentTime % 60).toString().padStart(2, '0')}/6:00`
                   )}
                 </span>
               </div>

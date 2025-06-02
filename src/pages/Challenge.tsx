@@ -25,7 +25,7 @@ const ChallengePage = () => {
           }]
         }
       ],
-      humePersona: '2befee5d-0661-403a-98d7-65e515f05e22'
+      humePersona: '3f136570-42d4-4afd-b319-866e2fd76474'
     },
     {
       id: 'climate',

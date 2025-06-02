@@ -1,13 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import * as Icons from 'lucide-react';
+import type { FeedbackId } from '@/types';
+
+// Mapping of feedback IDs to simple badge text
+const feedbackBadgeText: Record<FeedbackId, string> = {
+  'framing-introduced-your-name': 'Introduced your name',
+  'framing-introduced-the-issue': 'Introduced the issue',
+  'framed-uplifting': 'Uplifting',
+  'framed-simple-language': 'Direct language',
+  'listened-asked-about-relationship': 'Learned who they value',
+  'listened-dug-deeper': 'Dug Deep',
+  'listened-shared-own-relationship': 'Shared',
+  'listened-got-vulnerable': 'Became vulnerable',
+  'explored-connected-issue': 'Connected the issue',
+  'explored-stayed-calm': 'Stayed Calm',
+  'call-voter-interested': 'They\'ll call later',
+  'call-voter-called': 'They called right now'
+};
+
+// Group feedback IDs by step prefix
+const feedbackByStep: Record<string, FeedbackId[]> = {
+  'framing': ['framing-introduced-your-name', 'framing-introduced-the-issue', 'framed-uplifting', 'framed-simple-language'],
+  'listening': ['listened-asked-about-relationship', 'listened-dug-deeper', 'listened-shared-own-relationship', 'listened-got-vulnerable'],
+  'exploring': ['explored-connected-issue', 'explored-stayed-calm'],
+  'calling': ['call-voter-interested', 'call-voter-called']
+};
 
 interface ScoreCardConfig {
   id: string;
   icon: string;
   title: string;
   subtitle: string;
+  tip?: string;
 }
 
 interface FeedbackItem {
@@ -27,9 +53,11 @@ interface ScoreCardProps {
   stepNumber?: number;
   isCurrentStep?: boolean;
   isPreviousStep?: boolean;
+  activatedFeedback?: Set<FeedbackId>;
 }
 
-const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep }: ScoreCardProps) => {
+const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep, activatedFeedback = new Set() }: ScoreCardProps) => {
+  const [tipDismissed, setTipDismissed] = useState(false);
 
   const IconComponent = Icons[config.icon as keyof typeof Icons] as React.ComponentType<{ className?: string }>;
   
@@ -46,12 +74,13 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep }: 
       const iconColorMap: Record<string, string> = {
         Heart: 'bg-pink-800',
         Search: 'bg-blue-800',
-        Book: 'bg-green-800',
+        Book: 'bg-blue-800',
         Ear: 'bg-purple-800',
         Handshake: 'bg-orange-800',
         Users: 'bg-indigo-800',
         Blocks: 'bg-gray-800',
-        Sun: 'bg-yellow-800'
+        Sun: 'bg-yellow-800',
+        Phone: 'bg-green-800'
       };
       return iconColorMap[config.icon] || 'bg-gray-800';
     }
@@ -60,12 +89,13 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep }: 
     const iconColorMap: Record<string, string> = {
       Heart: 'bg-pink-100',
       Search: 'bg-blue-100',
-      Book: 'bg-green-100',
+      Book: 'bg-blue-100',
       Ear: 'bg-purple-100',
       Handshake: 'bg-orange-100',
       Users: 'bg-indigo-100',
       Blocks: 'bg-gray-100',
-      Sun: 'bg-yellow-100'
+      Sun: 'bg-yellow-100',
+      Phone: 'bg-green-100'
     };
     return iconColorMap[config.icon] || 'bg-gray-100';
   };
@@ -76,12 +106,13 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep }: 
       const iconColorMap: Record<string, string> = {
         Heart: 'text-pink-100',
         Search: 'text-blue-100',
-        Book: 'text-green-100',
+        Book: 'text-blue-100',
         Ear: 'text-purple-100',
         Handshake: 'text-orange-100',
         Users: 'text-indigo-100',
         Blocks: 'text-gray-100',
-        Sun: 'text-yellow-100'
+        Sun: 'text-yellow-100',
+        Phone: 'text-green-100'
       };
       return iconColorMap[config.icon] || 'text-white';
     }
@@ -90,19 +121,37 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep }: 
     const iconColorMap: Record<string, string> = {
       Heart: 'text-pink-600',
       Search: 'text-blue-600',
-      Book: 'text-green-600',
+      Book: 'text-blue-600',
       Ear: 'text-purple-600',
       Handshake: 'text-orange-600',
       Users: 'text-indigo-600',
       Blocks: 'text-gray-600',
-      Sun: 'text-yellow-600'
+      Sun: 'text-yellow-600',
+      Phone: 'text-green-600'
     };
     return iconColorMap[config.icon] || 'text-gray-600';
   };
 
   const getBadgeContent = () => {
+    // Get feedback badges for this step
+    const stepFeedback = feedbackByStep[config.id] || [];
+    
+    if (stepFeedback.length > 0) {
+      // Count how many are activated
+      const activatedCount = stepFeedback.filter(feedbackId => activatedFeedback.has(feedbackId)).length;
+      const totalCount = stepFeedback.length;
+      
+      // Calculate status based on activated badges
+      if (activatedCount === totalCount) {
+        return 'Great';
+      } else if (activatedCount >= totalCount / 2) {
+        return 'Good';
+      }
+    }
+    
+    // Fall back to timer/step info if no badges are activated
     if (data.status === 'to-do' && stepNumber) {
-      const durations = ['30 seconds', '2 minutes', '2 minutes'];
+      const durations = ['30 seconds', '3 minutes', '2 minutes', '30 seconds'];
       return durations[stepNumber - 1] || `Step ${stepNumber}`;
     }
     if (data.status === 'good') return 'Good';
@@ -112,6 +161,21 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep }: 
   };
 
   const getBadgeStyles = () => {
+    // Get feedback badges for this step and calculate dynamic status
+    const stepFeedback = feedbackByStep[config.id] || [];
+    
+    if (stepFeedback.length > 0) {
+      const activatedCount = stepFeedback.filter(feedbackId => activatedFeedback.has(feedbackId)).length;
+      const totalCount = stepFeedback.length;
+      
+      if (activatedCount === totalCount) {
+        return "bg-dialogue-darkblue text-white";
+      } else if (activatedCount >= totalCount / 2) {
+        return "bg-dialogue-neutral text-dialogue-purple";
+      }
+    }
+    
+    // Fall back to original status
     if (data.status === 'to-do') {
       return "bg-white text-dialogue-purple border border-dialogue-purple";
     }
@@ -160,50 +224,45 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep }: 
           <Icons.MessageCircleQuestion className="h-4 w-4" />
           {config.subtitle}
         </p>
-        
-        <div className="space-y-2">
-          {data.examples.length === 0 ? (
-            <p className="text-xs italic text-gray-500 leading-relaxed">
-              {data.status === 'to-do' ? 'Step not started yet' : 'No feedback yet'}
-            </p>
-          ) : (
-            data.examples.map((example, index) => {
-              // Handle both string and FeedbackItem formats
-              if (typeof example === 'string') {
-                return (
-                  <p 
-                    key={index} 
-                    className="text-xs italic text-gray-500 leading-relaxed"
-                  >
-                    {example}
-                  </p>
-                );
-              } else {
-                // FeedbackItem format with icon
-                return (
-                  <div 
-                    key={index} 
-                    className="flex items-start gap-2"
-                  >
-                    <span className={cn(
-                      "text-xs font-medium flex-shrink-0 mt-0.5",
-                      example.type === 'positive' ? "text-green-600" : 
-                      example.type === 'negative' ? "text-red-600" :
-                      example.type === 'hint' ? "text-blue-600" : "text-gray-500"
-                    )}>
-                      {example.type === 'positive' ? '✓' : 
-                       example.type === 'negative' ? '!' :
-                       example.type === 'hint' ? '?' : ''}
-                    </span>
-                    <p className="text-xs italic text-gray-500 leading-relaxed">
-                      {example.text}
-                    </p>
-                  </div>
-                );
-              }
-            })
-          )}
-        </div>
+
+        {/* Tip - only show if config has one and not dismissed */}
+        {config.tip && !tipDismissed && (
+          <div className="mb-3 bg-blue-50 border border-blue-200 rounded-lg p-3 relative">
+            <button
+              onClick={() => setTipDismissed(true)}
+              className="absolute top-2 right-2 text-blue-600 hover:text-blue-800 transition-colors"
+              aria-label="Dismiss tip"
+            >
+              <Icons.X className="h-4 w-4" />
+            </button>
+            <div className="flex items-start gap-2 pr-6">
+              <Icons.Info className="h-4 w-4 text-dialogue-purple flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-blue-800">
+                {config.tip}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Feedback badges */}
+        {feedbackByStep[config.id] && (
+          <div className="mt-3 flex flex-wrap gap-1">
+            {feedbackByStep[config.id].map((feedbackId) => (
+              <Badge
+                key={feedbackId}
+                variant="outline"
+                className={cn(
+                  "text-xs px-2 py-1",
+                  activatedFeedback.has(feedbackId)
+                    ? "bg-green-100 border-green-300 text-green-700"
+                    : "bg-gray-50 border-gray-200 text-gray-400"
+                )}
+              >
+                {feedbackBadgeText[feedbackId]}
+              </Badge>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
