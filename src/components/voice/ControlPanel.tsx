@@ -119,12 +119,10 @@ export default function ControlPanel({ onReportGenerated, isTimerActive = false,
               <Button
                 className={cn(
                   'flex items-center gap-1',
-                  currentTime >= 300 
-                    ? 'bg-dialogue-darkblue hover:bg-dialogue-darkblue/90 text-white' 
-                    : 'bg-purple-300 hover:bg-purple-400 text-purple-800'
+                  currentTime >= 300 && 'bg-dialogue-darkblue hover:bg-dialogue-darkblue/90 text-white'
                 )}
                 onClick={handleDisconnect}
-                variant={currentTime >= 300 ? 'default' : 'default'}
+                variant={currentTime >= 300 ? 'default' : 'secondary'}
               >
                 <span>
                   <Phone className={'size-4 opacity-50'} strokeWidth={2} stroke={'currentColor'} />

@@ -365,14 +365,14 @@ function ChallengeWorkspaceContent({ challenge, mock = false }: ChallengeWorkspa
             {/* Voter Card */}
             <div className="bg-gray-50 border border-gray-200 p-4 mx-6 mt-4 rounded-lg">
                 <h3 className="font-semibold text-sm text-gray-800 mb-3 font-sans">Voter Card</h3>
-                <div className="flex gap-4 items-start">
-                    <div className="flex-1">
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-[1.2] min-w-0 md:min-w-80">
                         <div className="space-y-1 text-sm text-gray-700">
                             <p><span className="font-medium">Name:</span> Frank Hilltop, 52M</p>
                             <p><span className="font-medium">Address:</span> 123 Oak Ln, Suburbville</p>
-                            <div className="flex items-center gap-2">
+                            <div>
                                 <span className="font-medium">Voting record:</span>
-                                <div className="flex items-center gap-3">
+                                <div className="flex md:flex-col items-center md:items-start gap-3 md:gap-1 mt-1">
                                     <div className="flex items-center gap-1">
                                         <Check className="h-3 w-3 text-green-600" />
                                         <span className="text-xs">2016</span>
@@ -389,17 +389,17 @@ function ChallengeWorkspaceContent({ challenge, mock = false }: ChallengeWorkspa
                             </div>
                         </div>
                     </div>
-                    <div className="w-80 flex-shrink-0 self-start">
+                    <div className="w-full md:w-72 flex-shrink-0">
                         <img 
                             src="/house-sketch.png" 
-                            alt="House sketch" 
-                            className="w-full rounded border"
+                            alt="House sketch"
+                            className="w-full h-auto"
                         />
                     </div>
                 </div>
             </div>
 
-            {/* Control Section - Only show when active */}
+            {/* Step Info Section - Only show when active */}
             {isTimerActive && (
                 <div className="bg-white border-b p-4">
                     <div className="text-center space-y-1">
@@ -407,19 +407,9 @@ function ChallengeWorkspaceContent({ challenge, mock = false }: ChallengeWorkspa
                             <span className="text-lg">
                                 {currentStep.icon === 'Sun' ? '☀️' : currentStep.icon === 'Heart' ? '❤️' : '📖'}
                             </span>
-                            <h3 className="font-medium text-dialogue-darkblue">
+                            <h3 className="font-medium text-dialogue-darkblue font-sans">
                                 Step {currentStepInfo.stepIndex + 1}: {currentStep.title}
                             </h3>
-                        </div>
-                        <div className="mt-4">
-                            <ControlPanel
-                                onReportGenerated={setReport}
-                                isTimerActive={isTimerActive}
-                                timeElapsed={timeElapsed}
-                                onTimeChange={setTimeElapsed}
-                                currentStepInfo={currentStepInfo}
-                                currentStep={currentStep}
-                            />
                         </div>
                     </div>
                 </div>
@@ -435,19 +425,17 @@ function ChallengeWorkspaceContent({ challenge, mock = false }: ChallengeWorkspa
                 <RecentMessages />
             </div>
 
-            {/* Control Panel - Show when not active */}
-            {!isTimerActive && (
-                <div className="border-t bg-white p-4 text-center">
-                    <ControlPanel
-                        onReportGenerated={setReport}
-                        isTimerActive={isTimerActive}
-                        timeElapsed={timeElapsed}
-                        onTimeChange={setTimeElapsed}
-                        currentStepInfo={currentStepInfo}
-                        currentStep={currentStep}
-                    />
-                </div>
-            )}
+            {/* Control Panel - Always at bottom */}
+            <div className="border-t bg-white p-4 text-center">
+                <ControlPanel
+                    onReportGenerated={setReport}
+                    isTimerActive={isTimerActive}
+                    timeElapsed={timeElapsed}
+                    onTimeChange={setTimeElapsed}
+                    currentStepInfo={currentStepInfo}
+                    currentStep={currentStep}
+                />
+            </div>
         </div>
     );
 }
