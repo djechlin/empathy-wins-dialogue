@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { expressionLabels } from '@/lib/expressionLabels';
-import { supabase } from '@/integrations/supabase/client';
 import { generateRealtimeReport } from '@/lib/claudeReport';
 
 interface ChallengeWorkspaceProps {
@@ -49,9 +48,9 @@ interface StepConfig {
 }
 
 const stepConfigs: StepConfig[] = [
-    { id: 'framing', title: 'Step 1: Build a brighter future', duration: 30, icon: 'Sun', subtitle: 'Frame the issue in a positive light, using your own words.' },
-    { id: 'listening', title: 'Step 2: Vulnerable listening', duration: 120, icon: 'Heart', subtitle: 'Dig deeper into the voter\'s concerns without judgment, and share your own story.' },
-    { id: 'exploring', title: 'Step 3: Explore together', duration: 120, icon: 'Book', subtitle: 'Listen actively as the voter thinks things through.' },
+    { id: 'framing', title: 'Frame the issue', duration: 30, icon: 'Sun', subtitle: 'How will you frame the issue?' },
+    { id: 'listening', title: 'Listen vulnerably', duration: 120, icon: 'Heart', subtitle: 'Can you dig deep as the voter opens up?' },
+    { id: 'exploring', title: 'Explore together', duration: 120, icon: 'Book', subtitle: 'How can you lead the voter to a new perspective?' },
 ];
 
 const behaviorCardConfigs: BehaviorCardConfig[] = stepConfigs;

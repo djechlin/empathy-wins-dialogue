@@ -156,7 +156,8 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep }: 
             </Badge>
           )}
         </div>
-        <p className="text-sm text-gray-600 mb-2">
+        <p className="text-sm text-gray-600 mb-2 flex items-center gap-1">
+          <Icons.MessageCircleQuestion className="h-4 w-4" />
           {config.subtitle}
         </p>
         
