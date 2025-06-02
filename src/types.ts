@@ -26,27 +26,13 @@ export type FeedbackId =
 | 'call-voter-interested'
 | 'call-voter-called';
 
-export type ScenarioId =
-| 'deep-canvassing'
-| 'law-order-voter'
-| 'code-review-junior-feedback'
-| 'intro-canvassing'
-| 'busy-voter-libraries'
-| 'empathetic-listening'
-| 'love-list';
+export type ChallengeStep =
+| 'framing'
+| 'listening'
+| 'exploring'
+| 'calling';
 
 export type Scenario = {
     title: string;
     description: string[];
 };
-
-export type ChallengeId = 'healthcare'|'climate'|'lgbt'|'voting';
-
-export type Challenge = {
-    id: ChallengeId;
-    title: string;
-    voterAction?: string;
-    humePersona?: string
-    disabled?: boolean;
-    script?: Script;
-}

@@ -1,21 +1,15 @@
 import ControlPanel from './ControlPanel';
 import ConversationReport from './ConversationReport';
 import ScoreCard from './ScoreCard';
-import { useRef, useState, useEffect } from 'react';
-import type { Challenge } from '@/types';
+import { useRef, useState, useEffect, useMemo } from 'react';
+import type { ChallengeStep, FeedbackId } from '@/types';
 import { HumeVoiceProvider, useVoice } from './HumeVoiceProvider';
 import { ConversationReport as ReportType } from '@/types/conversationReport';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { expressionLabels } from '@/lib/expressionLabels';
-import { generateRealtimeReport } from '@/lib/claudeReport';
-
-interface ChallengeWorkspaceProps {
-    challenge: Challenge;
-    isMock?: boolean;
-    mock?: boolean;
-}
+import { useRealtimeFeedback } from '@/lib/useRealtimeReport';
 
 interface BehaviorCardConfig {
     id: string;
@@ -35,12 +29,11 @@ interface BehaviorCardData {
     examples: string[] | FeedbackItem[];
 }
 
-// The server now returns step-specific feedback based on current step
 interface RealtimeFeedback {
-    [key: string]: string; // e.g. { "askQuestions": "✓ Good job", "noLecturing": "! Too much info" }
+    [key: string]: string;
 }
 interface StepConfig {
-    id: string;
+    id: ChallengeStep;
     title: string;
     duration: number; // in seconds
     icon: string;
@@ -57,7 +50,7 @@ const stepConfigs: StepConfig[] = [
 
 const behaviorCardConfigs: BehaviorCardConfig[] = stepConfigs;
 
-function getCurrentStep(timeElapsed: number): { stepIndex: number; stepId: string; timeInStep: number; timeRemaining: number } {
+function getCurrentStep(timeElapsed: number): { stepIndex: number; stepId: ChallengeStep; timeInStep: number; timeRemaining: number } {
     let totalTime = 0;
 
     for (let i = 0; i < stepConfigs.length; i++) {
@@ -88,7 +81,6 @@ function RecentMessages() {
     const { messages } = useVoice();
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Get last 6 messages (3 exchanges)
     const recentMessages = messages
     .filter(msg => msg.type === 'user_message' || msg.type === 'assistant_message')
     .slice(-6);
@@ -119,11 +111,11 @@ function RecentMessages() {
                 if (msg.models?.prosody?.scores) {
                     const scores = msg.models.prosody.scores;
                     return Object.entries(scores)
-                        .sort(([,a], [,b]) => b - a)
-                        .slice(0, 3)
-                        .map(([emotion]) => ({
-                            label: expressionLabels[emotion] || emotion
-                        }));
+                    .sort(([,a], [,b]) => b - a)
+                    .slice(0, 3)
+                    .map(([emotion]) => ({
+                        label: expressionLabels[emotion] || emotion
+                    }));
                 }
                 return [];
             };
@@ -147,14 +139,14 @@ function RecentMessages() {
                 </div>
                 {topEmotions.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1">
-                        {topEmotions.map((emotion, emotionIndex) => (
-                            <span
-                                key={emotionIndex}
-                                className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded-full"
-                            >
-                                {emotion.label}
-                            </span>
-                        ))}
+                    {topEmotions.map((emotion, emotionIndex) => (
+                        <span
+                        key={emotionIndex}
+                        className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded-full"
+                        >
+                        {emotion.label}
+                        </span>
+                    ))}
                     </div>
                 )}
                 </div>
@@ -165,35 +157,9 @@ function RecentMessages() {
     );
 }
 
-function BehaviorGrid({ mock = false, realtimeFeedback, timeElapsed = 0, activatedFeedback = new Set() }: { mock?: boolean; realtimeFeedback?: RealtimeFeedback | null; timeElapsed?: number; activatedFeedback?: Set<import('@/types').FeedbackId> }) {
+function BehaviorGrid({realtimeFeedback, timeElapsed = 0, activatedFeedback = new Set() }: { realtimeFeedback?: RealtimeFeedback | null; timeElapsed?: number; activatedFeedback?: Set<FeedbackId> }) {
     const currentStepInfo = getCurrentStep(timeElapsed);
-    
-    // Mock activated feedback to show different badge states
-    const mockActivatedFeedback = mock ? new Set<import('@/types').FeedbackId>([
-        'framed-uplifting',
-        'framed-simple-language',
-        'listened-asked-about-relationship',
-        'listened-shared-own-relationship'
-    ]) : activatedFeedback;
 
-    const mockData: Record<string, BehaviorCardData> = {
-        'framing': {
-            status: 'great',
-            examples: ['Think about how much easier it would be for families like yours', 'Imagine if you didn\'t have to worry about these costs']
-        },
-        'listening': {
-            status: 'good',
-            examples: ['I remember when my grandmother needed healthcare and we struggled with the costs']
-        },
-        'exploring': {
-            status: 'to-do',
-            examples: []
-        },
-        'calling': {
-            status: 'to-do',
-            examples: []
-        }
-    };
 
     const defaultData: Record<string, BehaviorCardData> = {
         'framing': {
@@ -214,21 +180,16 @@ function BehaviorGrid({ mock = false, realtimeFeedback, timeElapsed = 0, activat
         }
     };
 
-    const [cardsData, setCardsData] = useState<Record<string, BehaviorCardData>>(
-        mock ? mockData : defaultData
-    );
+    const [cardsData, setCardsData] = useState<Record<string, BehaviorCardData>>(defaultData);
 
-    // Update cards based on realtime feedback (skip in mock mode)
     useEffect(() => {
-        if (realtimeFeedback && !mock) {
+        if (realtimeFeedback) {
             setCardsData(prev => {
                 const newData = { ...prev };
 
-                // Get current step to update the right card
                 const currentStepId = getCurrentStep(timeElapsed).stepId;
 
                 if (newData[currentStepId]) {
-                    // Parse all feedback for the current step
                     const feedbackItems = Object.values(realtimeFeedback).map(text => {
                         if (text.startsWith('✓')) {
                             return {
@@ -272,7 +233,7 @@ function BehaviorGrid({ mock = false, realtimeFeedback, timeElapsed = 0, activat
                 return newData;
             });
         }
-    }, [realtimeFeedback, timeElapsed, mock]);
+    }, [realtimeFeedback, timeElapsed]);
 
     return (
         <div className="px-6 py-4">
@@ -285,7 +246,7 @@ function BehaviorGrid({ mock = false, realtimeFeedback, timeElapsed = 0, activat
             data={cardsData[config.id]}
             stepNumber={index + 1}
             isCurrentStep={currentStepInfo.stepIndex === index}
-            activatedFeedback={mockActivatedFeedback}
+            activatedFeedback={activatedFeedback}
             />
         ))}
         </div>
@@ -293,206 +254,184 @@ function BehaviorGrid({ mock = false, realtimeFeedback, timeElapsed = 0, activat
     );
 }
 
-function ChallengeWorkspaceContent({ challenge, mock = false }: ChallengeWorkspaceProps) {
-    const [report, setReport] = useState<ReportType | null>(null);
-    const [timeElapsed, setTimeElapsed] = useState(0);
-    const [realtimeFeedback, setRealtimeFeedback] = useState<RealtimeFeedback | null>(null);
-    const [receivedFeedbackKeys, setReceivedFeedbackKeys] = useState<Set<string>>(new Set());
-    const [activatedFeedback, setActivatedFeedback] = useState<Set<import('@/types').FeedbackId>>(new Set());
-    const { status, messages } = useVoice();
-    const isTimerActive = status.value === 'connected';
-
-    // Get current step info
-    const currentStepInfo = getCurrentStep(timeElapsed);
-    const currentStep = stepConfigs[currentStepInfo.stepIndex];
-
-    // Track message count to trigger realtime feedback
-    useEffect(() => {
-        if (!mock && messages.length > 0 && isTimerActive) {
-            // Only process when we have at least one exchange (2 messages)
-            const conversationMessages = messages.filter(msg =>
-                msg.type === 'user_message' || msg.type === 'assistant_message'
-            );
-
-            if (conversationMessages.length >= 2 && conversationMessages.length % 2 === 0) {
-                // Generate transcript from messages
-                const transcript = conversationMessages
-                    .map(msg => {
-                        const role = msg.message.role === 'user' ? 'Canvasser' : 'Voter';
-                        return `${role}: ${msg.message.content}`;
-                    })
-                    .join('\n\n');
-
-                // Call realtime feedback
-                generateRealtimeReport(transcript, currentStepInfo.stepId)
-                    .then(feedback => {
-                        if (feedback) {
-                            // Filter out feedback keys we've already received
-                            const newFeedback: RealtimeFeedback = {};
-                            const newKeys = new Set<string>();
-
-                            Object.entries(feedback).forEach(([key, value]) => {
-                                if (!receivedFeedbackKeys.has(key)) {
-                                    newFeedback[key] = value;
-                                    newKeys.add(key);
-                                }
-                            });
-
-                            // Only update state if we have new feedback
-                            if (Object.keys(newFeedback).length > 0) {
-                                setRealtimeFeedback(newFeedback);
-                                setReceivedFeedbackKeys(prev => new Set([...prev, ...newKeys]));
-                            }
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error getting realtime feedback:', error);
-                    });
-            }
-        }
-    }, [messages, isTimerActive, mock, receivedFeedbackKeys, currentStepInfo.stepId]);
-
-    if (report) {
-        return (
-            <div className="w-full h-full flex flex-col">
-            <div className="p-4 border-b bg-white sticky top-0 z-10">
-            <Button
-            onClick={() => setReport(null)}
-            variant="outline"
-            className="mb-2"
-            >
-            ← Back to Challenge
-            </Button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-4">
-            <ConversationReport report={report} />
-            </div>
-            </div>
-        );
+const ScenarioCard = () => {
+    return (      <div className="bg-blue-50 border border-blue-200 p-4 mx-6 mt-6 rounded-lg">
+        <p className="text-sm text-gray-700">
+        <span className="font-semibold">Your scenario: Your home state might cut parental leave benefits. Persuade the voter to call their representative to oppose the cuts.</span>
+        </p>
+        <p className="text-sm text-gray-700 mt-2">
+        <span>Converse naturally with the voice assistant. Try to listen actively, and not overwhelm them with facts.</span>
+        </p>
+        </div>);
     }
 
-    return (
-        <div className="flex flex-col h-full">
-            {/* Scenario Description */}
-            <div className="bg-blue-50 border border-blue-200 p-4 mx-6 mt-6 rounded-lg">
-                <p className="text-sm text-gray-700">
-                    <span className="font-semibold">Your scenario:</span> {challenge.voterAction}
-                </p>
-                <p className="text-sm text-gray-700 mt-2">
-                    <span>Converse naturally with the voice assistant. Try to listen actively, and not overwhelm them with facts.</span>
-                </p>
-            </div>
+    const VoterCard = () => {
+        return (<div className="bg-gray-50 border border-gray-200 p-4 mx-6 mt-4 rounded-lg">
+            <h3 className="font-semibold text-sm text-gray-800 mb-3 font-sans">Voter Card</h3>
+            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-[1.2] min-w-0 md:min-w-80">
+            <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm text-gray-700">
+            <span className="font-medium">Name:</span>
+            <span>Frank Townsend</span>
 
-            {/* Voter Card */}
-            <div className="bg-gray-50 border border-gray-200 p-4 mx-6 mt-4 rounded-lg">
-                <h3 className="font-semibold text-sm text-gray-800 mb-3 font-sans">Voter Card</h3>
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-[1.2] min-w-0 md:min-w-80">
-                        <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm text-gray-700">
-                            <span className="font-medium">Name:</span>
-                            <span>Frank Flatland</span>
-                            
-                            <span className="font-medium">Demographic:</span>
-                            <span>46 year old man</span>
-                            
-                            <span className="font-medium">Voter registration:</span>
-                            <span>Registered Independent</span>
-                            
-                            <span className="font-medium">State representative:</span>
-                            <span>Peter Daffodiland (555-4567)</span>
-                            
-                            <span className="font-medium">Voting record:</span>
-                            <div className="flex items-center gap-3">
-                                <div className="flex items-center gap-1">
-                                    <Check className="h-3 w-3 text-green-600" />
-                                    <span className="text-xs">2016</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <Check className="h-3 w-3 text-green-600" />
-                                    <span className="text-xs">2020</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <X className="h-3 w-3 text-red-600" />
-                                    <span className="text-xs">2024</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="w-full md:w-72 flex-shrink-0">
-                        <img 
-                            src="/house-sketch.png" 
-                            alt="House sketch"
-                            className="w-full h-auto"
-                        />
-                    </div>
-                </div>
-            </div>
+            <span className="font-medium">Demographic:</span>
+            <span>49 year old man</span>
 
-            {/* Step Info Section - Only show when active */}
-            {isTimerActive && (
-                <div className="bg-white border-b p-4">
+            <span className="font-medium">Voter registration:</span>
+            <span>Registered Independent</span>
+
+            <span className="font-medium">State representative:</span>
+            <span>Peter Daffodiland (555-4567)</span>
+
+            <span className="font-medium">Voting record:</span>
+            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
+            <Check className="h-3 w-3 text-green-600" />
+            <span className="text-xs">2016</span>
+            </div>
+            <div className="flex items-center gap-1">
+            <Check className="h-3 w-3 text-green-600" />
+            <span className="text-xs">2020</span>
+            </div>
+            <div className="flex items-center gap-1">
+            <X className="h-3 w-3 text-red-600" />
+            <span className="text-xs">2024</span>
+            </div>
+            </div>
+            </div>
+            </div>
+            <div className="w-full md:w-72 flex-shrink-0">
+            <img
+            src="/house-sketch.png"
+            alt="House sketch"
+            className="w-full h-auto"
+            />
+            </div>
+            </div>
+            </div>);
+        }
+
+        function ChallengeWorkspaceContent() {
+            const [report, setReport] = useState<ReportType | null>(null);
+            const [timeElapsed, setTimeElapsed] = useState(0);
+            const [receivedFeedbackKeys, setReceivedFeedbackKeys] = useState<Set<string>>(new Set());
+            const [activatedFeedback, setActivatedFeedback] = useState<Set<import('@/types').FeedbackId>>(new Set());
+            const { status } = useVoice();
+            const isTimerActive = status.value === 'connected';
+
+            const currentStepInfo = useMemo(() => getCurrentStep(timeElapsed), [timeElapsed]);
+            const currentStep = stepConfigs[currentStepInfo.stepIndex];
+
+            const realtimeFeedback = useRealtimeFeedback(currentStepInfo.stepId);
+
+
+            useEffect(() => {
+                const jsonMatch = realtimeFeedback && realtimeFeedback.match(/<json>(.*?)<\/json>/s);
+                if (!jsonMatch) {
+                    return;
+                }
+                const parsedFeedback = JSON.parse(jsonMatch[1].trim());
+                const newFeedback: RealtimeFeedback = {};
+                const newKeys = new Set<string>();
+
+                Object.entries(parsedFeedback).forEach(([key, value]) => {
+                    if (!receivedFeedbackKeys.has(key) && value[0] !== '?') {
+                        newFeedback[key] = value;
+                        newKeys.add(key);
+                    }
+                });
+
+                if (Object.keys(newFeedback).length > 0) {
+                    setReceivedFeedbackKeys(prev => new Set([...prev, ...newKeys]));
+
+                    const newActivatedFeedback = new Set<import('@/types').FeedbackId>();
+                    Object.entries(parsedFeedback).forEach(([key, value]) => {
+                        if (value === '✓') {
+                            newActivatedFeedback.add(key as import('@/types').FeedbackId);
+                        }
+                    });
+
+                    if (newActivatedFeedback.size > 0) {
+                        setActivatedFeedback(prev => {
+                            const updated = new Set([...prev, ...newActivatedFeedback]);
+                            return updated;
+                        });
+                    }
+                }
+            }, [realtimeFeedback, receivedFeedbackKeys]);
+
+            if (report) {
+                return (
+                    <div className="w-full h-full flex flex-col">
+                    <div className="p-4 border-b bg-white sticky top-0 z-10">
+                    <Button
+                    onClick={() => setReport(null)}
+                    variant="outline"
+                    className="mb-2"
+                    >
+                    ← Back to Challenge
+                    </Button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-4">
+                    <ConversationReport report={report} />
+                    </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="flex flex-col h-full">
+
+
+                <ScenarioCard />
+                <VoterCard />
+
+                {isTimerActive && (
+                    <div className="bg-white border-b p-4">
                     <div className="text-center space-y-1">
-                        <div className="flex items-center justify-center gap-2">
-                            <span className="text-lg">
-                                {currentStep.icon === 'Sun' ? '☀️' : currentStep.icon === 'Heart' ? '❤️' : currentStep.icon === 'Book' ? '📖' : '📞'}
-                            </span>
-                            <h3 className="font-medium text-dialogue-darkblue font-sans">
-                                Step {currentStepInfo.stepIndex + 1}: {currentStep.title}
-                            </h3>
-                        </div>
+                    <div className="flex items-center justify-center gap-2">
+                    <span className="text-lg">
+                    {currentStep.icon === 'Sun' ? '☀️' : currentStep.icon === 'Heart' ? '❤️' : currentStep.icon === 'Book' ? '📖' : '📞'}
+                    </span>
+                    <h3 className="font-medium text-dialogue-darkblue font-sans">
+                    Step {currentStepInfo.stepIndex + 1}: {currentStep.title}
+                    </h3>
                     </div>
+                    </div>
+                    </div>
+                )}
+
+                <div className="flex-1 overflow-y-auto">
+                <BehaviorGrid realtimeFeedback={realtimeFeedback} timeElapsed={timeElapsed} activatedFeedback={activatedFeedback} />
                 </div>
-            )}
 
-            {/* Behavior Cards Grid */}
-            <div className="flex-1 overflow-y-auto">
-                <BehaviorGrid mock={mock} realtimeFeedback={realtimeFeedback} timeElapsed={timeElapsed} activatedFeedback={activatedFeedback} />
-            </div>
-
-            {/* Recent Messages */}
-            <div className="border-t bg-white">
+                <div className="border-t bg-white">
                 <RecentMessages />
-            </div>
+                </div>
 
-            {/* Control Panel - Always at bottom */}
-            <div className="border-t bg-white p-4 text-center">
+                <div className="border-t bg-white p-4 text-center">
                 <ControlPanel
-                    onReportGenerated={setReport}
-                    isTimerActive={isTimerActive}
-                    timeElapsed={timeElapsed}
-                    onTimeChange={setTimeElapsed}
-                    currentStepInfo={currentStepInfo}
-                    currentStep={currentStep}
+                onReportGenerated={setReport}
+                isTimerActive={isTimerActive}
+                timeElapsed={timeElapsed}
+                onTimeChange={setTimeElapsed}
+                currentStepInfo={currentStepInfo}
+                currentStep={currentStep}
                 />
-            </div>
-        </div>
-    );
-}
+                </div>
+                </div>
+            );
+        }
 
-export function ChallengeWorkspace({ challenge, isMock = false, mock = false }: ChallengeWorkspaceProps) {
-    // Tool handler for Hume voice tools
-    const handleToolCall = async (toolCall: any, sendToolResponse: any) => {
-        console.log('Tool call received:', toolCall);
-        
-        // Alert the full output for demo purposes
-        alert(`Tool Call Received:\n\nTool: ${toolCall.name}\nParameters: ${JSON.stringify(toolCall.parameters, null, 2)}`);
-        
-        // Send a simple acknowledgment response
-        await sendToolResponse({
-            tool_call_id: toolCall.tool_call_id,
-            content: "Acknowledged"
-        });
-    };
+        export function ChallengeWorkspace() {
+            return (
+                <HumeVoiceProvider
+                configId="3f136570-42d4-4afd-b319-866e2fd76474"
+                onMessage={() => {}}
+                className="flex flex-col w-full min-h-[800px] h-fit bg-white rounded-lg overflow-hidden"
+                >
+                <ChallengeWorkspaceContent />
+                </HumeVoiceProvider>
+            );
+        }
 
-    return (
-        <HumeVoiceProvider
-        configId={challenge.humePersona}
-        onMessage={() => {}}
-        onToolCall={handleToolCall}
-        className="flex flex-col w-full min-h-[800px] h-fit bg-white rounded-lg overflow-hidden"
-        isMock={isMock}
-        >
-        <ChallengeWorkspaceContent challenge={challenge} mock={mock} />
-        </HumeVoiceProvider>
-    );
-}

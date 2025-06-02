@@ -39,6 +39,7 @@ export default function ControlPanel({ onReportGenerated, isTimerActive = false,
 
   // Internal timer state
   const [internalTimeElapsed, setInternalTimeElapsed] = useState(0);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   // Use external time if provided, otherwise use internal
   const currentTime = timeElapsed || internalTimeElapsed;
@@ -64,12 +65,15 @@ export default function ControlPanel({ onReportGenerated, isTimerActive = false,
   }, [isTimerActive, isPaused, currentTime, onTimeChange]);
 
   const handleStartCall = () => {
+    setIsConnecting(true);
     connect()
       .then(() => {
         console.log('Voice connection established');
+        setIsConnecting(false);
       })
       .catch((error) => {
         console.error('Failed to connect to voice:', error);
+        setIsConnecting(false);
       });
   };
 
@@ -117,12 +121,9 @@ export default function ControlPanel({ onReportGenerated, isTimerActive = false,
 
             <div className="flex items-center gap-4">
               <Button
-                className={cn(
-                  'flex items-center gap-1',
-                  currentTime >= 360 && 'bg-dialogue-darkblue hover:bg-dialogue-darkblue/90 text-white'
-                )}
+                className="flex items-center gap-1"
                 onClick={handleDisconnect}
-                variant={currentTime >= 360 ? 'default' : 'secondary'}
+                variant="outline"
               >
                 <span>
                   <Phone className={'size-4 opacity-50'} strokeWidth={2} stroke={'currentColor'} />
@@ -151,9 +152,10 @@ export default function ControlPanel({ onReportGenerated, isTimerActive = false,
             <Button
               className={'flex items-center gap-2 bg-dialogue-darkblue hover:bg-dialogue-darkblue/90'}
               onClick={handleStartCall}
+              disabled={isConnecting}
             >
               <Phone className={'size-4'} strokeWidth={2} stroke={'currentColor'} />
-              <span>Begin Roleplay</span>
+              <span>{isConnecting ? 'Starting...' : 'Begin Roleplay'}</span>
             </Button>
           </div>
         )}

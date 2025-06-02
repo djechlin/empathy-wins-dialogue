@@ -7,50 +7,16 @@ import ConversationReport from '@/components/voice/ConversationReport';
 import { Button } from '@/components/ui/button';
 import { sampleReport } from '@/lib/report';
 import SliderCard from '@/components/ui/slider-card';
-import type { Challenge } from '@/types';
 
 const ChallengePage = () => {
   const [showReport, setShowReport] = useState(false);
-
-  const challenges: Challenge[] = [
-    {
-      id: 'healthcare',
-      title: 'Expand healthcare',
-      voterAction: 'Your home state might cut parental leave benefits. Persuade the voter to call their representative to oppose the cuts.',
-      script: [
-        {
-          name: 'first script item',
-          items: [{
-            text: 'first item text',
-          }]
-        }
-      ],
-      humePersona: '3f136570-42d4-4afd-b319-866e2fd76474'
-    },
-    {
-      id: 'climate',
-      title: 'Protect the climate',
-      voterAction: 'Your home state of Washington is considering a program to increase grizzly bear populations, which is really good for the environment, but understandably has some citizens a little concerned.',
-      disabled: true,
-    },
-    {
-      id: 'lgbt',
-      title: 'Support LGBT rights',
-      disabled: true,
-    },
-    {
-      id: 'voting',
-      title: 'Increase midterm turnout',
-      disabled: true
-    }
-  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Helmet>
         <title>Persuasion Challenge | type2dialogue</title>
         <meta name="description" content="Put your deep canvassing skills to the test with this interactive practice session. Can you persuade a swing voter through empathetic dialogue?" />
-        
+
         {/* Open Graph tags */}
         <meta property="og:title" content="Persuasion Challenge | type2dialogue" />
         <meta property="og:description" content="Put your deep canvassing skills to the test with this interactive practice session. Can you persuade a swing voter through empathetic dialogue?" />
@@ -60,7 +26,7 @@ const ChallengePage = () => {
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="type2dialogue" />
-        
+
         {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@type2dialogue" />
@@ -95,7 +61,7 @@ const ChallengePage = () => {
                       Persuasion Challenge
                     </h3>
                   </div>
-                  <ChallengeWorkspace challenge={challenges[0]} />
+                  <ChallengeWorkspace />
                 </div>
               ) : (
                 <div className="bg-white rounded-lg shadow-lg p-6">
@@ -103,7 +69,7 @@ const ChallengePage = () => {
                     <h3 className="text-2xl font-bold text-dialogue-darkblue">
                       Conversation Report
                     </h3>
-                    <Button 
+                    <Button
                       onClick={() => setShowReport(false)}
                       variant="outline"
                     >

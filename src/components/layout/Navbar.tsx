@@ -55,9 +55,6 @@ const Navbar = () => {
           <Link to="/blog" className="text-foreground hover:text-dialogue-purple transition-colors">
             Blog
           </Link>
-          <Link to="/challenge/mock" className="text-white hover:text-gray-200 transition-colors">
-            Mock
-          </Link>
         </div>
 
         <div className="flex items-center gap-4">
