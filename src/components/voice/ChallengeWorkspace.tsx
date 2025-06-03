@@ -6,7 +6,7 @@ import type { ChallengeStep, FeedbackId } from '@/types';
 import { HumeVoiceProvider, useVoice } from './HumeVoiceProvider';
 import { ConversationReport as ReportType } from '@/types/conversationReport';
 import { Button } from '@/components/ui/button';
-import { MessageCircle, Check, X } from 'lucide-react';
+import { MessageCircle, Check, X, Info, Map, SquareUserRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { expressionLabels } from '@/lib/expressionLabels';
 import { useRealtimeFeedback } from '@/lib/useRealtimeReport';
@@ -245,33 +245,49 @@ function BehaviorGrid({realtimeFeedback, timeElapsed = 0, activatedFeedback = ne
 }
 
 const ScenarioCard = () => {
-    return (      <div className="bg-blue-50 border border-blue-200 p-4 mx-6 mt-6 rounded-lg">
-        <p className="text-sm text-gray-700">
-        <span className="font-semibold">Your scenario: Your home state might cut parental leave benefits. Persuade the voter to call their representative to oppose the cuts.</span>
-        </p>
-        <p className="text-sm text-gray-700 mt-2">
-        <span>Converse naturally with the voice assistant. Try to listen actively, and not overwhelm them with facts.</span>
-        </p>
-        </div>);
-    }
+    return (
+        <div className="bg-gradient-to-r from-purple-50 to-purple-100/70 border border-purple-200/60 p-5 mx-6 mt-6 rounded-xl shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+                <Map className="h-4 w-4 text-purple-500" />
+                <h3 className="font-medium text-purple-900 font-sans tracking-wide">Your Scenario</h3>
+            </div>
+            <p className="text-sm text-gray-800 leading-relaxed mb-4 font-medium">
+                Persuade the voter to support capping the price of insulin.
+            </p>
+            <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                At the end of the conversation, you'll ask them to call their local representative and share their support for lower insulin prices.
+            </p>
+            <div className="flex items-start gap-3 text-sm text-gray-600 bg-white/60 rounded-lg p-3 border border-purple-200/40">
+                <Info className="h-4 w-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                <span className="leading-relaxed">Converse naturally with the voice assistant. Try to listen actively, and not overwhelm them with facts.</span>
+            </div>
+        </div>
+    );
+}
 
     const VoterCard = () => {
         return (<div className="bg-gray-50 border border-gray-200 p-4 mx-6 mt-4 rounded-lg">
-            <h3 className="font-semibold text-sm text-gray-800 mb-3 font-sans">Voter Card</h3>
+            <div className="flex items-center gap-2 mb-3">
+                <SquareUserRound className="h-4 w-4 text-gray-500" />
+                <h3 className="font-semibold text-sm text-gray-800 font-sans">Voter Card</h3>
+            </div>
             <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-[1.2] min-w-0 md:min-w-80">
             <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm text-gray-700">
             <span className="font-medium">Name:</span>
-            <span>Frank Hamster</span>
+            <span className="text-gray-600">Frank Hamster</span>
 
             <span className="font-medium">Demographic:</span>
-            <span>49 year old man</span>
+            <span className="text-gray-600">49 year old man</span>
 
             <span className="font-medium">Voter registration:</span>
-            <span>Registered Independent</span>
+            <span className="text-gray-600">Registered Independent</span>
 
             <span className="font-medium">State representative:</span>
-            <span>Peter Gerbil, phone: 555-4567</span>
+            <span className="text-gray-600">Peter Gerbil, phone:   555-4567</span>
+
+            <span className="font-medium">Residence:</span>
+            <span className="text-gray-600">When you approach Frank's house, you see two cars, a girl's bike in the yard, and some flowers under the window.</span>
 
             <span className="font-medium">Voting record:</span>
             <div className="flex items-center gap-3">
@@ -301,7 +317,7 @@ const ScenarioCard = () => {
             </div>);
         }
 
-        function ChallengeWorkspaceContent() {
+        function ChallengeWorkspaceContent({ showScenarioOnly = false }: { showScenarioOnly?: boolean }) {
             const [report, setReport] = useState<ReportType | null>(null);
             const [timeElapsed, setTimeElapsed] = useState(0);
             const [receivedFeedbackKeys, setReceivedFeedbackKeys] = useState<Set<string>>(new Set());
@@ -391,64 +407,68 @@ const ScenarioCard = () => {
                 );
             }
 
+            if (showScenarioOnly) {
+                return (
+                    <div className="flex flex-col">
+                        <ScenarioCard />
+                        <VoterCard />
+                    </div>
+                );
+            }
+
             return (
                 <div className="flex flex-col h-full">
+                    {isTimerActive && (
+                        <div className="bg-white border-b p-4">
+                        <div className="text-center space-y-1">
+                        <div className="flex items-center justify-center gap-2">
+                        <span className="text-lg">
+                        {currentStep.icon === 'Sun' ? '☀️' : currentStep.icon === 'Heart' ? '❤️' : currentStep.icon === 'Book' ? '📖' : '📞'}
+                        </span>
+                        <h3 className="font-medium text-dialogue-darkblue font-sans">
+                        Step {currentStepInfo.stepIndex + 1}: {currentStep.title}
+                        </h3>
+                        </div>
+                        </div>
+                        </div>
+                    )}
 
-
-                <ScenarioCard />
-                <VoterCard />
-
-                {isTimerActive && (
-                    <div className="bg-white border-b p-4">
-                    <div className="text-center space-y-1">
-                    <div className="flex items-center justify-center gap-2">
-                    <span className="text-lg">
-                    {currentStep.icon === 'Sun' ? '☀️' : currentStep.icon === 'Heart' ? '❤️' : currentStep.icon === 'Book' ? '📖' : '📞'}
-                    </span>
-                    <h3 className="font-medium text-dialogue-darkblue font-sans">
-                    Step {currentStepInfo.stepIndex + 1}: {currentStep.title}
-                    </h3>
+                    <div className="flex-1 overflow-y-auto">
+                    <BehaviorGrid 
+                        realtimeFeedback={realtimeFeedback} 
+                        timeElapsed={timeElapsed} 
+                        activatedFeedback={activatedFeedback}
+                        allStepsFeedback={allStepsFeedback}
+                        isRoleplayEnded={isRoleplayEnded}
+                    />
                     </div>
+
+                    <div className="border-t bg-white">
+                    <RecentMessages />
                     </div>
+
+                    <div className="border-t bg-white p-4 text-center">
+                    <ControlPanel
+                    onReportGenerated={setReport}
+                    isTimerActive={isTimerActive}
+                    timeElapsed={timeElapsed}
+                    onTimeChange={setTimeElapsed}
+                    currentStepInfo={currentStepInfo}
+                    currentStep={currentStep}
+                    />
                     </div>
-                )}
-
-                <div className="flex-1 overflow-y-auto">
-                <BehaviorGrid 
-                    realtimeFeedback={realtimeFeedback} 
-                    timeElapsed={timeElapsed} 
-                    activatedFeedback={activatedFeedback}
-                    allStepsFeedback={allStepsFeedback}
-                    isRoleplayEnded={isRoleplayEnded}
-                />
-                </div>
-
-                <div className="border-t bg-white">
-                <RecentMessages />
-                </div>
-
-                <div className="border-t bg-white p-4 text-center">
-                <ControlPanel
-                onReportGenerated={setReport}
-                isTimerActive={isTimerActive}
-                timeElapsed={timeElapsed}
-                onTimeChange={setTimeElapsed}
-                currentStepInfo={currentStepInfo}
-                currentStep={currentStep}
-                />
-                </div>
                 </div>
             );
         }
 
-        export function ChallengeWorkspace() {
+        export function ChallengeWorkspace({ showScenarioOnly = false }: { showScenarioOnly?: boolean }) {
             return (
                 <HumeVoiceProvider
                 configId="3f136570-42d4-4afd-b319-866e2fd76474"
                 onMessage={() => {}}
-                className="flex flex-col w-full min-h-[800px] h-fit bg-white rounded-lg overflow-hidden"
+                className={`flex flex-col w-full ${showScenarioOnly ? 'h-fit' : 'min-h-[800px] h-fit'} bg-white rounded-lg overflow-hidden`}
                 >
-                <ChallengeWorkspaceContent />
+                <ChallengeWorkspaceContent showScenarioOnly={showScenarioOnly} />
                 </HumeVoiceProvider>
             );
         }

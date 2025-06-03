@@ -14,6 +14,7 @@ export interface ActivityCardProps {
   headerExtra?: ReactNode;
   className?: string;
   isComplete?: boolean;
+  completionText?: string;
 }
 
 const ActivityCard: React.FC<ActivityCardProps> = ({
@@ -24,7 +25,8 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
   children,
   headerExtra,
   className = "",
-  isComplete: externalIsComplete = false
+  isComplete: externalIsComplete = false,
+  completionText
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [internalIsComplete, setInternalIsComplete] = useState(false);
@@ -52,7 +54,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
   return (
     <Card
       className={`border-dialogue-neutral hover:shadow-sm transition-shadow ${
-        isComplete ? 'border-dialogue-darkblue border-2' : ''
+        isComplete ? 'border-transparent' : ''
       } ${className}`}
     >
       <Collapsible open={isOpen} onOpenChange={handleToggle}>
@@ -65,7 +67,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
               {isComplete && (
                 <div className="flex items-center bg-dialogue-purple text-white px-2 py-1 rounded-full gap-1">
                   <CheckCircle2 className="h-4 w-4" />
-                  <span className="text-xs font-medium">Complete</span>
+                  <span className="text-xs font-medium">{completionText || "Complete"}</span>
                 </div>
               )}
             </div>

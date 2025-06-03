@@ -7,6 +7,7 @@ import ConversationReport from '@/components/voice/ConversationReport';
 import { Button } from '@/components/ui/button';
 import { sampleReport } from '@/lib/report';
 import SliderCard from '@/components/ui/slider-card';
+import { Dice3, MessagesSquare } from 'lucide-react';
 
 const ChallengePage = () => {
   const [showReport, setShowReport] = useState(false);
@@ -15,11 +16,11 @@ const ChallengePage = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Helmet>
         <title>Persuasion Challenge | type2dialogue</title>
-        <meta name="description" content="Put your deep canvassing skills to the test with this interactive practice session. Can you persuade a swing voter through empathetic dialogue?" />
+        <meta name="description" content="Try to persuade a swing voter to support a popular healthcare measure in this interactive challenge." />
 
         {/* Open Graph tags */}
         <meta property="og:title" content="Persuasion Challenge | type2dialogue" />
-        <meta property="og:description" content="Put your deep canvassing skills to the test with this interactive practice session. Can you persuade a swing voter through empathetic dialogue?" />
+        <meta property="og:description" content="Try to persuade a swing voter to support a popular healthcare measure in this interactive challenge." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://type2dialogue.com/challenge" />
         <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
@@ -31,7 +32,7 @@ const ChallengePage = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@type2dialogue" />
         <meta name="twitter:title" content="Persuasion Challenge | type2dialogue" />
-        <meta name="twitter:description" content="Put your deep canvassing skills to the test with this interactive practice session. Can you persuade a swing voter through empathetic dialogue?" />
+        <meta name="twitter:description" content="Try to persuade a swing voter to support a popular healthcare measure in this interactive challenge." />
         <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
       </Helmet>
       <Navbar />
@@ -43,26 +44,44 @@ const ChallengePage = () => {
                 Can You Persuade a Swing Voter?
               </h1>
               <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-                Put your deep canvassing skills to the test with this interactive practice session.
+                Persuade a swing voter to support a popular healthcare measure in this interactive challenge.
               </p>
             </div>
 
             <div className="max-w-4xl mx-auto space-y-8">
               <SliderCard
-                id="pre-challenge-empathy"
-                title="Before You Start"
-                question="I'm interested in having more empathetic sations with people who disagree with me about political topics."
+                id="comfort-level"
+                title="Rate your agreement before the challenge"
+                question="I'm comfortable talking about my political beliefs with swing voters."
+                defaultOpen={true}
               />
-
+              
               {!showReport ? (
-                <div className="bg-white rounded-lg shadow-lg p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-2xl font-bold text-dialogue-darkblue">
-                      Persuasion Challenge
-                    </h3>
+                <>
+                  <div className="bg-white rounded-lg shadow-lg p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="flex items-center gap-2">
+                        <Dice3 className="h-6 w-6 text-dialogue-darkblue" />
+                        <h3 className="text-2xl font-bold text-dialogue-darkblue font-sans">
+                          Challenge Scenario
+                        </h3>
+                      </div>
+                    </div>
+                    <ChallengeWorkspace showScenarioOnly={true} />
                   </div>
-                  <ChallengeWorkspace />
-                </div>
+                  
+                  <div className="bg-white rounded-lg shadow-lg p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="flex items-center gap-2">
+                        <MessagesSquare className="h-6 w-6 text-dialogue-darkblue" />
+                        <h3 className="text-2xl font-bold text-dialogue-darkblue font-sans">
+                          Roleplay
+                        </h3>
+                      </div>
+                    </div>
+                    <ChallengeWorkspace showScenarioOnly={false} />
+                  </div>
+                </>
               ) : (
                 <div className="bg-white rounded-lg shadow-lg p-6">
                   <div className="flex justify-between items-center mb-6">
@@ -79,11 +98,12 @@ const ChallengePage = () => {
                   <ConversationReport report={sampleReport} />
                 </div>
               )}
-
+              
               <SliderCard
-                id="post-challenge-empathy"
-                title="After the Challenge"
-                question="I'm interested in having more empathetic conversations with people who disagree with me about political topics."
+                id="comfort-level-end"
+                title="Rate your agreement after completion"
+                question="I'm comfortable talking about my political beliefs with swing voters."
+                defaultOpen={false}
               />
             </div>
           </div>
