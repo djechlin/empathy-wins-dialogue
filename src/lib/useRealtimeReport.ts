@@ -1,6 +1,6 @@
 import { useVoice } from "@humeai/voice-react";
 import { useEffect, useState } from "react";
-import { generateRealtimeReport } from "./generateRealtimeReport";
+import { generateRealtimeFeedback, RealtimeFeedback } from "./generateRealtimeReport";
 import { ChallengeStep } from "@/types";
 
 const concatTranscript = (msgs) => {
@@ -12,10 +12,11 @@ const concatTranscript = (msgs) => {
 
 }
 
-export function useRealtimeFeedback(stepId: ChallengeStep) {
+export function useRealtimeFeedback(stepId: ChallengeStep): RealtimeFeedback | null {
     const { messages } = useVoice();
     const [prevIndex, setPrevIndex] = useState(-1);
-    const [realtimeReport, setRealtimeReport] = useState(undefined);
+    const [realtimeFeedback, setRealtimeFeedback] = useState<RealtimeFeedback | null>(null);
+    
     useEffect(() => {
         const newMessages = messages.filter((m, index) => index > prevIndex);
         const hasNewUserMessage = newMessages.filter(m => m.type === 'user_message').length > 0;
@@ -25,10 +26,10 @@ export function useRealtimeFeedback(stepId: ChallengeStep) {
         setPrevIndex(messages.length - 1);
         const allMessages = messages.filter(m => m.type === 'user_message' || m.type === 'assistant_message');
 
-        generateRealtimeReport(concatTranscript(allMessages), concatTranscript(newMessages), stepId)
-        .then(setRealtimeReport);
+        generateRealtimeFeedback(concatTranscript(allMessages), concatTranscript(newMessages), stepId)
+        .then(setRealtimeFeedback);
 
     }, [messages, stepId, prevIndex]);
 
-    return realtimeReport;
+    return realtimeFeedback;
 }

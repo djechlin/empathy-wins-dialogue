@@ -6,23 +6,22 @@ import type { FeedbackId } from '@/types';
 
 // Mapping of feedback IDs to simple badge text
 const feedbackBadgeText: Record<FeedbackId, string> = {
-  'framing-introduced-your-name': 'Introduced your name',
-  'framing-introduced-the-issue': 'Introduced the issue',
-  'framed-uplifting': 'Uplifting',
-  'framed-simple-language': 'Direct language',
-  'listened-asked-about-relationship': 'Learned who they value',
-  'listened-dug-deeper': 'Dug Deep',
-  'listened-shared-own-relationship': 'Shared',
-  'listened-got-vulnerable': 'Became vulnerable',
-  'explored-connected-issue': 'Connected the issue',
-  'explored-stayed-calm': 'Stayed Calm',
+  'framing-introduced-your-name': 'Say your name',
+  'framing-named-issue-plainspoken': 'Name the issue with plainspoken words',
+  'framed-uplifting': 'Talk about the good, not the bad',
+  'listened-asked-about-relationship': 'Ask about their family',
+  'listened-dug-deeper': 'Dig deeper into how they feel',
+  'listened-shared-own-relationship': 'Tell them about your family',
+  'listened-got-vulnerable': 'Share a time you struggled',
+  'explored-connected-issue': 'Connect the issue to our families',
+  'explored-stayed-calm': 'Ask questions when challenged without lecturing',
   'call-voter-interested': 'They\'ll call later',
   'call-voter-called': 'They called right now'
 };
 
 // Group feedback IDs by step prefix
 const feedbackByStep: Record<string, FeedbackId[]> = {
-  'framing': ['framing-introduced-your-name', 'framing-introduced-the-issue', 'framed-uplifting', 'framed-simple-language'],
+  'framing': ['framing-introduced-your-name', 'framing-named-issue-plainspoken', 'framed-uplifting'],
   'listening': ['listened-asked-about-relationship', 'listened-dug-deeper', 'listened-shared-own-relationship', 'listened-got-vulnerable'],
   'exploring': ['explored-connected-issue', 'explored-stayed-calm'],
   'calling': ['call-voter-interested', 'call-voter-called']
@@ -54,9 +53,10 @@ interface ScoreCardProps {
   isCurrentStep?: boolean;
   isPreviousStep?: boolean;
   activatedFeedback?: Set<FeedbackId>;
+  isRoleplayEnded?: boolean;
 }
 
-const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep, activatedFeedback = new Set() }: ScoreCardProps) => {
+const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep, activatedFeedback = new Set(), isRoleplayEnded = false }: ScoreCardProps) => {
   const [tipDismissed, setTipDismissed] = useState(false);
 
   const IconComponent = Icons[config.icon as keyof typeof Icons] as React.ComponentType<{ className?: string }>;
@@ -147,11 +147,18 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep, ac
       } else if (activatedCount >= totalCount / 2) {
         return 'Good';
       }
+      
+      // If we have feedback badges but less than half are activated, show step duration
+      if (stepNumber) {
+        const durations = ['1 minute', '3 minutes', '2 minutes', '30 seconds'];
+        return durations[stepNumber - 1] || `Step ${stepNumber}`;
+      }
+      return null;
     }
     
-    // Fall back to timer/step info if no badges are activated
+    // Fall back to timer/step info if no badges are available
     if (data.status === 'to-do' && stepNumber) {
-      const durations = ['30 seconds', '3 minutes', '2 minutes', '30 seconds'];
+      const durations = ['1 minute', '3 minutes', '2 minutes', '30 seconds'];
       return durations[stepNumber - 1] || `Step ${stepNumber}`;
     }
     if (data.status === 'good') return 'Good';
@@ -173,6 +180,9 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep, ac
       } else if (activatedCount >= totalCount / 2) {
         return "bg-dialogue-neutral text-dialogue-purple";
       }
+      
+      // If we have feedback badges but less than half are activated, show as to-do
+      return "bg-white text-dialogue-purple border border-dialogue-purple";
     }
     
     // Fall back to original status
@@ -254,13 +264,60 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep, ac
                 className={cn(
                   "text-xs px-2 py-1",
                   activatedFeedback.has(feedbackId)
-                    ? "bg-green-100 border-green-300 text-green-700"
-                    : "bg-gray-50 border-gray-200 text-gray-400"
+                    ? "bg-dialogue-darkblue border-dialogue-darkblue text-white"
+                    : "bg-white border-dialogue-purple text-dialogue-purple"
                 )}
               >
                 {feedbackBadgeText[feedbackId]}
               </Badge>
             ))}
+          </div>
+        )}
+
+        {/* Detailed feedback items after roleplay ends */}
+        {isRoleplayEnded && data.examples && Array.isArray(data.examples) && data.examples.length > 0 && (
+          <div className="mt-3 space-y-2">
+            {data.examples.map((example, index) => {
+              if (typeof example === 'string') {
+                return (
+                  <div key={index} className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                    {example}
+                  </div>
+                );
+              } else {
+                // FeedbackItem
+                const isPositive = example.type === 'positive';
+                const isNegative = example.type === 'negative';
+                
+                return (
+                  <div 
+                    key={index} 
+                    className={cn(
+                      "flex items-start gap-2 p-2 rounded text-sm",
+                      isPositive && "bg-green-50 border border-green-200",
+                      isNegative && "bg-red-50 border border-red-200",
+                      !isPositive && !isNegative && "bg-gray-50 border border-gray-200"
+                    )}
+                  >
+                    <div className={cn(
+                      "flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold",
+                      isPositive && "bg-green-600 text-white",
+                      isNegative && "bg-red-600 text-white",
+                      !isPositive && !isNegative && "bg-gray-400 text-white"
+                    )}>
+                      {isPositive ? '✓' : isNegative ? '!' : '?'}
+                    </div>
+                    <span className={cn(
+                      isPositive && "text-green-800",
+                      isNegative && "text-red-800",
+                      !isPositive && !isNegative && "text-gray-700"
+                    )}>
+                      {example.text}
+                    </span>
+                  </div>
+                );
+              }
+            })}
           </div>
         )}
       </div>

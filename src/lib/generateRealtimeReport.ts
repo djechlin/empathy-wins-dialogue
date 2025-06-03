@@ -3,26 +3,63 @@ import type { FeedbackId, ChallengeStep } from '@/types';
 
 export type RealtimeReport = string;
 
+export interface FeedbackItem {
+    type: 'positive' | 'negative' | 'hint' | 'neutral';
+    text: string;
+    icon: string;
+}
+
+export interface RealtimeFeedback {
+    [key: string]: FeedbackItem;
+}
+
 const feedbackCriteria: Record<string, FeedbackId[]> = {
-    'framing': ['framing-introduced-your-name', 'framing-introduced-the-issue', 'framed-uplifting', 'framed-simple-language'],
+    'framing': ['framing-introduced-your-name', 'framing-named-issue-plainspoken', 'framed-uplifting'],
     'listening': ['listened-asked-about-relationship', 'listened-dug-deeper', 'listened-shared-own-relationship', 'listened-got-vulnerable'],
     'exploring': ['explored-connected-issue', 'explored-stayed-calm']
 };
 
 const feedbackDescriptions: Record<FeedbackId, string> = {
     'framing-introduced-your-name': 'introduced yourself by name',
-    'framing-introduced-the-issue': 'introduced the issue/topic',
+    'framing-named-issue-plainspoken': 'named the issue using plainspoken words like "get sick", "see a doctor", "be healthy" but NOT words like "healthcare" or "health insurance"',
     'framed-uplifting': 'framed the issue in an uplifting way (e.g. "so everyone can see a doctor" not "so people don\'t lose healthcare access")',
-    'framed-simple-language': 'used simple, direct language (e.g. "see a doctor" instead of "access healthcare")',
     'listened-asked-about-relationship': 'asked about people close to the voter',
     'listened-dug-deeper': 'dug deeper to learn more about why someone close to the voter is special to them',
     'listened-shared-own-relationship': 'shared about your own loved one',
-    'listened-got-vulnerable': 'got vulnerable by sharing a moment in time your loved one was there for you',
+    'listened-got-vulnerable': 'shared a time they personally struggled (lost a job, lost a pet, couldn\'t see a doctor, etc.)',
     'explored-connected-issue': 'connected the issue to loved ones discussed previously',
     'explored-stayed-calm': 'stayed calm and didn\'t lecture when the voter was exploring',
     'call-voter-called': 'The voter agreed to call their representative on the spot',
     'call-voter-interested': 'The voter sounded very positive about calling their rep but didn\'t agree to do it.'
 };
+
+function parseFeedbackItem(text: string): FeedbackItem {
+    if (text.startsWith('✓')) {
+        return {
+            type: 'positive',
+            text: text.substring(1).trim(),
+            icon: '✓'
+        };
+    } else if (text.startsWith('!')) {
+        return {
+            type: 'negative',
+            text: text.substring(1).trim(),
+            icon: '!'
+        };
+    } else if (text.startsWith('?')) {
+        return {
+            type: 'hint',
+            text: text.substring(1).trim(),
+            icon: '?'
+        };
+    } else {
+        return {
+            type: 'neutral',
+            text: text.trim(),
+            icon: ''
+        };
+    }
+}
 
 export async function generateRealtimeReport(
     fullConversationTranscript: string,
@@ -71,4 +108,31 @@ Your response should be a json object, wrapped in <json> like follows:
     }
 
     return data as string;
+}
+
+export async function generateRealtimeFeedback(
+    fullConversationTranscript: string,
+    newMessagesTranscript: string,
+    step: ChallengeStep
+): Promise<RealtimeFeedback | null> {
+    const rawReport = await generateRealtimeReport(fullConversationTranscript, newMessagesTranscript, step);
+    
+    const jsonMatch = rawReport && rawReport.match(/<json>(.*?)<\/json>/s);
+    if (!jsonMatch) {
+        return null;
+    }
+    
+    try {
+        const parsedFeedback = JSON.parse(jsonMatch[1].trim());
+        const feedback: RealtimeFeedback = {};
+        
+        Object.entries(parsedFeedback).forEach(([key, value]) => {
+            feedback[key] = parseFeedbackItem(value as string);
+        });
+        
+        return feedback;
+    } catch (error) {
+        console.warn('Failed to parse realtime feedback:', error);
+        return null;
+    }
 }

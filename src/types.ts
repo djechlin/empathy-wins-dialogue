@@ -14,9 +14,8 @@ export type Script = Step[];
 
 export type FeedbackId =
 | 'framing-introduced-your-name'
-| 'framing-introduced-the-issue'
+| 'framing-named-issue-plainspoken'
 | 'framed-uplifting'
-| 'framed-simple-language'
 | 'listened-asked-about-relationship'
 | 'listened-dug-deeper'
 | 'listened-shared-own-relationship'

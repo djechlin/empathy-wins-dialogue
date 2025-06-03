@@ -10,6 +10,7 @@ import { MessageCircle, Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { expressionLabels } from '@/lib/expressionLabels';
 import { useRealtimeFeedback } from '@/lib/useRealtimeReport';
+import { RealtimeFeedback, FeedbackItem } from '@/lib/generateRealtimeReport';
 
 interface BehaviorCardConfig {
     id: string;
@@ -18,19 +19,9 @@ interface BehaviorCardConfig {
     subtitle: string;
 }
 
-interface FeedbackItem {
-    type: 'positive' | 'negative' | 'hint' | 'neutral';
-    text: string;
-    icon: string;
-}
-
 interface BehaviorCardData {
     status: 'to-do' | 'good' | 'great';
     examples: string[] | FeedbackItem[];
-}
-
-interface RealtimeFeedback {
-    [key: string]: string;
 }
 interface StepConfig {
     id: ChallengeStep;
@@ -42,7 +33,7 @@ interface StepConfig {
 }
 
 const stepConfigs: StepConfig[] = [
-    { id: 'framing', title: 'Frame the issue', duration: 30, icon: 'Sun', subtitle: 'How will you frame the issue?' },
+    { id: 'framing', title: 'Frame the issue', duration: 60, icon: 'Sun', subtitle: 'How will you frame the issue?' },
     { id: 'listening', title: 'Listen vulnerably', duration: 180, icon: 'Heart', subtitle: 'Can you dig deep as the voter opens up?', tip: 'Getting the voter to open up can be challenging! You can say, "Can you give me a hint?" at any time.' },
     { id: 'exploring', title: 'Explore together', duration: 120, icon: 'Book', subtitle: 'How can you lead the voter to a new perspective?' },
     { id: 'calling', title: 'Call their representative', duration: 30, icon: 'Phone', subtitle: 'Ask them to take their phone right now and call their representative listed on the voter card' },
@@ -157,7 +148,7 @@ function RecentMessages() {
     );
 }
 
-function BehaviorGrid({realtimeFeedback, timeElapsed = 0, activatedFeedback = new Set() }: { realtimeFeedback?: RealtimeFeedback | null; timeElapsed?: number; activatedFeedback?: Set<FeedbackId> }) {
+function BehaviorGrid({realtimeFeedback, timeElapsed = 0, activatedFeedback = new Set(), allStepsFeedback = {}, isRoleplayEnded = false }: { realtimeFeedback?: RealtimeFeedback | null; timeElapsed?: number; activatedFeedback?: Set<FeedbackId>; allStepsFeedback?: Record<string, RealtimeFeedback>; isRoleplayEnded?: boolean }) {
     const currentStepInfo = getCurrentStep(timeElapsed);
 
 
@@ -183,40 +174,38 @@ function BehaviorGrid({realtimeFeedback, timeElapsed = 0, activatedFeedback = ne
     const [cardsData, setCardsData] = useState<Record<string, BehaviorCardData>>(defaultData);
 
     useEffect(() => {
-        if (realtimeFeedback) {
+        if (isRoleplayEnded) {
+            // Show all collected feedback from all steps
+            setCardsData(prev => {
+                const newData = { ...prev };
+
+                Object.entries(allStepsFeedback).forEach(([stepId, stepFeedback]) => {
+                    if (newData[stepId] && stepFeedback) {
+                        const feedbackItems = Object.values(stepFeedback);
+                        
+                        // Update status based on feedback
+                        const hasPositiveFeedback = feedbackItems.some(f => f.type === 'positive');
+                        const cardStatus = hasPositiveFeedback ? 'good' : newData[stepId].status;
+
+                        newData[stepId] = {
+                            ...newData[stepId],
+                            examples: feedbackItems,
+                            status: cardStatus
+                        };
+                    }
+                });
+
+                return newData;
+            });
+        } else if (realtimeFeedback) {
+            // During roleplay, only show current step feedback
             setCardsData(prev => {
                 const newData = { ...prev };
 
                 const currentStepId = getCurrentStep(timeElapsed).stepId;
 
                 if (newData[currentStepId]) {
-                    const feedbackItems = Object.values(realtimeFeedback).map(text => {
-                        if (text.startsWith('✓')) {
-                            return {
-                                type: 'positive' as const,
-                                text: text.substring(1).trim(),
-                                icon: '✓'
-                            };
-                        } else if (text.startsWith('!')) {
-                            return {
-                                type: 'negative' as const,
-                                text: text.substring(1).trim(),
-                                icon: '!'
-                            };
-                        } else if (text.startsWith('?')) {
-                            return {
-                                type: 'hint' as const,
-                                text: text.substring(1).trim(),
-                                icon: '?'
-                            };
-                        } else {
-                            return {
-                                type: 'neutral' as const,
-                                text: text.trim(),
-                                icon: ''
-                            };
-                        }
-                    });
+                    const feedbackItems = Object.values(realtimeFeedback);
 
                     // Update status based on feedback
                     const hasPositiveFeedback = feedbackItems.some(f => f.type === 'positive');
@@ -233,7 +222,7 @@ function BehaviorGrid({realtimeFeedback, timeElapsed = 0, activatedFeedback = ne
                 return newData;
             });
         }
-    }, [realtimeFeedback, timeElapsed]);
+    }, [realtimeFeedback, timeElapsed, isRoleplayEnded, allStepsFeedback]);
 
     return (
         <div className="px-6 py-4">
@@ -247,6 +236,7 @@ function BehaviorGrid({realtimeFeedback, timeElapsed = 0, activatedFeedback = ne
             stepNumber={index + 1}
             isCurrentStep={currentStepInfo.stepIndex === index}
             activatedFeedback={activatedFeedback}
+            isRoleplayEnded={isRoleplayEnded}
             />
         ))}
         </div>
@@ -272,7 +262,7 @@ const ScenarioCard = () => {
             <div className="flex-[1.2] min-w-0 md:min-w-80">
             <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm text-gray-700">
             <span className="font-medium">Name:</span>
-            <span>Frank Townsend</span>
+            <span>Frank Hamster</span>
 
             <span className="font-medium">Demographic:</span>
             <span>49 year old man</span>
@@ -281,7 +271,7 @@ const ScenarioCard = () => {
             <span>Registered Independent</span>
 
             <span className="font-medium">State representative:</span>
-            <span>Peter Daffodiland (555-4567)</span>
+            <span>Peter Gerbil, phone: 555-4567</span>
 
             <span className="font-medium">Voting record:</span>
             <div className="flex items-center gap-3">
@@ -316,6 +306,8 @@ const ScenarioCard = () => {
             const [timeElapsed, setTimeElapsed] = useState(0);
             const [receivedFeedbackKeys, setReceivedFeedbackKeys] = useState<Set<string>>(new Set());
             const [activatedFeedback, setActivatedFeedback] = useState<Set<import('@/types').FeedbackId>>(new Set());
+            const [allStepsFeedback, setAllStepsFeedback] = useState<Record<string, RealtimeFeedback>>({});
+            const [isRoleplayEnded, setIsRoleplayEnded] = useState(false);
             const { status } = useVoice();
             const isTimerActive = status.value === 'connected';
 
@@ -324,18 +316,38 @@ const ScenarioCard = () => {
 
             const realtimeFeedback = useRealtimeFeedback(currentStepInfo.stepId);
 
+            // Track when roleplay ends
+            useEffect(() => {
+                if (status.value === 'disconnected' && timeElapsed > 0) {
+                    setIsRoleplayEnded(true);
+                }
+                
+                // Reset when starting a new roleplay
+                if (status.value === 'connected') {
+                    setIsRoleplayEnded(false);
+                }
+            }, [status.value, timeElapsed]);
+
+            // Collect feedback for current step
+            useEffect(() => {
+                if (realtimeFeedback && !isRoleplayEnded) {
+                    setAllStepsFeedback(prev => ({
+                        ...prev,
+                        [currentStepInfo.stepId]: realtimeFeedback
+                    }));
+                }
+            }, [realtimeFeedback, currentStepInfo.stepId, isRoleplayEnded]);
 
             useEffect(() => {
-                const jsonMatch = realtimeFeedback && realtimeFeedback.match(/<json>(.*?)<\/json>/s);
-                if (!jsonMatch) {
+                if (!realtimeFeedback) {
                     return;
                 }
-                const parsedFeedback = JSON.parse(jsonMatch[1].trim());
+                
                 const newFeedback: RealtimeFeedback = {};
                 const newKeys = new Set<string>();
 
-                Object.entries(parsedFeedback).forEach(([key, value]) => {
-                    if (!receivedFeedbackKeys.has(key) && value[0] !== '?') {
+                Object.entries(realtimeFeedback).forEach(([key, value]) => {
+                    if (!receivedFeedbackKeys.has(key) && value.type !== 'hint') {
                         newFeedback[key] = value;
                         newKeys.add(key);
                     }
@@ -345,8 +357,8 @@ const ScenarioCard = () => {
                     setReceivedFeedbackKeys(prev => new Set([...prev, ...newKeys]));
 
                     const newActivatedFeedback = new Set<import('@/types').FeedbackId>();
-                    Object.entries(parsedFeedback).forEach(([key, value]) => {
-                        if (value === '✓') {
+                    Object.entries(realtimeFeedback).forEach(([key, value]) => {
+                        if (value.type === 'positive') {
                             newActivatedFeedback.add(key as import('@/types').FeedbackId);
                         }
                     });
@@ -402,7 +414,13 @@ const ScenarioCard = () => {
                 )}
 
                 <div className="flex-1 overflow-y-auto">
-                <BehaviorGrid realtimeFeedback={realtimeFeedback} timeElapsed={timeElapsed} activatedFeedback={activatedFeedback} />
+                <BehaviorGrid 
+                    realtimeFeedback={realtimeFeedback} 
+                    timeElapsed={timeElapsed} 
+                    activatedFeedback={activatedFeedback}
+                    allStepsFeedback={allStepsFeedback}
+                    isRoleplayEnded={isRoleplayEnded}
+                />
                 </div>
 
                 <div className="border-t bg-white">
