@@ -246,7 +246,7 @@ function BehaviorGrid({realtimeFeedback, timeElapsed = 0, activatedFeedback = ne
 
 const ScenarioCard = () => {
     return (
-        <div className="bg-gradient-to-r from-purple-50 to-purple-100/70 border border-purple-200/60 p-5 mx-6 mt-6 rounded-xl shadow-sm">
+        <div className="bg-gradient-to-r from-purple-50 to-purple-100/70 border border-purple-200/60 p-5 rounded-xl shadow-sm">
             <div className="flex items-center gap-2 mb-4">
                 <Map className="h-4 w-4 text-purple-500" />
                 <h3 className="font-medium text-purple-900 font-sans tracking-wide">Your Scenario</h3>
@@ -266,10 +266,10 @@ const ScenarioCard = () => {
 }
 
     const VoterCard = () => {
-        return (<div className="bg-gray-50 border border-gray-200 p-4 mx-6 mt-4 rounded-lg">
-            <div className="flex items-center gap-2 mb-3">
+        return (<div className="bg-gray-50 border border-gray-200 p-5 rounded-xl shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
                 <SquareUserRound className="h-4 w-4 text-gray-500" />
-                <h3 className="font-semibold text-sm text-gray-800 font-sans">Voter Card</h3>
+                <h3 className="font-medium text-gray-800 font-sans tracking-wide">Voter Card</h3>
             </div>
             <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-[1.2] min-w-0 md:min-w-80">
@@ -409,7 +409,7 @@ const ScenarioCard = () => {
 
             if (showScenarioOnly) {
                 return (
-                    <div className="flex flex-col">
+                    <div className="flex flex-col gap-4">
                         <ScenarioCard />
                         <VoterCard />
                     </div>
