@@ -44,7 +44,7 @@ const ChallengePage = () => {
                 Can You Persuade a Swing Voter?
               </h1>
               <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-                Persuade a swing voter to support a popular healthcare measure in this interactive challenge.
+                Persuade a skeptical voter to support a popular healthcare measure in this interactive challenge.
               </p>
             </div>
 
