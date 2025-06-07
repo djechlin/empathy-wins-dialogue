@@ -1,16 +1,13 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/ui/toaster";
+import { Toaster as Sonner } from "@/ui/sonner";
+import { TooltipProvider } from "@/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import Learn from "./pages/Learn";
 import StartingOut from "./pages/StartingOut";
-import VulnerableStorytelling from "./pages/VulnerableStorytelling";
-import EmpatheticListening from "./pages/EmpatheticListening";
-import WhenToKeepTalking from "./pages/WhenToKeepTalking";
 import LearnChapter from "./pages/LearnChapter";
 import Blog from "./pages/Blog";
 import CognitiveDissonance from "./pages/blog/CognitiveDissonance";
@@ -34,9 +31,6 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/learn" element={<Learn />} />
           <Route path="/learn/starting-out" element={<StartingOut />} />
-          <Route path="/learn/vulnerable-storytelling" element={<VulnerableStorytelling />} />
-          <Route path="/learn/empathetic-listening" element={<EmpatheticListening />} />
-          <Route path="/learn/when-to-keep-talking" element={<WhenToKeepTalking />} />
           <Route path="/learn/:chapterId" element={<LearnChapter />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/the-name-type2dialogue" element={<TheNameType2Dialogue />} />

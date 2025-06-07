@@ -1,15 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Slider } from '@/components/ui/slider';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
+import { Slider } from '@/ui/slider';
+import { Button } from '@/ui/button';
+import { Input } from '@/ui/input';
+import { Textarea } from '@/ui/textarea';
 import { Plus, Trash2, List, ListCheck, Youtube, Users, ArrowDown, ArrowUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/components/ui/sonner';
-import { Skeleton } from '@/components/ui/skeleton';
-import PracticeCard from './PracticeCard';
+import { toast } from '@/ui/sonner';
+import { Skeleton } from '@/ui/skeleton';
 import VideoCard from './VideoCard';
 
 const LearningCards = () => {
@@ -182,14 +181,6 @@ const LearningCards = () => {
           title="Introduction to Empathetic Political Dialogue"
           description="Watch this short video to learn the basics of having productive political conversations"
           url="https://www.youtube.com/embed/zOgCdDJYF4U"
-        />
-
-        <PracticeCard
-          id="practice-deep-canvassing"
-          title="Practice Deep Canvassing"
-          description="Practice having productive political conversations using deep canvassing techniques"
-          defaultOpen={false}
-          scenarioId="deep-canvassing"
         />
 
         {/* Card 3: Friends List */}

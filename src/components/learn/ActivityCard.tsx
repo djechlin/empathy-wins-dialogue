@@ -1,8 +1,8 @@
 
 import React, { ReactNode, useState, Children, isValidElement, cloneElement } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
 import { ChevronDown, CheckCircle2 } from 'lucide-react';
-import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
+import { Collapsible, CollapsibleContent } from '@/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export interface ActivityCardProps {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { Button } from '@/components/ui/button';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/ui/carousel';
+import { Button } from '@/ui/button';
 
 interface MessageProps {
   speaker: 'canvasser' | 'voter';

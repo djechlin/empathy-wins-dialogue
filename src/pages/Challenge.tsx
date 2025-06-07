@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { ChallengeWorkspace } from '@/components/voice/ChallengeWorkspace';
-import ConversationReport from '@/components/voice/ConversationReport';
-import { Button } from '@/components/ui/button';
+import { ChallengeWorkspace } from '@/features/roleplay';
+import { ConversationReport } from '@/features/dialogue';
+import { Button } from '@/ui/button';
 import { sampleReport } from '@/lib/report';
-import SliderCard from '@/components/ui/slider-card';
+import SliderCard from '@/ui/slider-card';
 import { Dice3, MessagesSquare } from 'lucide-react';
 
 const ChallengePage = () => {
@@ -98,7 +98,6 @@ const ChallengePage = () => {
                   <ConversationReport report={sampleReport} />
                 </div>
               )}
-              
               <SliderCard
                 id="comfort-level-end"
                 title="Rate your agreement after completion"

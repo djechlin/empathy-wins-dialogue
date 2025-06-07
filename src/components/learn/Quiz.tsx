@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Toggle } from '@/components/ui/toggle';
+import { Card, CardContent, CardHeader } from '@/ui/card';
+import { Button } from '@/ui/button';
+import { Toggle } from '@/ui/toggle';
 import { Check, X, CheckCircle2, RotateCcw } from 'lucide-react';
 
 export type QuizQuestion = {

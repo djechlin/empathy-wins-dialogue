@@ -1,21 +1,19 @@
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Youtube, Check, X, MessageCircle, Clock, Heart, Users, TrendingUp, Target, Lightbulb, ArrowRight } from 'lucide-react';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import SliderCard from '@/components/ui/slider-card';
-import PracticeCard from '@/components/learn/PracticeCard';
+import { Card, CardContent, CardHeader } from '@/ui/card';
+import { MessageCircle, Clock, Heart, Users, TrendingUp, Target, Lightbulb, ArrowRight } from 'lucide-react';
+import SliderCard from '@/ui/slider-card';
 import FactCard from '@/components/learn/FactCard';
 import FactCardList from '@/components/learn/FactCardList';
 import ActivityCard from '@/components/learn/ActivityCard';
 import Quiz from '@/components/learn/Quiz';
-import DosAndDonts, { 
-  Dos, 
-  Donts, 
-  ConversationDos, 
-  ConversationDonts, 
-  DosAndDontsItem, 
-  ConversationDosAndDontsItem 
+import DosAndDonts, {
+  Dos,
+  Donts,
+  ConversationDos,
+  ConversationDonts,
+  DosAndDontsItem,
+  ConversationDosAndDontsItem
 } from '@/components/learn/DosAndDonts';
 import VideoCard from '@/components/learn/VideoCard';
 import ConversationFlow from '@/components/learn/ConversationFlow';
@@ -394,25 +392,6 @@ const Learn = () => {
                     description="Test your understanding of story preparation for deep canvassing."
                   />
                 </ActivityCard>
-                
-                <PracticeCard
-                  id="practice"
-                  title="Practice deep canvassing"
-                  description="Start a phone call with a virtual voice assistant who will roleplay the voter"
-                  scenarioId="deep-canvassing"
-                  quiz={[
-                    {
-                      id: 'practice_q1',
-                      text: 'In voice practice, it\'s important to listen for emotional cues and respond with empathy.',
-                      correctAnswer: true
-                    },
-                    {
-                      id: 'practice_q2',
-                      text: 'You should always stick exactly to the script during practice conversations.',
-                      correctAnswer: false
-                    }
-                  ]}
-                />
 
                 {/* Activity 4: Telling our story about a loved one */}
                 <ActivityCard

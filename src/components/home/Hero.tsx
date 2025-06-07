@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/ui/button';
 
 const Hero = () => {
   return <section className="py-24 md:py-32 bg-background">

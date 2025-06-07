@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/ui/card';
+import { Input } from '@/ui/input';
+import { Button } from '@/ui/button';
 import { Heart, Book, Utensils, MapPin, List } from 'lucide-react';
 
 type CategoryType = 'people' | 'hobbies' | 'food' | 'places' | 'other';

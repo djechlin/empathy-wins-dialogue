@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/ui/tabs';
+import { Button } from '@/ui/button';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordion';
 import { BookOpen, BookCheck, ChevronRight, List, ListCheck } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import { Progress } from '@/ui/progress';
 
 const LearnChapter = () => {
   const { chapterId } = useParams();
