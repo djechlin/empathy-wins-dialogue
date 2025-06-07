@@ -6,14 +6,13 @@ import { DialogueContextObject } from "./dialogueContext";
 
 interface HumeDialogueProviderProps {
     children: ReactNode;
-    onMessage?: (message: any) => void;
     className?: string;
     onToolCall?: ToolCallHandler;
-    [key: string]: any;
 }
 
 
 // Transform Hume emotion scores to Record<string, number>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function transformEmotions(emotionScores: any): Record<string, number> | undefined {
     if (!emotionScores) return undefined;
 
@@ -85,7 +84,6 @@ function InnerDialogueProvider({ children }: { children: ReactNode }) {
 
 export function HumeDialogueProvider({
     children,
-    onMessage,
     className,
     onToolCall,
     ...otherProps
@@ -121,7 +119,6 @@ export function HumeDialogueProvider({
             onToolCall={onToolCall}
             auth={{ type: 'accessToken', value: accessToken }}
             configId={configId}
-            onMessage={onMessage}
             debug={true}
             {...otherProps}
         >

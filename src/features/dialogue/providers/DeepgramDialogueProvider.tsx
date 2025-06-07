@@ -10,13 +10,11 @@ import { DialogueContextObject } from './dialogueContext';
 
 interface DeepgramDialogueProviderProps {
     children: ReactNode;
-    onMessage?: (message: any) => void;
     className?: string;
 }
 
 export function DeepgramDialogueProvider({
     children,
-    onMessage,
     className,
 }: DeepgramDialogueProviderProps) {
     const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -82,10 +80,6 @@ export function DeepgramDialogueProvider({
             };
 
             setMessages(prev => [...prev, newMessage]);
-
-            if (onMessage) {
-                onMessage(data);
-            }
         });
 
         connectionRef.current.on(AgentEvents.Error, (err: any) => {
@@ -109,7 +103,7 @@ export function DeepgramDialogueProvider({
                 connectionRef.current.disconnect();
             }
         };
-    }, [accessToken, onMessage]);
+    }, [accessToken]);
 
     useEffect(() => {
         if (!microphone || !connectionRef.current) return;

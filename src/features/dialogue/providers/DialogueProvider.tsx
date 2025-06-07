@@ -7,7 +7,6 @@ import { DialogueMessage } from '../types';
 export type DialogueProviderType = 'deepgram' | 'hume' | 'mock';
 interface DialogueProviderProps {
   children: ReactNode;
-  onMessage?: (message: DialogueMessage) => void;
   className?: string;
   provider: DialogueProviderType;
 }
@@ -26,7 +25,6 @@ export function DialogueProvider(props: DialogueProviderProps) {
     case 'hume':
       return (
         <HumeDialogueProvider
-          onMessage={props.onMessage}
           className={props.className}
           {...otherProps}
         >
@@ -36,7 +34,6 @@ export function DialogueProvider(props: DialogueProviderProps) {
     case 'deepgram':
       return (
         <DeepgramDialogueProvider
-          onMessage={props.onMessage}
           className={props.className}
         >
           {props.children}

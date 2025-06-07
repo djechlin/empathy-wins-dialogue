@@ -448,8 +448,8 @@ const VoterCard = () => {
             timeElapsed={timeElapsed}
             onTimeChange={setTimeElapsed}
             currentStepInfo={currentStepInfo}
-            currentStep={currentStep}
-            />
+        currentStep={currentStep}
+        />
             </div>
             </div>
         );
@@ -459,7 +459,6 @@ const VoterCard = () => {
         return (
             <DialogueProvider
             configId="3f136570-42d4-4afd-b319-866e2fd76474"
-            onMessage={() => {}}
             className={`flex flex-col w-full ${showScenarioOnly ? 'h-fit' : 'min-h-[800px] h-fit'} bg-white rounded-lg overflow-hidden`}
             >
             <ChallengeWorkspaceContent showScenarioOnly={showScenarioOnly} />
