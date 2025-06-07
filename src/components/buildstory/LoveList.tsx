@@ -20,13 +20,13 @@ const LoveList = () => {
 
   const handleAddItem = () => {
     if (newItem.trim() === '') return;
-    
+
     const item: LoveItem = {
       id: Date.now().toString(),
       text: newItem.trim(),
       category: selectedCategory
     };
-    
+
     setItems([...items, item]);
     setNewItem('');
   };
@@ -73,7 +73,7 @@ const LoveList = () => {
               </Button>
             ))}
           </div>
-          
+
           <div className="flex gap-2">
             <Input
               placeholder={`Add something you love (${selectedCategory})...`}
@@ -82,7 +82,7 @@ const LoveList = () => {
               onKeyPress={handleKeyPress}
               className="flex-grow"
             />
-            <Button 
+            <Button
               onClick={handleAddItem}
               className="bg-dialogue-purple hover:bg-dialogue-darkblue"
             >
@@ -90,7 +90,7 @@ const LoveList = () => {
             </Button>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
           {categories.map((category) => (
             <div key={category.id} className="space-y-2">
@@ -102,8 +102,8 @@ const LoveList = () => {
                 {items
                   .filter(item => item.category === category.id)
                   .map(item => (
-                    <li 
-                      key={item.id} 
+                    <li
+                      key={item.id}
                       className="px-3 py-2 bg-dialogue-neutral rounded-md text-sm animate-fade-in"
                     >
                       {item.text}

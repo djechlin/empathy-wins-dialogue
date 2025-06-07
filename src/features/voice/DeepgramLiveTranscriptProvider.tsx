@@ -27,18 +27,18 @@ import {
     MicrophoneEvents,
 } from "./MicrophoneContextProvider";
 
-interface DeepgramContextType {
+interface DeepgramLiveTranscriptType {
     connection: LiveClient | null;
     connectToDeepgram: (options: LiveSchema, endpoint?: string) => Promise<void>;
     disconnectFromDeepgram: () => void;
     connectionState: LiveConnectionState;
 }
 
-const DeepgramContext = createContext<DeepgramContextType | undefined>(
+const DeepgramLiveTranscriptContext = createContext<DeepgramLiveTranscriptType | undefined>(
     undefined
 );
 
-interface DeepgramContextProviderProps {
+interface DeepgramLiveTranscriptContextProviderProps {
     children: ReactNode;
 }
 
@@ -48,7 +48,7 @@ const getApiKey = async (): Promise<string> => {
     return r;
 };
 
-const DeepgramContextInner: FunctionComponent<{children: ReactNode}> = ({ children }) => {
+const DeepgramLiveTranscriptContextInner: FunctionComponent<{children: ReactNode}> = ({ children }) => {
     const [connection, setConnection] = useState<LiveClient | null>(null);
     const [connectionState, setConnectionState] = useState<LiveConnectionState>(
         LiveConnectionState.CLOSED
@@ -63,7 +63,7 @@ const DeepgramContextInner: FunctionComponent<{children: ReactNode}> = ({ childr
     * @param endpoint - The optional endpoint URL for the Deepgram service.
     * @returns A Promise that resolves when the connection is established.
     */
-    const connectToDeepgram = async (options: LiveSchema, endpoint?: string) => {
+    const connect = async (options: LiveSchema, endpoint?: string) => {
         console.log('setting up microphone first...');
         await setupMicrophone();
         console.log('microphone ready, creating deepgram client');
@@ -83,7 +83,7 @@ const DeepgramContextInner: FunctionComponent<{children: ReactNode}> = ({ childr
         setConnection(conn);
     };
 
-    const disconnectFromDeepgram = async () => {
+    const disconnect = async () => {
         if (connection) {
             connection.finish();
             setConnection(null);
@@ -98,7 +98,7 @@ const DeepgramContextInner: FunctionComponent<{children: ReactNode}> = ({ childr
 
         const onData = (e: BlobEvent) => {
             // iOS SAFARI FIX:
-            // Prevent packetZero from being sent. If sent at size 0, the connection will close. 
+            // Prevent packetZero from being sent. If sent at size 0, the connection will close.
             if (e.data.size > 0) {
                 connection?.send(e.data);
             }
@@ -113,36 +113,36 @@ const DeepgramContextInner: FunctionComponent<{children: ReactNode}> = ({ childr
     }, [microphone, connection, connectionState, startMicrophone]);
 
     return (
-        <DeepgramContext.Provider
+        <DeepgramLiveTranscriptContext.Provider
         value={{
             connection,
-            connectToDeepgram,
-            disconnectFromDeepgram,
+            connectToDeepgram: connect,
+            disconnectFromDeepgram: disconnect,
             connectionState,
         }}
         >
         {children}
-        </DeepgramContext.Provider>
+        </DeepgramLiveTranscriptContext.Provider>
     );
 };
 
-const DeepgramContextProvider: FunctionComponent<DeepgramContextProviderProps> = ({ children }) => {
+const DeepgramLiveTranscriptProvider: FunctionComponent<DeepgramLiveTranscriptContextProviderProps> = ({ children }) => {
     return (
         <MicrophoneContextProvider>
-            <DeepgramContextInner>
-                {children}
-            </DeepgramContextInner>
+        <DeepgramLiveTranscriptContextInner>
+        {children}
+        </DeepgramLiveTranscriptContextInner>
         </MicrophoneContextProvider>
     );
 };
 
-function useDeepgram(): DeepgramContextType {
-   return useContext(DeepgramContext);
+function useDeepgramLiveTranscript(): DeepgramLiveTranscriptType {
+    return useContext(DeepgramLiveTranscriptContext);
 }
 
 export {
-    DeepgramContextProvider,
-    useDeepgram,
+    DeepgramLiveTranscriptProvider as DeepgramContextProvider,
+    useDeepgramLiveTranscript,
     LiveConnectionState,
     LiveTranscriptionEvents,
     type LiveTranscriptionEvent,
