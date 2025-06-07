@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/
 import { ChevronDown, CheckCircle2 } from 'lucide-react';
 import { Collapsible, CollapsibleContent } from '@/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
+import { expandFade } from '@/ui/motionConstants';
 
 export interface ActivityCardProps {
   id: string;
@@ -96,10 +97,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
             <CollapsibleContent forceMount>
               <motion.div
                 key={`content-${id}`}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
+                {...expandFade}
                 onClick={(e) => e.stopPropagation()}
               >
                 <CardContent>

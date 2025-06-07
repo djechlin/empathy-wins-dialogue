@@ -1,5 +1,6 @@
 // Public exports
-export { DialogueProvider as HumeDialogueProvider, useDialogue } from './providers/DialogueProvider';
+export { DialogueProvider } from './providers/DialogueProvider';
+export { useDialogue } from './hooks/useDialogue';
 export { default as ControlPanel } from './ControlPanel';
 export { DeepgramContextProvider, useDeepgram } from './providers/DeepgramContextProvider';
 export { default as ConversationReport } from '../roleplay/ConversationReport';

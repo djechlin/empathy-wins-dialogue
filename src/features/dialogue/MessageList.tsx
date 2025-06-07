@@ -1,60 +1,47 @@
 
 import { cn } from '@/lib/utils';
-import { useDialogueInternal } from './providers/DialogueProvider';
 import ExpressionChipBar from '../../components/ExpressionChipBar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ComponentRef, forwardRef } from 'react';
+import { fadeInUp } from '@/ui/motionConstants';
+import { DialogueMessage, useDialogue } from './providers/DialogueProvider';
 
 const MessageList = forwardRef<ComponentRef<typeof motion.div>, Record<never, never>>(
   function MessageList(_, ref) {
-    const { rawMessages: messages } = useDialogueInternal();
+    const dialogue = useDialogue();
+    const messages: DialogueMessage[] = dialogue.messages;
 
     return (
       <motion.div layoutScroll className={'flex-1 rounded-md overflow-y-auto p-4'} ref={ref}>
         <motion.div className={'w-full flex flex-col gap-4 pb-24'}>
           <AnimatePresence mode={'popLayout'}>
             {messages.map((msg, index) => {
-              if (msg.type === 'user_message' || msg.type === 'assistant_message') {
                 return (
                   <motion.div
-                    key={msg.type + index}
+                    key={msg.role + index}
                     className={cn(
                       'w-[80%]',
                       'bg-card',
                       'border border-border rounded',
-                      msg.type === 'user_message' ? 'ml-auto' : ''
+                      msg.role === 'user' ? 'ml-auto' : ''
                     )}
-                    initial={{
-                      opacity: 0,
-                      y: 10,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                    }}
-                    exit={{
-                      opacity: 0,
-                      y: 0,
-                    }}
+                    {...fadeInUp}
                   >
                     <div
                       className={cn(
                         'text-xs capitalize font-medium leading-none opacity-50 pt-4 px-3'
                       )}
                     >
-                      {msg.message.role === 'user'
+                      {msg.role === 'user'
                         ? 'Canvasser'
-                        : msg.message.role === 'assistant'
+                        : msg.role === 'assistant'
                           ? 'Voter'
-                          : msg.message.role}
+                          : msg.role}
                     </div>
-                    <div className={'pb-3 px-3'}>{msg.message.content}</div>
-                    <ExpressionChipBar values={{ ...msg.models.prosody?.scores }} />
+                    <div className={'pb-3 px-3'}>{msg.content}</div>
+                    <ExpressionChipBar values={{ ...msg.emotions }} />
                   </motion.div>
                 );
-              }
-
-              return null;
             })}
           </AnimatePresence>
         </motion.div>
