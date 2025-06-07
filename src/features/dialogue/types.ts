@@ -13,5 +13,10 @@ export type DialogueContext = {
     isPaused: boolean;
     togglePause: (state?: boolean) => boolean;
     status: { value: string };
-    internalOnly?: never;
+    connect: () => Promise<void>;
+    disconnect: () => void;
+    isMuted: boolean;
+    mute: () => void;
+    unmute: () => void;
+    micFft: number[];
 };

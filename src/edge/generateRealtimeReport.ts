@@ -116,20 +116,20 @@ export async function generateRealtimeFeedback(
     step: ChallengeStep
 ): Promise<RealtimeFeedback | null> {
     const rawReport = await generateRealtimeReport(fullConversationTranscript, newMessagesTranscript, step);
-    
+
     const jsonMatch = rawReport && rawReport.match(/<json>(.*?)<\/json>/s);
     if (!jsonMatch) {
         return null;
     }
-    
+
     try {
         const parsedFeedback = JSON.parse(jsonMatch[1].trim());
         const feedback: RealtimeFeedback = {};
-        
+
         Object.entries(parsedFeedback).forEach(([key, value]) => {
             feedback[key] = parseFeedbackItem(value as string);
         });
-        
+
         return feedback;
     } catch (error) {
         console.warn('Failed to parse realtime feedback:', error);

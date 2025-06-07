@@ -7,7 +7,7 @@ import {
   LiveTranscriptionEvent,
   LiveTranscriptionEvents,
 } from "@deepgram/sdk";
-import { DeepgramContextProvider, useDeepgram } from '@/features/dialogue';
+import { DeepgramLiveTranscriptProvider, useDeepgramLiveTranscript } from '@/features/voice/DeepgramLiveTranscriptProvider';
 import nlp from 'compromise';
 import { commonHobbies } from '@/data/hobbies';
 
@@ -25,17 +25,17 @@ interface LoveListInnerHandle {
 
 const LoveListWidgetOuter = () => {
   return (
-    <DeepgramContextProvider>
+    <DeepgramLiveTranscriptProvider>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <LoveListWidgetInner />
       </div>
-    </DeepgramContextProvider>
+    </DeepgramLiveTranscriptProvider>
   );
 };
 
 const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
 
-    const { connection, connectToDeepgram, connectionState } = useDeepgram();
+    const { connection, connectToDeepgram, connectionState } = useDeepgramLiveTranscript();
 
   const captionTimeout = useRef<undefined | ReturnType<typeof setTimeout>>();
   const [caption, setCaption] = useState<string>("");

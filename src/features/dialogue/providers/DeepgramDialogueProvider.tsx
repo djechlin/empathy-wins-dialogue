@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { ReactNode, useEffect, useState, useRef, useMemo, useCallback } from 'react';
-import { createClient, AgentEvents, DeepgramClient, AgentLiveClient } from '@deepgram/sdk';
+import { createClient } from 'deepgram';
 import { getDeepgramAccessToken } from '@/edge/getDeepgramAccessToken';
-import { useMicrophone, MicrophoneEvents, MicrophoneState } from '@/features/voice/MicrophoneContextProvider';
+import { useMicrophone, MicrophoneEvents, MicrophoneState, MicrophoneContextProvider } from '@/features/voice/MicrophoneContextProvider';
 import { deepgramAgentConfig } from './deepgram-agent-config';
 import { DialogueContext, DialogueMessage } from '../types';
 import { DialogueContextObject } from './dialogueContext';
@@ -13,17 +13,17 @@ interface DeepgramDialogueProviderProps {
     className?: string;
 }
 
-export function DeepgramDialogueProvider({
+function DeepgramDialogueProviderInner({
     children,
     className,
 }: DeepgramDialogueProviderProps) {
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [messages, setMessages] = useState<DialogueMessage[]>([]);
     const [error, setError] = useState<string | null>(null);
-    const [status, setStatus] = useState<{ value: string }>({ value: 'connecting' });
+    const [status, setStatus] = useState<{ value: string }>({ value: 'disconnected' });
     const connectionRef = useRef<AgentLiveClient | null>(null);
     const deepgramRef = useRef<DeepgramClient | null>(null);
-    const { microphone, microphoneState, startMicrophone, stopMicrophone } = useMicrophone();
+    const { microphone, microphoneState, startMicrophone, stopMicrophone, setupMicrophone, micFft } = useMicrophone();
 
     useEffect(() => {
         async function getToken() {
@@ -61,10 +61,12 @@ export function DeepgramDialogueProvider({
 
         connectionRef.current.on(AgentEvents.Open, () => {
             console.log("Connection opened");
+            setStatus({ value: 'connected' });
         });
 
         connectionRef.current.on(AgentEvents.Close, () => {
             console.log("Connection closed");
+            setStatus({ value: 'disconnected' });
         });
 
         connectionRef.current.on(AgentEvents.ConversationText, (data: any) => {
@@ -146,12 +148,48 @@ export function DeepgramDialogueProvider({
         return targetState;
     }, [isPaused, stopMicrophone, startMicrophone]);
 
+    const connect = useCallback(async () => {
+        console.log('Connecting to Deepgram agent...');
+        setStatus({ value: 'connecting' });
+        
+        // Set up microphone first
+        if (microphoneState === MicrophoneState.NotSetup) {
+            await setupMicrophone();
+        }
+        
+        // Start microphone - the Deepgram connection is already established
+        // when the agent is created in the useEffect
+        startMicrophone();
+    }, [microphoneState, setupMicrophone, startMicrophone]);
+
+    const disconnect = useCallback(() => {
+        console.log('Disconnecting from Deepgram agent');
+        stopMicrophone();
+        
+        if (connectionRef.current && connectionRef.current.isConnected()) {
+            connectionRef.current.disconnect();
+        }
+        
+        setStatus({ value: 'disconnected' });
+    }, [stopMicrophone]);
+
+    // For now, mute == pause as per your goal
+    const isMuted = isPaused;
+    const mute = useCallback(() => togglePause(true), [togglePause]);
+    const unmute = useCallback(() => togglePause(false), [togglePause]);
+
     const dialogueContext: DialogueContext = useMemo(() => ({
         messages,
         isPaused,
         togglePause,
-        status
-    }), [messages, isPaused, togglePause, status]);
+        status,
+        connect,
+        disconnect,
+        isMuted,
+        mute,
+        unmute,
+        micFft
+    }), [messages, isPaused, togglePause, status, connect, disconnect, isMuted, mute, unmute, micFft]);
 
     if (error) {
         return <div className="p-8 text-red-500">Error: {error}</div>;
@@ -167,5 +205,14 @@ export function DeepgramDialogueProvider({
                 {children}
             </DialogueContextObject.Provider>
         </div>
+    );
+}
+
+// Wrapper to provide microphone context for the Deepgram dialogue provider
+export function DeepgramDialogueProvider(props: DeepgramDialogueProviderProps) {
+    return (
+        <MicrophoneContextProvider>
+            <DeepgramDialogueProviderInner {...props} />
+        </MicrophoneContextProvider>
     );
 }

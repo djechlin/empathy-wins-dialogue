@@ -145,15 +145,32 @@ export function MockDialogueProvider({ children, className }: MockDialogueProvid
     return () => clearTimeout(timer);
   }, [messages]);
 
+  const [isPaused, setIsPaused] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  
   const mockContext: DialogueContext = useMemo(() =>
     ({
     messages,
-    isPaused: false,
-    togglePause: (v?: boolean) => {return false;},
+    isPaused,
+    togglePause: (state?: boolean) => {
+      const newState = state !== undefined ? state : !isPaused;
+      setIsPaused(newState);
+      return newState;
+    },
     status: {
       value: isConnected ? 'connected' : 'connecting'
-    }
-}), [messages, isConnected]);
+    },
+    connect: async () => {
+      setIsConnected(true);
+    },
+    disconnect: () => {
+      setIsConnected(false);
+    },
+    isMuted,
+    mute: () => setIsMuted(true),
+    unmute: () => setIsMuted(false),
+    micFft: Array(32).fill(0).map(() => Math.random() * 0.5)
+}), [messages, isConnected, isPaused, isMuted]);
 
   return (
     <div className={className}>

@@ -14,6 +14,7 @@ interface MicrophoneContextType {
     stopMicrophone: () => void;
     setupMicrophone: () => void;
     microphoneState: MicrophoneState | null;
+    micFft: number[];
 }
 
 export enum MicrophoneEvents {
@@ -51,6 +52,7 @@ const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({
         MicrophoneState.NotSetup
     );
     const [microphone, setMicrophone] = useState<MediaRecorder | null>(null);
+    const [micFft, setMicFft] = useState<number[]>(Array(32).fill(0));
 
     const setupMicrophone = async () => {
         setMicrophoneState(MicrophoneState.SettingUp);
@@ -96,6 +98,7 @@ const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({
             stopMicrophone,
             setupMicrophone,
             microphoneState,
+            micFft,
         }}
         >
         {children}
@@ -104,7 +107,11 @@ const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({
 };
 
 function useMicrophone(): MicrophoneContextType {
-    return useContext(MicrophoneContext);
+    const context = useContext(MicrophoneContext);
+    if (context === undefined) {
+        throw new Error('useMicrophone must be used within a MicrophoneContextProvider');
+    }
+    return context;
 }
 
 export { MicrophoneContextProvider, useMicrophone };

@@ -1,13 +1,6 @@
 "use client";
 
-import {
-    createClient,
-    LiveClient,
-    LiveConnectionState,
-    LiveTranscriptionEvents,
-    type LiveSchema,
-    type LiveTranscriptionEvent,
-} from "@deepgram/sdk";
+import { createClient } from "deepgram";
 
 import { getDeepgramAccessToken } from "@/edge/getDeepgramAccessToken";
 
@@ -141,7 +134,7 @@ function useDeepgramLiveTranscript(): DeepgramLiveTranscriptType {
 }
 
 export {
-    DeepgramLiveTranscriptProvider as DeepgramContextProvider,
+    DeepgramLiveTranscriptProvider,
     useDeepgramLiveTranscript,
     LiveConnectionState,
     LiveTranscriptionEvents,

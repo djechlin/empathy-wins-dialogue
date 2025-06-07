@@ -2,7 +2,6 @@ import { ReactNode } from 'react';
 import { MockDialogueProvider } from './MockDialogueProvider';
 import { DeepgramDialogueProvider } from './DeepgramDialogueProvider';
 import { HumeDialogueProvider } from './HumeDialogueProvider';
-import { DialogueMessage } from '../types';
 
 export type DialogueProviderType = 'deepgram' | 'hume' | 'mock';
 interface DialogueProviderProps {

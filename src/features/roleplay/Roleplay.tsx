@@ -1,7 +1,7 @@
 import { ControlPanel, ConversationReport, ScoreCard } from '../dialogue';
 import { useRef, useState, useEffect, useMemo } from 'react';
 import type { ChallengeStep, FeedbackId } from '@/types';
-import { DialogueProvider, useDialogue } from '../dialogue/providers/DialogueProvider';
+import {useDialogue, DialogueProvider } from '@/features/dialogue';
 import { ConversationReport as ReportType } from '@/types/conversationReport';
 import { Button } from '@/ui/button';
 import { MessageCircle, Check, X, Info, Map, SquareUserRound } from 'lucide-react';
@@ -458,7 +458,7 @@ const VoterCard = () => {
     export function Roleplay({ showScenarioOnly = false }: { showScenarioOnly?: boolean }) {
         return (
             <DialogueProvider
-            configId="3f136570-42d4-4afd-b319-866e2fd76474"
+            provider="deepgram"
             className={`flex flex-col w-full ${showScenarioOnly ? 'h-fit' : 'min-h-[800px] h-fit'} bg-white rounded-lg overflow-hidden`}
             >
             <ChallengeWorkspaceContent showScenarioOnly={showScenarioOnly} />

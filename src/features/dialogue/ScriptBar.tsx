@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight, CheckCircle, Circle } from 'lucide-react';
 import type { Script, Step, StepItem} from '@/types';
-import { useDialogueInternal } from './providers/DialogueProvider';
+import { useDialogue } from './hooks/useDialogue';
 import type { UserTranscriptMessage } from '@humeai/voice-react';
 
 interface HintProps {
@@ -100,10 +100,10 @@ function Step({ step, stepIndex, isTriggered, triggeredItems, isCurrentStep }: S
 }
 
 export default function ScriptBar({ script }: { script: Script }) {
-  const { rawMessages: messages } = useDialogueInternal();
+  const { messages } = useDialogue();
 
   const [triggeredSteps, triggeredItems, currentStepIndex] = useMemo<[Set<number>, Set<string>, number]>(() => {
-    const userMessages = messages?.filter((msg): msg is UserTranscriptMessage => msg.type === 'user_message');
+    const userMessages = messages?.filter((msg) => msg.role === 'user');
     if (!userMessages || userMessages.length === 0) return [new Set(), new Set(), 0];
 
     const lastUserMessage = userMessages[userMessages.length - 1];
@@ -114,7 +114,7 @@ export default function ScriptBar({ script }: { script: Script }) {
       step.items.forEach((description, descriptionIndex) => {
         if (
           description.triggers?.some((trigger) =>
-            lastUserMessage.message?.content?.toLowerCase()?.includes(trigger)
+            lastUserMessage?.content?.toLowerCase()?.includes(trigger)
           )
         ) {
           triggeredSteps.add(stepIndex);

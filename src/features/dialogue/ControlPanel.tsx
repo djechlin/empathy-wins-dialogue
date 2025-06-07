@@ -1,9 +1,9 @@
-import { useDialogueInternal } from './providers/DialogueProvider';
 import { Button } from '@/ui/button';
 import { Mic, MicOff, Phone, Clock, Pause, Play } from 'lucide-react';
 import { Toggle } from '@/ui/toggle';
 import MicFFT from '@/ui/MicFFT';
 import { useState, useEffect } from 'react';
+import { useDialogue } from './hooks/useDialogue';
 
 interface StepInfo {
   stepIndex: number;
@@ -25,7 +25,7 @@ interface VoiceControlPanelProps {
 }
 
 function VoiceControlPanel({ onPauseChange }: VoiceControlPanelProps) {
-  const dialogueContext = useDialogueInternal();
+  const dialogueContext = useDialogue();
   const { disconnect, connect, status, isMuted, unmute, mute, micFft, isPaused, togglePause } = dialogueContext;
 
   const [isConnecting, setIsConnecting] = useState(false);
@@ -128,7 +128,7 @@ interface ControlPanelProps {
 }
 
 export default function ControlPanel({ isTimerActive = false, timeElapsed = 0, onTimeChange, currentStepInfo, currentStep }: ControlPanelProps) {
-  const { status } = useDialogueInternal();
+  const { status } = useDialogue();
 
   // Internal timer state
   const [internalTimeElapsed, setInternalTimeElapsed] = useState(0);
