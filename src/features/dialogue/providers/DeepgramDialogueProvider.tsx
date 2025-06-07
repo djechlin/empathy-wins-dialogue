@@ -3,17 +3,10 @@
 import { ReactNode, useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { createClient, AgentEvents, DeepgramClient, AgentLiveClient } from '@deepgram/sdk';
 import { getDeepgramAccessToken } from '@/edge/getDeepgramAccessToken';
-import { useMicrophone, MicrophoneEvents } from '@/features/voice/MicrophoneContextProvider';
+import { useMicrophone, MicrophoneEvents, MicrophoneState } from '@/features/voice/MicrophoneContextProvider';
 import { deepgramAgentConfig } from './deepgram-agent-config';
 import { DialogueContext, DialogueMessage } from '../types';
 import { DialogueContextObject } from './dialogueContext';
-
-type DeepgramMessage = {
-    id: string;
-    type: 'user_message' | 'assistant_message';
-    message: { content: string };
-    receivedAt: Date;
-};
 
 interface DeepgramDialogueProviderProps {
     children: ReactNode;
@@ -27,11 +20,12 @@ export function DeepgramDialogueProvider({
     className,
 }: DeepgramDialogueProviderProps) {
     const [accessToken, setAccessToken] = useState<string | null>(null);
+    const [messages, setMessages] = useState<DialogueMessage[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [status, setStatus] = useState<{ value: string }>({ value: 'connecting' });
     const connectionRef = useRef<AgentLiveClient | null>(null);
     const deepgramRef = useRef<DeepgramClient | null>(null);
-    const messagesRef = useRef<DeepgramMessage[]>([]);
-    const errorRef = useRef<string | null>(null);
-    const { microphone } = useMicrophone();
+    const { microphone, microphoneState, startMicrophone, stopMicrophone } = useMicrophone();
 
     useEffect(() => {
         async function getToken() {
@@ -42,7 +36,7 @@ export function DeepgramDialogueProvider({
                 setAccessToken(token);
             } catch (err) {
                 console.error('Failed to fetch Deepgram token:', err);
-                errorRef.current = 'Could not get Deepgram access token';
+                setError('Could not get Deepgram access token');
             }
         }
         getToken();
@@ -69,23 +63,22 @@ export function DeepgramDialogueProvider({
 
         connectionRef.current.on(AgentEvents.Open, () => {
             console.log("Connection opened");
-            forceUpdate();
         });
 
         connectionRef.current.on(AgentEvents.Close, () => {
             console.log("Connection closed");
-            forceUpdate();
         });
 
         connectionRef.current.on(AgentEvents.ConversationText, (data: any) => {
             console.log("Conversation text:", data);
 
             // Add message to our messages array
-            const newMessage: DeepgramMessage = {
+            const newMessage: DialogueMessage = {
                 id: `msg-${Date.now()}`,
-                type: data.role === 'user' ? 'user_message' : 'assistant_message',
-                message: { content: data.content || '' },
-                receivedAt: new Date()
+                role: data.role === 'user' ? 'user' : 'assistant',
+                content: data.content || '',
+                timestamp: new Date(),
+                emotions: undefined // Deepgram doesn't provide emotion scores
             };
 
             setMessages(prev => [...prev, newMessage]);
@@ -142,33 +135,29 @@ export function DeepgramDialogueProvider({
         };
     }, [microphone, connectionRef]);
 
-    const transformedMessages: DialogueMessage[] = useMemo(() =>
-        messages.map((msg, index) => transformDeepgramMessage(msg, index)),
-        [messages]
-    );
+
+    const isPaused = microphoneState === MicrophoneState.Paused || microphoneState === MicrophoneState.Pausing;
 
     const togglePause = useCallback((state?: boolean) => {
         const targetState = state !== undefined ? state : !isPaused;
-        setIsPaused(targetState);
-        setIsMuted(targetState);
         
-        if (targetState && connectionRef.current) {
-            // Pause the connection if possible
+        if (targetState) {
             console.log('Pausing Deepgram agent');
-        } else if (connectionRef.current) {
-            // Resume the connection if possible
+            stopMicrophone();
+        } else {
             console.log('Resuming Deepgram agent');
+            startMicrophone();
         }
         
         return targetState;
-    }, [isPaused]);
+    }, [isPaused, stopMicrophone, startMicrophone]);
 
     const dialogueContext: DialogueContext = useMemo(() => ({
-        messages: transformedMessages,
+        messages,
         isPaused,
         togglePause,
         status
-    }), [transformedMessages, isPaused, togglePause, status]);
+    }), [messages, isPaused, togglePause, status]);
 
     if (error) {
         return <div className="p-8 text-red-500">Error: {error}</div>;
@@ -185,15 +174,4 @@ export function DeepgramDialogueProvider({
             </DialogueContextObject.Provider>
         </div>
     );
-}
-
-// Transform Deepgram message to app message
-function transformDeepgramMessage(deepgramMessage: DeepgramMessage, index: number): DialogueMessage {
-    return {
-        id: deepgramMessage.id || `msg-${index}`,
-        role: deepgramMessage.type === 'user_message' ? 'user' : 'assistant',
-        content: deepgramMessage.message.content || '',
-        timestamp: deepgramMessage.receivedAt,
-        emotions: undefined // Deepgram doesn't provide emotion scores in this implementation
-    };
 }
