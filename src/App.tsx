@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/ui/toaster";
 import { Toaster as Sonner } from "@/ui/sonner";
 import { TooltipProvider } from "@/ui/tooltip";
@@ -27,21 +26,30 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/learn" element={<Learn />} />
-          <Route path="/learn/starting-out" element={<StartingOut />} />
-          <Route path="/learn/:chapterId" element={<LearnChapter />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/the-name-type2dialogue" element={<TheNameType2Dialogue />} />
-          <Route path="/blog/cognitive-dissonance" element={<CognitiveDissonance />} />
-          <Route path="/blog/swing-voters" element={<SwingVoters />} />
-          <Route path="/blog/turning-out-the-base" element={<TurningOutTheBase />} />
-          <Route path="/challenge" element={<Challenge />} />
-          <Route path="/auth" element={<Auth />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/learn" element={<Learn />} />
+            <Route path="/learn/starting-out" element={<StartingOut />} />
+            <Route path="/learn/:chapterId" element={<LearnChapter />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route
+              path="/blog/the-name-type2dialogue"
+              element={<TheNameType2Dialogue />}
+            />
+            <Route
+              path="/blog/cognitive-dissonance"
+              element={<CognitiveDissonance />}
+            />
+            <Route path="/blog/swing-voters" element={<SwingVoters />} />
+            <Route
+              path="/blog/turning-out-the-base"
+              element={<TurningOutTheBase />}
+            />
+            <Route path="/challenge" element={<Challenge />} />
+            <Route path="/auth" element={<Auth />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </HelmetProvider>

@@ -1,8 +1,7 @@
-
-import React, { useState } from 'react';
-import { Slider } from '@/ui/slider';
-import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
-import { CheckCircle2 } from 'lucide-react';
+import React, { useState } from "react";
+import { Slider } from "@/ui/slider";
+import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import { CheckCircle2 } from "lucide-react";
 
 interface SliderCardProps {
   id: string;
@@ -11,7 +10,12 @@ interface SliderCardProps {
   defaultOpen?: boolean;
 }
 
-const SliderCard = ({ id, title, question, defaultOpen = true }: SliderCardProps) => {
+const SliderCard = ({
+  id,
+  title,
+  question,
+  defaultOpen = true,
+}: SliderCardProps) => {
   const [sliderLevel, setSliderLevel] = useState([5]);
 
   const isCompleted = true;
@@ -21,9 +25,7 @@ const SliderCard = ({ id, title, question, defaultOpen = true }: SliderCardProps
       <CardHeader className="pt-3 pb-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <CardTitle className="text-xl">
-              {title}
-            </CardTitle>
+            <CardTitle className="text-xl">{title}</CardTitle>
             {isCompleted && (
               <div className="flex items-center bg-dialogue-purple text-white px-2 py-1 rounded-full gap-1">
                 <CheckCircle2 className="h-4 w-4" />
@@ -35,10 +37,8 @@ const SliderCard = ({ id, title, question, defaultOpen = true }: SliderCardProps
       </CardHeader>
 
       <CardContent>
-        <p className="text-lg font-medium mb-6 text-center">
-          "{question}"
-        </p>
-        
+        <p className="text-lg font-medium mb-6 text-center">"{question}"</p>
+
         <Slider
           value={sliderLevel}
           onValueChange={setSliderLevel}
