@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
     createContext,
@@ -6,7 +6,7 @@ import {
     useContext,
     useState,
     ReactNode,
-} from "react";
+} from 'react';
 
 interface MicrophoneContextType {
     microphone: MediaRecorder | null;
@@ -18,12 +18,12 @@ interface MicrophoneContextType {
 }
 
 export enum MicrophoneEvents {
-    DataAvailable = "dataavailable",
-    Error = "error",
-    Pause = "pause",
-    Resume = "resume",
-    Start = "start",
-    Stop = "stop",
+    DataAvailable = 'dataavailable',
+    Error = 'error',
+    Pause = 'pause',
+    Resume = 'resume',
+    Start = 'start',
+    Stop = 'stop',
 }
 
 export enum MicrophoneState {
@@ -72,7 +72,7 @@ const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({
     const stopMicrophone = useCallback(() => {
         setMicrophoneState(MicrophoneState.Pausing);
 
-        if (microphone?.state === "recording") {
+        if (microphone?.state === 'recording') {
             microphone.pause();
             setMicrophoneState(MicrophoneState.Paused);
         }
@@ -81,7 +81,7 @@ const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({
     const startMicrophone = useCallback(() => {
         setMicrophoneState(MicrophoneState.Opening);
 
-        if (microphone?.state === "paused") {
+        if (microphone?.state === 'paused') {
             microphone.resume();
         } else {
             microphone?.start(250);

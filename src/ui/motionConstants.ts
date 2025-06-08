@@ -20,7 +20,7 @@ export const expandFade = {
   },
   animate: {
     opacity: 1,
-    height: "auto",
+    height: 'auto',
   },
   exit: {
     opacity: 0,
@@ -28,6 +28,6 @@ export const expandFade = {
   },
   transition: {
     duration: 0.3,
-    ease: "easeInOut",
+    ease: 'easeInOut',
   },
 };

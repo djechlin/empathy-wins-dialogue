@@ -6,7 +6,7 @@ import {
   LiveConnectionState,
   LiveTranscriptionEvent,
   LiveTranscriptionEvents,
-} from "@deepgram/sdk";
+} from '@deepgram/sdk';
 import { DeepgramLiveTranscriptProvider, useDeepgramLiveTranscript } from '@/features/voice/DeepgramLiveTranscriptProvider';
 import nlp from 'compromise';
 import { commonHobbies } from '@/data/hobbies';
@@ -38,8 +38,8 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
     const { connection, connectToDeepgram, connectionState } = useDeepgramLiveTranscript();
 
   const captionTimeout = useRef<undefined | ReturnType<typeof setTimeout>>();
-  const [caption, setCaption] = useState<string>("");
-  const [interimCaption, setInterimCaption] = useState<string>("");
+  const [caption, setCaption] = useState<string>('');
+  const [interimCaption, setInterimCaption] = useState<string>('');
 
   // Track detected entities for goal system
   const [detectedPeople, setDetectedPeople] = useState<Set<string>>(new Set());
@@ -52,7 +52,7 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
 
   // Function to render text with colored entities using compromise.js
   const renderTextWithEntities = (text: string) => {
-    if (!text || text.trim() === "") {
+    if (!text || text.trim() === '') {
       return text;
     }
 
@@ -159,7 +159,7 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
 
   useEffect(() => {
     connectToDeepgram({
-        model: "nova-3",
+        model: 'nova-3',
         interim_results: true,
         smart_format: true,
         filler_words: true,
@@ -176,10 +176,10 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
 
       console.log('transcript data:', { isFinal, speechFinal, text: thisCaption });
 
-      if (thisCaption !== "") {
+      if (thisCaption !== '') {
         if (isFinal) {
           setCaption(prev => prev + ' ' + thisCaption);
-          setInterimCaption(""); // Clear interim since it's now final
+          setInterimCaption(''); // Clear interim since it's now final
 
           // Extract entities from the final caption and update state
           try {

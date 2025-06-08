@@ -1,7 +1,7 @@
 import { useDialogue } from '@/features/dialogue';
-import { useEffect, useState } from "react";
-import { generateRealtimeFeedback, RealtimeFeedback } from "../../../edge/generateRealtimeReport";
-import { ChallengeStep } from "@/types";
+import { useEffect, useState } from 'react';
+import { generateRealtimeFeedback, RealtimeFeedback } from '../../../edge/generateRealtimeReport';
+import { ChallengeStep } from '@/types';
 import { DialogueMessage } from '../types';
 
 const concatTranscript = (msgs: DialogueMessage[]) => {

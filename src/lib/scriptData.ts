@@ -80,7 +80,7 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
       ],
     },
     {
-      name: "2. Elicit about the voter's concerns",
+      name: '2. Elicit about the voter\'s concerns',
       items: [
         {
           text: 'Learn what issues matter to the voter.',
@@ -104,7 +104,7 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
       name: '1. Receiving feedback',
       items: [
         {
-          text: "Your junior colleague is giving you feedback. They think you've been too nitpicky on code reviews. They'll be quite standoffish.",
+          text: 'Your junior colleague is giving you feedback. They think you\'ve been too nitpicky on code reviews. They\'ll be quite standoffish.',
           triggers: ['nitpicky', 'feedback', 'code reviews'],
         },
       ],
@@ -122,7 +122,7 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
   ],
   'deep-canvassing': [
     {
-      name: "1. Why you're here",
+      name: '1. Why you\'re here',
       items: [
         {
           text: '"Hi, I\'m [name], talking to voters today about expanding bike access in the city. How do you feel about that?"',
@@ -145,7 +145,7 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
       items: [
         {
           text: '"Thanks so much. For me, voting isn\'t just political, it\'s also personal. I vote because I love [share your personal connection]..."',
-          triggers: ["isn't just political", 'personal', 'love'],
+          triggers: ['isn\'t just political', 'personal', 'love'],
         },
         {
           text: 'Use the word "love"! And say the person\'s name.',
@@ -169,14 +169,14 @@ Christmas Eve came, and Jim handed me a wrapped package. Inside was a record by 
         },
         {
           text: '[Idea 2] "Is there someone who\'s been there for you, or who you\'ve been there for?"',
-          triggers: ['there for you', "you've been there for"],
+          triggers: ['there for you', 'you\'ve been there for'],
         },
         {
           text: '[Idea 3]"Have there been any big changes in your life lately? Who was around when you were going through that?"',
           triggers: ['big changes', 'who was around'],
         },
         {
-          text: "Don't give up, this part's hard. Make sure to ask their person's name.",
+          text: 'Don\'t give up, this part\'s hard. Make sure to ask their person\'s name.',
         },
       ],
     },
@@ -285,7 +285,7 @@ export const SCENARIOS: { [key in ScenarioId]: Scenario } = {
   'code-review-junior-feedback': {
     title: 'Handle Junior Colleague Feedback',
     description: [
-      "You will talk with a junior colleague who thinks you've been too nitpicky on code reviews.",
+      'You will talk with a junior colleague who thinks you\'ve been too nitpicky on code reviews.',
       'Practice receiving feedback professionally and finding constructive solutions.',
     ],
   },

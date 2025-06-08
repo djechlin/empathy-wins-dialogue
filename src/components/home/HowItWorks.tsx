@@ -7,18 +7,18 @@ const HowItWorks = () => {
   const steps = [
     {
       icon: <MessageCircle className="h-10 w-10 text-dialogue-purple" />,
-      title: "Structured Conversation",
-      description: "Follow our proven dialogue framework designed to foster understanding rather than debate."
+      title: 'Structured Conversation',
+      description: 'Follow our proven dialogue framework designed to foster understanding rather than debate.'
     },
     {
       icon: <Users className="h-10 w-10 text-dialogue-purple" />,
-      title: "Empathetic Listening",
-      description: "Practice active listening to truly understand different perspectives without judgment."
+      title: 'Empathetic Listening',
+      description: 'Practice active listening to truly understand different perspectives without judgment.'
     },
     {
       icon: <TrendingUp className="h-10 w-10 text-dialogue-purple" />,
-      title: "Electoral Impact",
-      description: "Turn understanding into action by connecting dialogue to electoral outcomes that matter."
+      title: 'Electoral Impact',
+      description: 'Turn understanding into action by connecting dialogue to electoral outcomes that matter.'
     }
   ];
 

@@ -7,7 +7,7 @@ interface VideoCardProps {
   className?: string;
 }
 
-const VideoCard = ({ title, description, url, className = "" }: VideoCardProps) => {
+const VideoCard = ({ title, description, url, className = '' }: VideoCardProps) => {
   return (
     <Card className={`shadow-lg border-dialogue-neutral animate-fade-in ${className}`}>
       <CardHeader>

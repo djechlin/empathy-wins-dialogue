@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { createClient } from "deepgram";
+import { createClient } from 'deepgram';
 
-import { getDeepgramAccessToken } from "@/edge/getDeepgramAccessToken";
+import { getDeepgramAccessToken } from '@/edge/getDeepgramAccessToken';
 
 import {
     createContext,
@@ -11,14 +11,14 @@ import {
     ReactNode,
     FunctionComponent,
     useEffect,
-} from "react";
+} from 'react';
 
 import {
     MicrophoneContextProvider,
     useMicrophone,
     MicrophoneState,
     MicrophoneEvents,
-} from "./MicrophoneContextProvider";
+} from './MicrophoneContextProvider';
 
 interface DeepgramLiveTranscriptType {
     connection: LiveClient | null;

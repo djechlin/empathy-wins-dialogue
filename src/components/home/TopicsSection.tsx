@@ -7,28 +7,28 @@ import { Button } from '@/ui/button';
 const TopicsSection = () => {
   const topics = [
     {
-      title: "Healthcare Reform",
-      description: "Exploring common ground on improving healthcare access and affordability while maintaining quality.",
+      title: 'Healthcare Reform',
+      description: 'Exploring common ground on improving healthcare access and affordability while maintaining quality.',
       participants: 843,
-      tags: ["Healthcare", "Policy", "Economics"]
+      tags: ['Healthcare', 'Policy', 'Economics']
     },
     {
-      title: "Climate Solutions",
-      description: "Discussing practical approaches to addressing climate change while balancing economic concerns.",
+      title: 'Climate Solutions',
+      description: 'Discussing practical approaches to addressing climate change while balancing economic concerns.',
       participants: 762,
-      tags: ["Environment", "Economy", "Science"]
+      tags: ['Environment', 'Economy', 'Science']
     },
     {
-      title: "Immigration Policy",
-      description: "Finding balanced approaches to immigration that respect both security and humanitarian values.",
+      title: 'Immigration Policy',
+      description: 'Finding balanced approaches to immigration that respect both security and humanitarian values.',
       participants: 691,
-      tags: ["Immigration", "Security", "Human Rights"]
+      tags: ['Immigration', 'Security', 'Human Rights']
     },
     {
-      title: "Economic Opportunity",
-      description: "Exploring ways to create prosperity that works for people across different communities.",
+      title: 'Economic Opportunity',
+      description: 'Exploring ways to create prosperity that works for people across different communities.',
       participants: 578,
-      tags: ["Economics", "Equality", "Jobs"]
+      tags: ['Economics', 'Equality', 'Jobs']
     }
   ];
 

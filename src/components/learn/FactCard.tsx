@@ -10,7 +10,7 @@ export interface FactCardProps {
 const FactCard: React.FC<FactCardProps> = ({
   topic,
   children,
-  className = ""
+  className = ''
 }) => {
   return (
     <Card className={`border-dialogue-neutral hover:shadow-md transition-shadow overflow-hidden ${className}`}>

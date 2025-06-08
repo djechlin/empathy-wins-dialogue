@@ -20,8 +20,8 @@ export type QuizProps = {
 
 const Quiz: React.FC<QuizProps> = ({
   questions,
-  title = "Quiz",
-  description = "Select your answers to test your knowledge.",
+  title = 'Quiz',
+  description = 'Select your answers to test your knowledge.',
   onQuizComplete,
   onScoreChange
 }) => {
@@ -155,42 +155,42 @@ const Quiz: React.FC<QuizProps> = ({
 
                 <div className="flex gap-2 flex-shrink-0">
                   <Toggle
-                    pressed={quizAnswers[question.id] === "true"}
-                    onPressedChange={() => handleQuizToggle(question.id, "true")}
+                    pressed={quizAnswers[question.id] === 'true'}
+                    onPressedChange={() => handleQuizToggle(question.id, 'true')}
                     variant="outline"
                     size="sm"
                     className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
-                      quizAnswers[question.id] === "true"
-                        ? isCorrectAnswer(question.id, "true")
-                          ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100"
-                          : "bg-red-50 border-red-300 text-red-700 hover:bg-red-100"
-                        : "hover:bg-dialogue-neutral/50 border-dialogue-neutral/40"
+                      quizAnswers[question.id] === 'true'
+                        ? isCorrectAnswer(question.id, 'true')
+                          ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100'
+                          : 'bg-red-50 border-red-300 text-red-700 hover:bg-red-100'
+                        : 'hover:bg-dialogue-neutral/50 border-dialogue-neutral/40'
                     }`}
                   >
                     <span>True</span>
-                    {quizAnswers[question.id] === "true" && (
-                      isCorrectAnswer(question.id, "true")
+                    {quizAnswers[question.id] === 'true' && (
+                      isCorrectAnswer(question.id, 'true')
                         ? <Check className="ml-2 h-3 w-3" />
                         : <X className="ml-2 h-3 w-3" />
                     )}
                   </Toggle>
 
                   <Toggle
-                    pressed={quizAnswers[question.id] === "false"}
-                    onPressedChange={() => handleQuizToggle(question.id, "false")}
+                    pressed={quizAnswers[question.id] === 'false'}
+                    onPressedChange={() => handleQuizToggle(question.id, 'false')}
                     variant="outline"
                     size="sm"
                     className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
-                      quizAnswers[question.id] === "false"
-                        ? isCorrectAnswer(question.id, "false")
-                          ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100"
-                          : "bg-red-50 border-red-300 text-red-700 hover:bg-red-100"
-                        : "hover:bg-dialogue-neutral/50 border-dialogue-neutral/40"
+                      quizAnswers[question.id] === 'false'
+                        ? isCorrectAnswer(question.id, 'false')
+                          ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100'
+                          : 'bg-red-50 border-red-300 text-red-700 hover:bg-red-100'
+                        : 'hover:bg-dialogue-neutral/50 border-dialogue-neutral/40'
                     }`}
                   >
                     <span>False</span>
-                    {quizAnswers[question.id] === "false" && (
-                      isCorrectAnswer(question.id, "false")
+                    {quizAnswers[question.id] === 'false' && (
+                      isCorrectAnswer(question.id, 'false')
                         ? <Check className="ml-2 h-3 w-3" />
                         : <X className="ml-2 h-3 w-3" />
                     )}
@@ -200,7 +200,7 @@ const Quiz: React.FC<QuizProps> = ({
 
               {quizAnswers[question.id] !== null && !isCorrectAnswer(question.id, quizAnswers[question.id]) && (
                 <div className="mt-3 text-xs p-2 bg-red-50/80 text-red-800 rounded-md border border-red-200/50">
-                  <p>Correct answer: <span className="font-medium">{question.correctAnswer ? "True" : "False"}</span></p>
+                  <p>Correct answer: <span className="font-medium">{question.correctAnswer ? 'True' : 'False'}</span></p>
                 </div>
               )}
             </div>

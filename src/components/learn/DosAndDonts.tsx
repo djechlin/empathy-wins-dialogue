@@ -16,7 +16,7 @@ interface DosAndDontsProps {
   children: ReactNode;
 }
 
-export const Dos: React.FC<DosProps> = ({ children, title = "Story Dos" }) => {
+export const Dos: React.FC<DosProps> = ({ children, title = 'Story Dos' }) => {
   return (
     <Card className="border-green-200 bg-green-50">
       <CardHeader className="pb-3">
@@ -34,7 +34,7 @@ export const Dos: React.FC<DosProps> = ({ children, title = "Story Dos" }) => {
   );
 };
 
-export const Donts: React.FC<DontsProps> = ({ children, title = "Story Don'ts" }) => {
+export const Donts: React.FC<DontsProps> = ({ children, title = 'Story Don\'ts' }) => {
   return (
     <Card className="border-red-200 bg-red-50">
       <CardHeader className="pb-3">
@@ -52,7 +52,7 @@ export const Donts: React.FC<DontsProps> = ({ children, title = "Story Don'ts" }
   );
 };
 
-export const ConversationDos: React.FC<DosProps> = ({ children, title = "Conversation Dos" }) => {
+export const ConversationDos: React.FC<DosProps> = ({ children, title = 'Conversation Dos' }) => {
   return (
     <Card className="border-blue-200 bg-blue-50">
       <CardHeader className="pb-3">
@@ -70,7 +70,7 @@ export const ConversationDos: React.FC<DosProps> = ({ children, title = "Convers
   );
 };
 
-export const ConversationDonts: React.FC<DontsProps> = ({ children, title = "Conversation Don'ts" }) => {
+export const ConversationDonts: React.FC<DontsProps> = ({ children, title = 'Conversation Don\'ts' }) => {
   return (
     <Card className="border-orange-200 bg-orange-50">
       <CardHeader className="pb-3">

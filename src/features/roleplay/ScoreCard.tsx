@@ -62,8 +62,8 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep, ac
   const IconComponent = Icons[config.icon as keyof typeof Icons] as React.ComponentType<{ className?: string }>;
   
   const getCardStyles = () => {
-    const borderClass = isCurrentStep ? "border-dialogue-purple border-2" : "border-gray-200 border-2";
-    const bgClass = data.status === 'great' ? "bg-dialogue-neutral" : "bg-white";
+    const borderClass = isCurrentStep ? 'border-dialogue-purple border-2' : 'border-gray-200 border-2';
+    const bgClass = data.status === 'great' ? 'bg-dialogue-neutral' : 'bg-white';
     
     return `${bgClass} ${borderClass}`;
   };
@@ -176,29 +176,29 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep, ac
       const totalCount = stepFeedback.length;
       
       if (activatedCount === totalCount) {
-        return "bg-dialogue-darkblue text-white";
+        return 'bg-dialogue-darkblue text-white';
       } else if (activatedCount >= totalCount / 2) {
-        return "bg-dialogue-neutral text-dialogue-purple";
+        return 'bg-dialogue-neutral text-dialogue-purple';
       }
       
       // If we have feedback badges but less than half are activated, show as to-do
-      return "bg-white text-dialogue-purple border border-dialogue-purple";
+      return 'bg-white text-dialogue-purple border border-dialogue-purple';
     }
     
     // Fall back to original status
     if (data.status === 'to-do') {
-      return "bg-white text-dialogue-purple border border-dialogue-purple";
+      return 'bg-white text-dialogue-purple border border-dialogue-purple';
     }
     
     if (data.status === 'good') {
-      return "bg-dialogue-neutral text-dialogue-purple";
+      return 'bg-dialogue-neutral text-dialogue-purple';
     }
     
     if (data.status === 'great') {
-      return "bg-dialogue-darkblue text-white";
+      return 'bg-dialogue-darkblue text-white';
     }
     
-    return "bg-gray-100 text-gray-600";
+    return 'bg-gray-100 text-gray-600';
   };
 
   const badgeContent = getBadgeContent();
@@ -206,13 +206,13 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep, ac
   return (
     <div
       className={cn(
-        "w-full p-3 rounded-lg transition-colors duration-200 flex items-start gap-3 relative",
+        'w-full p-3 rounded-lg transition-colors duration-200 flex items-start gap-3 relative',
         getCardStyles()
       )}
     >
       {/* Icon */}
-      <div className={cn("p-2 rounded-full flex-shrink-0", getIconStyles())}>
-        {IconComponent && <IconComponent className={cn("h-4 w-4", getIconColor())} />}
+      <div className={cn('p-2 rounded-full flex-shrink-0', getIconStyles())}>
+        {IconComponent && <IconComponent className={cn('h-4 w-4', getIconColor())} />}
       </div>
 
       {/* Main content */}
@@ -224,7 +224,7 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep, ac
           {badgeContent && (
             <Badge 
               variant="secondary" 
-              className={cn("text-xs ml-2 flex-shrink-0", getBadgeStyles())}
+              className={cn('text-xs ml-2 flex-shrink-0', getBadgeStyles())}
             >
               {badgeContent}
             </Badge>
@@ -262,10 +262,10 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep, ac
                 key={feedbackId}
                 variant="outline"
                 className={cn(
-                  "text-xs px-2 py-1",
+                  'text-xs px-2 py-1',
                   activatedFeedback.has(feedbackId)
-                    ? "bg-dialogue-darkblue border-dialogue-darkblue text-white"
-                    : "bg-white border-dialogue-purple text-dialogue-purple"
+                    ? 'bg-dialogue-darkblue border-dialogue-darkblue text-white'
+                    : 'bg-white border-dialogue-purple text-dialogue-purple'
                 )}
               >
                 {feedbackBadgeText[feedbackId]}
@@ -293,24 +293,24 @@ const ScoreCard = ({ config, data, stepNumber, isCurrentStep, isPreviousStep, ac
                   <div 
                     key={index} 
                     className={cn(
-                      "flex items-start gap-2 p-2 rounded text-sm",
-                      isPositive && "bg-green-50 border border-green-200",
-                      isNegative && "bg-red-50 border border-red-200",
-                      !isPositive && !isNegative && "bg-gray-50 border border-gray-200"
+                      'flex items-start gap-2 p-2 rounded text-sm',
+                      isPositive && 'bg-green-50 border border-green-200',
+                      isNegative && 'bg-red-50 border border-red-200',
+                      !isPositive && !isNegative && 'bg-gray-50 border border-gray-200'
                     )}
                   >
                     <div className={cn(
-                      "flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold",
-                      isPositive && "bg-green-600 text-white",
-                      isNegative && "bg-red-600 text-white",
-                      !isPositive && !isNegative && "bg-gray-400 text-white"
+                      'flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold',
+                      isPositive && 'bg-green-600 text-white',
+                      isNegative && 'bg-red-600 text-white',
+                      !isPositive && !isNegative && 'bg-gray-400 text-white'
                     )}>
                       {isPositive ? '✓' : isNegative ? '!' : '?'}
                     </div>
                     <span className={cn(
-                      isPositive && "text-green-800",
-                      isNegative && "text-red-800",
-                      !isPositive && !isNegative && "text-gray-700"
+                      isPositive && 'text-green-800',
+                      isNegative && 'text-red-800',
+                      !isPositive && !isNegative && 'text-gray-700'
                     )}>
                       {example.text}
                     </span>

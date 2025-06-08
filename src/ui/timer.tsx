@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Clock } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { Clock } from 'lucide-react';
 
 interface TimerProps {
   isActive: boolean;
@@ -45,8 +45,8 @@ export function Timer({
     <div className="flex items-center gap-2 p-4 bg-white border-b">
       <Clock className="size-4 text-gray-500" />
       <span className="text-sm font-medium">
-        {minutes}:{seconds.toString().padStart(2, "0")}/{maxMinutes}:
-        {maxSecondsDisplay.toString().padStart(2, "0")}
+        {minutes}:{seconds.toString().padStart(2, '0')}/{maxMinutes}:
+        {maxSecondsDisplay.toString().padStart(2, '0')}
       </span>
     </div>
   );

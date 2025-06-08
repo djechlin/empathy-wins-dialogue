@@ -25,7 +25,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
   defaultOpen = false,
   children,
   headerExtra,
-  className = "",
+  className = '',
   isComplete: externalIsComplete = false,
   completionText
 }) => {
@@ -68,7 +68,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
               {isComplete && (
                 <div className="flex items-center bg-dialogue-purple text-white px-2 py-1 rounded-full gap-1">
                   <CheckCircle2 className="h-4 w-4" />
-                  <span className="text-xs font-medium">{completionText || "Complete"}</span>
+                  <span className="text-xs font-medium">{completionText || 'Complete'}</span>
                 </div>
               )}
             </div>
@@ -79,7 +79,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
                 }}
                 transition={{
                   duration: 0.3,
-                  ease: "easeInOut"
+                  ease: 'easeInOut'
                 }}
               >
                 <ChevronDown className="h-5 w-5" />

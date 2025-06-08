@@ -51,26 +51,26 @@ function DeepgramDialogueProviderInner({
 
         // Set up event handlers
         connectionRef.current.on(AgentEvents.Welcome, () => {
-            console.log("Welcome to the Deepgram Voice Agent!");
+            console.log('Welcome to the Deepgram Voice Agent!');
 
             // Configure the agent
             connectionRef.current.configure(deepgramAgentConfig);
 
-            console.log("Deepgram agent configured!");
+            console.log('Deepgram agent configured!');
         });
 
         connectionRef.current.on(AgentEvents.Open, () => {
-            console.log("Connection opened");
+            console.log('Connection opened');
             setStatus({ value: 'connected' });
         });
 
         connectionRef.current.on(AgentEvents.Close, () => {
-            console.log("Connection closed");
+            console.log('Connection closed');
             setStatus({ value: 'disconnected' });
         });
 
         connectionRef.current.on(AgentEvents.ConversationText, (data: any) => {
-            console.log("Conversation text:", data);
+            console.log('Conversation text:', data);
 
             // Add message to our messages array
             const newMessage: DialogueMessage = {
@@ -85,7 +85,7 @@ function DeepgramDialogueProviderInner({
         });
 
         connectionRef.current.on(AgentEvents.Error, (err: any) => {
-            console.error("Deepgram agent error:", err);
+            console.error('Deepgram agent error:', err);
             setError(`Agent error: ${err.message || 'Unknown error'}`);
             setStatus({ value: 'error' });
         });
@@ -93,7 +93,7 @@ function DeepgramDialogueProviderInner({
         // Set up keep-alive
         const keepAliveInterval = setInterval(() => {
             if (connectionRef.current && connectionRef.current.isConnected()) {
-                console.log("Keep alive!");
+                console.log('Keep alive!');
                 connectionRef.current.keepAlive();
             }
         }, 5000);

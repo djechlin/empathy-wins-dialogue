@@ -246,12 +246,12 @@ const LearningCards = () => {
           <CardContent>
             <div className="space-y-4">
               {[
-                "Family gatherings with opposing viewpoints",
-                "Social media disagreements with friends",
-                "Workplace political discussions",
-                "Community meetings on divisive issues",
-                "One-on-one conversations with someone who disagrees",
-                "Group settings where I'm the minority opinion"
+                'Family gatherings with opposing viewpoints',
+                'Social media disagreements with friends',
+                'Workplace political discussions',
+                'Community meetings on divisive issues',
+                'One-on-one conversations with someone who disagrees',
+                'Group settings where I\'m the minority opinion'
               ].map((scenario) => (
                 <div
                   key={scenario}

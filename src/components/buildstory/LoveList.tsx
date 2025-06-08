@@ -63,8 +63,8 @@ const LoveList = () => {
             {categories.map((category) => (
               <Button
                 key={category.id}
-                variant={selectedCategory === category.id ? "default" : "outline"}
-                className={selectedCategory === category.id ? "bg-dialogue-purple hover:bg-dialogue-darkblue" : ""}
+                variant={selectedCategory === category.id ? 'default' : 'outline'}
+                className={selectedCategory === category.id ? 'bg-dialogue-purple hover:bg-dialogue-darkblue' : ''}
                 onClick={() => setSelectedCategory(category.id)}
                 size="sm"
               >

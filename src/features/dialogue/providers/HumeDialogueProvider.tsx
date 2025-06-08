@@ -1,8 +1,8 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { ToolCallHandler, VoiceProvider, useVoice as useHumeVoice, VoiceContextType } from '@humeai/voice-react';
-import { DialogueContext, DialogueMessage } from "../types";
-import { getHumeAccessToken } from "@/edge/getHumeAccessToken";
-import { DialogueContextObject } from "./dialogueContext";
+import { DialogueContext, DialogueMessage } from '../types';
+import { getHumeAccessToken } from '@/edge/getHumeAccessToken';
+import { DialogueContextObject } from './dialogueContext';
 
 interface HumeDialogueProviderProps {
     children: ReactNode;
@@ -95,7 +95,7 @@ export function HumeDialogueProvider({
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    const configId = "3f136570-42d4-4afd-b319-866e2fd76474";
+    const configId = '3f136570-42d4-4afd-b319-866e2fd76474';
 
     useEffect(() => {
         async function getToken() {

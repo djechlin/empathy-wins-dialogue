@@ -58,13 +58,13 @@ function Step({ step, stepIndex, isTriggered, triggeredItems, isCurrentStep }: S
           <CheckCircle className="size-5 text-green-600" />
         ) : (
           <Circle className={cn(
-            "size-5",
-            isCurrentStep ? "text-blue-600" : "text-gray-400"
+            'size-5',
+            isCurrentStep ? 'text-blue-600' : 'text-gray-400'
           )} />
         )}
         <h3 className={cn(
-          "text-lg font-semibold",
-          isTriggered ? "text-green-800" : isCurrentStep ? "text-blue-800" : "text-gray-600"
+          'text-lg font-semibold',
+          isTriggered ? 'text-green-800' : isCurrentStep ? 'text-blue-800' : 'text-gray-600'
         )}>
           Step {stepIndex + 1}: {step.name}
         </h3>

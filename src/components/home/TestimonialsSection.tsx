@@ -6,22 +6,22 @@ import { Quote } from 'lucide-react';
 const TestimonialsSection = () => {
   const testimonials = [
     {
-      quote: "type2dialogue helped me understand perspectives I'd been dismissing for years. It's changed how I approach political conversations completely.",
-      name: "Sarah J.",
-      location: "Ohio",
-      type: "Community Organizer"
+      quote: 'type2dialogue helped me understand perspectives I\'d been dismissing for years. It\'s changed how I approach political conversations completely.',
+      name: 'Sarah J.',
+      location: 'Ohio',
+      type: 'Community Organizer'
     },
     {
-      quote: "I was skeptical at first, but this process actually works. Our campaign reached voters we'd never connected with before using these dialogue techniques.",
-      name: "Marcus T.",
-      location: "Pennsylvania",
-      type: "Campaign Manager"
+      quote: 'I was skeptical at first, but this process actually works. Our campaign reached voters we\'d never connected with before using these dialogue techniques.',
+      name: 'Marcus T.',
+      location: 'Pennsylvania',
+      type: 'Campaign Manager'
     },
     {
-      quote: "The structured dialogue approach gave me tools to have conversations with family members I'd been avoiding for years. We still disagree, but now we can talk.",
-      name: "Priya L.",
-      location: "Arizona",
-      type: "Voter"
+      quote: 'The structured dialogue approach gave me tools to have conversations with family members I\'d been avoiding for years. We still disagree, but now we can talk.',
+      name: 'Priya L.',
+      location: 'Arizona',
+      type: 'Voter'
     }
   ];
 

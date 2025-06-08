@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Slider } from "@/ui/slider";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { CheckCircle2 } from "lucide-react";
+import React, { useState } from 'react';
+import { Slider } from '@/ui/slider';
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
+import { CheckCircle2 } from 'lucide-react';
 
 interface SliderCardProps {
   id: string;
