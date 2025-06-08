@@ -6,7 +6,9 @@ import { getDeepgramAccessToken } from '@/edge/getDeepgramAccessToken';
 
 import { createContext, useContext, useState, ReactNode, FunctionComponent, useEffect } from 'react';
 
-import { MicrophoneContextProvider, useMicrophone, MicrophoneState, MicrophoneEvents } from './MicrophoneContextProvider';
+import { MicrophoneContextProvider } from './MicrophoneContextProvider';
+import { useMicrophone } from './useMicrophone';
+import { MicrophoneState, MicrophoneEvents } from './microphoneConstants';
 
 interface DeepgramLiveTranscriptType {
   connection: LiveClient | null;
@@ -121,5 +123,4 @@ export {
   LiveConnectionState,
   LiveTranscriptionEvents,
   type LiveTranscriptionEvent,
-  MicrophoneState,
 };

@@ -6,7 +6,7 @@ import { Input } from '@/ui/input';
 import { Textarea } from '@/ui/textarea';
 import { Plus, Trash2, List, ListCheck, Youtube, Users, ArrowDown, ArrowUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/ui/sonner';
+import { toast } from '@/hooks/use-toast';
 import { Skeleton } from '@/ui/skeleton';
 import VideoCard from './VideoCard';
 

@@ -3,7 +3,9 @@
 import { ReactNode, useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { createClient } from '@deepgram/sdk';
 import { getDeepgramAccessToken } from '@/edge/getDeepgramAccessToken';
-import { useMicrophone, MicrophoneEvents, MicrophoneState, MicrophoneContextProvider } from '@/features/voice/MicrophoneContextProvider';
+import { MicrophoneContextProvider } from '@/features/voice/MicrophoneContextProvider';
+import { useMicrophone } from '@/features/voice/useMicrophone';
+import { MicrophoneEvents, MicrophoneState } from '@/features/voice/microphoneConstants';
 import { deepgramAgentConfig } from './deepgram-agent-config';
 import { DialogueContext, DialogueMessage } from '../types';
 import { DialogueContextObject } from './dialogueContext';
