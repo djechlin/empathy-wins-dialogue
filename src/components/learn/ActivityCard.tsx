@@ -42,14 +42,6 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
     setInternalIsComplete(passed);
   };
 
-  // Clone children and pass handleQuizComplete to any Quiz components
-  const enhancedChildren = Children.map(children, (child) => {
-    if (isValidElement(child) && child.type && (child.type as any).name === 'Quiz') {
-      return cloneElement(child as any, { onQuizComplete: handleQuizComplete });
-    }
-    return child;
-  });
-
   return (
     <Card className={`border-dialogue-neutral hover:shadow-sm transition-shadow ${isComplete ? 'border-transparent' : ''} ${className}`}>
       <Collapsible open={isOpen} onOpenChange={handleToggle}>
@@ -82,25 +74,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
           {headerExtra}
         </CardHeader>
 
-        <AnimatePresence mode="wait" initial={false}>
-          {isOpen && (
-            <CollapsibleContent forceMount>
-              <motion.div key={`content-${id}`} {...expandFade} onClick={(e) => e.stopPropagation()}>
-                <CardContent>
-                  <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: 20, opacity: 0 }}
-                    transition={{ delay: 0.1, duration: 0.3 }}
-                    className="prose max-w-none mb-4"
-                  >
-                    {enhancedChildren}
-                  </motion.div>
-                </CardContent>
-              </motion.div>
-            </CollapsibleContent>
-          )}
-        </AnimatePresence>
+        {/* I think quiz goes here but previous vibe coding created a mess so I removed it */}
       </Collapsible>
     </Card>
   );
