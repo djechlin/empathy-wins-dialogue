@@ -1,4 +1,27 @@
-node_modules
-*.png
-*.jpg
+# Build outputs
+dist/
+build/
+*.min.js
+*.min.css
 
+# Dependencies
+node_modules/
+
+# Generated files
+*.d.ts
+
+# Config files that shouldn't be formatted
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment files
+.env*
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
