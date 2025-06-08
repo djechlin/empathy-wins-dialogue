@@ -1,16 +1,16 @@
 'use client';
 
-import { createClient, LiveClient, LiveSchema, LiveConnectionState, LiveTranscriptionEvents } from '@deepgram/sdk';
+import { createClient, LiveClient, LiveConnectionState, LiveSchema, LiveTranscriptionEvents } from '@deepgram/sdk';
 
 import { getDeepgramAccessToken } from '@/edge/getDeepgramAccessToken';
 
-import { useState, ReactNode, FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, ReactNode, useEffect, useState } from 'react';
 
+import { MicrophoneEvents } from './microphoneConstants';
 import MicrophoneContextProvider from './MicrophoneContextProvider';
 import { useMicrophone } from './useMicrophone';
-import { MicrophoneState, MicrophoneEvents } from './microphoneConstants';
 
-import { useDeepgramLiveTranscript, DeepgramLiveTranscriptContext, type DeepgramLiveTranscriptType } from './useDeepgramLiveTranscript';
+import { DeepgramLiveTranscriptContext } from './useDeepgramLiveTranscript';
 
 interface DeepgramLiveTranscriptContextProviderProps {
   children: ReactNode;
@@ -25,7 +25,7 @@ const getApiKey = async (): Promise<string> => {
 const DeepgramLiveTranscriptContextInner: FunctionComponent<{ children: ReactNode }> = ({ children }) => {
   const [connection, setConnection] = useState<LiveClient | null>(null);
   const [connectionState, setConnectionState] = useState<LiveConnectionState>(LiveConnectionState.CLOSED);
-  const { microphone, startMicrophone, stopMicrophone, setupMicrophone, microphoneState } = useMicrophone();
+  const { microphone, startMicrophone, setupMicrophone } = useMicrophone();
 
   /**
    * Connects to the Deepgram speech recognition service and sets up a live transcription session.
@@ -105,6 +105,5 @@ const DeepgramLiveTranscriptProvider: FunctionComponent<DeepgramLiveTranscriptCo
     </MicrophoneContextProvider>
   );
 };
-
 
 export { DeepgramLiveTranscriptProvider };

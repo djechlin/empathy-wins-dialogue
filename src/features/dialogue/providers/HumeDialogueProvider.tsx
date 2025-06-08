@@ -1,12 +1,11 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { ToolCallHandler, VoiceProvider, useVoice as useHumeVoice, VoiceContextType } from '@humeai/voice-react';
-import { DialogueContext, DialogueMessage } from '../types';
 import { getHumeAccessToken } from '@/edge/getHumeAccessToken';
+import { ToolCallHandler, useVoice as useHumeVoice, VoiceContextType, VoiceProvider } from '@humeai/voice-react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { DialogueContext, DialogueMessage } from '../types';
 import { DialogueContextObject } from './dialogueContext';
 
 interface HumeDialogueProviderProps {
   children: ReactNode;
-  className?: string;
   onToolCall?: ToolCallHandler;
 }
 
@@ -92,7 +91,7 @@ function InnerDialogueProvider({ children }: { children: ReactNode }) {
   return <DialogueContextObject.Provider value={dialogueContext}>{children}</DialogueContextObject.Provider>;
 }
 
-export function HumeDialogueProvider({ children, className, onToolCall, ...otherProps }: HumeDialogueProviderProps) {
+export function HumeDialogueProvider({ children, onToolCall, ...otherProps }: HumeDialogueProviderProps) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 

@@ -1,17 +1,17 @@
 'use client';
 
-import { useCallback, useState, ReactNode } from 'react';
+import { ReactNode, useCallback, useState } from 'react';
 import { MicrophoneState } from './microphoneConstants';
-import { MicrophoneContext, MicrophoneContextType } from './microphoneContext';
+import { MicrophoneContext } from './microphoneContext';
 
 interface MicrophoneContextProviderProps {
   children: ReactNode;
 }
 
+// micFft is clearly done wrong and not doing anything here
 const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({ children }) => {
   const [microphoneState, setMicrophoneState] = useState<MicrophoneState>(MicrophoneState.NotSetup);
   const [microphone, setMicrophone] = useState<MediaRecorder | null>(null);
-  const [micFft, setMicFft] = useState<number[]>(Array(32).fill(0));
 
   const setupMicrophone = async () => {
     setMicrophoneState(MicrophoneState.SettingUp);
@@ -57,7 +57,7 @@ const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({ c
         stopMicrophone,
         setupMicrophone,
         microphoneState,
-        micFft,
+        micFft: Array(32).fill(0),
       }}
     >
       {children}

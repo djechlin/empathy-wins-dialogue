@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
-import { Slider } from '@/ui/slider';
-import { Button } from '@/ui/button';
-import { Input } from '@/ui/input';
-import { Textarea } from '@/ui/textarea';
-import { Plus, Trash2, List, ListCheck, Youtube, Users, ArrowDown, ArrowUp } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
+import { Input } from '@/ui/input';
 import { Skeleton } from '@/ui/skeleton';
+import { Slider } from '@/ui/slider';
+import { Textarea } from '@/ui/textarea';
+import { ArrowDown, ArrowUp, ListCheck, Plus, Trash2, Users } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import VideoCard from './VideoCard';
 
 const LearningCards = () => {

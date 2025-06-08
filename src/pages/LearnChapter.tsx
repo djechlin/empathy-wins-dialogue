@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/ui/tabs';
-import { Button } from '@/ui/button';
+import Navbar from '@/components/layout/Navbar';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordion';
-import { BookOpen, BookCheck, ChevronRight, List, ListCheck } from 'lucide-react';
+import { Button } from '@/ui/button';
 import { Progress } from '@/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs';
+import { BookCheck, ChevronRight, List, ListCheck } from 'lucide-react';
+import { useState } from 'react';
 
 const LearnChapter = () => {
-  const { chapterId } = useParams();
   const [activeLesson, setActiveLesson] = useState('lesson1');
   const [progress, setProgress] = useState(0);
 

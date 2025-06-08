@@ -1,19 +1,14 @@
-import React, { useState, useEffect, useRef, forwardRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
-import { Heart, Mic } from 'lucide-react';
-import { LiveConnectionState, LiveTranscriptionEvent, LiveTranscriptionEvents } from '@deepgram/sdk';
+import { commonHobbies } from '@/data/hobbies';
 import { DeepgramLiveTranscriptProvider } from '@/features/voice/DeepgramLiveTranscriptProvider';
 import { useDeepgramLiveTranscript } from '@/features/voice/useDeepgramLiveTranscript';
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
+import { LiveConnectionState, LiveTranscriptionEvent, LiveTranscriptionEvents } from '@deepgram/sdk';
 import nlp from 'compromise';
-import { commonHobbies } from '@/data/hobbies';
+import { Heart, Mic } from 'lucide-react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 
 // Create a Set for O(1) lookup of hobbies
 const hobbySet = new Set(commonHobbies.map((hobby) => hobby.toLowerCase()));
-
-interface LoveItem {
-  id: string;
-  text: string;
-}
 
 interface LoveListInnerHandle {
   addItem: (item: string) => void;
@@ -29,7 +24,7 @@ const LoveListWidgetOuter = () => {
   );
 };
 
-const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
+const LoveListWidgetInner = forwardRef<LoveListInnerHandle>(() => {
   const { connection, connectToDeepgram, connectionState } = useDeepgramLiveTranscript();
 
   const captionTimeout = useRef<undefined | ReturnType<typeof setTimeout>>();

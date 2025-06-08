@@ -1,9 +1,8 @@
-import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronDown, ChevronRight, CheckCircle, Circle } from 'lucide-react';
 import type { Script, Step, StepItem } from '@/types';
+import { CheckCircle, ChevronDown, ChevronRight, Circle } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { useDialogue } from './hooks/useDialogue';
-import type { UserTranscriptMessage } from '@humeai/voice-react';
 
 interface HintProps {
   hint: string;

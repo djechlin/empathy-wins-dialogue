@@ -1,22 +1,21 @@
-import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Card, CardContent, CardHeader } from '@/ui/card';
-import { MessageCircle, Clock, Heart, Users, TrendingUp, Target, Lightbulb, ArrowRight } from 'lucide-react';
-import SliderCard from '@/ui/slider-card';
+import Navbar from '@/components/layout/Navbar';
+import ActivityCard from '@/components/learn/ActivityCard';
+import ConversationFlow from '@/components/learn/ConversationFlow';
+import DosAndDonts, {
+  ConversationDonts,
+  ConversationDos,
+  ConversationDosAndDontsItem,
+  Donts,
+  Dos,
+  DosAndDontsItem,
+} from '@/components/learn/DosAndDonts';
 import FactCard from '@/components/learn/FactCard';
 import FactCardList from '@/components/learn/FactCardList';
-import ActivityCard from '@/components/learn/ActivityCard';
 import Quiz from '@/components/learn/Quiz';
-import DosAndDonts, {
-  Dos,
-  Donts,
-  ConversationDos,
-  ConversationDonts,
-  DosAndDontsItem,
-  ConversationDosAndDontsItem,
-} from '@/components/learn/DosAndDonts';
-import VideoCard from '@/components/learn/VideoCard';
-import ConversationFlow from '@/components/learn/ConversationFlow';
+import { Card, CardContent, CardHeader } from '@/ui/card';
+import SliderCard from '@/ui/slider-card';
+import { ArrowRight, Clock, Heart, Lightbulb, MessageCircle, Target, TrendingUp, Users } from 'lucide-react';
 
 const Learn = () => {
   return (

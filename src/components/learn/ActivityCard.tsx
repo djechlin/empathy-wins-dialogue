@@ -1,9 +1,8 @@
-import React, { ReactNode, useState, Children, isValidElement, cloneElement } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
-import { ChevronDown, CheckCircle2 } from 'lucide-react';
-import { Collapsible, CollapsibleContent } from '@/ui/collapsible';
-import { motion, AnimatePresence } from 'framer-motion';
-import { expandFade } from '@/ui/motionConstants';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/ui/card';
+import { Collapsible } from '@/ui/collapsible';
+import { motion } from 'framer-motion';
+import { CheckCircle2, ChevronDown } from 'lucide-react';
+import React, { ReactNode, useState } from 'react';
 
 export interface ActivityCardProps {
   id: string;
@@ -18,28 +17,21 @@ export interface ActivityCardProps {
 }
 
 const ActivityCard: React.FC<ActivityCardProps> = ({
-  id,
   title,
   description,
   defaultOpen = false,
-  children,
   headerExtra,
   className = '',
   isComplete: externalIsComplete = false,
   completionText,
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
-  const [internalIsComplete, setInternalIsComplete] = useState(false);
 
   // Use external isComplete if provided, otherwise use internal state
-  const isComplete = externalIsComplete || internalIsComplete;
+  const isComplete = externalIsComplete || false;
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
-  };
-
-  const handleQuizComplete = (passed: boolean) => {
-    setInternalIsComplete(passed);
   };
 
   return (

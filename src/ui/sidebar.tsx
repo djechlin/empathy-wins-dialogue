@@ -20,7 +20,6 @@ import {
   SIDEBAR_WIDTH_MOBILE,
   SIDEBAR_WIDTH_ICON,
   SIDEBAR_KEYBOARD_SHORTCUT,
-  type SidebarContext as SidebarContextType,
 } from './sidebar-hooks';
 
 const SidebarProvider = React.forwardRef<

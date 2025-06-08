@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Badge } from '@/ui/badge';
 import { cn } from '@/lib/utils';
-import * as Icons from 'lucide-react';
 import type { FeedbackId } from '@/types';
+import { Badge } from '@/ui/badge';
+import * as Icons from 'lucide-react';
+import React, { useState } from 'react';
 
 // Mapping of feedback IDs to simple badge text
 const feedbackBadgeText: Record<FeedbackId, string> = {
@@ -51,20 +51,11 @@ interface ScoreCardProps {
   data: ScoreCardData;
   stepNumber?: number;
   isCurrentStep?: boolean;
-  isPreviousStep?: boolean;
   activatedFeedback?: Set<FeedbackId>;
   isRoleplayEnded?: boolean;
 }
 
-const ScoreCard = ({
-  config,
-  data,
-  stepNumber,
-  isCurrentStep,
-  isPreviousStep,
-  activatedFeedback = new Set(),
-  isRoleplayEnded = false,
-}: ScoreCardProps) => {
+const ScoreCard = ({ config, data, stepNumber, isCurrentStep, activatedFeedback = new Set(), isRoleplayEnded = false }: ScoreCardProps) => {
   const [tipDismissed, setTipDismissed] = useState(false);
 
   const IconComponent = Icons[config.icon as keyof typeof Icons] as React.ComponentType<{ className?: string }>;

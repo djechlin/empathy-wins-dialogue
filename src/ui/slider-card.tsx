@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
-import { Slider } from '@/ui/slider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
+import { Slider } from '@/ui/slider';
 import { CheckCircle2 } from 'lucide-react';
+import { useState } from 'react';
 
 interface SliderCardProps {
-  id: string;
   title: string;
   question: string;
-  defaultOpen?: boolean;
 }
 
-const SliderCard = ({ id, title, question, defaultOpen = true }: SliderCardProps) => {
+const SliderCard = ({ title, question }: SliderCardProps) => {
   const [sliderLevel, setSliderLevel] = useState([5]);
 
   const isCompleted = true;

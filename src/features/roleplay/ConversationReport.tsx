@@ -1,9 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
+import { CategoryScore, KeyMoment, ConversationReport as ReportType } from '@/types/conversationReport';
 import { Badge } from '@/ui/badge';
-import { CheckCircle, AlertCircle, XCircle, TrendingUp, Clock, Target, User, Heart } from 'lucide-react';
-import { ConversationReport as ReportType, KeyMoment } from '@/types/conversationReport';
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import * as Icons from 'lucide-react';
-import { CategoryScore } from '@/types/conversationReport';
+import { AlertCircle, CheckCircle, Heart, TrendingUp, User, XCircle } from 'lucide-react';
 
 interface ConversationReportProps {
   report: ReportType;
@@ -67,13 +66,6 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
         return <XCircle className="h-4 w-4 text-red-600" />;
     }
   };
-
-  const getLowestCategory = () => {
-    const sorted = [...report.categories].sort((a, b) => a.score - b.score);
-    return sorted[0];
-  };
-
-  const lowestCategory = getLowestCategory();
 
   return (
     <div className="space-y-6">

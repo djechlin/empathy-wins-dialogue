@@ -1,4 +1,4 @@
-import { Script, Step, Scenario, ScenarioId } from '@/types';
+import { Scenario, ScenarioId, Script } from '@/types';
 
 export const SCRIPT_TITLES: { [key in ScenarioId]: string } = {
   'deep-canvassing': 'Script',
@@ -19,40 +19,6 @@ export const HUME_PERSONAS: { [key in ScenarioId]: string } = {
   'empathetic-listening': 'd3b113c7-3e87-49a2-b400-1b155b514d0a',
   'love-list': 'd3b113c7-3e87-49a2-b400-1b155b514d0a',
 };
-
-function challengeScript(hint: string): Script {
-  return [
-    {
-      name: 'You knock on the door - they answer',
-      items: [
-        {
-          text: 'Try to gauge their support for your issue early. Ask them how they feel on a scale of 1-10.',
-          triggers: ['scale', '10', 'ten'],
-        },
-      ],
-    },
-    {
-      name: 'Try to persuade them'!,
-      items: [
-        {
-          text: 'Persuade as you normally would. As you roleplay feel free to improvise any details about the issue or your background.',
-        },
-        {
-          text: 'Click for a hint',
-          hint: hint,
-        },
-      ],
-    },
-    {
-      name: "End the conversation when you're ready",
-      items: [
-        {
-          text: "The roleplayer won't hang up, so you have to. Before you go, ask them how they feel about the issue on that 1-10 scale again and see if they've changed their mind at all.",
-        },
-      ],
-    },
-  ];
-}
 
 export const SCRIPTS: { [key in ScenarioId]: Script } = {
   'love-list': [],
