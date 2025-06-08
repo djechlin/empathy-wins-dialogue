@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { ReactNode, useEffect, useState, useRef, useMemo, useCallback } from 'react';
-import { createClient } from 'deepgram';
+import { createClient } from '@deepgram/sdk';
 import { getDeepgramAccessToken } from '@/edge/getDeepgramAccessToken';
 import { useMicrophone, MicrophoneEvents, MicrophoneState, MicrophoneContextProvider } from '@/features/voice/MicrophoneContextProvider';
 import { deepgramAgentConfig } from './deepgram-agent-config';

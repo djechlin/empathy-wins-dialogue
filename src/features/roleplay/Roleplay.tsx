@@ -458,7 +458,7 @@ const VoterCard = () => {
     export function Roleplay({ showScenarioOnly = false }: { showScenarioOnly?: boolean }) {
         return (
             <DialogueProvider
-            provider="deepgram"
+            provider="hume"
             className={`flex flex-col w-full ${showScenarioOnly ? 'h-fit' : 'min-h-[800px] h-fit'} bg-white rounded-lg overflow-hidden`}
             >
             <ChallengeWorkspaceContent showScenarioOnly={showScenarioOnly} />
