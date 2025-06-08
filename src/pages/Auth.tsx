@@ -41,8 +41,9 @@ const Auth = () => {
 
       toast.success('Logged in successfully!');
       navigate('/');
-    } catch (error: any) {
-      toast.error(error.message || 'Error logging in');
+    } catch (error: unknown) {
+      console.error('Login error:', JSON.stringify(error));
+      toast.error(error instanceof Error ? error.message : 'Error logging in');
     } finally {
       setLoading(false);
     }
@@ -62,8 +63,9 @@ const Auth = () => {
 
       toast.success('Sign up successful! Please check your email for verification.');
       setActiveTab('login');
-    } catch (error: any) {
-      toast.error(error.message || 'Error signing up');
+    } catch (error: unknown) {
+      console.error('Signup error:', JSON.stringify(error));
+      toast.error(error instanceof Error ? error.message : 'Error signing up');
     } finally {
       setLoading(false);
     }
