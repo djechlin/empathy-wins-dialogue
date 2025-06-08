@@ -1,23 +1,16 @@
 'use client';
 
-import { createClient } from 'deepgram';
+import { createClient, LiveClient, LiveSchema, LiveConnectionState, LiveTranscriptionEvents } from '@deepgram/sdk';
 
 import { getDeepgramAccessToken } from '@/edge/getDeepgramAccessToken';
 
-import { createContext, useContext, useState, ReactNode, FunctionComponent, useEffect } from 'react';
+import { useState, ReactNode, FunctionComponent, useEffect } from 'react';
 
 import { MicrophoneContextProvider } from './MicrophoneContextProvider';
 import { useMicrophone } from './useMicrophone';
 import { MicrophoneState, MicrophoneEvents } from './microphoneConstants';
 
-interface DeepgramLiveTranscriptType {
-  connection: LiveClient | null;
-  connectToDeepgram: (options: LiveSchema, endpoint?: string) => Promise<void>;
-  disconnectFromDeepgram: () => void;
-  connectionState: LiveConnectionState;
-}
-
-const DeepgramLiveTranscriptContext = createContext<DeepgramLiveTranscriptType | undefined>(undefined);
+import { useDeepgramLiveTranscript, DeepgramLiveTranscriptContext, type DeepgramLiveTranscriptType } from './useDeepgramLiveTranscript';
 
 interface DeepgramLiveTranscriptContextProviderProps {
   children: ReactNode;
@@ -113,14 +106,5 @@ const DeepgramLiveTranscriptProvider: FunctionComponent<DeepgramLiveTranscriptCo
   );
 };
 
-function useDeepgramLiveTranscript(): DeepgramLiveTranscriptType {
-  return useContext(DeepgramLiveTranscriptContext);
-}
 
-export {
-  DeepgramLiveTranscriptProvider,
-  useDeepgramLiveTranscript,
-  LiveConnectionState,
-  LiveTranscriptionEvents,
-  type LiveTranscriptionEvent,
-};
+export { DeepgramLiveTranscriptProvider };

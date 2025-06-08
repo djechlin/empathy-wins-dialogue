@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, forwardRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Heart, Mic } from 'lucide-react';
 import { LiveConnectionState, LiveTranscriptionEvent, LiveTranscriptionEvents } from '@deepgram/sdk';
-import { DeepgramLiveTranscriptProvider, useDeepgramLiveTranscript } from '@/features/voice/DeepgramLiveTranscriptProvider';
+import { DeepgramLiveTranscriptProvider } from '@/features/voice/DeepgramLiveTranscriptProvider';
+import { useDeepgramLiveTranscript } from '@/features/voice/useDeepgramLiveTranscript';
 import nlp from 'compromise';
 import { commonHobbies } from '@/data/hobbies';
 
@@ -182,7 +183,7 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>((props, ref) => {
       filler_words: true,
       utterance_end_ms: 3000,
     });
-  }, []);
+  }, [connectToDeepgram]);
 
   useEffect(() => {
     if (!connection) return;
