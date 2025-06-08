@@ -6,7 +6,7 @@ import { getDeepgramAccessToken } from '@/edge/getDeepgramAccessToken';
 
 import { useState, ReactNode, FunctionComponent, useEffect } from 'react';
 
-import { MicrophoneContextProvider } from './MicrophoneContextProvider';
+import MicrophoneContextProvider from './MicrophoneContextProvider';
 import { useMicrophone } from './useMicrophone';
 import { MicrophoneState, MicrophoneEvents } from './microphoneConstants';
 

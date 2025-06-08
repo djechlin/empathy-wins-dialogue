@@ -1,18 +1,8 @@
 'use client';
 
-import { createContext, useCallback, useState, ReactNode } from 'react';
+import { useCallback, useState, ReactNode } from 'react';
 import { MicrophoneState } from './microphoneConstants';
-
-export interface MicrophoneContextType {
-  microphone: MediaRecorder | null;
-  startMicrophone: () => void;
-  stopMicrophone: () => void;
-  setupMicrophone: () => void;
-  microphoneState: MicrophoneState | null;
-  micFft: number[];
-}
-
-export const MicrophoneContext = createContext<MicrophoneContextType | undefined>(undefined);
+import { MicrophoneContext, MicrophoneContextType } from './microphoneContext';
 
 interface MicrophoneContextProviderProps {
   children: ReactNode;
@@ -75,4 +65,4 @@ const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({ c
   );
 };
 
-export { MicrophoneContextProvider };
+export default MicrophoneContextProvider;
