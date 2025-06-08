@@ -29,11 +29,7 @@ const Learn = () => {
 
           {/* Deep Canvassing Assessment */}
           <div className="max-w-6xl mx-auto mb-12">
-            <SliderCard
-              id="deep-canvassing-assessment"
-              title="How do you feel about deep canvassing?"
-              question="I can persuade swing voters on issues important to me."
-            />
+            <SliderCard title="How do you feel about deep canvassing?" question="I can persuade swing voters on issues important to me." />
           </div>
 
           <div className="max-w-6xl mx-auto mb-16">

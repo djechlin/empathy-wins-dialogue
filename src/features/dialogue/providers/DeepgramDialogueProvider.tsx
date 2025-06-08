@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { ReactNode, useEffect, useState, useRef, useMemo, useCallback } from 'react';
-import { createClient } from '@deepgram/sdk';
 import { getDeepgramAccessToken } from '@/edge/getDeepgramAccessToken';
+import { MicrophoneEvents, MicrophoneState } from '@/features/voice/microphoneConstants';
 import MicrophoneContextProvider from '@/features/voice/MicrophoneContextProvider';
 import { useMicrophone } from '@/features/voice/useMicrophone';
-import { MicrophoneEvents, MicrophoneState } from '@/features/voice/microphoneConstants';
-import { deepgramAgentConfig } from './deepgram-agent-config';
+import { AgentEvents, AgentLiveClient, createClient, DeepgramClient } from '@deepgram/sdk';
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DialogueContext, DialogueMessage } from '../types';
+import { deepgramAgentConfig } from './deepgram-agent-config';
 import { DialogueContextObject } from './dialogueContext';
 
 interface DeepgramDialogueProviderProps {

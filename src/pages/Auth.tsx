@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs';
-import { Label } from '@/ui/label';
-import { Input } from '@/ui/input';
-import { Button } from '@/ui/button';
-import { toast } from '@/hooks/use-toast';
-import { LogIn, UserPlus } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import Navbar from '@/components/layout/Navbar';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/ui/card';
+import { Input } from '@/ui/input';
+import { Label } from '@/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs';
+import { LogIn, UserPlus } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const Auth = () => {
   const navigate = useNavigate();

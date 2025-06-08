@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { ChallengeWorkspace } from '@/features/roleplay';
+import Navbar from '@/components/layout/Navbar';
 import { ConversationReport } from '@/features/dialogue';
-import { Button } from '@/ui/button';
+import { ChallengeWorkspace } from '@/features/roleplay';
 import { sampleReport } from '@/lib/report';
+import { Button } from '@/ui/button';
 import SliderCard from '@/ui/slider-card';
 import { Dice3, MessagesSquare } from 'lucide-react';
+import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 
 const ChallengePage = () => {
   const [showReport, setShowReport] = useState(false);
@@ -57,10 +57,8 @@ const ChallengePage = () => {
 
             <div className="max-w-4xl mx-auto space-y-8">
               <SliderCard
-                id="comfort-level"
                 title="Rate your agreement before the challenge"
                 question="I'm comfortable talking about my political beliefs with swing voters."
-                defaultOpen={true}
               />
 
               {!showReport ? (
@@ -97,10 +95,8 @@ const ChallengePage = () => {
                 </div>
               )}
               <SliderCard
-                id="comfort-level-end"
                 title="Rate your agreement after completion"
                 question="I'm comfortable talking about my political beliefs with swing voters."
-                defaultOpen={false}
               />
             </div>
           </div>

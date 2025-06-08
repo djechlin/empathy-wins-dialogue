@@ -1,9 +1,10 @@
 import { cn } from '@/lib/utils';
-import ExpressionChipBar from '../../components/ExpressionChipBar';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ComponentRef, forwardRef } from 'react';
 import { fadeInUp } from '@/ui/motionConstants';
-import { DialogueMessage, useDialogue } from './providers/DialogueProvider';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ComponentRef, forwardRef } from 'react';
+import ExpressionChipBar from '../../components/ExpressionChipBar';
+import { useDialogue } from './hooks/useDialogue';
+import { DialogueMessage } from './types';
 
 const MessageList = forwardRef<ComponentRef<typeof motion.div>, Record<never, never>>(function MessageList(_, ref) {
   const dialogue = useDialogue();

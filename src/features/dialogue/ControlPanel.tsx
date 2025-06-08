@@ -1,8 +1,8 @@
 import { Button } from '@/ui/button';
-import { Mic, MicOff, Phone, Clock, Pause, Play } from 'lucide-react';
-import { Toggle } from '@/ui/toggle';
 import MicFFT from '@/ui/MicFFT';
-import { useState, useEffect } from 'react';
+import { Toggle } from '@/ui/toggle';
+import { Clock, Pause, Phone, Play } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useDialogue } from './hooks/useDialogue';
 
 interface StepInfo {
@@ -26,7 +26,7 @@ interface VoiceControlPanelProps {
 
 function VoiceControlPanel({ onPauseChange }: VoiceControlPanelProps) {
   const dialogueContext = useDialogue();
-  const { disconnect, connect, status, isMuted, unmute, mute, micFft, isPaused, togglePause } = dialogueContext;
+  const { disconnect, connect, status, micFft, isPaused, togglePause } = dialogueContext;
 
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -88,10 +88,6 @@ function VoiceControlPanel({ onPauseChange }: VoiceControlPanelProps) {
 
   return (
     <>
-      <Toggle pressed={!isMuted} onPressedChange={() => (isMuted ? unmute() : mute())}>
-        {isMuted ? <MicOff className={'size-4'} /> : <Mic className={'size-4'} />}
-      </Toggle>
-
       <Toggle pressed={isPaused} onPressedChange={handlePauseToggle}>
         {isPaused ? <Play className={'size-4'} /> : <Pause className={'size-4'} />}
       </Toggle>

@@ -1,4 +1,3 @@
-import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
@@ -8,6 +7,7 @@ import { Slider } from '@/ui/slider';
 import { Textarea } from '@/ui/textarea';
 import { ArrowDown, ArrowUp, ListCheck, Plus, Trash2, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import VideoCard from './VideoCard';
 
 const LearningCards = () => {

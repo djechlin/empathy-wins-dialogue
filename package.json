@@ -102,6 +102,7 @@
     "prettier": "^3.5.3",
     "supabase": "^2.23.4",
     "tailwindcss": "^3.4.11",
+    "tsc-files": "^1.1.4",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.33.1",
     "vite": "^5.4.1",
@@ -111,7 +112,7 @@
     "*.{ts,tsx}": [
       "eslint --fix",
       "prettier --write",
-      "tsc --noEmit -p tsconfig.app.json"
+      "tsc-files --noEmit -p tsconfig.app.json"
     ],
     "*.{json,md,yml,yaml}": [
       "prettier --write"
