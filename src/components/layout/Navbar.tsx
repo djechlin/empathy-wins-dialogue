@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/ui/button';
@@ -13,19 +12,13 @@ const Navbar = () => {
   useEffect(() => {
     // Set up auth state listener
     const {
-      data: {
-        subscription
-      }
+      data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
     });
 
     // Check for existing session
-    supabase.auth.getSession().then(({
-      data: {
-        session
-      }
-    }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
     return () => subscription.unsubscribe();
@@ -39,7 +32,8 @@ const Navbar = () => {
     }
   };
 
-  return <nav className="py-4 border-b border-border bg-white sticky top-0 z-50">
+  return (
+    <nav className="py-4 border-b border-border bg-white sticky top-0 z-50">
       <div className="container-custom flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Link to="/" className="font-sans text-[18px] font-semibold text-gray-800 tracking-tight">
@@ -67,7 +61,8 @@ const Navbar = () => {
           </Button>
         </div>
       </div>
-    </nav>;
+    </nav>
+  );
 };
 
 export default Navbar;

@@ -12,9 +12,7 @@ const VideoCard = ({ title, description, url, className = '' }: VideoCardProps) 
     <Card className={`shadow-lg border-dialogue-neutral animate-fade-in ${className}`}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        <CardDescription>
-          {description}
-        </CardDescription>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="aspect-video">
@@ -27,8 +25,8 @@ const VideoCard = ({ title, description, url, className = '' }: VideoCardProps) 
           ></iframe>
         </div>
         <p className="mt-4 text-muted-foreground">
-          This video explains key concepts and strategies for engaging in meaningful political discussions
-          with friends, family, and colleagues.
+          This video explains key concepts and strategies for engaging in meaningful political discussions with friends, family, and
+          colleagues.
         </p>
       </CardContent>
     </Card>

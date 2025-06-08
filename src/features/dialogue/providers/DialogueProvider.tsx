@@ -10,34 +10,20 @@ interface DialogueProviderProps {
   provider: DialogueProviderType;
 }
 
-
 export function DialogueProvider(props: DialogueProviderProps) {
   const { provider, ...otherProps } = props;
 
   switch (provider) {
     case 'mock':
-      return (
-        <MockDialogueProvider className={props.className}>
-          {props.children}
-        </MockDialogueProvider>
-      );
+      return <MockDialogueProvider className={props.className}>{props.children}</MockDialogueProvider>;
     case 'hume':
       return (
-        <HumeDialogueProvider
-          className={props.className}
-          {...otherProps}
-        >
+        <HumeDialogueProvider className={props.className} {...otherProps}>
           {props.children}
         </HumeDialogueProvider>
       );
     case 'deepgram':
-      return (
-        <DeepgramDialogueProvider
-          className={props.className}
-        >
-          {props.children}
-        </DeepgramDialogueProvider>
-      );
+      return <DeepgramDialogueProvider className={props.className}>{props.children}</DeepgramDialogueProvider>;
     default:
       throw new Error(`Unknown dialogue provider: ${provider}`);
   }

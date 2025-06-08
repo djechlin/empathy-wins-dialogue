@@ -55,80 +55,85 @@ const baseScores = {
   surprisePositive: 0.2,
   sympathy: 0.2,
   tiredness: 0.2,
-  triumph: 0.2
-}
+  triumph: 0.2,
+};
 
 const MOCK_MESSAGES: DialogueMessage[] = [
   {
     role: 'assistant' as const,
-    content: 'Hi there! I understand you want to talk about healthcare policy. I\'m honestly pretty skeptical about government expansion in healthcare. What\'s your take on this?',
+    content:
+      "Hi there! I understand you want to talk about healthcare policy. I'm honestly pretty skeptical about government expansion in healthcare. What's your take on this?",
     emotions: baseScores,
     id: 'msg-1',
-    timestamp: new Date()
-  }   ,
+    timestamp: new Date(),
+  },
   {
     role: 'user' as const,
     content: 'I appreciate you sharing that perspective. Can you tell me a bit about what makes you feel skeptical about it?',
     emotions: baseScores,
     id: 'msg-2',
-    timestamp: new Date()
+    timestamp: new Date(),
   },
   {
     role: 'assistant' as const,
-    content: 'Well, I just worry about costs and efficiency. Government programs tend to be expensive and bureaucratic. I\'ve had bad experiences with government services before.',
+    content:
+      "Well, I just worry about costs and efficiency. Government programs tend to be expensive and bureaucratic. I've had bad experiences with government services before.",
     emotions: baseScores,
     id: 'msg-3',
-    timestamp: new Date()
+    timestamp: new Date(),
   },
   {
     role: 'user' as const,
     content: 'That sounds really frustrating. Can you share more about those experiences you mentioned?',
     emotions: baseScores,
     id: 'msg-4',
-    timestamp: new Date()
+    timestamp: new Date(),
   },
   {
     role: 'assistant' as const,
-    content: 'Yeah, when my mom needed Medicare help, it took months of paperwork and phone calls. It was such a hassle when she was already sick.',
+    content:
+      'Yeah, when my mom needed Medicare help, it took months of paperwork and phone calls. It was such a hassle when she was already sick.',
     emotions: baseScores,
     id: 'msg-5',
-    timestamp: new Date()
+    timestamp: new Date(),
   },
   {
     role: 'user' as const,
-    content: 'I\'m so sorry you and your mom went through that. That must have been incredibly stressful during an already difficult time.',
+    content: "I'm so sorry you and your mom went through that. That must have been incredibly stressful during an already difficult time.",
     emotions: baseScores,
     id: 'msg-6',
-    timestamp: new Date()
+    timestamp: new Date(),
   },
   {
     role: 'assistant' as const,
-    content: 'Thanks for saying that. It really was tough. I guess I just don\'t trust that expanding healthcare will make things better.',
+    content: "Thanks for saying that. It really was tough. I guess I just don't trust that expanding healthcare will make things better.",
     emotions: baseScores,
     id: 'msg-7',
-    timestamp: new Date()
+    timestamp: new Date(),
   },
   {
     role: 'user' as const,
     content: 'I understand that concern completely. What if there were ways to expand access while also improving the experience you had?',
     emotions: baseScores,
     id: 'msg-8',
-    timestamp: new Date()
+    timestamp: new Date(),
   },
   {
     role: 'assistant' as const,
-    content: 'Hmm, I suppose if they could actually streamline things and make it less bureaucratic... but I\'m still not sure it would work.',
+    content:
+      "Hmm, I suppose if they could actually streamline things and make it less bureaucratic... but I'm still not sure it would work.",
     emotions: baseScores,
     id: 'msg-9',
-    timestamp: new Date()
+    timestamp: new Date(),
   },
   {
     role: 'user' as const,
-    content: 'That makes total sense. Would you be open to hearing about some specific aspects of this proposal that might address those concerns?',
+    content:
+      'That makes total sense. Would you be open to hearing about some specific aspects of this proposal that might address those concerns?',
     emotions: baseScores,
     id: 'msg-10',
-    timestamp: new Date()
-  }
+    timestamp: new Date(),
+  },
 ];
 
 export function MockDialogueProvider({ children, className }: MockDialogueProviderProps) {
@@ -147,36 +152,38 @@ export function MockDialogueProvider({ children, className }: MockDialogueProvid
 
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  
-  const mockContext: DialogueContext = useMemo(() =>
-    ({
-    messages,
-    isPaused,
-    togglePause: (state?: boolean) => {
-      const newState = state !== undefined ? state : !isPaused;
-      setIsPaused(newState);
-      return newState;
-    },
-    status: {
-      value: isConnected ? 'connected' : 'connecting'
-    },
-    connect: async () => {
-      setIsConnected(true);
-    },
-    disconnect: () => {
-      setIsConnected(false);
-    },
-    isMuted,
-    mute: () => setIsMuted(true),
-    unmute: () => setIsMuted(false),
-    micFft: Array(32).fill(0).map(() => Math.random() * 0.5)
-}), [messages, isConnected, isPaused, isMuted]);
+
+  const mockContext: DialogueContext = useMemo(
+    () => ({
+      messages,
+      isPaused,
+      togglePause: (state?: boolean) => {
+        const newState = state !== undefined ? state : !isPaused;
+        setIsPaused(newState);
+        return newState;
+      },
+      status: {
+        value: isConnected ? 'connected' : 'connecting',
+      },
+      connect: async () => {
+        setIsConnected(true);
+      },
+      disconnect: () => {
+        setIsConnected(false);
+      },
+      isMuted,
+      mute: () => setIsMuted(true),
+      unmute: () => setIsMuted(false),
+      micFft: Array(32)
+        .fill(0)
+        .map(() => Math.random() * 0.5),
+    }),
+    [messages, isConnected, isPaused, isMuted],
+  );
 
   return (
     <div className={className}>
-    <DialogueContextObject.Provider value={mockContext}>
-    {children}
-    </DialogueContextObject.Provider>
+      <DialogueContextObject.Provider value={mockContext}>{children}</DialogueContextObject.Provider>
     </div>
   );
 }

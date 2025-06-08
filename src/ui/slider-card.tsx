@@ -10,12 +10,7 @@ interface SliderCardProps {
   defaultOpen?: boolean;
 }
 
-const SliderCard = ({
-  id,
-  title,
-  question,
-  defaultOpen = true,
-}: SliderCardProps) => {
+const SliderCard = ({ id, title, question, defaultOpen = true }: SliderCardProps) => {
   const [sliderLevel, setSliderLevel] = useState([5]);
 
   const isCompleted = true;
@@ -39,19 +34,10 @@ const SliderCard = ({
       <CardContent>
         <p className="text-lg font-medium mb-6 text-center">"{question}"</p>
 
-        <Slider
-          value={sliderLevel}
-          onValueChange={setSliderLevel}
-          max={10}
-          min={0}
-          step={1}
-          className="py-4 mb-2"
-        />
+        <Slider value={sliderLevel} onValueChange={setSliderLevel} max={10} min={0} step={1} className="py-4 mb-2" />
         <div className="flex justify-between mb-6 text-sm text-muted-foreground">
           <span>0 - Strongly disagree</span>
-          <span className="font-medium text-dialogue-darkblue">
-            {sliderLevel[0]}
-          </span>
+          <span className="font-medium text-dialogue-darkblue">{sliderLevel[0]}</span>
           <span>10 - Strongly agree</span>
         </div>
       </CardContent>

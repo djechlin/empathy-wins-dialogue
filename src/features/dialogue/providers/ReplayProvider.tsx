@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useMemo,
-} from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import { DialogueContextObject } from './dialogueContext';
 import { DialogueContext, DialogueMessage } from '../types';
 
@@ -16,12 +9,7 @@ interface ReplayProviderProps {
   playbackSpeed?: number;
 }
 
-export function ReplayProvider({
-  children,
-  className,
-  messages: initialMessages = [],
-  playbackSpeed = 1,
-}: ReplayProviderProps) {
+export function ReplayProvider({ children, className, messages: initialMessages = [], playbackSpeed = 1 }: ReplayProviderProps) {
   const [isConnected, setIsConnected] = useState(false);
   const [messages, setMessages] = useState<DialogueMessage[]>([]);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
@@ -39,8 +27,7 @@ export function ReplayProvider({
   }, [initialMessages]);
 
   useEffect(() => {
-    if (!isConnected || isPaused || currentMessageIndex >= messages.length)
-      return;
+    if (!isConnected || isPaused || currentMessageIndex >= messages.length) return;
 
     const delay = 2000 / playbackSpeed; // Base delay of 2 seconds between messages
     const timer = setTimeout(() => {
@@ -48,13 +35,7 @@ export function ReplayProvider({
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [
-    isConnected,
-    isPaused,
-    currentMessageIndex,
-    messages.length,
-    playbackSpeed,
-  ]);
+  }, [isConnected, isPaused, currentMessageIndex, messages.length, playbackSpeed]);
 
   const displayedMessages = messages.slice(0, currentMessageIndex + 1);
 
@@ -88,9 +69,7 @@ export function ReplayProvider({
 
   return (
     <div className={className}>
-      <DialogueContextObject.Provider value={replayContext}>
-        {children}
-      </DialogueContextObject.Provider>
+      <DialogueContextObject.Provider value={replayContext}>{children}</DialogueContextObject.Provider>
     </div>
   );
 }

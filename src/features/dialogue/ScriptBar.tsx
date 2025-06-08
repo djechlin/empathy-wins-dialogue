@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight, CheckCircle, Circle } from 'lucide-react';
-import type { Script, Step, StepItem} from '@/types';
+import type { Script, Step, StepItem } from '@/types';
 import { useDialogue } from './hooks/useDialogue';
 import type { UserTranscriptMessage } from '@humeai/voice-react';
 
@@ -24,9 +24,7 @@ function Hint({ hint }: HintProps) {
 
       {isExpanded && (
         <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded text-xs">
-          <p className="text-blue-800 dark:text-blue-300 whitespace-pre-wrap">
-            {hint}
-          </p>
+          <p className="text-blue-800 dark:text-blue-300 whitespace-pre-wrap">{hint}</p>
         </div>
       )}
     </>
@@ -49,29 +47,21 @@ function Step({ step, stepIndex, isTriggered, triggeredItems, isCurrentStep }: S
         isTriggered
           ? 'bg-green-100 dark:bg-green-900/20 border-green-500 shadow-sm'
           : isCurrentStep
-          ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 shadow-sm ring-2 ring-blue-200'
-          : 'bg-muted/30 border-border'
+            ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 shadow-sm ring-2 ring-blue-200'
+            : 'bg-muted/30 border-border',
       )}
     >
       <div className="flex items-center gap-3 mb-3">
         {isTriggered ? (
           <CheckCircle className="size-5 text-green-600" />
         ) : (
-          <Circle className={cn(
-            'size-5',
-            isCurrentStep ? 'text-blue-600' : 'text-gray-400'
-          )} />
+          <Circle className={cn('size-5', isCurrentStep ? 'text-blue-600' : 'text-gray-400')} />
         )}
-        <h3 className={cn(
-          'text-lg font-semibold',
-          isTriggered ? 'text-green-800' : isCurrentStep ? 'text-blue-800' : 'text-gray-600'
-        )}>
+        <h3 className={cn('text-lg font-semibold', isTriggered ? 'text-green-800' : isCurrentStep ? 'text-blue-800' : 'text-gray-600')}>
           Step {stepIndex + 1}: {step.name}
         </h3>
         {isCurrentStep && !isTriggered && (
-          <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full font-medium">
-            Current
-          </span>
+          <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full font-medium">Current</span>
         )}
       </div>
 
@@ -80,18 +70,16 @@ function Step({ step, stepIndex, isTriggered, triggeredItems, isCurrentStep }: S
           <div key={itemIndex}>
             <p
               className={cn(
-                (!item.triggers || item.triggers.length === 0)
+                !item.triggers || item.triggers.length === 0
                   ? 'p-3 rounded border transition-colors duration-300 bg-background border-border'
                   : 'italic text-xs mt-1 text-gray-600',
-                triggeredItems.has(`${stepIndex}-${itemIndex}`)
-                  && 'bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-500/50'
+                triggeredItems.has(`${stepIndex}-${itemIndex}`) &&
+                  'bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-500/50',
               )}
             >
               {item.text}
             </p>
-            {item.hint && (
-              <Hint hint={item.hint} />
-            )}
+            {item.hint && <Hint hint={item.hint} />}
           </div>
         ))}
       </div>
@@ -112,11 +100,7 @@ export default function ScriptBar({ script }: { script: Script }) {
 
     script.forEach((step, stepIndex) => {
       step.items.forEach((description, descriptionIndex) => {
-        if (
-          description.triggers?.some((trigger) =>
-            lastUserMessage?.content?.toLowerCase()?.includes(trigger)
-          )
-        ) {
+        if (description.triggers?.some((trigger) => lastUserMessage?.content?.toLowerCase()?.includes(trigger))) {
           triggeredSteps.add(stepIndex);
           triggeredDescriptions.add(`${stepIndex}-${descriptionIndex}`);
         }

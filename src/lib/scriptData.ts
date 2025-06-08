@@ -1,4 +1,4 @@
-import {Script, Step, Scenario, ScenarioId} from '@/types';
+import { Script, Step, Scenario, ScenarioId } from '@/types';
 
 export const SCRIPT_TITLES: { [key in ScenarioId]: string } = {
   'deep-canvassing': 'Script',
@@ -7,7 +7,7 @@ export const SCRIPT_TITLES: { [key in ScenarioId]: string } = {
   'intro-canvassing': 'Candidate Introduction Script',
   'busy-voter-libraries': 'Library Funding Script',
   'empathetic-listening': 'Empathetic Listening Script',
-  'love-list': 'Love list'
+  'love-list': 'Love list',
 };
 
 export const HUME_PERSONAS: { [key in ScenarioId]: string } = {
@@ -17,7 +17,7 @@ export const HUME_PERSONAS: { [key in ScenarioId]: string } = {
   'intro-canvassing': '8e875e6a-83f5-4f97-a5f8-dcddb4ba9b6c',
   'busy-voter-libraries': 'd3b113c7-3e87-49a2-b400-1b155b514d0a',
   'empathetic-listening': 'd3b113c7-3e87-49a2-b400-1b155b514d0a',
-  'love-list': 'd3b113c7-3e87-49a2-b400-1b155b514d0a'
+  'love-list': 'd3b113c7-3e87-49a2-b400-1b155b514d0a',
 };
 
 function challengeScript(hint: string): Script {
@@ -28,8 +28,8 @@ function challengeScript(hint: string): Script {
         {
           text: 'Try to gauge their support for your issue early. Ask them how they feel on a scale of 1-10.',
           triggers: ['scale', '10', 'ten'],
-        }
-      ]
+        },
+      ],
     },
     {
       name: 'Try to persuade them'!,
@@ -40,24 +40,22 @@ function challengeScript(hint: string): Script {
         {
           text: 'Click for a hint',
           hint: hint,
-        }
-      ]
+        },
+      ],
     },
     {
-      name: 'End the conversation when you\'re ready',
+      name: "End the conversation when you're ready",
       items: [
         {
-          text: 'The roleplayer won\'t hang up, so you have to. Before you go, ask them how they feel about the issue on that 1-10 scale again and see if they\'ve changed their mind at all.',
-        }
-      ]
-    }
-  ]
+          text: "The roleplayer won't hang up, so you have to. Before you go, ask them how they feel about the issue on that 1-10 scale again and see if they've changed their mind at all.",
+        },
+      ],
+    },
+  ];
 }
 
 export const SCRIPTS: { [key in ScenarioId]: Script } = {
-  'love-list': [
-
-  ],
+  'love-list': [],
   'empathetic-listening': [
     {
       name: '1. Practice empathetic listening',
@@ -80,12 +78,12 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
       ],
     },
     {
-      name: '2. Elicit about the voter\'s concerns',
+      name: "2. Elicit about the voter's concerns",
       items: [
         {
           text: 'Learn what issues matter to the voter.',
           triggers: ['landlord', 'housing', 'rent', 'apartment'],
-          hint: 'Ask about her landlord situation to hear her personal housing story.'
+          hint: 'Ask about her landlord situation to hear her personal housing story.',
         },
       ],
     },
@@ -104,7 +102,7 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
       name: '1. Receiving feedback',
       items: [
         {
-          text: 'Your junior colleague is giving you feedback. They think you\'ve been too nitpicky on code reviews. They\'ll be quite standoffish.',
+          text: "Your junior colleague is giving you feedback. They think you've been too nitpicky on code reviews. They'll be quite standoffish.",
           triggers: ['nitpicky', 'feedback', 'code reviews'],
         },
       ],
@@ -115,24 +113,22 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
         {
           text: 'Try to find a constructive solution to the feedback.',
           triggers: ['pair program', 'pair coding', 'work together'],
-          hint: 'When you offer to pair program the junior colleague will be happy.'
+          hint: 'When you offer to pair program the junior colleague will be happy.',
         },
       ],
     },
   ],
   'deep-canvassing': [
     {
-      name: '1. Why you\'re here',
+      name: "1. Why you're here",
       items: [
         {
           text: '"Hi, I\'m [name], talking to voters today about expanding bike access in the city. How do you feel about that?"',
           triggers: ['bike', 'access', 'city'],
-
         },
         {
           text: '"Thanks for sharing that. And you know there\'s a primary election this June, on a scale of 1 to 10, how likely are you to vote?"',
           triggers: ['june', 'scale', '1 to 10', 'one to ten'],
-
         },
         {
           text: '"Gotcha. And why is that the right number for you?"',
@@ -145,7 +141,7 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
       items: [
         {
           text: '"Thanks so much. For me, voting isn\'t just political, it\'s also personal. I vote because I love [share your personal connection]..."',
-          triggers: ['isn\'t just political', 'personal', 'love'],
+          triggers: ["isn't just political", 'personal', 'love'],
         },
         {
           text: 'Use the word "love"! And say the person\'s name.',
@@ -156,7 +152,7 @@ export const SCRIPTS: { [key in ScenarioId]: Script } = {
 
 I remember standing in that dusty record shop, hands shaking a little as I slid my rare vinyl across the counter. 'You sure about this?' the dealer asked, eyebrows raised. I nodded, thinking of Jim's face when he'd open the guitar case I'd bought with that money. The leather smell of that handcrafted strap, how perfectly it would match his uncle's vintage guitar. Worth it.
 
-Christmas Eve came, and Jim handed me a wrapped package. Inside was a record by the same band I'd just sold. His eyes sparkled as he told me he'd been secretly giving guitar lessons on weekends to save up. I burst out laughing right there - couldn't help it. And you know, we felt pretty good that Christmas. It was just the two of us, like we wanted it. We didn't have much, but I loved him and I really knew he loved me."`
+Christmas Eve came, and Jim handed me a wrapped package. Inside was a record by the same band I'd just sold. His eyes sparkled as he told me he'd been secretly giving guitar lessons on weekends to save up. I burst out laughing right there - couldn't help it. And you know, we felt pretty good that Christmas. It was just the two of us, like we wanted it. We didn't have much, but I loved him and I really knew he loved me."`,
         },
       ],
     },
@@ -169,14 +165,14 @@ Christmas Eve came, and Jim handed me a wrapped package. Inside was a record by 
         },
         {
           text: '[Idea 2] "Is there someone who\'s been there for you, or who you\'ve been there for?"',
-          triggers: ['there for you', 'you\'ve been there for'],
+          triggers: ['there for you', "you've been there for"],
         },
         {
           text: '[Idea 3]"Have there been any big changes in your life lately? Who was around when you were going through that?"',
           triggers: ['big changes', 'who was around'],
         },
         {
-          text: 'Don\'t give up, this part\'s hard. Make sure to ask their person\'s name.',
+          text: "Don't give up, this part's hard. Make sure to ask their person's name.",
         },
       ],
     },
@@ -243,7 +239,7 @@ Christmas Eve came, and Jim handed me a wrapped package. Inside was a record by 
           triggers: ['jill', 'increase funding', 'libraries', 'adam'],
         },
         {
-          text: 'If the voter says they\'re busy, continue',
+          text: "If the voter says they're busy, continue",
         },
         {
           text: '"Great, real quick on a scale of 1-10, where 1 means you\'re opposed and 10 means you definitely support increasing library funding, what number is right for you?"',
@@ -254,12 +250,10 @@ Christmas Eve came, and Jim handed me a wrapped package. Inside was a record by 
   ],
 };
 
-
-
 export const SCENARIOS: { [key in ScenarioId]: Scenario } = {
   'love-list': {
     title: 'Love list',
-    description: ['Love list exercise']
+    description: ['Love list exercise'],
   },
   'empathetic-listening': {
     title: 'Practice Empathetic Listening',
@@ -285,7 +279,7 @@ export const SCENARIOS: { [key in ScenarioId]: Scenario } = {
   'code-review-junior-feedback': {
     title: 'Handle Junior Colleague Feedback',
     description: [
-      'You will talk with a junior colleague who thinks you\'ve been too nitpicky on code reviews.',
+      "You will talk with a junior colleague who thinks you've been too nitpicky on code reviews.",
       'Practice receiving feedback professionally and finding constructive solutions.',
     ],
   },

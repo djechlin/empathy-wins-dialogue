@@ -27,14 +27,9 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
       <CardHeader className="flex flex-row items-center space-y-0 pb-2">
         <div className="flex items-center gap-2">
           {IconComponent && <IconComponent className="h-5 w-5" />}
-          <CardTitle className="text-lg">
-            {category.name}
-          </CardTitle>
+          <CardTitle className="text-lg">{category.name}</CardTitle>
         </div>
-        <Badge
-          variant={getScoreBadgeVariant(category.score)}
-          className="ml-auto"
-        >
+        <Badge variant={getScoreBadgeVariant(category.score)} className="ml-auto">
           {category.score}/10
         </Badge>
       </CardHeader>
@@ -54,7 +49,6 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
     </Card>
   );
 };
-
 
 const ConversationReport = ({ report }: ConversationReportProps) => {
   const getScoreColor = (score: number) => {
@@ -86,9 +80,7 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
       {/* Summary Section */}
       <Card className="bg-gradient-to-r from-dialogue-blue/10 to-dialogue-purple/10 border-dialogue-blue/20">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-dialogue-darkblue mb-4">
-            Conversation Summary
-          </CardTitle>
+          <CardTitle className="text-2xl font-bold text-dialogue-darkblue mb-4">Conversation Summary</CardTitle>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className={`text-3xl font-bold ${getScoreColor(report.currentScore)} mb-1`}>
@@ -100,18 +92,14 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
               </div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-dialogue-purple mb-1">
-                Engaging
-              </div>
+              <div className="text-2xl font-bold text-dialogue-purple mb-1">Engaging</div>
               <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
                 <User className="h-4 w-4" />
                 Your style
               </div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-dialogue-purple mb-1">
-                Eager
-              </div>
+              <div className="text-2xl font-bold text-dialogue-purple mb-1">Eager</div>
               <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
                 <Heart className="h-4 w-4" />
                 Voter mood
@@ -121,9 +109,7 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
         </CardHeader>
         <CardContent>
           <div className="bg-white/80 rounded-lg p-4 space-y-3">
-            <div className="text-sm text-gray-700">
-              {report.summary}
-            </div>
+            <div className="text-sm text-gray-700">{report.summary}</div>
           </div>
         </CardContent>
       </Card>
@@ -153,9 +139,7 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
                     </Badge>
                   </div>
                   <p className="text-sm text-gray-700">{moment.description}</p>
-                  {moment.quote && (
-                    <p className="text-sm text-gray-500 italic mt-1">"{moment.quote}"</p>
-                  )}
+                  {moment.quote && <p className="text-sm text-gray-500 italic mt-1">"{moment.quote}"</p>}
                 </div>
               </div>
             ))}

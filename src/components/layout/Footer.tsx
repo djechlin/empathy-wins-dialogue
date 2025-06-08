@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { MessageCircle } from 'lucide-react';
@@ -11,15 +10,11 @@ const Footer = () => {
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
               <MessageCircle className="h-6 w-6 text-dialogue-purple" />
-              <span className="font-heading font-bold text-xl text-dialogue-darkblue">
-                type2dialogue
-              </span>
+              <span className="font-heading font-bold text-xl text-dialogue-darkblue">type2dialogue</span>
             </div>
-            <p className="text-muted-foreground mb-4">
-              Building bridges through empathetic political conversations that win elections.
-            </p>
+            <p className="text-muted-foreground mb-4">Building bridges through empathetic political conversations that win elections.</p>
           </div>
-          
+
           <div>
             <h3 className="font-heading font-semibold mb-4">Platform</h3>
             <ul className="space-y-2">
@@ -45,7 +40,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="font-heading font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
@@ -71,7 +66,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="font-heading font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
@@ -98,11 +93,9 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        
+
         <div className="border-t border-border mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} type2dialogue. All rights reserved.
-          </p>
+          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} type2dialogue. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link to="#" className="text-muted-foreground hover:text-dialogue-purple">
               Twitter

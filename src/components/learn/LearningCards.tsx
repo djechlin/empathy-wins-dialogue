@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
 import { Slider } from '@/ui/slider';
@@ -33,11 +32,7 @@ const LearningCards = () => {
         }
 
         // Get the latest willingness value for this user
-        const { data, error } = await supabase
-          .from('willingness')
-          .select('value')
-          .order('created_at', { ascending: false })
-          .limit(1);
+        const { data, error } = await supabase.from('willingness').select('value').order('created_at', { ascending: false }).limit(1);
 
         if (error) {
           console.error('Error fetching willingness data:', error);
@@ -78,7 +73,7 @@ const LearningCards = () => {
 
   const toggleScenario = (scenario: string) => {
     if (selectedScenarios.includes(scenario)) {
-      setSelectedScenarios(selectedScenarios.filter(s => s !== scenario));
+      setSelectedScenarios(selectedScenarios.filter((s) => s !== scenario));
     } else {
       setSelectedScenarios([...selectedScenarios, scenario]);
     }
@@ -99,9 +94,7 @@ const LearningCards = () => {
 
       // Insert the comfort level into the willingness table
       // user_id will be set automatically via the DEFAULT value we set
-      const { error } = await supabase
-        .from('willingness')
-        .insert([{ value: comfortLevel[0] }]);
+      const { error } = await supabase.from('willingness').insert([{ value: comfortLevel[0] }]);
 
       if (error) {
         console.error('Error saving comfort level:', error);
@@ -125,9 +118,7 @@ const LearningCards = () => {
         <Card className="shadow-lg border-dialogue-neutral animate-fade-in">
           <CardHeader>
             <CardTitle>How comfortable are you having political conversations?</CardTitle>
-            <CardDescription>
-              Rate your comfort level on a scale from 1 to 10
-            </CardDescription>
+            <CardDescription>Rate your comfort level on a scale from 1 to 10</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-8">
@@ -145,14 +136,7 @@ const LearningCards = () => {
               ) : (
                 <>
                   <div>
-                    <Slider
-                      value={comfortLevel}
-                      onValueChange={setComfortLevel}
-                      max={10}
-                      min={1}
-                      step={1}
-                      className="py-4"
-                    />
+                    <Slider value={comfortLevel} onValueChange={setComfortLevel} max={10} min={1} step={1} className="py-4" />
                     <div className="flex justify-between mt-2 text-sm text-muted-foreground">
                       <span>1 - Very uncomfortable</span>
                       <span>10 - Very comfortable</span>
@@ -187,9 +171,7 @@ const LearningCards = () => {
         <Card className="shadow-lg border-dialogue-neutral animate-fade-in">
           <CardHeader>
             <CardTitle>Who would you like to have better conversations with?</CardTitle>
-            <CardDescription>
-              List the people you want to connect with for meaningful political dialogue
-            </CardDescription>
+            <CardDescription>List the people you want to connect with for meaningful political dialogue</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
@@ -202,34 +184,23 @@ const LearningCards = () => {
                     className="flex-grow"
                   />
                   {friends.length > 1 && (
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => removeFriend(index)}
-                      className="shrink-0"
-                    >
+                    <Button variant="outline" size="icon" onClick={() => removeFriend(index)} className="shrink-0">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   )}
                 </div>
               ))}
 
-              <Button
-                variant="outline"
-                onClick={addFriend}
-                className="w-full border-dashed border-dialogue-neutral"
-              >
+              <Button variant="outline" onClick={addFriend} className="w-full border-dashed border-dialogue-neutral">
                 <Plus className="mr-2 h-4 w-4" /> Add another person
               </Button>
 
               <div className="pt-4">
                 <p className="text-muted-foreground mb-4">
-                  These are the people you've identified for having more productive political conversations.
-                  Once you complete this lesson, you'll have tools to engage with them effectively.
+                  These are the people you've identified for having more productive political conversations. Once you complete this lesson,
+                  you'll have tools to engage with them effectively.
                 </p>
-                <Button className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue">
-                  Save My List
-                </Button>
+                <Button className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue">Save My List</Button>
               </div>
             </div>
           </CardContent>
@@ -239,9 +210,7 @@ const LearningCards = () => {
         <Card className="shadow-lg border-dialogue-neutral animate-fade-in">
           <CardHeader>
             <CardTitle>What scenarios do you find most challenging?</CardTitle>
-            <CardDescription>
-              Select all that apply to help us customize your learning experience
-            </CardDescription>
+            <CardDescription>Select all that apply to help us customize your learning experience</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -251,7 +220,7 @@ const LearningCards = () => {
                 'Workplace political discussions',
                 'Community meetings on divisive issues',
                 'One-on-one conversations with someone who disagrees',
-                'Group settings where I\'m the minority opinion'
+                "Group settings where I'm the minority opinion",
               ].map((scenario) => (
                 <div
                   key={scenario}
@@ -264,19 +233,16 @@ const LearningCards = () => {
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{scenario}</span>
-                    <ListCheck className={`h-5 w-5 ${
-                      selectedScenarios.includes(scenario)
-                        ? 'text-dialogue-purple'
-                        : 'text-muted-foreground'
-                    }`} />
+                    <ListCheck
+                      className={`h-5 w-5 ${selectedScenarios.includes(scenario) ? 'text-dialogue-purple' : 'text-muted-foreground'}`}
+                    />
                   </div>
                 </div>
               ))}
 
               <div className="pt-6">
                 <p className="text-muted-foreground mb-4">
-                  Understanding your specific challenges helps us provide more targeted strategies
-                  for these situations.
+                  Understanding your specific challenges helps us provide more targeted strategies for these situations.
                 </p>
               </div>
             </div>
@@ -287,9 +253,7 @@ const LearningCards = () => {
         <Card className="shadow-lg border-dialogue-neutral animate-fade-in">
           <CardHeader>
             <CardTitle>Reflect on your political dialogue goals</CardTitle>
-            <CardDescription>
-              Share what you hope to achieve by improving your political conversation skills
-            </CardDescription>
+            <CardDescription>Share what you hope to achieve by improving your political conversation skills</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
@@ -322,9 +286,7 @@ const LearningCards = () => {
               </div>
 
               <div className="pt-4">
-                <Button className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue">
-                  Complete Learning Module
-                </Button>
+                <Button className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue">Complete Learning Module</Button>
               </div>
             </div>
           </CardContent>

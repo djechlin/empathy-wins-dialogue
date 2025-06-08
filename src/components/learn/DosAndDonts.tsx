@@ -27,14 +27,12 @@ export const Dos: React.FC<DosProps> = ({ children, title = 'Story Dos' }) => {
           <h3 className="text-lg font-semibold text-green-800">{title}</h3>
         </div>
       </CardHeader>
-      <CardContent className="space-y-2">
-        {children}
-      </CardContent>
+      <CardContent className="space-y-2">{children}</CardContent>
     </Card>
   );
 };
 
-export const Donts: React.FC<DontsProps> = ({ children, title = 'Story Don\'ts' }) => {
+export const Donts: React.FC<DontsProps> = ({ children, title = "Story Don'ts" }) => {
   return (
     <Card className="border-red-200 bg-red-50">
       <CardHeader className="pb-3">
@@ -45,9 +43,7 @@ export const Donts: React.FC<DontsProps> = ({ children, title = 'Story Don\'ts' 
           <h3 className="text-lg font-semibold text-red-800">{title}</h3>
         </div>
       </CardHeader>
-      <CardContent className="space-y-2">
-        {children}
-      </CardContent>
+      <CardContent className="space-y-2">{children}</CardContent>
     </Card>
   );
 };
@@ -63,14 +59,12 @@ export const ConversationDos: React.FC<DosProps> = ({ children, title = 'Convers
           <h3 className="text-lg font-semibold text-blue-800">{title}</h3>
         </div>
       </CardHeader>
-      <CardContent className="space-y-2">
-        {children}
-      </CardContent>
+      <CardContent className="space-y-2">{children}</CardContent>
     </Card>
   );
 };
 
-export const ConversationDonts: React.FC<DontsProps> = ({ children, title = 'Conversation Don\'ts' }) => {
+export const ConversationDonts: React.FC<DontsProps> = ({ children, title = "Conversation Don'ts" }) => {
   return (
     <Card className="border-orange-200 bg-orange-50">
       <CardHeader className="pb-3">
@@ -81,9 +75,7 @@ export const ConversationDonts: React.FC<DontsProps> = ({ children, title = 'Con
           <h3 className="text-lg font-semibold text-orange-800">{title}</h3>
         </div>
       </CardHeader>
-      <CardContent className="space-y-2">
-        {children}
-      </CardContent>
+      <CardContent className="space-y-2">{children}</CardContent>
     </Card>
   );
 };
@@ -115,11 +107,7 @@ export const ConversationDosAndDontsItem: React.FC<{ children: ReactNode; type: 
 };
 
 const DosAndDonts: React.FC<DosAndDontsProps> = ({ children }) => {
-  return (
-    <div className="grid md:grid-cols-2 gap-4">
-      {children}
-    </div>
-  );
+  return <div className="grid md:grid-cols-2 gap-4">{children}</div>;
 };
 
 export default DosAndDonts;

@@ -48,7 +48,7 @@ function VoiceControlPanel({ onPauseChange }: VoiceControlPanelProps) {
         console.log('Requesting microphone permissions...');
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         console.log('Microphone permissions granted');
-        stream.getTracks().forEach(track => track.stop()); // Stop the test stream
+        stream.getTracks().forEach((track) => track.stop()); // Stop the test stream
       } catch (micError) {
         console.error('Microphone permission denied:', micError);
         setIsConnecting(false);
@@ -88,16 +88,11 @@ function VoiceControlPanel({ onPauseChange }: VoiceControlPanelProps) {
 
   return (
     <>
-      <Toggle
-        pressed={!isMuted}
-        onPressedChange={() => isMuted ? unmute() : mute()}>
+      <Toggle pressed={!isMuted} onPressedChange={() => (isMuted ? unmute() : mute())}>
         {isMuted ? <MicOff className={'size-4'} /> : <Mic className={'size-4'} />}
       </Toggle>
 
-      <Toggle
-        pressed={isPaused}
-        onPressedChange={handlePauseToggle}
-      >
+      <Toggle pressed={isPaused} onPressedChange={handlePauseToggle}>
         {isPaused ? <Play className={'size-4'} /> : <Pause className={'size-4'} />}
       </Toggle>
 
@@ -105,11 +100,7 @@ function VoiceControlPanel({ onPauseChange }: VoiceControlPanelProps) {
         <MicFFT fft={Array.from(micFft)} className={'fill-current'} />
       </div>
 
-      <Button
-        className="flex items-center gap-1"
-        onClick={handleDisconnect}
-        variant="outline"
-      >
+      <Button className="flex items-center gap-1" onClick={handleDisconnect} variant="outline">
         <span>
           <Phone className={'size-4 opacity-50'} strokeWidth={2} stroke={'currentColor'} />
         </span>
@@ -127,7 +118,13 @@ interface ControlPanelProps {
   currentStep?: StepConfig;
 }
 
-export default function ControlPanel({ isTimerActive = false, timeElapsed = 0, onTimeChange, currentStepInfo, currentStep }: ControlPanelProps) {
+export default function ControlPanel({
+  isTimerActive = false,
+  timeElapsed = 0,
+  onTimeChange,
+  currentStepInfo,
+  currentStep,
+}: ControlPanelProps) {
   const { status } = useDialogue();
 
   // Internal timer state
@@ -145,7 +142,8 @@ export default function ControlPanel({ isTimerActive = false, timeElapsed = 0, o
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-    if (isTimerActive && !isTimerPaused && currentTime < 360) { // 6:00 minutes = 360 seconds
+    if (isTimerActive && !isTimerPaused && currentTime < 360) {
+      // 6:00 minutes = 360 seconds
       interval = setInterval(() => {
         const newTime = currentTime + 1;
         setInternalTimeElapsed(newTime);
@@ -163,22 +161,16 @@ export default function ControlPanel({ isTimerActive = false, timeElapsed = 0, o
 
   return (
     <div className="flex items-center justify-center">
-      <div
-        className={
-          'p-4 bg-card border border-border rounded-lg shadow-sm flex items-center gap-4'
-        }
-      >
+      <div className={'p-4 bg-card border border-border rounded-lg shadow-sm flex items-center gap-4'}>
         <VoiceControlPanel onPauseChange={handlePauseChange} />
 
         {status.value === 'connected' && (
           <div className="flex items-center gap-2">
             <Clock className="size-4 text-gray-500" />
             <span className="text-sm font-medium">
-              {currentStepInfo && currentStep ? (
-                `${Math.floor(currentStepInfo.timeInStep / 60)}:${(Math.floor(currentStepInfo.timeInStep) % 60).toString().padStart(2, '0')}/${Math.floor(currentStep.duration / 60)}:${(currentStep.duration % 60).toString().padStart(2, '0')}`
-              ) : (
-                `${Math.floor(currentTime / 60)}:${(currentTime % 60).toString().padStart(2, '0')}/6:00`
-              )}
+              {currentStepInfo && currentStep
+                ? `${Math.floor(currentStepInfo.timeInStep / 60)}:${(Math.floor(currentStepInfo.timeInStep) % 60).toString().padStart(2, '0')}/${Math.floor(currentStep.duration / 60)}:${(currentStep.duration % 60).toString().padStart(2, '0')}`
+                : `${Math.floor(currentTime / 60)}:${(currentTime % 60).toString().padStart(2, '0')}/6:00`}
             </span>
           </div>
         )}

@@ -1,117 +1,105 @@
 'use client';
 
-import {
-    createContext,
-    useCallback,
-    useContext,
-    useState,
-    ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useState, ReactNode } from 'react';
 
 interface MicrophoneContextType {
-    microphone: MediaRecorder | null;
-    startMicrophone: () => void;
-    stopMicrophone: () => void;
-    setupMicrophone: () => void;
-    microphoneState: MicrophoneState | null;
-    micFft: number[];
+  microphone: MediaRecorder | null;
+  startMicrophone: () => void;
+  stopMicrophone: () => void;
+  setupMicrophone: () => void;
+  microphoneState: MicrophoneState | null;
+  micFft: number[];
 }
 
 export enum MicrophoneEvents {
-    DataAvailable = 'dataavailable',
-    Error = 'error',
-    Pause = 'pause',
-    Resume = 'resume',
-    Start = 'start',
-    Stop = 'stop',
+  DataAvailable = 'dataavailable',
+  Error = 'error',
+  Pause = 'pause',
+  Resume = 'resume',
+  Start = 'start',
+  Stop = 'stop',
 }
 
 export enum MicrophoneState {
-    NotSetup = -1,
-    SettingUp = 0,
-    Ready = 1,
-    Opening = 2,
-    Open = 3,
-    Error = 4,
-    Pausing = 5,
-    Paused = 6,
+  NotSetup = -1,
+  SettingUp = 0,
+  Ready = 1,
+  Opening = 2,
+  Open = 3,
+  Error = 4,
+  Pausing = 5,
+  Paused = 6,
 }
 
-const MicrophoneContext = createContext<MicrophoneContextType | undefined>(
-    undefined
-);
+const MicrophoneContext = createContext<MicrophoneContextType | undefined>(undefined);
 
 interface MicrophoneContextProviderProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
-const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({
-    children,
-}) => {
-    const [microphoneState, setMicrophoneState] = useState<MicrophoneState>(
-        MicrophoneState.NotSetup
-    );
-    const [microphone, setMicrophone] = useState<MediaRecorder | null>(null);
-    const [micFft, setMicFft] = useState<number[]>(Array(32).fill(0));
+const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({ children }) => {
+  const [microphoneState, setMicrophoneState] = useState<MicrophoneState>(MicrophoneState.NotSetup);
+  const [microphone, setMicrophone] = useState<MediaRecorder | null>(null);
+  const [micFft, setMicFft] = useState<number[]>(Array(32).fill(0));
 
-    const setupMicrophone = async () => {
-        setMicrophoneState(MicrophoneState.SettingUp);
-        const userMedia = await navigator.mediaDevices.getUserMedia({
-            audio: {
-                noiseSuppression: true,
-                echoCancellation: true,
-            },
-        });
+  const setupMicrophone = async () => {
+    setMicrophoneState(MicrophoneState.SettingUp);
+    const userMedia = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        noiseSuppression: true,
+        echoCancellation: true,
+      },
+    });
 
-        const microphone = new MediaRecorder(userMedia);
+    const microphone = new MediaRecorder(userMedia);
 
-        setMicrophoneState(MicrophoneState.Ready);
-        setMicrophone(microphone);
-    };
+    setMicrophoneState(MicrophoneState.Ready);
+    setMicrophone(microphone);
+  };
 
-    const stopMicrophone = useCallback(() => {
-        setMicrophoneState(MicrophoneState.Pausing);
+  const stopMicrophone = useCallback(() => {
+    setMicrophoneState(MicrophoneState.Pausing);
 
-        if (microphone?.state === 'recording') {
-            microphone.pause();
-            setMicrophoneState(MicrophoneState.Paused);
-        }
-    }, [microphone]);
+    if (microphone?.state === 'recording') {
+      microphone.pause();
+      setMicrophoneState(MicrophoneState.Paused);
+    }
+  }, [microphone]);
 
-    const startMicrophone = useCallback(() => {
-        setMicrophoneState(MicrophoneState.Opening);
+  const startMicrophone = useCallback(() => {
+    setMicrophoneState(MicrophoneState.Opening);
 
-        if (microphone?.state === 'paused') {
-            microphone.resume();
-        } else {
-            microphone?.start(250);
-        }
+    if (microphone?.state === 'paused') {
+      microphone.resume();
+    } else {
+      microphone?.start(250);
+    }
 
-        setMicrophoneState(MicrophoneState.Open);
-    }, [microphone]);
+    setMicrophoneState(MicrophoneState.Open);
+  }, [microphone]);
 
-    return (
-        <MicrophoneContext.Provider
-        value={{
-            microphone,
-            startMicrophone,
-            stopMicrophone,
-            setupMicrophone,
-            microphoneState,
-            micFft,
-        }}
-        >
-        {children}
-        </MicrophoneContext.Provider>
-    );
+  return (
+    <MicrophoneContext.Provider
+      value={{
+        microphone,
+        startMicrophone,
+        stopMicrophone,
+        setupMicrophone,
+        microphoneState,
+        micFft,
+      }}
+    >
+      {children}
+    </MicrophoneContext.Provider>
+  );
 };
 
 function useMicrophone(): MicrophoneContextType {
-    const context = useContext(MicrophoneContext);
-    if (context === undefined) {
-        throw new Error('useMicrophone must be used within a MicrophoneContextProvider');
-    }
-    return context;
+  const context = useContext(MicrophoneContext);
+  if (context === undefined) {
+    throw new Error('useMicrophone must be used within a MicrophoneContextProvider');
+  }
+  return context;
 }
 
 export { MicrophoneContextProvider, useMicrophone };

@@ -8,7 +8,7 @@ export type QuizQuestion = {
   id: string;
   text: string;
   correctAnswer: boolean;
-}
+};
 
 export type QuizProps = {
   questions: QuizQuestion[];
@@ -16,28 +16,28 @@ export type QuizProps = {
   description?: string;
   onQuizComplete?: (passed: boolean) => void;
   onScoreChange?: (score: number, total: number) => void;
-}
+};
 
 const Quiz: React.FC<QuizProps> = ({
   questions,
   title = 'Quiz',
   description = 'Select your answers to test your knowledge.',
   onQuizComplete,
-  onScoreChange
+  onScoreChange,
 }) => {
   const [quizAnswers, setQuizAnswers] = useState<Record<string, string | null>>({});
 
   // Initialize quiz answers state
   useEffect(() => {
     const initialAnswers: Record<string, string | null> = {};
-    questions.forEach(question => {
+    questions.forEach((question) => {
       initialAnswers[question.id] = null;
     });
     setQuizAnswers(initialAnswers);
   }, [questions]);
 
   const handleQuizToggle = (questionId: string, value: string) => {
-    setQuizAnswers(prev => {
+    setQuizAnswers((prev) => {
       // If the same value is already selected, keep it (don't allow toggling off)
       if (prev[questionId] === value) {
         return prev;
@@ -46,14 +46,12 @@ const Quiz: React.FC<QuizProps> = ({
       // Set to the new value
       const newAnswers = {
         ...prev,
-        [questionId]: value
+        [questionId]: value,
       };
 
       // Calculate score and check completion
-      const answeredQuestions = Object.values(newAnswers).filter(answer => answer !== null).length;
-      const correctAnswers = questions.filter(question =>
-        isCorrectAnswer(question.id, newAnswers[question.id])
-      ).length;
+      const answeredQuestions = Object.values(newAnswers).filter((answer) => answer !== null).length;
+      const correctAnswers = questions.filter((question) => isCorrectAnswer(question.id, newAnswers[question.id])).length;
 
       // Notify parent of score changes
       if (onScoreChange) {
@@ -72,7 +70,7 @@ const Quiz: React.FC<QuizProps> = ({
 
   const resetQuiz = () => {
     const resetAnswers: Record<string, string | null> = {};
-    questions.forEach(question => {
+    questions.forEach((question) => {
       resetAnswers[question.id] = null;
     });
     setQuizAnswers(resetAnswers);
@@ -90,7 +88,7 @@ const Quiz: React.FC<QuizProps> = ({
   const isCorrectAnswer = (questionId: string, answer: string | null): boolean => {
     if (answer === null) return false;
 
-    const question = questions.find(q => q.id === questionId);
+    const question = questions.find((q) => q.id === questionId);
     if (!question) return false;
 
     return answer === String(question.correctAnswer);
@@ -98,21 +96,17 @@ const Quiz: React.FC<QuizProps> = ({
 
   // Check if all questions are answered correctly
   const isQuizComplete = (): boolean => {
-    return questions.every(question =>
-      isCorrectAnswer(question.id, quizAnswers[question.id])
-    );
+    return questions.every((question) => isCorrectAnswer(question.id, quizAnswers[question.id]));
   };
 
   // Check if all questions have been answered
   const allQuestionsAnswered = (): boolean => {
-    return questions.every(question => quizAnswers[question.id] !== null);
+    return questions.every((question) => quizAnswers[question.id] !== null);
   };
 
   // Calculate progress
-  const answeredCount = Object.values(quizAnswers).filter(answer => answer !== null).length;
-  const correctCount = questions.filter(question =>
-    isCorrectAnswer(question.id, quizAnswers[question.id])
-  ).length;
+  const answeredCount = Object.values(quizAnswers).filter((answer) => answer !== null).length;
+  const correctCount = questions.filter((question) => isCorrectAnswer(question.id, quizAnswers[question.id])).length;
 
   return (
     <Card className="border-dialogue-neutral hover:shadow-md transition-shadow overflow-hidden bg-gradient-to-br from-white to-slate-50">
@@ -130,27 +124,26 @@ const Quiz: React.FC<QuizProps> = ({
             </div>
             {correctCount > 0 && (
               <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full border border-green-200">
-                <span className="font-medium">
-                  {correctCount} correct
-                </span>
+                <span className="font-medium">{correctCount} correct</span>
               </div>
             )}
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="py-4 px-6">
         <div className="space-y-2">
           {questions.map((question, index) => (
-            <div key={question.id} className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-dialogue-neutral/20 hover:border-dialogue-purple/30 transition-colors">
+            <div
+              key={question.id}
+              className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-dialogue-neutral/20 hover:border-dialogue-purple/30 transition-colors"
+            >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1">
                   <div className="flex-shrink-0 w-6 h-6 rounded-full bg-dialogue-purple/10 border border-dialogue-purple/20 flex items-center justify-center text-xs font-medium text-dialogue-purple mt-0.5">
                     {index + 1}
                   </div>
-                  <div className="font-medium text-dialogue-darkblue text-sm leading-relaxed">
-                    {question.text}
-                  </div>
+                  <div className="font-medium text-dialogue-darkblue text-sm leading-relaxed">{question.text}</div>
                 </div>
 
                 <div className="flex gap-2 flex-shrink-0">
@@ -168,11 +161,8 @@ const Quiz: React.FC<QuizProps> = ({
                     }`}
                   >
                     <span>True</span>
-                    {quizAnswers[question.id] === 'true' && (
-                      isCorrectAnswer(question.id, 'true')
-                        ? <Check className="ml-2 h-3 w-3" />
-                        : <X className="ml-2 h-3 w-3" />
-                    )}
+                    {quizAnswers[question.id] === 'true' &&
+                      (isCorrectAnswer(question.id, 'true') ? <Check className="ml-2 h-3 w-3" /> : <X className="ml-2 h-3 w-3" />)}
                   </Toggle>
 
                   <Toggle
@@ -189,18 +179,17 @@ const Quiz: React.FC<QuizProps> = ({
                     }`}
                   >
                     <span>False</span>
-                    {quizAnswers[question.id] === 'false' && (
-                      isCorrectAnswer(question.id, 'false')
-                        ? <Check className="ml-2 h-3 w-3" />
-                        : <X className="ml-2 h-3 w-3" />
-                    )}
+                    {quizAnswers[question.id] === 'false' &&
+                      (isCorrectAnswer(question.id, 'false') ? <Check className="ml-2 h-3 w-3" /> : <X className="ml-2 h-3 w-3" />)}
                   </Toggle>
                 </div>
               </div>
 
               {quizAnswers[question.id] !== null && !isCorrectAnswer(question.id, quizAnswers[question.id]) && (
                 <div className="mt-3 text-xs p-2 bg-red-50/80 text-red-800 rounded-md border border-red-200/50">
-                  <p>Correct answer: <span className="font-medium">{question.correctAnswer ? 'True' : 'False'}</span></p>
+                  <p>
+                    Correct answer: <span className="font-medium">{question.correctAnswer ? 'True' : 'False'}</span>
+                  </p>
                 </div>
               )}
             </div>
@@ -215,9 +204,7 @@ const Quiz: React.FC<QuizProps> = ({
               </div>
               <div>
                 <h4 className="font-semibold text-green-800 text-sm">Excellent work!</h4>
-                <p className="text-xs text-green-700 mt-0.5">
-                  You've successfully completed this knowledge check.
-                </p>
+                <p className="text-xs text-green-700 mt-0.5">You've successfully completed this knowledge check.</p>
               </div>
             </div>
           </div>
