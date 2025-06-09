@@ -42,6 +42,27 @@ function transformHumeMessage(humeMessage: VoiceContextType['messages'][number],
   };
 }
 
+// Remove VoiceStatus import and define locally
+// type VoiceStatus from @humeai/voice-react
+type VoiceStatus = { value: 'disconnected' | 'connecting' | 'connected'; reason?: never } | { value: 'error'; reason: string };
+
+// Map Hume VoiceStatus to app DialogueContext status
+function fromHumeStatus(status: VoiceStatus): 'connected' | 'connecting' | 'not-started' | 'ended' | 'paused' {
+  if (!status || !status.value) return 'not-started';
+  switch (status.value) {
+    case 'connected':
+      return 'connected';
+    case 'connecting':
+      return 'connecting';
+    case 'disconnected':
+      return 'ended';
+    case 'error':
+      return 'ended';
+    default:
+      return 'not-started';
+  }
+}
+
 // Requires a Hume VoiceProvider to be set up, which is why we need 2 layers
 function InnerDialogueProvider({ children }: { children: ReactNode }) {
   const humeVoice = useHumeVoice();
@@ -74,7 +95,7 @@ function InnerDialogueProvider({ children }: { children: ReactNode }) {
       micFft: humeVoice.micFft,
       isPaused: humeVoice.isPaused,
       togglePause,
-      status: humeVoice.status,
+      status: fromHumeStatus(humeVoice.status),
     }),
     [messages, humeVoice.connect, humeVoice.disconnect, humeVoice.micFft, humeVoice.isPaused, togglePause, humeVoice.status],
   );

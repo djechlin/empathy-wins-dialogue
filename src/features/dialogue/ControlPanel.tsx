@@ -26,77 +26,32 @@ interface VoiceControlPanelProps {
 
 function VoiceControlPanel({ onPauseChange }: VoiceControlPanelProps) {
   const dialogueContext = useDialogue();
-  const { disconnect, connect, status, micFft, isPaused, togglePause } = dialogueContext;
+  const { disconnect, connect, status, micFft, togglePause } = dialogueContext;
 
-  const [isConnecting, setIsConnecting] = useState(false);
-
-  // Stop the connecting state when we actually connect
-  useEffect(() => {
-    if (status.value === 'connected' && isConnecting) {
-      console.log('Connection successful, stopping loading state');
-      setIsConnecting(false);
-    }
-  }, [status.value, isConnecting]);
-
-  const handleStartCall = async () => {
-    setIsConnecting(true);
-    try {
-      console.log('Attempting to connect to voice...', { currentStatus: status.value });
-
-      // Check and request microphone permissions first
-      try {
-        console.log('Requesting microphone permissions...');
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        console.log('Microphone permissions granted');
-        stream.getTracks().forEach((track) => track.stop()); // Stop the test stream
-      } catch (micError) {
-        console.error('Microphone permission denied:', micError);
-        setIsConnecting(false);
-        return;
-      }
-
-      await connect();
-      console.log('Connect promise resolved', { newStatus: status.value });
-      // Don't set isConnecting to false here - let the useEffect handle it based on status
-    } catch (error) {
-      console.error('Failed to connect to voice:', error);
-      setIsConnecting(false);
-    }
-  };
-
-  const handleDisconnect = async () => {
-    disconnect();
-  };
-
-  const handlePauseToggle = () => {
-    const newPausedState = togglePause();
-    onPauseChange?.(newPausedState);
-  };
-
-  if (status.value !== 'connected') {
+  if (status !== 'connected' && status !== 'paused') {
     return (
       <Button
         className={'flex items-center gap-2 bg-dialogue-darkblue hover:bg-dialogue-darkblue/90'}
-        onClick={handleStartCall}
-        disabled={isConnecting}
+        onClick={connect}
+        disabled={status !== 'not-started'}
       >
         <Phone className={'size-4'} strokeWidth={2} stroke={'currentColor'} />
-        <span>{isConnecting ? 'Starting...' : 'Begin Roleplay'}</span>
+        <span>{status == 'connecting' ? 'Starting...' : 'Begin Roleplay'}</span>
       </Button>
     );
   }
 
   return (
     <>
-      <Toggle pressed={isPaused} onPressedChange={handlePauseToggle}>
-        {isPaused ? <Play className={'size-4'} /> : <Pause className={'size-4'} />}
+      <Toggle pressed={status === 'paused'} onPressedChange={() => onPauseChange?.(togglePause())}>
+        {status === 'paused' ? <Play className={'size-4'} /> : <Pause className={'size-4'} />}
       </Toggle>
 
       <div className={'relative grid h-8 w-48 shrink grow-0'}>
         <MicFFT fft={Array.from(micFft)} className={'fill-current'} />
       </div>
 
-      <Button className="flex items-center gap-1" onClick={handleDisconnect} variant="outline">
+      <Button className="flex items-center gap-1" onClick={disconnect} variant="outline">
         <span>
           <Phone className={'size-4 opacity-50'} strokeWidth={2} stroke={'currentColor'} />
         </span>
@@ -123,11 +78,9 @@ export default function ControlPanel({
 }: ControlPanelProps) {
   const { status } = useDialogue();
 
-  // Internal timer state
   const [internalTimeElapsed, setInternalTimeElapsed] = useState(0);
   const [isTimerPaused, setIsTimerPaused] = useState(false);
 
-  // Use external time if provided, otherwise use internal
   const currentTime = timeElapsed || internalTimeElapsed;
 
   useEffect(() => {
@@ -139,7 +92,6 @@ export default function ControlPanel({
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     if (isTimerActive && !isTimerPaused && currentTime < 360) {
-      // 6:00 minutes = 360 seconds
       interval = setInterval(() => {
         const newTime = currentTime + 1;
         setInternalTimeElapsed(newTime);
@@ -151,25 +103,22 @@ export default function ControlPanel({
     };
   }, [isTimerActive, isTimerPaused, currentTime, onTimeChange]);
 
-  const handlePauseChange = (voiceIsPaused: boolean) => {
-    setIsTimerPaused(voiceIsPaused);
-  };
-
   return (
     <div className="flex items-center justify-center">
       <div className={'p-4 bg-card border border-border rounded-lg shadow-sm flex items-center gap-4'}>
-        <VoiceControlPanel onPauseChange={handlePauseChange} />
+        <VoiceControlPanel onPauseChange={(v) => setIsTimerPaused(v)} />
 
-        {status.value === 'connected' && (
-          <div className="flex items-center gap-2">
-            <Clock className="size-4 text-gray-500" />
-            <span className="text-sm font-medium">
-              {currentStepInfo && currentStep
-                ? `${Math.floor(currentStepInfo.timeInStep / 60)}:${(Math.floor(currentStepInfo.timeInStep) % 60).toString().padStart(2, '0')}/${Math.floor(currentStep.duration / 60)}:${(currentStep.duration % 60).toString().padStart(2, '0')}`
-                : `${Math.floor(currentTime / 60)}:${(currentTime % 60).toString().padStart(2, '0')}/6:00`}
-            </span>
-          </div>
-        )}
+        {status === 'connected' ||
+          (status === 'paused' && (
+            <div className="flex items-center gap-2">
+              <Clock className="size-4 text-gray-500" />
+              <span className="text-sm font-medium">
+                {currentStepInfo && currentStep
+                  ? `${Math.floor(currentStepInfo.timeInStep / 60)}:${(Math.floor(currentStepInfo.timeInStep) % 60).toString().padStart(2, '0')}/${Math.floor(currentStep.duration / 60)}:${(currentStep.duration % 60).toString().padStart(2, '0')}`
+                  : `${Math.floor(currentTime / 60)}:${(currentTime % 60).toString().padStart(2, '0')}/6:00`}
+              </span>
+            </div>
+          ))}
       </div>
     </div>
   );

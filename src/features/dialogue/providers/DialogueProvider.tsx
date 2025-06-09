@@ -1,10 +1,9 @@
-import { ReactNode, useMemo, useEffect } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { DeepgramDialogueProvider } from './DeepgramDialogueProvider';
+import { DialogueMessage } from '../types';
 import { HumeDialogueProvider } from './HumeDialogueProvider';
 import { MockDialogueProvider } from './MockDialogueProvider';
-import { DialogueMessage } from '../types';
 
 export type DialogueSource =
   | { type: 'deepgram' }
@@ -74,8 +73,6 @@ export function DialogueProvider(props: DialogueProviderProps) {
           {props.children}
         </HumeDialogueProvider>
       );
-    case 'deepgram':
-      return <DeepgramDialogueProvider className={props.className}>{props.children}</DeepgramDialogueProvider>;
     case 'replay':
       throw new Error('Replay provider not implemented yet');
     default:

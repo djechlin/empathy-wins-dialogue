@@ -47,9 +47,8 @@ export function ReplayProvider({ children, className, messages: initialMessages 
         setIsPaused(newState);
         return newState;
       },
-      status: {
-        value: isConnected ? 'connected' : 'connecting',
-      },
+      status: isConnected ? 'connected' : 'connecting',
+
       connect: async () => {
         setIsConnected(true);
       },

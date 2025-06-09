@@ -9,9 +9,8 @@ export type DialogueMessage = {
 
 export type DialogueContext = {
   messages: DialogueMessage[];
-  isPaused: boolean;
   togglePause: (state?: boolean) => boolean;
-  status: { value: string };
+  status: 'connected' | 'connecting' | 'not-started' | 'ended' | 'paused';
   connect: () => Promise<void>;
   disconnect: () => void;
   micFft: number[];

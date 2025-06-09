@@ -161,9 +161,7 @@ export function MockDialogueProvider({ children, className }: MockDialogueProvid
         setIsPaused(newState);
         return newState;
       },
-      status: {
-        value: isConnected ? 'connected' : 'connecting',
-      },
+      status: isConnected ? 'connected' : 'connecting',
       connect: async () => {
         setIsConnected(true);
       },

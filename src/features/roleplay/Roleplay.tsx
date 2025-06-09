@@ -348,7 +348,7 @@ function RoleplayContent({ showScenarioOnly = false }: { showScenarioOnly?: bool
   const [allStepsFeedback, setAllStepsFeedback] = useState<Record<string, RealtimeFeedback>>({});
   const [isRoleplayEnded, setIsRoleplayEnded] = useState(false);
   const { status } = useDialogue();
-  const isTimerActive = status.value === 'connected';
+  const isTimerActive = status === 'connected' || status === 'paused';
 
   const currentStepInfo = useMemo(() => getCurrentStep(timeElapsed), [timeElapsed]);
   const currentStep = stepConfigs[currentStepInfo.stepIndex];
@@ -357,15 +357,15 @@ function RoleplayContent({ showScenarioOnly = false }: { showScenarioOnly?: bool
 
   // Track when roleplay ends
   useEffect(() => {
-    if (status.value === 'disconnected' && timeElapsed > 0) {
+    if (status === 'ended' && timeElapsed > 0) {
       setIsRoleplayEnded(true);
     }
 
     // Reset when starting a new roleplay
-    if (status.value === 'connected') {
+    if (status === 'connected' || status === 'paused') {
       setIsRoleplayEnded(false);
     }
-  }, [status.value, timeElapsed]);
+  }, [status, timeElapsed]);
 
   // Collect feedback for current step
   useEffect(() => {
