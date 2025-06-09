@@ -1,19 +1,19 @@
 import { ReactNode } from 'react';
-import { MockDialogueProvider } from './MockDialogueProvider';
 import { DeepgramDialogueProvider } from './DeepgramDialogueProvider';
 import { HumeDialogueProvider } from './HumeDialogueProvider';
+import { MockDialogueProvider } from './MockDialogueProvider';
 
-export type DialogueProviderType = 'deepgram' | 'hume' | 'mock';
+export type DialogueSource = 'deepgram' | 'hume' | 'mock';
 interface DialogueProviderProps {
   children: ReactNode;
   className?: string;
-  provider: DialogueProviderType;
+  source: DialogueSource;
 }
 
 export function DialogueProvider(props: DialogueProviderProps) {
-  const { provider, ...otherProps } = props;
+  const { source, ...otherProps } = props;
 
-  switch (provider) {
+  switch (source) {
     case 'mock':
       return <MockDialogueProvider className={props.className}>{props.children}</MockDialogueProvider>;
     case 'hume':
@@ -25,6 +25,6 @@ export function DialogueProvider(props: DialogueProviderProps) {
     case 'deepgram':
       return <DeepgramDialogueProvider className={props.className}>{props.children}</DeepgramDialogueProvider>;
     default:
-      throw new Error(`Unknown dialogue provider: ${provider}`);
+      throw new Error(`Unknown dialogue provider: ${source}`);
   }
 }
