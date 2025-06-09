@@ -71,22 +71,12 @@ function InnerDialogueProvider({ children }: { children: ReactNode }) {
       messages,
       connect: humeVoice.connect,
       disconnect: humeVoice.disconnect,
-      isMuted: humeVoice.isMuted,
       micFft: humeVoice.micFft,
       isPaused: humeVoice.isPaused,
       togglePause,
       status: humeVoice.status,
     }),
-    [
-      messages,
-      humeVoice.connect,
-      humeVoice.disconnect,
-      humeVoice.micFft,
-      humeVoice.isMuted,
-      humeVoice.isPaused,
-      togglePause,
-      humeVoice.status,
-    ],
+    [messages, humeVoice.connect, humeVoice.disconnect, humeVoice.micFft, humeVoice.isPaused, togglePause, humeVoice.status],
   );
 
   return <DialogueContextObject.Provider value={dialogueContext}>{children}</DialogueContextObject.Provider>;

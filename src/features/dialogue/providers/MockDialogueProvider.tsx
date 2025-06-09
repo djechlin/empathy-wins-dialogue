@@ -151,7 +151,6 @@ export function MockDialogueProvider({ children, className }: MockDialogueProvid
   }, [messages]);
 
   const [isPaused, setIsPaused] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
 
   const mockContext: DialogueContext = useMemo(
     () => ({
@@ -171,14 +170,11 @@ export function MockDialogueProvider({ children, className }: MockDialogueProvid
       disconnect: () => {
         setIsConnected(false);
       },
-      isMuted,
-      mute: () => setIsMuted(true),
-      unmute: () => setIsMuted(false),
       micFft: Array(32)
         .fill(0)
         .map(() => Math.random() * 0.5),
     }),
-    [messages, isConnected, isPaused, isMuted],
+    [messages, isConnected, isPaused],
   );
 
   return (

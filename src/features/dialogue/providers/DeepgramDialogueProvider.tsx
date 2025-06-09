@@ -158,7 +158,7 @@ function DeepgramDialogueProviderInner({ children, className }: DeepgramDialogue
 
     // Set up microphone first
     if (microphoneState === MicrophoneState.NotSetup) {
-      await setupMicrophone();
+      setupMicrophone();
     }
 
     // Start microphone - the Deepgram connection is already established
@@ -177,11 +177,6 @@ function DeepgramDialogueProviderInner({ children, className }: DeepgramDialogue
     setStatus({ value: 'disconnected' });
   }, [stopMicrophone]);
 
-  // For now, mute == pause as per your goal
-  const isMuted = isPaused;
-  const mute = useCallback(() => togglePause(true), [togglePause]);
-  const unmute = useCallback(() => togglePause(false), [togglePause]);
-
   const dialogueContext: DialogueContext = useMemo(
     () => ({
       messages,
@@ -190,12 +185,9 @@ function DeepgramDialogueProviderInner({ children, className }: DeepgramDialogue
       status,
       connect,
       disconnect,
-      isMuted,
-      mute,
-      unmute,
       micFft,
     }),
-    [messages, isPaused, togglePause, status, connect, disconnect, isMuted, mute, unmute, micFft],
+    [messages, isPaused, togglePause, status, connect, disconnect, micFft],
   );
 
   if (error) {

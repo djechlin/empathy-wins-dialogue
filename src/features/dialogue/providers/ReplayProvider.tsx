@@ -14,7 +14,6 @@ export function ReplayProvider({ children, className, messages: initialMessages 
   const [messages, setMessages] = useState<DialogueMessage[]>([]);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
     // Simulate connection after a short delay
@@ -57,14 +56,11 @@ export function ReplayProvider({ children, className, messages: initialMessages 
       disconnect: () => {
         setIsConnected(false);
       },
-      isMuted,
-      mute: () => setIsMuted(true),
-      unmute: () => setIsMuted(false),
       micFft: Array(32)
         .fill(0)
         .map(() => Math.random() * 0.5),
     }),
-    [displayedMessages, isConnected, isPaused, isMuted],
+    [displayedMessages, isConnected, isPaused],
   );
 
   return (

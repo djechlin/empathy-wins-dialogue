@@ -14,6 +14,5 @@ export type DialogueContext = {
   status: { value: string };
   connect: () => Promise<void>;
   disconnect: () => void;
-  isMuted: boolean;
   micFft: number[];
 };
