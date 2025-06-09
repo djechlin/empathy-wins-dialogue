@@ -482,7 +482,6 @@ function RoleplayContent({ showScenarioOnly = false }: { showScenarioOnly?: bool
 export function Roleplay({ showScenarioOnly = false }: { showScenarioOnly?: boolean }) {
   return (
     <DialogueProvider
-      source="hume"
       className={`flex flex-col w-full ${showScenarioOnly ? 'h-fit' : 'min-h-[800px] h-fit'} bg-white rounded-lg overflow-hidden`}
     >
       <RoleplayContent showScenarioOnly={showScenarioOnly} />

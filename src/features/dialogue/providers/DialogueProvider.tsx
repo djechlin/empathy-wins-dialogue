@@ -1,4 +1,5 @@
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { DeepgramDialogueProvider } from './DeepgramDialogueProvider';
 import { HumeDialogueProvider } from './HumeDialogueProvider';
 import { MockDialogueProvider } from './MockDialogueProvider';
@@ -14,11 +15,41 @@ export type DialogueSource =
 interface DialogueProviderProps {
   children: ReactNode;
   className?: string;
-  source: DialogueSource;
 }
 
 export function DialogueProvider(props: DialogueProviderProps) {
-  const { source, ...otherProps } = props;
+  const [searchParams] = useSearchParams();
+
+  const source = useMemo((): DialogueSource => {
+    const sourceType = searchParams.get('source');
+
+    switch (sourceType) {
+      case 'hume': {
+        const configId = searchParams.get('source.configId');
+        return {
+          type: 'hume',
+          configId: configId || '3f136570-42d4-4afd-b319-866e2fd76474', // fallback to default
+        };
+      }
+      case 'deepgram':
+        return { type: 'deepgram' };
+      case 'mock':
+        return { type: 'mock' };
+      case 'replay': {
+        return { type: 'replay', transcript: [] };
+      }
+      case 'text-to-ai':
+        return { type: 'text-to-ai' };
+      default:
+        // Default to hume with default config
+        return {
+          type: 'hume',
+          configId: '3f136570-42d4-4afd-b319-866e2fd76474',
+        };
+    }
+  }, [searchParams]);
+
+  const { ...otherProps } = props;
 
   switch (source.type) {
     case 'mock':
