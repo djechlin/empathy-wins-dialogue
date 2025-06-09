@@ -6,6 +6,7 @@ import { DialogueContextObject } from './dialogueContext';
 
 interface HumeDialogueProviderProps {
   children: ReactNode;
+  configId: string;
   onToolCall?: ToolCallHandler;
 }
 
@@ -91,11 +92,9 @@ function InnerDialogueProvider({ children }: { children: ReactNode }) {
   return <DialogueContextObject.Provider value={dialogueContext}>{children}</DialogueContextObject.Provider>;
 }
 
-export function HumeDialogueProvider({ children, onToolCall, ...otherProps }: HumeDialogueProviderProps) {
+export function HumeDialogueProvider({ children, configId, onToolCall, ...otherProps }: HumeDialogueProviderProps) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const configId = '3f136570-42d4-4afd-b319-866e2fd76474';
 
   useEffect(() => {
     async function getToken() {
