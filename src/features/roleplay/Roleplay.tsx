@@ -1,14 +1,14 @@
-import { ControlPanel, ConversationReport, ScoreCard } from '../dialogue';
-import { useRef, useState, useEffect, useMemo } from 'react';
+import { FeedbackItem, RealtimeFeedback } from '@/edge/generateRealtimeReport';
+import { DialogueProvider, useDialogue } from '@/features/dialogue';
+import { useRealtimeFeedback } from '@/features/dialogue/hooks/useRealtimeReport';
+import { expressionLabels } from '@/lib/expressionLabels';
+import { cn } from '@/lib/utils';
 import type { ChallengeStep, FeedbackId } from '@/types';
-import { useDialogue, DialogueProvider } from '@/features/dialogue';
 import { ConversationReport as ReportType } from '@/types/conversationReport';
 import { Button } from '@/ui/button';
-import { MessageCircle, Check, X, Info, Map, SquareUserRound } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { expressionLabels } from '@/lib/expressionLabels';
-import { useRealtimeFeedback } from '@/features/dialogue/hooks/useRealtimeReport';
-import { RealtimeFeedback, FeedbackItem } from '@/edge/generateRealtimeReport';
+import { Check, Info, Map, MessageCircle, SquareUserRound, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ControlPanel, ConversationReport, ScoreCard } from '../dialogue';
 
 interface BehaviorCardConfig {
   id: string;
@@ -340,7 +340,7 @@ const VoterCard = () => {
   );
 };
 
-function ChallengeWorkspaceContent({ showScenarioOnly = false }: { showScenarioOnly?: boolean }) {
+function RoleplayContent({ showScenarioOnly = false }: { showScenarioOnly?: boolean }) {
   const [report, setReport] = useState<ReportType | null>(null);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [receivedFeedbackKeys, setReceivedFeedbackKeys] = useState<Set<string>>(new Set());
@@ -485,7 +485,7 @@ export function Roleplay({ showScenarioOnly = false }: { showScenarioOnly?: bool
       provider="hume"
       className={`flex flex-col w-full ${showScenarioOnly ? 'h-fit' : 'min-h-[800px] h-fit'} bg-white rounded-lg overflow-hidden`}
     >
-      <ChallengeWorkspaceContent showScenarioOnly={showScenarioOnly} />
+      <RoleplayContent showScenarioOnly={showScenarioOnly} />
     </DialogueProvider>
   );
 }

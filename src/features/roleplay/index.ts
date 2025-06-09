@@ -1,1 +1,1 @@
-export { Roleplay as ChallengeWorkspace } from './Roleplay';
+export { Roleplay } from './Roleplay';

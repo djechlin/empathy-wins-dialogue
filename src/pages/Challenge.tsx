@@ -1,7 +1,7 @@
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import { ConversationReport } from '@/features/dialogue';
-import { ChallengeWorkspace } from '@/features/roleplay';
+import { Roleplay } from '@/features/roleplay/Roleplay';
 import { sampleReport } from '@/lib/report';
 import { Button } from '@/ui/button';
 import SliderCard from '@/ui/slider-card';
@@ -70,7 +70,7 @@ const ChallengePage = () => {
                         <h3 className="text-2xl font-bold text-dialogue-darkblue font-sans">Challenge Scenario</h3>
                       </div>
                     </div>
-                    <ChallengeWorkspace showScenarioOnly={true} />
+                    <Roleplay showScenarioOnly={true} />
                   </div>
 
                   <div className="bg-white rounded-lg shadow-lg p-6">
@@ -80,7 +80,7 @@ const ChallengePage = () => {
                         <h3 className="text-2xl font-bold text-dialogue-darkblue font-sans">Roleplay</h3>
                       </div>
                     </div>
-                    <ChallengeWorkspace showScenarioOnly={false} />
+                    <Roleplay showScenarioOnly={false} />
                   </div>
                 </>
               ) : (
