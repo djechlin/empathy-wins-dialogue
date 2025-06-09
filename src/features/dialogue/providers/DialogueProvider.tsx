@@ -1,5 +1,6 @@
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import { DeepgramDialogueProvider } from './DeepgramDialogueProvider';
 import { HumeDialogueProvider } from './HumeDialogueProvider';
 import { MockDialogueProvider } from './MockDialogueProvider';
@@ -20,34 +21,47 @@ interface DialogueProviderProps {
 export function DialogueProvider(props: DialogueProviderProps) {
   const [searchParams] = useSearchParams();
 
-  const source = useMemo((): DialogueSource => {
+  const { source, isFromQuery } = useMemo(() => {
     const sourceType = searchParams.get('source');
+    const isFromQuery = !!sourceType;
 
     switch (sourceType) {
       case 'hume': {
         const configId = searchParams.get('source.configId');
         return {
-          type: 'hume',
-          configId: configId || '3f136570-42d4-4afd-b319-866e2fd76474', // fallback to default
+          source: {
+            type: 'hume',
+            configId: configId || '3f136570-42d4-4afd-b319-866e2fd76474', // fallback to default
+          },
+          isFromQuery,
         };
       }
       case 'deepgram':
-        return { type: 'deepgram' };
+        return { source: { type: 'deepgram' }, isFromQuery };
       case 'mock':
-        return { type: 'mock' };
+        return { source: { type: 'mock' }, isFromQuery };
       case 'replay': {
-        return { type: 'replay', transcript: [] };
+        return { source: { type: 'replay', transcript: [] }, isFromQuery };
       }
       case 'text-to-ai':
-        return { type: 'text-to-ai' };
+        return { source: { type: 'text-to-ai' }, isFromQuery };
       default:
         // Default to hume with default config
         return {
-          type: 'hume',
-          configId: '3f136570-42d4-4afd-b319-866e2fd76474',
+          source: {
+            type: 'hume',
+            configId: '3f136570-42d4-4afd-b319-866e2fd76474',
+          },
+          isFromQuery: false,
         };
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (isFromQuery) {
+      toast(`Using source: ${JSON.stringify(source)}`);
+    }
+  }, [isFromQuery, source]);
 
   const { ...otherProps } = props;
 
