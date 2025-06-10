@@ -1,6 +1,6 @@
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
-import { ConversationReport } from '@/features/dialogue';
+import ConversationReportCard from '@/features/roleplay/ConversationReportCard';
 import { Roleplay } from '@/features/roleplay/Roleplay';
 import { sampleReport } from '@/lib/report';
 import { Button } from '@/ui/button';
@@ -91,7 +91,7 @@ const ChallengePage = () => {
                       Back to Challenge
                     </Button>
                   </div>
-                  <ConversationReport report={sampleReport} />
+                  <ConversationReportCard report={sampleReport} />
                 </div>
               )}
               <SliderCard

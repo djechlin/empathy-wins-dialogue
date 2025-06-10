@@ -2,7 +2,7 @@ import { Button } from '@/ui/button';
 import MicFFT from '@/ui/MicFFT';
 import { Toggle } from '@/ui/toggle';
 import { Clock, Pause, Phone, Play } from 'lucide-react';
-import { useDialogue } from './hooks/useDialogue';
+import { useDialogue } from '@/features/dialogue/hooks/useDialogue';
 
 interface StepInfo {
   stepIndex: number;

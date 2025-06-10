@@ -1,4 +1,4 @@
-import { CategoryScore, KeyMoment, ConversationReport as ReportType } from '@/types/conversationReport';
+import { CategoryScore, KeyMoment, ConversationReport as ReportType } from '@/types/ConversationReport';
 import { Badge } from '@/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import * as Icons from 'lucide-react';
@@ -49,7 +49,7 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
   );
 };
 
-const ConversationReport = ({ report }: ConversationReportProps) => {
+const ConversationReportCard = ({ report }: ConversationReportProps) => {
   const getScoreColor = (score: number) => {
     if (score >= 4) return 'text-green-600';
     if (score >= 1) return 'text-yellow-600';
@@ -202,4 +202,4 @@ const ConversationReport = ({ report }: ConversationReportProps) => {
   );
 };
 
-export default ConversationReport;
+export default ConversationReportCard;

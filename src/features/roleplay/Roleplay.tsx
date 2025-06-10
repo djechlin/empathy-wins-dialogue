@@ -4,11 +4,13 @@ import { useRealtimeFeedback } from '@/features/dialogue/hooks/useRealtimeReport
 import { expressionLabels } from '@/lib/expressionLabels';
 import { cn } from '@/lib/utils';
 import type { ChallengeStep, FeedbackId } from '@/types';
-import { ConversationReport as ReportType } from '@/types/conversationReport';
+import { ConversationReport } from '@/types/ConversationReport';
 import { Button } from '@/ui/button';
 import { Check, Info, Map, MessageCircle, SquareUserRound, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ControlPanel, ConversationReport, ScoreCard } from '../dialogue';
+import ControlPanel from './ControlPanel';
+import ConversationReportCard from './ConversationReportCard';
+import ScoreCard from './ScoreCard';
 
 interface BehaviorCardConfig {
   id: string;
@@ -341,9 +343,9 @@ const VoterCard = () => {
 };
 
 function RoleplayContent({ showScenarioOnly = false }: { showScenarioOnly?: boolean }) {
-  const [report, setReport] = useState<ReportType | null>(null);
+  const [report, setReport] = useState<ConversationReport | null>(null);
   const [receivedFeedbackKeys, setReceivedFeedbackKeys] = useState<Set<string>>(new Set());
-  const [activatedFeedback, setActivatedFeedback] = useState<Set<import('@/types').FeedbackId>>(new Set());
+  const [activatedFeedback, setActivatedFeedback] = useState<Set<FeedbackId>>(new Set());
   const [allStepsFeedback, setAllStepsFeedback] = useState<Record<string, RealtimeFeedback>>({});
   const [isRoleplayEnded, setIsRoleplayEnded] = useState(false);
   const { status, timeElapsed } = useDialogue();
@@ -393,10 +395,10 @@ function RoleplayContent({ showScenarioOnly = false }: { showScenarioOnly?: bool
     if (Object.keys(newFeedback).length > 0) {
       setReceivedFeedbackKeys((prev) => new Set([...prev, ...newKeys]));
 
-      const newActivatedFeedback = new Set<import('@/types').FeedbackId>();
+      const newActivatedFeedback = new Set<FeedbackId>();
       Object.entries(realtimeFeedback).forEach(([key, value]) => {
         if (value.type === 'positive') {
-          newActivatedFeedback.add(key as import('@/types').FeedbackId);
+          newActivatedFeedback.add(key as FeedbackId);
         }
       });
 
@@ -418,7 +420,7 @@ function RoleplayContent({ showScenarioOnly = false }: { showScenarioOnly?: bool
           </Button>
         </div>
         <div className="flex-1 overflow-y-auto p-4">
-          <ConversationReport report={report} />
+          <ConversationReportCard report={report} />
         </div>
       </div>
     );
