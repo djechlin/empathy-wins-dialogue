@@ -342,13 +342,11 @@ const VoterCard = () => {
 
 function RoleplayContent({ showScenarioOnly = false }: { showScenarioOnly?: boolean }) {
   const [report, setReport] = useState<ReportType | null>(null);
-  const [timeElapsed, setTimeElapsed] = useState(0);
   const [receivedFeedbackKeys, setReceivedFeedbackKeys] = useState<Set<string>>(new Set());
   const [activatedFeedback, setActivatedFeedback] = useState<Set<import('@/types').FeedbackId>>(new Set());
   const [allStepsFeedback, setAllStepsFeedback] = useState<Record<string, RealtimeFeedback>>({});
   const [isRoleplayEnded, setIsRoleplayEnded] = useState(false);
-  const { status } = useDialogue();
-  const isTimerActive = status === 'connected' || status === 'paused';
+  const { status, timeElapsed } = useDialogue();
 
   const currentStepInfo = useMemo(() => getCurrentStep(timeElapsed), [timeElapsed]);
   const currentStep = stepConfigs[currentStepInfo.stepIndex];
@@ -437,7 +435,7 @@ function RoleplayContent({ showScenarioOnly = false }: { showScenarioOnly?: bool
 
   return (
     <div className="flex flex-col h-full">
-      {isTimerActive && (
+      {(status === 'connected' || status === 'paused') && (
         <div className="bg-white border-b p-4">
           <div className="text-center space-y-1">
             <div className="flex items-center justify-center gap-2">
@@ -468,9 +466,6 @@ function RoleplayContent({ showScenarioOnly = false }: { showScenarioOnly?: bool
 
       <div className="border-t bg-white p-4 text-center">
         <ControlPanel
-          isTimerActive={isTimerActive}
-          timeElapsed={timeElapsed}
-          onTimeChange={setTimeElapsed}
           currentStepInfo={currentStepInfo}
           currentStep={currentStep}
         />

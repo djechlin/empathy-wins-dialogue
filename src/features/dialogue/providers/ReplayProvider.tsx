@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { useStopwatch } from 'react-timer-hook';
 import { DialogueContext, DialogueMessage } from '../types';
-import { DialogueContextObject } from './dialogueContext';
+import { DialogueContextObject } from './DialogueContextObject';
 
 interface ReplayProviderProps {
   children: ReactNode;
@@ -13,7 +14,7 @@ export function ReplayProvider({ children, className, messages: initialMessages 
   const [isConnected, setIsConnected] = useState(false);
   const [messages, setMessages] = useState<DialogueMessage[]>([]);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  const { seconds: secondsElapsed, pause, start, isRunning } = useStopwatch({ autoStart: false });
 
   useEffect(() => {
     // Simulate connection after a short delay
@@ -26,7 +27,7 @@ export function ReplayProvider({ children, className, messages: initialMessages 
   }, [initialMessages]);
 
   useEffect(() => {
-    if (!isConnected || isPaused || currentMessageIndex >= messages.length) return;
+    if (!isConnected || !isRunning || currentMessageIndex >= messages.length) return;
 
     const delay = 2000 / playbackSpeed; // Base delay of 2 seconds between messages
     const timer = setTimeout(() => {
@@ -34,32 +35,38 @@ export function ReplayProvider({ children, className, messages: initialMessages 
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [isConnected, isPaused, currentMessageIndex, messages.length, playbackSpeed]);
+  }, [isConnected, isRunning, currentMessageIndex, messages.length, playbackSpeed]);
 
   const displayedMessages = messages.slice(0, currentMessageIndex + 1);
 
   const replayContext: DialogueContext = useMemo(
     () => ({
       messages: displayedMessages,
-      isPaused,
+      isPaused: !isRunning,
       togglePause: (state?: boolean) => {
-        const newState = state !== undefined ? state : !isPaused;
-        setIsPaused(newState);
+        const newState = state !== undefined ? state : isRunning;
+        if (newState) {
+          pause();
+        } else {
+          start();
+        }
         return newState;
       },
       status: isConnected ? 'connected' : 'connecting',
-
       connect: async () => {
         setIsConnected(true);
+        start();
       },
       disconnect: () => {
         setIsConnected(false);
+        pause();
       },
       micFft: Array(32)
         .fill(0)
         .map(() => Math.random() * 0.5),
+      timeElapsed: secondsElapsed,
     }),
-    [displayedMessages, isConnected, isPaused],
+    [displayedMessages, isConnected, isRunning, pause, start, secondsElapsed],
   );
 
   return (

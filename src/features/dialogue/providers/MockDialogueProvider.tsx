@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { useStopwatch } from 'react-timer-hook';
 import { DialogueContext, DialogueMessage } from '../types';
-import { DialogueContextObject } from './dialogueContext';
+import { DialogueContextObject } from './DialogueContextObject';
 
 interface MockDialogueProviderProps {
   children: ReactNode;
@@ -139,6 +140,7 @@ const MOCK_MESSAGES: DialogueMessage[] = [
 export function MockDialogueProvider({ children, className }: MockDialogueProviderProps) {
   const [isConnected, setIsConnected] = useState(false);
   const [messages, setMessages] = useState<DialogueMessage[]>([]);
+  const { seconds: secondsElapsed, pause, start, isRunning } = useStopwatch({ autoStart: false });
 
   useEffect(() => {
     // Simulate connection after a short delay
@@ -150,29 +152,34 @@ export function MockDialogueProvider({ children, className }: MockDialogueProvid
     return () => clearTimeout(timer);
   }, [messages]);
 
-  const [isPaused, setIsPaused] = useState(false);
-
   const mockContext: DialogueContext = useMemo(
     () => ({
       messages,
-      isPaused,
+      isPaused: !isRunning,
       togglePause: (state?: boolean) => {
-        const newState = state !== undefined ? state : !isPaused;
-        setIsPaused(newState);
+        const newState = state !== undefined ? state : isRunning;
+        if (newState) {
+          pause();
+        } else {
+          start();
+        }
         return newState;
       },
       status: isConnected ? 'connected' : 'connecting',
       connect: async () => {
         setIsConnected(true);
+        start();
       },
       disconnect: () => {
         setIsConnected(false);
+        pause();
       },
       micFft: Array(32)
         .fill(0)
         .map(() => Math.random() * 0.5),
+      timeElapsed: secondsElapsed,
     }),
-    [messages, isConnected, isPaused],
+    [messages, isConnected, isRunning, pause, start, secondsElapsed],
   );
 
   return (

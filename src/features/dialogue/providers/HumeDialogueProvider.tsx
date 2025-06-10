@@ -1,8 +1,9 @@
 import { getHumeAccessToken } from '@/edge/getHumeAccessToken';
 import { ToolCallHandler, useVoice as useHumeVoice, VoiceContextType, VoiceProvider } from '@humeai/voice-react';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { useStopwatch } from 'react-timer-hook';
 import { DialogueContext, DialogueMessage } from '../types';
-import { DialogueContextObject } from './dialogueContext';
+import { DialogueContextObject } from './DialogueContextObject';
 
 interface HumeDialogueProviderProps {
   children: ReactNode;
@@ -66,6 +67,17 @@ function fromHumeStatus(status: VoiceStatus): 'connected' | 'connecting' | 'not-
 // Requires a Hume VoiceProvider to be set up, which is why we need 2 layers
 function InnerDialogueProvider({ children }: { children: ReactNode }) {
   const humeVoice = useHumeVoice();
+  const { seconds: secondsElapsed, pause, start, isRunning } = useStopwatch({ autoStart: false });
+
+  const connect = useCallback(async () => {
+    await humeVoice.connect();
+    start();
+  }, [humeVoice, start]);
+
+  const disconnect = useCallback(() => {
+    humeVoice.disconnect();
+    pause();
+  }, [humeVoice, pause]);
 
   const messages: DialogueMessage[] = useMemo(
     () => humeVoice.messages.map((msg, index) => transformHumeMessage(msg, index)).filter((msg): msg is DialogueMessage => msg !== null),
@@ -74,30 +86,33 @@ function InnerDialogueProvider({ children }: { children: ReactNode }) {
 
   const togglePause = useCallback(
     (state?: boolean) => {
-      const targetState = state !== undefined ? state : !humeVoice.isPaused;
+      const targetState = state !== undefined ? state : isRunning;
       if (targetState) {
         humeVoice.pauseAssistant();
         humeVoice.mute();
+        pause();
       } else {
         humeVoice.resumeAssistant();
         humeVoice.unmute();
+        start();
       }
       return targetState;
     },
-    [humeVoice],
+    [humeVoice, isRunning, pause, start],
   );
 
   const dialogueContext: DialogueContext = useMemo(
     () => ({
       messages,
-      connect: humeVoice.connect,
-      disconnect: humeVoice.disconnect,
+      connect,
+      disconnect,
       micFft: humeVoice.micFft,
-      isPaused: humeVoice.isPaused,
+      isPaused: !isRunning,
       togglePause,
       status: fromHumeStatus(humeVoice.status),
+      timeElapsed: secondsElapsed,
     }),
-    [messages, humeVoice.connect, humeVoice.disconnect, humeVoice.micFft, humeVoice.isPaused, togglePause, humeVoice.status],
+    [messages, connect, disconnect, humeVoice.micFft, isRunning, togglePause, humeVoice.status, secondsElapsed],
   );
 
   return <DialogueContextObject.Provider value={dialogueContext}>{children}</DialogueContextObject.Provider>;

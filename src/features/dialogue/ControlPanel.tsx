@@ -2,7 +2,6 @@ import { Button } from '@/ui/button';
 import MicFFT from '@/ui/MicFFT';
 import { Toggle } from '@/ui/toggle';
 import { Clock, Pause, Phone, Play } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { useDialogue } from './hooks/useDialogue';
 
 interface StepInfo {
@@ -20,11 +19,7 @@ interface StepConfig {
   subtitle: string;
 }
 
-interface VoiceControlPanelProps {
-  onPauseChange?: (isPaused: boolean) => void;
-}
-
-function VoiceControlPanel({ onPauseChange }: VoiceControlPanelProps) {
+function VoiceControlPanel() {
   const dialogueContext = useDialogue();
   const { disconnect, connect, status, micFft, togglePause } = dialogueContext;
 
@@ -43,7 +38,7 @@ function VoiceControlPanel({ onPauseChange }: VoiceControlPanelProps) {
 
   return (
     <>
-      <Toggle pressed={status === 'paused'} onPressedChange={() => onPauseChange?.(togglePause())}>
+      <Toggle pressed={status === 'paused'} onPressedChange={() => togglePause()}>
         {status === 'paused' ? <Play className={'size-4'} /> : <Pause className={'size-4'} />}
       </Toggle>
 
@@ -62,63 +57,31 @@ function VoiceControlPanel({ onPauseChange }: VoiceControlPanelProps) {
 }
 
 interface ControlPanelProps {
-  isTimerActive?: boolean;
-  timeElapsed?: number;
-  onTimeChange?: (timeElapsed: number) => void;
   currentStepInfo?: StepInfo;
   currentStep?: StepConfig;
 }
 
 export default function ControlPanel({
-  isTimerActive = false,
-  timeElapsed = 0,
-  onTimeChange,
   currentStepInfo,
   currentStep,
 }: ControlPanelProps) {
-  const { status } = useDialogue();
-
-  const [internalTimeElapsed, setInternalTimeElapsed] = useState(0);
-  const [isTimerPaused, setIsTimerPaused] = useState(false);
-
-  const currentTime = timeElapsed || internalTimeElapsed;
-
-  useEffect(() => {
-    if (!isTimerActive) {
-      setInternalTimeElapsed(0);
-    }
-  }, [isTimerActive]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    if (isTimerActive && !isTimerPaused && currentTime < 360) {
-      interval = setInterval(() => {
-        const newTime = currentTime + 1;
-        setInternalTimeElapsed(newTime);
-        onTimeChange?.(newTime);
-      }, 1000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isTimerActive, isTimerPaused, currentTime, onTimeChange]);
+  const { status, timeElapsed } = useDialogue();
 
   return (
     <div className="flex items-center justify-center">
       <div className={'p-4 bg-card border border-border rounded-lg shadow-sm flex items-center gap-4'}>
-        <VoiceControlPanel onPauseChange={(v) => setIsTimerPaused(v)} />
+        <VoiceControlPanel />
 
-        {status === 'connected' ||
-          (status === 'paused' && (
-            <div className="flex items-center gap-2">
-              <Clock className="size-4 text-gray-500" />
-              <span className="text-sm font-medium">
-                {currentStepInfo && currentStep
-                  ? `${Math.floor(currentStepInfo.timeInStep / 60)}:${(Math.floor(currentStepInfo.timeInStep) % 60).toString().padStart(2, '0')}/${Math.floor(currentStep.duration / 60)}:${(currentStep.duration % 60).toString().padStart(2, '0')}`
-                  : `${Math.floor(currentTime / 60)}:${(currentTime % 60).toString().padStart(2, '0')}/6:00`}
-              </span>
-            </div>
-          ))}
+        {(status === 'connected' || status === 'paused') && (
+          <div className="flex items-center gap-2">
+            <Clock className="size-4 text-gray-500" />
+            <span className="text-sm font-medium">
+              {currentStepInfo && currentStep
+                ? `${Math.floor(currentStepInfo.timeInStep / 60)}:${(Math.floor(currentStepInfo.timeInStep) % 60).toString().padStart(2, '0')}/${Math.floor(currentStep.duration / 60)}:${(currentStep.duration % 60).toString().padStart(2, '0')}`
+                : `${Math.floor(timeElapsed / 60)}:${(timeElapsed % 60).toString().padStart(2, '0')}/6:00`}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

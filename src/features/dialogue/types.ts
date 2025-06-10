@@ -14,4 +14,6 @@ export type DialogueContext = {
   connect: () => Promise<void>;
   disconnect: () => void;
   micFft: number[];
+  timeElapsed: number;
+  isPaused: boolean;
 };
