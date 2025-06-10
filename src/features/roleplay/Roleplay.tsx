@@ -465,10 +465,7 @@ function RoleplayContent({ showScenarioOnly = false }: { showScenarioOnly?: bool
       </div>
 
       <div className="border-t bg-white p-4 text-center">
-        <ControlPanel
-          currentStepInfo={currentStepInfo}
-          currentStep={currentStep}
-        />
+        <ControlPanel currentStepInfo={currentStepInfo} currentStep={currentStep} />
       </div>
     </div>
   );

@@ -61,10 +61,7 @@ interface ControlPanelProps {
   currentStep?: StepConfig;
 }
 
-export default function ControlPanel({
-  currentStepInfo,
-  currentStep,
-}: ControlPanelProps) {
+export default function ControlPanel({ currentStepInfo, currentStep }: ControlPanelProps) {
   const { status, timeElapsed } = useDialogue();
 
   return (
