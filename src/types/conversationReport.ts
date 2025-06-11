@@ -1,3 +1,4 @@
+
 export interface ConversationReport {
   baseScore: number; // 1-10 (starting score)
   currentScore: number; // 1-10 (current score after conversation)
