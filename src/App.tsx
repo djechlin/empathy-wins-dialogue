@@ -15,6 +15,9 @@ import Index from './pages/Index';
 import Learn from './pages/Learn';
 import LearnChapter from './pages/LearnChapter';
 import NotFound from './pages/NotFound';
+import Preparation from './pages/Preparation';
+import Report from './pages/Report';
+import Roleplay from './pages/Roleplay';
 import StartingOut from './pages/StartingOut';
 
 const queryClient = new QueryClient();
@@ -37,7 +40,11 @@ const App = () => (
             <Route path="/blog/swing-voters" element={<SwingVoters />} />
             <Route path="/blog/turning-out-the-base" element={<TurningOutTheBase />} />
             <Route path="/challenge" element={<ChallengePage />} />
+            <Route path="/preparation" element={<Preparation />} />
+            <Route path="/report" element={<Report />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/roleplay" element={<Roleplay />} />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
