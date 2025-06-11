@@ -1,6 +1,8 @@
+
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select';
 import { ArrowRight, Heart, RotateCcw, Users } from 'lucide-react';
 import { useState } from 'react';
@@ -9,27 +11,23 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 const Preparation = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const issue = searchParams.get('issue') || 'insulin';
+  const defaultIssue = searchParams.get('issue') || 'insulin';
 
+  const [selectedIssue, setSelectedIssue] = useState(defaultIssue);
   const [personType, setPersonType] = useState('');
   const [eventType, setEventType] = useState('');
   const [selectedFeeling, setSelectedFeeling] = useState('');
 
   const issueDetails = {
     insulin: {
-      title: 'Lower Insulin Prices',
-      plainLanguage: 'see a doctor, get medicine, pay for prescriptions',
-      politicalLanguage: 'access healthcare, pharmaceutical costs, medical intervention',
+      title: 'Healthcare - Insulin Affordability',
+      plainLanguage: 'affordable insulin for people with diabetes',
+      organization: 'Diabetes Advocates',
     },
-    healthcare: {
-      title: 'Expand Healthcare Access',
-      plainLanguage: 'see a doctor, get help when sick, find a clinic nearby',
-      politicalLanguage: 'healthcare accessibility, medical infrastructure, care delivery',
-    },
-    education: {
-      title: 'Education Funding',
-      plainLanguage: 'help kids learn, better schools, more teachers',
-      politicalLanguage: 'educational investment, academic infrastructure, resource allocation',
+    climate: {
+      title: 'Climate - Wildfire Management',
+      plainLanguage: 'protecting our communities from wildfires',
+      organization: 'Safe Climate Advocates',
     },
   };
 
@@ -39,10 +37,10 @@ const Preparation = () => {
 
   const emotionOptions = ['relieved', 'scared', 'comforted', 'loved', 'happy', 'glad', 'grateful'];
 
-  const currentIssue = issueDetails[issue as keyof typeof issueDetails];
+  const currentIssue = issueDetails[selectedIssue as keyof typeof issueDetails];
 
   const handleStartRoleplay = () => {
-    navigate(`/roleplay?issue=${issue}&person=${personType}&event=${encodeURIComponent(eventType)}&feeling=${selectedFeeling}`);
+    navigate(`/roleplay?issue=${selectedIssue}&person=${personType}&event=${encodeURIComponent(eventType)}&feeling=${selectedFeeling}`);
   };
 
   const canProceed = () => {
@@ -53,9 +51,45 @@ const Preparation = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Conversation Strategy: {currentIssue.title}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Conversation Strategy</h1>
           <p className="text-gray-600">Your roadmap for persuasive conversation</p>
         </div>
+
+        {/* Issue Selection */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Step 1: Frame the Issue</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <Label className="text-base font-medium mb-4 block">Choose your issue:</Label>
+              <RadioGroup value={selectedIssue} onValueChange={setSelectedIssue} className="space-y-3">
+                <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                  <RadioGroupItem value="insulin" id="insulin" />
+                  <Label htmlFor="insulin" className="flex-1 cursor-pointer">
+                    <div className="font-medium">Healthcare - Insulin Affordability</div>
+                    <div className="text-sm text-gray-600">Help families afford life-saving diabetes medication</div>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                  <RadioGroupItem value="climate" id="climate" />
+                  <Label htmlFor="climate" className="flex-1 cursor-pointer">
+                    <div className="font-medium">Climate - Wildfire Management</div>
+                    <div className="text-sm text-gray-600">Protect communities from increasing wildfire risks</div>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Script Preview */}
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h4 className="font-medium text-blue-900 mb-2">Your opening line:</h4>
+              <p className="text-blue-800 italic text-lg">
+                "My name is [your name], I'm here with {currentIssue.organization} to talk about {currentIssue.plainLanguage}."
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Visual Flow */}
         <Card className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
@@ -125,15 +159,6 @@ const Preparation = () => {
 
         {/* Key Phrases */}
         <div className="space-y-4 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="font-semibold text-gray-900 mb-2">🎯 Your Framing:</h3>
-              <p className="text-lg text-gray-700 italic">
-                "Let's talk about {currentIssue.plainLanguage} - this really affects real people."
-              </p>
-            </CardContent>
-          </Card>
-
           <Card>
             <CardHeader>
               <CardTitle>💝 Your Story Opening</CardTitle>
