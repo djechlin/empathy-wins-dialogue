@@ -4,7 +4,7 @@ import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
 import { AlertCircle, Clock, Heart, Lightbulb, Mic, MicOff, User, Users } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface ConversationMessage {
@@ -52,188 +52,257 @@ const Roleplay = () => {
   const messageTimerRef = useRef<NodeJS.Timeout>();
   const sessionDuration = 600; // 10 minutes in seconds
 
-  const techniques = [
-    { id: 'plain-language', text: 'Used plain language', achieved: false },
-    { id: 'asked-feelings', text: 'Asked about feelings', achieved: false },
-    { id: 'asked-loved-ones', text: 'Asked about loved ones', achieved: false },
-    { id: 'shared-story', text: 'Shared a personal story', achieved: false },
-  ];
+  const techniques = useMemo(
+    () =>
+      [
+        { id: 'plain-language', text: 'Used plain language', achieved: false },
+        { id: 'asked-feelings', text: 'Asked about feelings', achieved: false },
+        { id: 'asked-loved-ones', text: 'Asked about loved ones', achieved: false },
+        { id: 'shared-story', text: 'Shared a personal story', achieved: false },
+      ] as const,
+    [],
+  );
 
-  const issueDetails = {
-    insulin: { title: 'Lower Insulin Prices', voterPersona: 'Sarah, a working mother concerned about healthcare costs' },
-    healthcare: { title: 'Expand Healthcare Access', voterPersona: 'Mike, a small business owner in rural area' },
-    education: { title: 'Education Funding', voterPersona: 'Lisa, a parent and teacher concerned about school resources' },
-  };
+  const issueDetails = useMemo(
+    () =>
+      ({
+        insulin: { title: 'Lower Insulin Prices', voterPersona: 'Sarah, a working mother concerned about healthcare costs' },
+        healthcare: { title: 'Expand Healthcare Access', voterPersona: 'Mike, a small business owner in rural area' },
+        education: { title: 'Education Funding', voterPersona: 'Lisa, a parent and teacher concerned about school resources' },
+      }) as const,
+    [],
+  );
 
-  const mockConversation: ConversationMessage[] = [
-    {
-      id: 1,
-      speaker: 'voter',
-      text: "Hi there! I'm glad you reached out. I have to be honest, I'm pretty busy these days, but what did you want to talk about?",
-      timestamp: 2,
-    },
-    {
-      id: 2,
-      speaker: 'canvasser',
-      text: 'Thanks for taking the time, Sarah. I wanted to talk about something that affects a lot of families - the cost of insulin. Have you or anyone you know been affected by high prescription costs?',
-      timestamp: 15,
-    },
-    {
-      id: 3,
-      speaker: 'voter',
-      text: "Actually, yes. My neighbor's daughter is diabetic and they've really struggled with the costs. It's honestly heartbreaking to watch.",
-      timestamp: 25,
-    },
-    {
-      id: 4,
-      speaker: 'canvasser',
-      text: 'That must be really difficult to see your neighbors going through that. How does it make you feel when you hear about families having to choose between medicine and other necessities?',
-      timestamp: 40,
-    },
-    {
-      id: 5,
-      speaker: 'voter',
-      text: "It makes me angry, honestly. No one should have to ration their medication because they can't afford it. It just doesn't seem right in a country like ours.",
-      timestamp: 52,
-    },
-    {
-      id: 6,
-      speaker: 'canvasser',
-      text: "I completely understand that anger. I feel the same way. My own aunt had to cut her insulin doses in half last year because of the cost. Have you thought about what could be done to help families like your neighbor's?",
-      timestamp: 75,
-    },
-    {
-      id: 7,
-      speaker: 'voter',
-      text: "I hadn't really thought about solutions, but there has to be something we can do. What are you thinking?",
-      timestamp: 85,
-    },
-    {
-      id: 8,
-      speaker: 'canvasser',
-      text: "There's actually legislation being proposed that would cap insulin costs at $35 per month. It would mean families like your neighbor's wouldn't have to make those impossible choices anymore.",
-      timestamp: 105,
-    },
-    {
-      id: 9,
-      speaker: 'voter',
-      text: "That sounds reasonable. $35 is still money, but it's not going to break anyone's budget. How would something like that work?",
-      timestamp: 118,
-    },
-    {
-      id: 10,
-      speaker: 'canvasser',
-      text: "The idea is to limit what insurance companies and pharmacies can charge patients directly. The medication would still be covered, but there would be a cap on out-of-pocket costs. It's worked in other states.",
-      timestamp: 140,
-    },
-    {
-      id: 11,
-      speaker: 'voter',
-      text: "That makes sense. I'm generally skeptical of government intervention, but when people are literally dying because they can't afford medicine... that's just wrong.",
-      timestamp: 155,
-    },
-    {
-      id: 12,
-      speaker: 'voter',
-      text: "Actually, my wife Emma has diabetes too. We're lucky to have good insurance now, but I know that could change.",
-      timestamp: 170,
-    },
-    {
-      id: 13,
-      speaker: 'canvasser',
-      text: "I appreciate your honesty about being skeptical - that's completely understandable. What would it mean to you personally to know that your neighbor's family wouldn't have to worry about this anymore?",
-      timestamp: 175,
-    },
-    {
-      id: 14,
-      speaker: 'voter',
-      text: 'It would be a huge relief, honestly. I worry about them all the time. And I worry about what would happen to my own family if we ever faced something like this.',
-      timestamp: 190,
-    },
-  ];
+  const mockConversation = useMemo<ConversationMessage[]>(
+    () => [
+      {
+        id: 1,
+        speaker: 'voter' as const,
+        text: "Hi there! I'm glad you reached out. I have to be honest, I'm pretty busy these days, but what did you want to talk about?",
+        timestamp: 2,
+      },
+      {
+        id: 2,
+        speaker: 'canvasser',
+        text: 'Thanks for taking the time, Sarah. I wanted to talk about something that affects a lot of families - the cost of insulin. Have you or anyone you know been affected by high prescription costs?',
+        timestamp: 15,
+      },
+      {
+        id: 3,
+        speaker: 'voter',
+        text: "Actually, yes. My neighbor's daughter is diabetic and they've really struggled with the costs. It's honestly heartbreaking to watch.",
+        timestamp: 25,
+      },
+      {
+        id: 4,
+        speaker: 'canvasser',
+        text: 'That must be really difficult to see your neighbors going through that. How does it make you feel when you hear about families having to choose between medicine and other necessities?',
+        timestamp: 40,
+      },
+      {
+        id: 5,
+        speaker: 'voter',
+        text: "It makes me angry, honestly. No one should have to ration their medication because they can't afford it. It just doesn't seem right in a country like ours.",
+        timestamp: 52,
+      },
+      {
+        id: 6,
+        speaker: 'canvasser',
+        text: "I completely understand that anger. I feel the same way. My own aunt had to cut her insulin doses in half last year because of the cost. Have you thought about what could be done to help families like your neighbor's?",
+        timestamp: 75,
+      },
+      {
+        id: 7,
+        speaker: 'voter',
+        text: "I hadn't really thought about solutions, but there has to be something we can do. What are you thinking?",
+        timestamp: 85,
+      },
+      {
+        id: 8,
+        speaker: 'canvasser',
+        text: "There's actually legislation being proposed that would cap insulin costs at $35 per month. It would mean families like your neighbor's wouldn't have to make those impossible choices anymore.",
+        timestamp: 105,
+      },
+      {
+        id: 9,
+        speaker: 'voter',
+        text: "That sounds reasonable. $35 is still money, but it's not going to break anyone's budget. How would something like that work?",
+        timestamp: 118,
+      },
+      {
+        id: 10,
+        speaker: 'canvasser',
+        text: "The idea is to limit what insurance companies and pharmacies can charge patients directly. The medication would still be covered, but there would be a cap on out-of-pocket costs. It's worked in other states.",
+        timestamp: 140,
+      },
+      {
+        id: 11,
+        speaker: 'voter',
+        text: "That makes sense. I'm generally skeptical of government intervention, but when people are literally dying because they can't afford medicine... that's just wrong.",
+        timestamp: 155,
+      },
+      {
+        id: 12,
+        speaker: 'voter',
+        text: "Actually, my wife Emma has diabetes too. We're lucky to have good insurance now, but I know that could change.",
+        timestamp: 170,
+      },
+      {
+        id: 13,
+        speaker: 'canvasser',
+        text: "I appreciate your honesty about being skeptical - that's completely understandable. What would it mean to you personally to know that your neighbor's family wouldn't have to worry about this anymore?",
+        timestamp: 175,
+      },
+      {
+        id: 14,
+        speaker: 'voter',
+        text: 'It would be a huge relief, honestly. I worry about them all the time. And I worry about what would happen to my own family if we ever faced something like this.',
+        timestamp: 190,
+      },
+    ],
+    [],
+  );
 
-  const predefinedCues: CoachingCue[] = [
-    {
-      id: 'neighbor-daughter',
-      type: 'name',
-      trigger: "neighbor's daughter",
-      prompt: "Ask about the daughter's age or specific struggles",
-      urgency: 'high',
-      appearsAt: 26,
-    },
-    {
-      id: 'heartbreaking',
-      type: 'emotion',
-      trigger: 'heartbreaking',
-      prompt: "Follow up: 'What's the hardest part for you to watch?'",
-      urgency: 'high',
-      appearsAt: 26,
-    },
-    {
-      id: 'angry-emotion',
-      type: 'emotion',
-      trigger: 'angry',
-      prompt: 'Validate their anger and dig deeper into why',
-      urgency: 'medium',
-      appearsAt: 53,
-    },
-    {
-      id: 'wife-emma',
-      type: 'name',
-      trigger: 'wife Emma',
-      prompt: "Ask: 'How does Emma feel about the costs? What's her biggest concern?'",
-      urgency: 'high',
-      appearsAt: 171,
-    },
-    {
-      id: 'worry-opportunity',
-      type: 'opportunity',
-      trigger: 'worry about them',
-      prompt: 'This is your moment - they care deeply. Ask what keeps them up at night.',
-      urgency: 'high',
-      appearsAt: 191,
-    },
-  ];
+  const predefinedCues = useMemo<CoachingCue[]>(
+    () => [
+      {
+        id: 'neighbor-daughter',
+        type: 'name' as const,
+        trigger: "neighbor's daughter",
+        prompt: "Ask about the daughter's age or specific struggles",
+        urgency: 'high' as const,
+        appearsAt: 26,
+      },
+      {
+        id: 'heartbreaking',
+        type: 'emotion' as const,
+        trigger: 'heartbreaking',
+        prompt: "Follow up: 'What's the hardest part for you to watch?'",
+        urgency: 'high' as const,
+        appearsAt: 26,
+      },
+      {
+        id: 'angry-emotion',
+        type: 'emotion' as const,
+        trigger: 'angry',
+        prompt: 'Validate their anger and dig deeper into why',
+        urgency: 'medium' as const,
+        appearsAt: 53,
+      },
+      {
+        id: 'wife-emma',
+        type: 'name' as const,
+        trigger: 'wife Emma',
+        prompt: "Ask: 'How does Emma feel about the costs? What's her biggest concern?'",
+        urgency: 'high' as const,
+        appearsAt: 171,
+      },
+      {
+        id: 'worry-opportunity',
+        type: 'opportunity' as const,
+        trigger: 'worry about them',
+        prompt: 'This is your moment - they care deeply. Ask what keeps them up at night.',
+        urgency: 'high' as const,
+        appearsAt: 191,
+      },
+    ],
+    [],
+  );
 
-  const peoplePatterns = [
-    {
-      pattern: /neighbor's daughter/i,
-      name: "neighbor's daughter",
-      relationship: 'neighbor',
-      context: 'diabetic, struggling with insulin costs',
-    },
-    {
-      pattern: /wife Emma/i,
-      name: 'Emma',
-      relationship: 'wife',
-      context: 'has diabetes, currently has good insurance',
-    },
-    {
-      pattern: /my aunt/i,
-      name: 'aunt',
-      relationship: 'aunt',
-      context: 'had to cut insulin doses due to cost',
-    },
-  ];
+  const peoplePatterns = useMemo(
+    () =>
+      [
+        {
+          pattern: /neighbor's daughter/i,
+          name: "neighbor's daughter",
+          relationship: 'neighbor',
+          context: 'diabetic, struggling with insulin costs',
+        },
+        {
+          pattern: /wife Emma/i,
+          name: 'Emma',
+          relationship: 'wife',
+          context: 'has diabetes, currently has good insurance',
+        },
+        {
+          pattern: /my aunt/i,
+          name: 'aunt',
+          relationship: 'aunt',
+          context: 'had to cut insulin doses due to cost',
+        },
+      ] as const,
+    [],
+  );
 
-  const extractMentionedPeople = (message: ConversationMessage) => {
-    peoplePatterns.forEach(({ pattern, name, relationship, context }) => {
-      if (pattern.test(message.text) && !mentionedPeople.find((p) => p.name === name)) {
-        const newPerson: MentionedPerson = {
-          name,
-          relationship,
-          context,
-          firstMentionedAt: message.timestamp,
-          followedUp: false,
-        };
-        setMentionedPeople((prev) => [...prev, newPerson]);
+  const endSession = useCallback(() => {
+    setIsSessionActive(false);
+    setIsRecording(false);
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (messageTimerRef.current) clearInterval(messageTimerRef.current);
+
+    navigate(`/report?issue=${issue}&duration=${timeElapsed}&techniques=${achievedTechniques.join(',')}`);
+  }, [navigate, issue, timeElapsed, achievedTechniques]);
+
+  const mockAchieveTechnique = useCallback(
+    (techniqueId: string) => {
+      if (!achievedTechniques.includes(techniqueId)) {
+        setAchievedTechniques((prev) => [...prev, techniqueId]);
+        const technique = techniques.find((t) => t.id === techniqueId);
+        if (technique) {
+          toast({
+            title: 'Great technique!',
+            description: technique.text,
+          });
+        }
       }
-    });
-  };
+    },
+    [achievedTechniques, toast, techniques],
+  );
 
-  const markPersonFollowedUp = (personName: string) => {
+  const extractMentionedPeople = useCallback(
+    (message: ConversationMessage) => {
+      peoplePatterns.forEach(({ pattern, name, relationship, context }) => {
+        if (pattern.test(message.text) && !mentionedPeople.find((p) => p.name === name)) {
+          const newPerson: MentionedPerson = {
+            name,
+            relationship,
+            context,
+            firstMentionedAt: message.timestamp,
+            followedUp: false,
+          };
+          setMentionedPeople((prev) => [...prev, newPerson]);
+        }
+      });
+    },
+    [mentionedPeople, peoplePatterns],
+  );
+
+  const markPersonFollowedUp = useCallback((personName: string) => {
     setMentionedPeople((prev) => prev.map((person) => (person.name === personName ? { ...person, followedUp: true } : person)));
-  };
+  }, []);
+
+  const dismissCue = useCallback((cueId: string) => {
+    setActiveCues((prev) => prev.filter((cue) => cue.id !== cueId));
+    setDismissedCues((prev) => [...prev, cueId]);
+  }, []);
+
+  const startSession = useCallback(async () => {
+    setIsSessionActive(true);
+    setConversationStarted(true);
+    setConversationMessages([]);
+    setActiveCues([]);
+    setDismissedCues([]);
+    setMentionedPeople([]);
+
+    toast({
+      title: 'Session Started',
+      description: 'Listen for names, emotions, and moments to dig deeper.',
+    });
+  }, [toast]);
+
+  const toggleRecording = useCallback(() => {
+    setIsRecording(!isRecording);
+  }, [isRecording]);
 
   useEffect(() => {
     if (isSessionActive) {
@@ -288,60 +357,26 @@ const Roleplay = () => {
       if (timerRef.current) clearInterval(timerRef.current);
       if (messageTimerRef.current) clearInterval(messageTimerRef.current);
     };
-  }, [isSessionActive, activeCues, dismissedCues, achievedTechniques, mentionedPeople]);
+  }, [
+    isSessionActive,
+    activeCues,
+    dismissedCues,
+    achievedTechniques,
+    extractMentionedPeople,
+    mockAchieveTechnique,
+    endSession,
+    mockConversation,
+    predefinedCues,
+    sessionDuration,
+  ]);
 
-  const startSession = async () => {
-    setIsSessionActive(true);
-    setConversationStarted(true);
-    setConversationMessages([]);
-    setActiveCues([]);
-    setDismissedCues([]);
-    setMentionedPeople([]);
-
-    toast({
-      title: 'Session Started',
-      description: 'Listen for names, emotions, and moments to dig deeper.',
-    });
-  };
-
-  const dismissCue = (cueId: string) => {
-    setActiveCues((prev) => prev.filter((cue) => cue.id !== cueId));
-    setDismissedCues((prev) => [...prev, cueId]);
-  };
-
-  const mockAchieveTechnique = (techniqueId: string) => {
-    if (!achievedTechniques.includes(techniqueId)) {
-      setAchievedTechniques((prev) => [...prev, techniqueId]);
-      const technique = techniques.find((t) => t.id === techniqueId);
-      if (technique) {
-        toast({
-          title: 'Great technique!',
-          description: technique.text,
-        });
-      }
-    }
-  };
-
-  const endSession = () => {
-    setIsSessionActive(false);
-    setIsRecording(false);
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (messageTimerRef.current) clearInterval(messageTimerRef.current);
-
-    navigate(`/report?issue=${issue}&duration=${timeElapsed}&techniques=${achievedTechniques.join(',')}`);
-  };
-
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
-  };
-
-  const formatTime = (seconds: number) => {
+  const formatTime = useCallback((seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+  }, []);
 
-  const getCueIcon = (type: string) => {
+  const getCueIcon = useCallback((type: string) => {
     switch (type) {
       case 'name':
         return Users;
@@ -354,9 +389,9 @@ const Roleplay = () => {
       default:
         return AlertCircle;
     }
-  };
+  }, []);
 
-  const getCueColor = (urgency: string) => {
+  const getCueColor = useCallback((urgency: string) => {
     switch (urgency) {
       case 'high':
         return 'border-red-300 bg-red-50';
@@ -367,9 +402,9 @@ const Roleplay = () => {
       default:
         return 'border-gray-300 bg-gray-50';
     }
-  };
+  }, []);
 
-  const progressPercentage = (timeElapsed / sessionDuration) * 100;
+  const progressPercentage = useMemo(() => (timeElapsed / sessionDuration) * 100, [timeElapsed, sessionDuration]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
