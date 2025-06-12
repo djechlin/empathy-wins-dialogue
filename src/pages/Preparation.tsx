@@ -1,3 +1,4 @@
+
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
@@ -285,22 +286,6 @@ const Preparation = () => {
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
-                  <Label>Who was there for you?</Label>
-                  <Select value={personType} onValueChange={handlePersonChange}>
-                    <SelectTrigger className="mt-2">
-                      <SelectValue placeholder="Select someone..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {personOptions.map((person) => (
-                        <SelectItem key={person} value={person}>
-                          {person}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
                   <Label>What happened?</Label>
                   <Select value={eventType} onValueChange={handleEventChange}>
                     <SelectTrigger className="mt-2">
@@ -310,6 +295,22 @@ const Preparation = () => {
                       {eventOptions.map((event) => (
                         <SelectItem key={event} value={event}>
                           {event}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label>Who was there for you?</Label>
+                  <Select value={personType} onValueChange={handlePersonChange}>
+                    <SelectTrigger className="mt-2">
+                      <SelectValue placeholder="Select someone..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {personOptions.map((person) => (
+                        <SelectItem key={person} value={person}>
+                          {person}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -343,7 +344,7 @@ const Preparation = () => {
                 </p>
                 <p className="text-green-600 mt-2 text-base font-sans">Tell the voter what happened</p>
                 <p className="text-green-700 text-lg font-mono mt-3">
-                  {personType || '_______'} was really there for me. They helped me by...
+                  My {personType || '_______'} was really there for me. They helped me by...
                 </p>
                 <p className="text-green-600 mt-2 text-base font-sans">Tell the voter what they did</p>
                 <p className="text-green-700 text-lg font-mono mt-3">
