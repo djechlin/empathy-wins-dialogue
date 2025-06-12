@@ -11,7 +11,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 const Preparation = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const defaultIssue = searchParams.get('issue') || 'insulin';
+  const defaultIssue = searchParams.get('issue') || '';
 
   const [selectedIssue, setSelectedIssue] = useState(defaultIssue);
   const [personType, setPersonType] = useState('');
@@ -39,14 +39,23 @@ const Preparation = () => {
 
   const emotionOptions = ['relieved', 'scared', 'comforted', 'loved', 'happy', 'glad', 'grateful'];
 
-  const currentIssue = issueDetails[selectedIssue as keyof typeof issueDetails];
+  const currentIssue = selectedIssue ? issueDetails[selectedIssue as keyof typeof issueDetails] : null;
+
+  const handleIssueChange = (value: string) => {
+    // Allow deselecting by checking if the same value is clicked
+    if (selectedIssue === value) {
+      setSelectedIssue('');
+    } else {
+      setSelectedIssue(value);
+    }
+  };
 
   const handleStartRoleplay = () => {
     navigate(`/roleplay?issue=${selectedIssue}&person=${personType}&event=${encodeURIComponent(eventType)}&feeling=${selectedFeeling}`);
   };
 
   const canProceed = () => {
-    return personType && eventType && selectedFeeling;
+    return selectedIssue && personType && eventType && selectedFeeling;
   };
 
   return (
@@ -131,7 +140,7 @@ const Preparation = () => {
           <CardContent className="space-y-6">
             <div>
               <Label className="text-base font-medium mb-4 block">Choose your issue:</Label>
-              <RadioGroup value={selectedIssue} onValueChange={setSelectedIssue} className="space-y-0">
+              <RadioGroup value={selectedIssue} onValueChange={handleIssueChange} className="space-y-0">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="relative">
                     <RadioGroupItem value="insulin" id="insulin" className="sr-only" />
@@ -172,10 +181,18 @@ const Preparation = () => {
                 <Check className="w-5 h-5 text-green-600 mr-2" />
                 <h4 className="font-medium text-green-900">Your opening line:</h4>
               </div>
-              <p className="text-green-800 text-lg font-mono">
-                "My name is [your name], I'm here with <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to talk about {currentIssue.plainLanguage}."
-              </p>
-              <p className="text-green-700 mt-3 text-xs"><sup>†</sup> fictitious</p>
+              {currentIssue ? (
+                <>
+                  <p className="text-green-800 text-lg font-mono">
+                    "My name is [your name], I'm here with <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to talk about {currentIssue.plainLanguage}."
+                  </p>
+                  <p className="text-green-700 mt-3 text-xs"><sup>†</sup> fictitious</p>
+                </>
+              ) : (
+                <p className="text-green-700 text-base">
+                  Select an issue to see how to frame it
+                </p>
+              )}
             </div>
 
             {/* Don't Say This */}
@@ -184,9 +201,15 @@ const Preparation = () => {
                 <X className="w-5 h-5 text-red-600 mr-2" />
                 <h4 className="font-medium text-red-900">Don't say this:</h4>
               </div>
-              <p className="text-red-800 text-sm font-mono">
-                {currentIssue.dontSayText}
-              </p>
+              {currentIssue ? (
+                <p className="text-red-800 text-sm font-mono">
+                  {currentIssue.dontSayText}
+                </p>
+              ) : (
+                <p className="text-red-700 text-base">
+                  Select an issue to see what NOT to say
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -276,7 +299,7 @@ const Preparation = () => {
           <Card>
             <CardContent className="p-6">
               <h3 className="font-semibold text-gray-900 mb-2">🎯 Tie It Together:</h3>
-              <p className="text-lg text-gray-700 font-mono">"Does that change how you feel about {currentIssue.title.toLowerCase()}?"</p>
+              <p className="text-lg text-gray-700 font-mono">"Does that change how you feel about {currentIssue ? currentIssue.title.toLowerCase() : 'this issue'}?"</p>
             </CardContent>
           </Card>
         </div>
