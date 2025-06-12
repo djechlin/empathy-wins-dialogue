@@ -135,15 +135,14 @@ const Preparation = () => {
                     <RadioGroupItem value="insulin" id="insulin" className="sr-only" />
                     <Label 
                       htmlFor="insulin" 
-                      className={`block cursor-pointer p-6 rounded-lg border-2 transition-all duration-200 aspect-[1.618/1] flex flex-col justify-center text-center hover:shadow-lg ${
+                      className={`block cursor-pointer p-4 rounded-lg border-2 transition-all duration-200 aspect-[1.2/1] flex flex-col justify-center text-center hover:shadow-lg ${
                         selectedIssue === 'insulin' 
                           ? 'border-blue-500 bg-blue-50 shadow-md' 
                           : 'border-gray-200 bg-white hover:border-blue-300'
                       }`}
                     >
                       <div className="font-semibold text-lg text-blue-700 mb-2">Healthcare</div>
-                      <div className="text-blue-600 font-medium">Insulin Affordability</div>
-                      <div className="text-sm text-gray-600 mt-2">Help families afford life-saving diabetes medication</div>
+                      <div className="text-sm text-gray-600">Help families afford life-saving diabetes medication</div>
                     </Label>
                   </div>
                   
@@ -151,15 +150,14 @@ const Preparation = () => {
                     <RadioGroupItem value="climate" id="climate" className="sr-only" />
                     <Label 
                       htmlFor="climate" 
-                      className={`block cursor-pointer p-6 rounded-lg border-2 transition-all duration-200 aspect-[1.618/1] flex flex-col justify-center text-center hover:shadow-lg ${
+                      className={`block cursor-pointer p-4 rounded-lg border-2 transition-all duration-200 aspect-[1.2/1] flex flex-col justify-center text-center hover:shadow-lg ${
                         selectedIssue === 'climate' 
                           ? 'border-green-500 bg-green-50 shadow-md' 
                           : 'border-gray-200 bg-white hover:border-green-300'
                       }`}
                     >
                       <div className="font-semibold text-lg text-green-700 mb-2">Climate</div>
-                      <div className="text-green-600 font-medium">Wildfire Management</div>
-                      <div className="text-sm text-gray-600 mt-2">Protect communities from increasing wildfire risks</div>
+                      <div className="text-sm text-gray-600">Protect communities from increasing wildfire risks</div>
                     </Label>
                   </div>
                 </div>
