@@ -3,7 +3,7 @@ import { Badge } from '@/ui/badge';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
-import { AlertCircle, Clock, Heart, Lightbulb, Mic, MicOff, User, Users } from 'lucide-react';
+import { AlertCircle, Clock, Heart, Lightbulb, Mic, MicOff, User, Users, MessageCircle, ArrowRight } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -103,79 +103,79 @@ const Roleplay = () => {
         id: 2,
         speaker: 'canvasser',
         text: 'Thanks for taking the time, Sarah. I wanted to talk about something that affects a lot of families - the cost of insulin. Have you or anyone you know been affected by high prescription costs?',
-        timestamp: 15,
+        timestamp: 3,
       },
       {
         id: 3,
         speaker: 'voter',
         text: "Actually, yes. My neighbor's daughter is diabetic and they've really struggled with the costs. It's honestly heartbreaking to watch.",
-        timestamp: 25,
+        timestamp: 4,
       },
       {
         id: 4,
         speaker: 'canvasser',
         text: 'That must be really difficult to see your neighbors going through that. How does it make you feel when you hear about families having to choose between medicine and other necessities?',
-        timestamp: 40,
+        timestamp: 5,
       },
       {
         id: 5,
         speaker: 'voter',
         text: "It makes me angry, honestly. No one should have to ration their medication because they can't afford it. It just doesn't seem right in a country like ours.",
-        timestamp: 52,
+        timestamp: 6,
       },
       {
         id: 6,
         speaker: 'canvasser',
         text: "I completely understand that anger. I feel the same way. My own aunt had to cut her insulin doses in half last year because of the cost. Have you thought about what could be done to help families like your neighbor's?",
-        timestamp: 75,
+        timestamp: 7,
       },
       {
         id: 7,
         speaker: 'voter',
         text: "I hadn't really thought about solutions, but there has to be something we can do. What are you thinking?",
-        timestamp: 85,
+        timestamp: 8,
       },
       {
         id: 8,
         speaker: 'canvasser',
         text: "There's actually legislation being proposed that would cap insulin costs at $35 per month. It would mean families like your neighbor's wouldn't have to make those impossible choices anymore.",
-        timestamp: 105,
+        timestamp: 9,
       },
       {
         id: 9,
         speaker: 'voter',
         text: "That sounds reasonable. $35 is still money, but it's not going to break anyone's budget. How would something like that work?",
-        timestamp: 118,
+        timestamp: 10,
       },
       {
         id: 10,
         speaker: 'canvasser',
         text: "The idea is to limit what insurance companies and pharmacies can charge patients directly. The medication would still be covered, but there would be a cap on out-of-pocket costs. It's worked in other states.",
-        timestamp: 140,
+        timestamp: 11,
       },
       {
         id: 11,
         speaker: 'voter',
         text: "That makes sense. I'm generally skeptical of government intervention, but when people are literally dying because they can't afford medicine... that's just wrong.",
-        timestamp: 155,
+        timestamp: 12,
       },
       {
         id: 12,
         speaker: 'voter',
         text: "Actually, my wife Emma has diabetes too. We're lucky to have good insurance now, but I know that could change.",
-        timestamp: 170,
+        timestamp: 13,
       },
       {
         id: 13,
         speaker: 'canvasser',
         text: "I appreciate your honesty about being skeptical - that's completely understandable. What would it mean to you personally to know that your neighbor's family wouldn't have to worry about this anymore?",
-        timestamp: 175,
+        timestamp: 14,
       },
       {
         id: 14,
         speaker: 'voter',
         text: 'It would be a huge relief, honestly. I worry about them all the time. And I worry about what would happen to my own family if we ever faced something like this.',
-        timestamp: 190,
+        timestamp: 15,
       },
     ],
     [],
@@ -368,7 +368,7 @@ const Roleplay = () => {
           }
           return currentTime;
         });
-      }, 1000);
+      }, 2000);
     }
 
     return () => {
@@ -427,8 +427,39 @@ const Roleplay = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-6xl mx-auto">
+        {/* Progress Flow */}
+        <div className="mb-8">
+          <div className="flex items-center justify-center space-x-6">
+            {/* Step 1 - Completed */}
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                ✓
+              </div>
+              <span className="text-sm font-medium text-center text-green-600 font-sans">Conversation Strategy</span>
+            </div>
+
+            <ArrowRight className="w-6 h-6 text-gray-400" />
+
+            {/* Step 2 - Current Step */}
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">2</div>
+              <span className="text-sm font-medium text-center text-blue-600 font-sans">Roleplay</span>
+            </div>
+
+            <ArrowRight className="w-6 h-6 text-gray-400" />
+
+            {/* Step 3 - Future Step */}
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                3
+              </div>
+              <span className="text-sm font-medium text-center text-gray-400 font-sans">Learn how you did</span>
+            </div>
+          </div>
+        </div>
+
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Persuasion Roleplay: {currentIssue?.title}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Roleplay</h1>
           <p className="text-gray-600">Speaking with: {voterPersonas[selectedIssue as keyof typeof voterPersonas]}</p>
         </div>
 
@@ -480,33 +511,143 @@ const Roleplay = () => {
             </Card>
 
             {/* Recent conversation */}
-            {conversationMessages.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Messages</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3 max-h-64 overflow-y-auto">
-                    {conversationMessages.slice(-3).map((message) => (
-                      <div key={message.id} className={`flex ${message.speaker === 'canvasser' ? 'justify-end' : 'justify-start'}`}>
-                        <div
-                          className={`max-w-[90%] p-3 rounded-lg ${
-                            message.speaker === 'canvasser' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'
-                          }`}
-                        >
-                          <div className="text-xs opacity-70 mb-1">{message.speaker === 'canvasser' ? 'You' : 'Sarah'}</div>
-                          <p className="text-sm">{message.text}</p>
-                        </div>
-                      </div>
-                    ))}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Messages</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div
+                  ref={(el) => {
+                    if (el) {
+                      el.scrollTop = el.scrollHeight;
+                    }
+                  }}
+                  className="space-y-3 max-h-96 overflow-y-auto"
+                >
+                  {/* Always show voter info as first message */}
+                  <div className="flex justify-center">
+                    <div className="max-w-[90%] p-3 rounded-lg bg-gray-50 border border-gray-200">
+                      <p className="text-sm text-gray-600 italic text-center">
+                        You'll be talking with Frank Hamster, a 55 year old Registered Independent who voted in 2020 but not 2024. His
+                        representative is Peter Gerbil.
+                      </p>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            )}
+
+                  {/* Conversation messages */}
+                  {conversationMessages.slice(-3).map((message) => (
+                    <div key={message.id} className={`flex ${message.speaker === 'canvasser' ? 'justify-end' : 'justify-start'}`}>
+                      <div
+                        className={`max-w-[90%] p-3 rounded-lg ${
+                          message.speaker === 'canvasser' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        <div className="text-xs opacity-70 mb-1">{message.speaker === 'canvasser' ? 'You' : 'Frank'}</div>
+                        <p className="text-sm">{message.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Live Coaching Cues */}
           <div className="lg:col-span-2 space-y-4">
+            {/* Your Script */}
+            {personType && eventType && selectedFeeling && currentIssue && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Script</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4 text-sm">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
+                        1
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-1">Framing:</h5>
+                        <p className="text-gray-700 font-mono text-xs">
+                          My name is [your name], I'm here with <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to
+                          talk about {currentIssue.plainLanguage}.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
+                        2
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-1">Share your story:</h5>
+                        <p className="text-gray-700 font-mono text-xs">
+                          One time, I {eventType} and was really worried. What happened was...
+                          <br />
+                          <span className="text-gray-500">[your story]</span>
+                          <br />
+                          My {personType} was really there for me. They helped me by...
+                          <br />
+                          <span className="text-gray-500">[what they did]</span>
+                          <br />
+                          and that really made me feel {selectedFeeling}. Is there a time someone was really there for you?
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
+                        3
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-1">Dig deeper:</h5>
+                        <div className="text-gray-600 text-xs space-y-2">
+                          <div className="flex items-center gap-2">
+                            <MessageCircle className="w-3 h-3 text-blue-500" />
+                            <p>Ask about their family.</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MessageCircle className="w-3 h-3 text-blue-500" />
+                            <p>When they name a person, ask more about them.</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MessageCircle className="w-3 h-3 text-blue-500" />
+                            <p>When they say how they feel, ask why.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-indigo-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
+                        4
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-1">Explore together:</h5>
+                        <p className="text-gray-700 font-mono text-xs">
+                          It sounds like we both really care about the people we love. Does that change how you think about this issue at
+                          all?
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
+                        5
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-1">Ask for action:</h5>
+                        <p className="text-gray-700 font-mono text-xs">
+                          Now that we've explored the issue together, would you take your phone and tell your representative Peter Gerbil
+                          how you feel, at 555-4567?
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card>
               <CardHeader>
                 <CardTitle>Live Coaching</CardTitle>
@@ -616,81 +757,6 @@ const Roleplay = () => {
                 </div>
               </CardContent>
             </Card>
-
-            {/* Your Script */}
-            {personType && eventType && selectedFeeling && currentIssue && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Your Script</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4 text-sm">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
-                        1
-                      </div>
-                      <div>
-                        <h5 className="font-medium text-gray-900 mb-1">Framing:</h5>
-                        <p className="text-gray-700 font-mono text-xs">
-                          "My name is [your name], I'm here with <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to
-                          talk about {currentIssue.plainLanguage}."
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
-                        2
-                      </div>
-                      <div>
-                        <h5 className="font-medium text-gray-900 mb-1">Share your story:</h5>
-                        <p className="text-gray-700 font-mono text-xs">
-                          "One time, I {eventType} and was really worried. What happened was... My {personType} was really there for me.
-                          They helped me by... and that really made me feel {selectedFeeling}. Is there a time someone was really there for
-                          you?"
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
-                        3
-                      </div>
-                      <div>
-                        <h5 className="font-medium text-gray-900 mb-1">Dig deeper:</h5>
-                        <p className="text-gray-700 font-mono text-xs">"How does this issue affect people you care about?"</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-indigo-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
-                        4
-                      </div>
-                      <div>
-                        <h5 className="font-medium text-gray-900 mb-1">Explore together:</h5>
-                        <p className="text-gray-700 font-mono text-xs">
-                          "It sounds like we both really care about the people we love. Does that change how you think about this issue at
-                          all?"
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
-                        5
-                      </div>
-                      <div>
-                        <h5 className="font-medium text-gray-900 mb-1">Ask for action:</h5>
-                        <p className="text-gray-700 font-mono text-xs">
-                          "Now that we've explored the issue together, would you take your phone and tell your representative Peter Gerbil
-                          how you feel, at 555-4567?"
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
       </div>

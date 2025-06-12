@@ -2,7 +2,7 @@ import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select';
-import { ArrowRight, X, MessageSquare } from 'lucide-react';
+import { ArrowRight, X, MessageSquare, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -470,7 +470,20 @@ const Preparation = () => {
                       </div>
                       <div>
                         <h4 className="font-medium text-gray-900 mb-1">Dig deeper:</h4>
-                        <p className="text-gray-700 font-mono text-sm">"How does this issue affect people you care about?"</p>
+                        <div className="text-gray-600 text-sm space-y-2">
+                          <div className="flex items-center gap-2">
+                            <MessageCircle className="w-3 h-3 text-blue-500" />
+                            <p>Ask about their family.</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MessageCircle className="w-3 h-3 text-blue-500" />
+                            <p>When they name a person, ask more about them.</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MessageCircle className="w-3 h-3 text-blue-500" />
+                            <p>When they say how they feel, ask why.</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
