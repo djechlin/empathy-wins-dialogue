@@ -492,7 +492,7 @@ const Roleplay = () => {
                     <div className="text-center">
                       <p className="text-gray-600 mb-4">Ready to practice active listening? Watch for coaching cues as they speak.</p>
                       <Button onClick={startSession} size="lg">
-                        Start Conversation
+                        Start Roleplay
                       </Button>
                     </div>
                   ) : (
@@ -505,10 +505,10 @@ const Roleplay = () => {
                           className="flex items-center gap-2"
                         >
                           {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                          {isRecording ? 'Stop Speaking' : 'Start Speaking'}
+                          {isRecording ? 'Pause' : 'Start Speaking'}
                         </Button>
                         <Button onClick={endSession} variant="outline">
-                          End Session
+                          Finish
                         </Button>
                       </div>
                       {isRecording && (
