@@ -1,42 +1,171 @@
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
+import { useDialogue } from '@/features/dialogue';
+import { ReplayProvider } from '@/features/dialogue/providers/ReplayProvider';
+import { DialogueMessage } from '@/features/dialogue/types';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from '@/ui/badge';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
-import { AlertCircle, Clock, Heart, Lightbulb, Mic, MicOff, User, Users, MessageCircle, ArrowRight } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AlertCircle, Mic, MicOff, MessageCircle, ArrowRight } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-interface ConversationMessage {
-  id: number;
-  speaker: 'canvasser' | 'voter';
-  text: string;
-  timestamp: number;
+// Parse Lucas replay data
+const lucasReplayText = `Voter: Hello? Is someone at my door?
+
+Canvasser: Hi. My name is Lucas, and I'm interested in talking with you more about health care in America.
+
+Voter: Oh, healthcare? I don't know if I have much to say about that.
+
+Voter: I'm Frank, by the way.
+
+Voter: What organization are you with?
+
+Canvasser: I'm with Americans with diabetes.
+
+Canvasser: And we're interested in capping the price of insulin so that, citizens pay less money for lifesaving medication.
+
+Canvasser: Which costs big companies only a dollar to make.
+
+Canvasser: But sells for two hundred dollars.
+
+Voter: Oh, I see. Well, I don't have diabetes myself, so I haven't really thought much about insulin prices.
+
+Voter: Sounds like there's quite a markup there, but isn't that how most medications work?
+
+Voter: Companies spend money on research and then charge more to make their profit back.
+
+Voter: I tend to think the government getting involved just makes things more expensive in the long run with all the bureaucracy.
+
+Canvasser: Yeah. I I think I I understand where you're coming from. Definitely government regulation can cause prices to go up. Certainly for new medication research. But insulin's been around for a hundred years. Actually, the inventor of insulin sold the patent for one dollar. So that everyone could have access to this medication. And what has happened is these companies have taken this very, very cheap to make product that sells for a dollar in Mexico and are charging people two hundred, three hundred dollars here.
+
+Voter: Hmm, I didn't know that about insulin being that old or that the inventor sold it for so little.
+
+Voter: That does make it seem different than new medications still under research.
+
+Voter: So it's that much cheaper in Mexico?
+
+Voter: That's pretty wild. I guess I can see why people would be upset about that.
+
+Voter: But I'm still not sure what the government could do that wouldn't just create more problems.
+
+Voter: You know how these things go.
+
+Canvasser: I do know how these things go. And, certainly, when the government gets involved, it can cause problems. I mean, my brother has diabetes actually right now, and it's pretty difficult for him if he doesn't his health insurance doesn't cover his insulin. He's just out of luck. And I think that we should make sure that I think one of the things government can do well is it can make sure that companies don't rip off American citizens.
+
+Canvasser: Given the price difference between Mexico and the US for the same drug, you can see that or at least for my brother, it can see that he's having to pay way more than others are.
+
+Voter: I didn't realize your brother has diabetes.
+
+Voter: That must be tough for him.
+
+Voter: Is he managing okay?
+
+Voter: Does he have to pay those high prices you mentioned?
+
+Canvasser: Yeah. He is, he's doing better, certainly. But and right now, because of his insurance plan, he doesn't have to pay as much. But if he didn't have health insurance like many people don't, or if he had a worse health insurance plan, like he was working for you know, Target, then he he would be in trouble.
+
+Voter: Well, I'm glad he has decent insurance now.
+
+Voter: I can see how that would be really stressful otherwise.
+
+Voter: His mom was worried sick.
+
+Voter: Do you think a lot of people are in that situation with insulin?
+
+Voter: Having to choose between medicine and other necessities?
+
+Voter: I'm curious - does your brother ever struggle with affording his insulin?
+
+Voter: How does that affect him and your family?
+
+Canvasser: Oh, I'm I'm sorry to hear about your nephew. Yeah. I I mean, certainly, I think not being able to afford life saving medication because you've gotten laid off or because you're you know, your job changes is is terrible.
+
+Canvasser: My brother, like I said, doesn't struggle now because of his current job situation, but I think he is worried that if he changes jobs in the future, or, you know, gets laid off unexpectedly, that could all change, and then he could be in real trouble.
+
+Voter: That's a real worry to live with, isn't it?
+
+Voter: I can see how that would create a lot of stress.
+
+Voter: My nephew was only without his medication for about a month, but my sister was beside herself with worry.
+
+Voter: It's not right that people have to worry about basic health needs just because of job changes.
+
+Voter: What do you think would help people like your brother have more security?
+
+Voter: Is that what this insulin price cap idea would do?
+
+Canvasser: Yeah. Exactly. So if we were to cap the price of insulin from, say, two hundred dollars to thirty dollars even though my brother would be paying the same amount right now, if he was fired, or or, you know, he just was between jobs. He would just be able to afford it out of pocket rather than having to pay these exorbitant prices.
+
+Canvasser: Oh, and your nephew too. Right? Wouldn't your, your sister wouldn't have had to worry about him because they could have just afforded it because it wouldn't have been outrageously expensive.
+
+Voter: You're right, it would have made a huge difference for them.
+
+Voter: My sister was trying to help him pay for it, but she's a single mom and it was just too much on top of her other bills.
+
+Voter: That was a really stressful time for our whole family.
+
+Voter: I hadn't really thought about it that way before - how a price cap could be like a safety net for people between jobs.
+
+Voter: That makes a lot of sense.
+
+Voter: What are you folks actually doing to try to make this happen?
+
+Voter: Is there something specific you're asking people to do?
+
+Canvasser: Yeah. So I'm I'm glad you asked. Right now, there's some legislation in congress that is being voted on within a month. And we're trying to get people to call their representatives to tell them to vote for it so that it will significantly increase the likelihood that it passes.
+
+Voter: That makes sense. You know, after hearing about how this could help people like my nephew and your brother, I think I would be willing to make that call.
+
+Canvasser: Would that be something you'd be willing to do?
+
+Voter: Who would I need to contact exactly?
+
+Voter: Do you have the information for who my representative is?
+
+Voter: You know what? I think I would be willing to do that.
+
+Voter: After thinking about what my nephew and sister went through, and knowing your brother faces the same worry, it just seems like the right thing to do.
+
+Voter: Do you have the number I should call?
+
+Voter: And what exactly should I say when I call?
+
+Canvasser: Yeah. I have the number right here. Let me give you a card.
+
+Canvasser: When you call, you'll just talk to one of the staffers at the representative's office. You just tell them your name. You'll tell them your ZIP ZIP code so that they know your constituent, and then you can you can just tell them your concern. So in this case, you know, tell them that you support proposition twenty eight and, that you hope that your senator, senator White House will also vote for it.`;
+
+function parseLucasReplay(): DialogueMessage[] {
+  const lines = lucasReplayText.split('\n').filter((line) => line.trim());
+  const messages: DialogueMessage[] = [];
+
+  lines.forEach((line, index) => {
+    const trimmedLine = line.trim();
+    if (trimmedLine.startsWith('Voter:')) {
+      messages.push({
+        id: `msg-${index}`,
+        role: 'assistant',
+        content: trimmedLine.replace('Voter:', '').trim(),
+        timestamp: new Date(Date.now() + index * 1000),
+      });
+    } else if (trimmedLine.startsWith('Canvasser:')) {
+      messages.push({
+        id: `msg-${index}`,
+        role: 'user',
+        content: trimmedLine.replace('Canvasser:', '').trim(),
+        timestamp: new Date(Date.now() + index * 1000),
+      });
+    }
+  });
+
+  return messages;
 }
 
-interface CoachingCue {
-  id: string;
-  type: 'name' | 'emotion' | 'time' | 'opportunity';
-  trigger: string;
-  prompt: string;
-  urgency: 'high' | 'medium' | 'low';
-  appearsAt: number;
-  dismissedAt?: number;
-}
-
-interface MentionedPerson {
-  name: string;
-  relationship: string;
-  context: string;
-  firstMentionedAt: number;
-  followedUp: boolean;
-}
-
-const Roleplay = () => {
+function RoleplayContent() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { messages, connect, disconnect, togglePause, isPaused, timeElapsed } = useDialogue();
 
   // Load preparation data from sessionStorage
   const selectedIssue = sessionStorage.getItem('selectedIssue') || 'insulin';
@@ -59,340 +188,34 @@ const Roleplay = () => {
 
   const currentIssue = issueDetails[selectedIssue as keyof typeof issueDetails];
 
-  const [isRecording, setIsRecording] = useState(false);
-  const [timeElapsed, setTimeElapsed] = useState(0);
-  const [achievedTechniques, setAchievedTechniques] = useState<string[]>([]);
   const [roleplayStarted, setRoleplayStarted] = useState(false);
-  const [conversationMessages, setConversationMessages] = useState<ConversationMessage[]>([]);
-  const [activeCues, setActiveCues] = useState<CoachingCue[]>([]);
-  const [dismissedCues, setDismissedCues] = useState<string[]>([]);
-  const [mentionedPeople, setMentionedPeople] = useState<MentionedPerson[]>([]);
-
-  const timerRef = useRef<NodeJS.Timeout>();
-  const messageTimerRef = useRef<NodeJS.Timeout>();
-  const sessionDuration = 600; // 10 minutes in seconds
-
-  const techniques = useMemo(
-    () =>
-      [
-        { id: 'plain-language', text: 'Used plain language', achieved: false },
-        { id: 'asked-feelings', text: 'Asked about feelings', achieved: false },
-        { id: 'asked-loved-ones', text: 'Asked about loved ones', achieved: false },
-        { id: 'shared-story', text: 'Shared a personal story', achieved: false },
-      ] as const,
-    [],
-  );
 
   const voterPersonas = useMemo(
     () =>
       ({
-        insulin: 'Sarah, a working mother concerned about healthcare costs',
-        climate: 'Mike, a small business owner in rural area',
+        insulin: 'Frank, a registered independent concerned about healthcare costs',
+        climate: 'Frank, a registered independent concerned about environmental issues',
       }) as const,
     [],
   );
 
-  const mockConversation = useMemo<ConversationMessage[]>(
-    () => [
-      {
-        id: 1,
-        speaker: 'voter' as const,
-        text: "Hi there! I'm glad you reached out. I have to be honest, I'm pretty busy these days, but what did you want to talk about?",
-        timestamp: 2,
-      },
-      {
-        id: 2,
-        speaker: 'canvasser',
-        text: 'Thanks for taking the time, Sarah. I wanted to talk about something that affects a lot of families - the cost of insulin. Have you or anyone you know been affected by high prescription costs?',
-        timestamp: 3,
-      },
-      {
-        id: 3,
-        speaker: 'voter',
-        text: "Actually, yes. My neighbor's daughter is diabetic and they've really struggled with the costs. It's honestly heartbreaking to watch.",
-        timestamp: 4,
-      },
-      {
-        id: 4,
-        speaker: 'canvasser',
-        text: 'That must be really difficult to see your neighbors going through that. How does it make you feel when you hear about families having to choose between medicine and other necessities?',
-        timestamp: 5,
-      },
-      {
-        id: 5,
-        speaker: 'voter',
-        text: "It makes me angry, honestly. No one should have to ration their medication because they can't afford it. It just doesn't seem right in a country like ours.",
-        timestamp: 6,
-      },
-      {
-        id: 6,
-        speaker: 'canvasser',
-        text: "I completely understand that anger. I feel the same way. My own aunt had to cut her insulin doses in half last year because of the cost. Have you thought about what could be done to help families like your neighbor's?",
-        timestamp: 7,
-      },
-      {
-        id: 7,
-        speaker: 'voter',
-        text: "I hadn't really thought about solutions, but there has to be something we can do. What are you thinking?",
-        timestamp: 8,
-      },
-      {
-        id: 8,
-        speaker: 'canvasser',
-        text: "There's actually legislation being proposed that would cap insulin costs at $35 per month. It would mean families like your neighbor's wouldn't have to make those impossible choices anymore.",
-        timestamp: 9,
-      },
-      {
-        id: 9,
-        speaker: 'voter',
-        text: "That sounds reasonable. $35 is still money, but it's not going to break anyone's budget. How would something like that work?",
-        timestamp: 10,
-      },
-      {
-        id: 10,
-        speaker: 'canvasser',
-        text: "The idea is to limit what insurance companies and pharmacies can charge patients directly. The medication would still be covered, but there would be a cap on out-of-pocket costs. It's worked in other states.",
-        timestamp: 11,
-      },
-      {
-        id: 11,
-        speaker: 'voter',
-        text: "That makes sense. I'm generally skeptical of government intervention, but when people are literally dying because they can't afford medicine... that's just wrong.",
-        timestamp: 12,
-      },
-      {
-        id: 12,
-        speaker: 'voter',
-        text: "Actually, my wife Emma has diabetes too. We're lucky to have good insurance now, but I know that could change.",
-        timestamp: 13,
-      },
-      {
-        id: 13,
-        speaker: 'canvasser',
-        text: "I appreciate your honesty about being skeptical - that's completely understandable. What would it mean to you personally to know that your neighbor's family wouldn't have to worry about this anymore?",
-        timestamp: 14,
-      },
-      {
-        id: 14,
-        speaker: 'voter',
-        text: 'It would be a huge relief, honestly. I worry about them all the time. And I worry about what would happen to my own family if we ever faced something like this.',
-        timestamp: 15,
-      },
-    ],
-    [],
-  );
-
-  const predefinedCues = useMemo<CoachingCue[]>(
-    () => [
-      {
-        id: 'neighbor-daughter',
-        type: 'name' as const,
-        trigger: "neighbor's daughter",
-        prompt: "Ask about the daughter's age or specific struggles",
-        urgency: 'high' as const,
-        appearsAt: 26,
-      },
-      {
-        id: 'heartbreaking',
-        type: 'emotion' as const,
-        trigger: 'heartbreaking',
-        prompt: "Follow up: 'What's the hardest part for you to watch?'",
-        urgency: 'high' as const,
-        appearsAt: 26,
-      },
-      {
-        id: 'angry-emotion',
-        type: 'emotion' as const,
-        trigger: 'angry',
-        prompt: 'Validate their anger and dig deeper into why',
-        urgency: 'medium' as const,
-        appearsAt: 53,
-      },
-      {
-        id: 'wife-emma',
-        type: 'name' as const,
-        trigger: 'wife Emma',
-        prompt: "Ask: 'How does Emma feel about the costs? What's her biggest concern?'",
-        urgency: 'high' as const,
-        appearsAt: 171,
-      },
-      {
-        id: 'worry-opportunity',
-        type: 'opportunity' as const,
-        trigger: 'worry about them',
-        prompt: 'This is your moment - they care deeply. Ask what keeps them up at night.',
-        urgency: 'high' as const,
-        appearsAt: 191,
-      },
-    ],
-    [],
-  );
-
-  const peoplePatterns = useMemo(
-    () =>
-      [
-        {
-          pattern: /neighbor's daughter/i,
-          name: "neighbor's daughter",
-          relationship: 'neighbor',
-          context: 'diabetic, struggling with insulin costs',
-        },
-        {
-          pattern: /wife Emma/i,
-          name: 'Emma',
-          relationship: 'wife',
-          context: 'has diabetes, currently has good insurance',
-        },
-        {
-          pattern: /my aunt/i,
-          name: 'aunt',
-          relationship: 'aunt',
-          context: 'had to cut insulin doses due to cost',
-        },
-      ] as const,
-    [],
-  );
-
   const finishRoleplay = useCallback(() => {
-    setIsRecording(false);
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (messageTimerRef.current) clearInterval(messageTimerRef.current);
-
-    navigate(`/report?duration=${timeElapsed}&techniques=${achievedTechniques.join(',')}`);
-  }, [navigate, timeElapsed, achievedTechniques]);
-
-  const mockAchieveTechnique = useCallback(
-    (techniqueId: string) => {
-      if (!achievedTechniques.includes(techniqueId)) {
-        setAchievedTechniques((prev) => [...prev, techniqueId]);
-        const technique = techniques.find((t) => t.id === techniqueId);
-        if (technique) {
-          toast({
-            title: 'Great technique!',
-            description: technique.text,
-          });
-        }
-      }
-    },
-    [achievedTechniques, toast, techniques],
-  );
-
-  const extractMentionedPeople = useCallback(
-    (message: ConversationMessage) => {
-      peoplePatterns.forEach(({ pattern, name, relationship, context }) => {
-        if (pattern.test(message.text) && !mentionedPeople.find((p) => p.name === name)) {
-          const newPerson: MentionedPerson = {
-            name,
-            relationship,
-            context,
-            firstMentionedAt: message.timestamp,
-            followedUp: false,
-          };
-          setMentionedPeople((prev) => [...prev, newPerson]);
-        }
-      });
-    },
-    [mentionedPeople, peoplePatterns],
-  );
-
-  const markPersonFollowedUp = useCallback((personName: string) => {
-    setMentionedPeople((prev) => prev.map((person) => (person.name === personName ? { ...person, followedUp: true } : person)));
-  }, []);
-
-  const dismissCue = useCallback((cueId: string) => {
-    setActiveCues((prev) => prev.filter((cue) => cue.id !== cueId));
-    setDismissedCues((prev) => [...prev, cueId]);
-  }, []);
+    disconnect();
+    navigate(`/report?duration=${timeElapsed}&techniques=`);
+  }, [disconnect, navigate, timeElapsed]);
 
   const startRoleplay = useCallback(async () => {
     setRoleplayStarted(true);
-    setIsRecording(true);
-    setConversationMessages([]);
-    setActiveCues([]);
-    setDismissedCues([]);
-    setMentionedPeople([]);
-
+    await connect();
     toast({
       title: 'Roleplay Started',
       description: 'Listen for names, emotions, and moments to dig deeper.',
     });
-  }, [toast]);
+  }, [connect, toast]);
 
   const toggleRecording = useCallback(() => {
-    setIsRecording(!isRecording);
-  }, [isRecording]);
-
-  useEffect(() => {
-    if (roleplayStarted) {
-      timerRef.current = setInterval(() => {
-        setTimeElapsed((prev) => {
-          if (prev >= sessionDuration) {
-            finishRoleplay();
-            return sessionDuration;
-          }
-          return prev + 1;
-        });
-      }, 1000);
-
-      messageTimerRef.current = setInterval(() => {
-        setConversationMessages((prevMessages) => {
-          const nextMessageIndex = prevMessages.length;
-          const nextMessage = mockConversation[nextMessageIndex];
-
-          if (nextMessage) {
-            // Extract mentioned people
-            extractMentionedPeople(nextMessage);
-
-            // Check for new coaching cues based on time elapsed
-            setTimeElapsed((currentTime) => {
-              const newCues = predefinedCues.filter(
-                (cue) =>
-                  cue.appearsAt === currentTime && !dismissedCues.includes(cue.id) && !activeCues.find((active) => active.id === cue.id),
-              );
-
-              if (newCues.length > 0) {
-                setActiveCues((prev) => [...prev, ...newCues]);
-              }
-              return currentTime;
-            });
-
-            // Check for technique achievements
-            if (nextMessage.speaker === 'canvasser') {
-              if (nextMessage.text.toLowerCase().includes('feel') && !achievedTechniques.includes('asked-feelings')) {
-                mockAchieveTechnique('asked-feelings');
-              }
-              if (nextMessage.text.toLowerCase().includes('aunt') && !achievedTechniques.includes('shared-story')) {
-                mockAchieveTechnique('shared-story');
-              }
-              if (nextMessage.text.toLowerCase().includes('$35') && !achievedTechniques.includes('plain-language')) {
-                mockAchieveTechnique('plain-language');
-              }
-            }
-
-            return [...prevMessages, nextMessage];
-          }
-
-          return prevMessages;
-        });
-      }, 2000);
-    }
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-      if (messageTimerRef.current) clearInterval(messageTimerRef.current);
-    };
-  }, [
-    roleplayStarted,
-    activeCues,
-    dismissedCues,
-    achievedTechniques,
-    extractMentionedPeople,
-    mockAchieveTechnique,
-    finishRoleplay,
-    mockConversation,
-    predefinedCues,
-    sessionDuration,
-  ]);
+    togglePause();
+  }, [togglePause]);
 
   const formatTime = useCallback((seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -400,35 +223,7 @@ const Roleplay = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }, []);
 
-  const getCueIcon = useCallback((type: string) => {
-    switch (type) {
-      case 'name':
-        return Users;
-      case 'emotion':
-        return Heart;
-      case 'time':
-        return Clock;
-      case 'opportunity':
-        return Lightbulb;
-      default:
-        return AlertCircle;
-    }
-  }, []);
-
-  const getCueColor = useCallback((urgency: string) => {
-    switch (urgency) {
-      case 'high':
-        return 'border-red-300 bg-red-50';
-      case 'medium':
-        return 'border-yellow-300 bg-yellow-50';
-      case 'low':
-        return 'border-blue-300 bg-blue-50';
-      default:
-        return 'border-gray-300 bg-gray-50';
-    }
-  }, []);
-
-  const progressPercentage = useMemo(() => (timeElapsed / sessionDuration) * 100, [timeElapsed, sessionDuration]);
+  const progressPercentage = useMemo(() => (timeElapsed / 600) * 100, [timeElapsed]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -498,12 +293,12 @@ const Roleplay = () => {
                       <div className="flex justify-center gap-4">
                         <Button
                           onClick={toggleRecording}
-                          variant={isRecording ? 'outline' : 'default'}
+                          variant={isPaused ? 'default' : 'outline'}
                           size="lg"
                           className="flex items-center gap-2"
                         >
-                          {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                          {isRecording ? 'Pause' : 'Resume'}
+                          {isPaused ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
+                          {isPaused ? 'Resume' : 'Pause'}
                         </Button>
                         <Button onClick={finishRoleplay} variant="outline">
                           Finish Roleplay
@@ -539,15 +334,15 @@ const Roleplay = () => {
                     </div>
 
                     {/* Conversation messages */}
-                    {conversationMessages.slice(-3).map((message) => (
-                      <div key={message.id} className={`flex ${message.speaker === 'canvasser' ? 'justify-end' : 'justify-start'}`}>
+                    {messages.slice(-3).map((message) => (
+                      <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div
                           className={`max-w-[90%] p-3 rounded-lg ${
-                            message.speaker === 'canvasser' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'
+                            message.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'
                           }`}
                         >
-                          <div className="text-xs opacity-70 mb-1">{message.speaker === 'canvasser' ? 'You' : 'Frank'}</div>
-                          <p className="text-sm">{message.text}</p>
+                          <div className="text-xs opacity-70 mb-1">{message.role === 'user' ? 'You' : 'Frank'}</div>
+                          <p className="text-sm">{message.content}</p>
                         </div>
                       </div>
                     ))}
@@ -657,107 +452,9 @@ const Roleplay = () => {
                   <CardTitle>Live Coaching</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {activeCues.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
-                      <AlertCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>Listen actively. Cues will appear here when they mention important details.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {activeCues.map((cue) => {
-                        const Icon = getCueIcon(cue.type);
-                        return (
-                          <div key={cue.id} className={`border-2 rounded-lg p-4 ${getCueColor(cue.urgency)} animate-fade-in`}>
-                            <div className="flex items-start justify-between">
-                              <div className="flex items-start gap-3">
-                                <Icon className="w-5 h-5 mt-0.5 text-gray-600" />
-                                <div>
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <Badge variant="outline" className="text-xs">
-                                      {cue.type}
-                                    </Badge>
-                                    {cue.urgency === 'high' && (
-                                      <Badge variant="destructive" className="text-xs">
-                                        Act Now
-                                      </Badge>
-                                    )}
-                                  </div>
-                                  <p className="font-medium text-gray-800 mb-1">They said: "{cue.trigger}"</p>
-                                  <p className="text-sm text-gray-700">{cue.prompt}</p>
-                                </div>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => dismissCue(cue.id)}
-                                className="text-gray-500 hover:text-gray-700"
-                              >
-                                ✕
-                              </Button>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {/* People Mentioned Section */}
-                  {mentionedPeople.length > 0 && (
-                    <div className="mt-6 pt-4 border-t">
-                      <h4 className="font-medium mb-3 flex items-center gap-2">
-                        <User className="w-4 h-4" />
-                        People Mentioned
-                      </h4>
-                      <div className="space-y-2">
-                        {mentionedPeople.map((person, index) => (
-                          <div
-                            key={index}
-                            className={`flex items-center justify-between p-2 rounded border ${
-                              person.followedUp ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'
-                            }`}
-                          >
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium text-sm">{person.name}</span>
-                                <Badge variant="outline" className="text-xs">
-                                  {person.relationship}
-                                </Badge>
-                              </div>
-                              <p className="text-xs text-gray-600 mt-1">{person.context}</p>
-                            </div>
-                            {!person.followedUp && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => markPersonFollowedUp(person.name)}
-                                className="text-xs px-2 py-1 h-auto"
-                              >
-                                Mark as followed up
-                              </Button>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Techniques Progress */}
-                  <div className="mt-6 pt-4 border-t">
-                    <h4 className="font-medium mb-3">Techniques Used</h4>
-                    <div className="space-y-2">
-                      {techniques.map((technique) => {
-                        const isAchieved = achievedTechniques.includes(technique.id);
-                        return (
-                          <div
-                            key={technique.id}
-                            className={`flex items-center gap-2 text-sm ${isAchieved ? 'text-green-700' : 'text-gray-500'}`}
-                          >
-                            <div className={`w-2 h-2 rounded-full ${isAchieved ? 'bg-green-500' : 'bg-gray-300'}`} />
-                            {technique.text}
-                          </div>
-                        );
-                      })}
-                    </div>
+                  <div className="text-center py-8 text-gray-500">
+                    <AlertCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>Listen actively. Watch how Lucas engages with Frank in this conversation.</p>
                   </div>
                 </CardContent>
               </Card>
@@ -767,6 +464,16 @@ const Roleplay = () => {
       </main>
       <Footer />
     </div>
+  );
+}
+
+const Roleplay = () => {
+  const lucasMessages = useMemo(() => parseLucasReplay(), []);
+
+  return (
+    <ReplayProvider messages={lucasMessages} playbackSpeed={1}>
+      <RoleplayContent />
+    </ReplayProvider>
   );
 };
 
