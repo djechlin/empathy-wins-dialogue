@@ -1,4 +1,3 @@
-
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
@@ -354,7 +353,7 @@ const Preparation = () => {
               {/* Red X box - Don't do this */}
               <div className="mt-4 p-4 bg-white border border-purple-300 rounded-lg">
                 <div className="flex items-center mb-2">
-                  <X className="w-5 h-5 text-purple-600 mr-2" />
+                  <X className="w-5 h-5 text-red-600 mr-2" />
                   <h4 className="font-medium text-purple-900">Don't go into politics!</h4>
                 </div>
                 <p className="text-purple-800 text-lg font-mono">
@@ -391,7 +390,7 @@ const Preparation = () => {
 
               <div className="p-4 bg-white border border-purple-300 rounded-lg">
                 <div className="flex items-center mb-2">
-                  <X className="w-5 h-5 text-purple-600 mr-2" />
+                  <X className="w-5 h-5 text-red-600 mr-2" />
                   <h4 className="font-medium text-purple-900">Don't do this:</h4>
                 </div>
                 <p className="text-purple-800 text-lg font-mono">
