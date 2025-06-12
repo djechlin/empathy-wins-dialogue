@@ -203,7 +203,7 @@ function RoleplayContent() {
 
   const finishRoleplay = useCallback(() => {
     disconnect();
-    navigate(`/report?duration=${timeElapsed}&techniques=`);
+    navigate(`/challenge/competencies?duration=${timeElapsed}&techniques=`);
   }, [disconnect, navigate, timeElapsed]);
 
   const startRoleplay = useCallback(async () => {
@@ -538,18 +538,18 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplaySt
             </div>
           </div>
         ),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
       setCueStack([openingCue]);
     }
   }, [currentIssue, openingScriptDismissed]);
 
-  // Handle opening script dismissal when roleplay starts  
+  // Handle opening script dismissal when roleplay starts
   useEffect(() => {
     if (roleplayStarted && !openingScriptDismissed) {
       const timer = setTimeout(() => {
         setOpeningScriptDismissed(true);
-        setCueStack(prev => prev.filter(cue => cue.id !== 'opening-script'));
+        setCueStack((prev) => prev.filter((cue) => cue.id !== 'opening-script'));
       }, 10000);
 
       return () => clearTimeout(timer);
@@ -577,7 +577,7 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplaySt
             </div>
           </div>
         ),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
 
@@ -596,7 +596,7 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplaySt
             </div>
           </div>
         ),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
 
@@ -615,13 +615,13 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplaySt
             </div>
           </div>
         ),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
 
     // Add new cues to stack (new ones go to bottom, old ones shift up)
-    setCueStack(prev => {
-      const filtered = prev.filter(cue => cue.id === 'opening-script' || !newCues.some(newCue => newCue.id === cue.id));
+    setCueStack((prev) => {
+      const filtered = prev.filter((cue) => cue.id === 'opening-script' || !newCues.some((newCue) => newCue.id === cue.id));
       const combined = [...filtered, ...newCues];
       return combined.slice(-2); // Keep only the last 2 cues
     });
@@ -629,7 +629,7 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplaySt
     // Auto-dismiss new cues after 10 seconds
     if (newCues.length > 0) {
       const timer = setTimeout(() => {
-        setCueStack(prev => prev.filter(cue => !newCues.some(newCue => newCue.id === cue.id)));
+        setCueStack((prev) => prev.filter((cue) => !newCues.some((newCue) => newCue.id === cue.id)));
       }, 10000);
 
       return () => clearTimeout(timer);
@@ -648,8 +648,8 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplaySt
   return (
     <div className="space-y-3">
       {cueStack.map((cue, index) => (
-        <div 
-          key={`${cue.id}-${cue.timestamp}`} 
+        <div
+          key={`${cue.id}-${cue.timestamp}`}
           className="transition-all duration-500 ease-in-out transform"
           style={{
             transform: `translateY(${index * 4}px)`,

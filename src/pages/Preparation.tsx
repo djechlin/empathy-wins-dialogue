@@ -94,7 +94,7 @@ const Preparation = () => {
     sessionStorage.setItem('personType', personType);
     sessionStorage.setItem('eventType', eventType);
     sessionStorage.setItem('selectedFeeling', selectedFeeling);
-    navigate('/roleplay');
+    navigate('/challenge/roleplay');
   };
 
   const canProceed = () => {

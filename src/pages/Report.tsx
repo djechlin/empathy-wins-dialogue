@@ -501,7 +501,7 @@ const Report = () => {
               <Home className="w-4 h-4 mr-2" />
               Back to Home
             </Button>
-            <Button onClick={() => navigate('/roleplay?issue=' + issue)} size="lg">
+            <Button onClick={() => navigate('/challenge/roleplay?issue=' + issue)} size="lg">
               <RotateCcw className="w-4 h-4 mr-2" />
               Try Again
             </Button>
