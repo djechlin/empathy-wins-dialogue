@@ -336,11 +336,15 @@ const Preparation = () => {
               {/* Always show the mad-lib style story template */}
               <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
                 <p className="text-green-700 text-lg font-mono">
-                  "One time, I {eventType || '_______'} and was really worried.
+                  "One time, I {eventType || '_______'} and was really worried. What happened was..."
                 </p>
                 <p className="text-green-600 mt-2 text-base font-sans">Tell the voter what happened</p>
                 <p className="text-green-700 text-lg font-mono mt-3">
-                  {personType || '_______'} was really there for me and they made me feel {selectedFeeling || '_______'}"
+                  {personType || '_______'} was really there for me. They helped me by...
+                </p>
+                <p className="text-green-600 mt-2 text-base font-sans">Tell the voter what they did</p>
+                <p className="text-green-700 text-lg font-mono mt-3">
+                  and that really made me feel {selectedFeeling || '_______'}"
                 </p>
                 <p className="text-green-600 mt-2 text-sm">Then you'll ask: "Is there a time someone was really there for you?"</p>
               </div>
