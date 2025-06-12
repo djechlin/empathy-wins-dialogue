@@ -1,3 +1,4 @@
+
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
@@ -46,6 +47,33 @@ const Preparation = () => {
       setSelectedIssue('');
     } else {
       setSelectedIssue(value);
+    }
+  };
+
+  const handlePersonChange = (value: string) => {
+    // If the same option is selected, deselect it
+    if (personType === value) {
+      setPersonType('');
+    } else {
+      setPersonType(value);
+    }
+  };
+
+  const handleEventChange = (value: string) => {
+    // If the same option is selected, deselect it
+    if (eventType === value) {
+      setEventType('');
+    } else {
+      setEventType(value);
+    }
+  };
+
+  const handleFeelingChange = (value: string) => {
+    // If the same option is selected, deselect it
+    if (selectedFeeling === value) {
+      setSelectedFeeling('');
+    } else {
+      setSelectedFeeling(value);
     }
   };
 
@@ -259,7 +287,7 @@ const Preparation = () => {
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
                   <Label>Who was there for you?</Label>
-                  <Select value={personType} onValueChange={setPersonType}>
+                  <Select value={personType} onValueChange={handlePersonChange}>
                     <SelectTrigger className="mt-2">
                       <SelectValue placeholder="Select someone..." />
                     </SelectTrigger>
@@ -275,7 +303,7 @@ const Preparation = () => {
 
                 <div>
                   <Label>What happened?</Label>
-                  <Select value={eventType} onValueChange={setEventType}>
+                  <Select value={eventType} onValueChange={handleEventChange}>
                     <SelectTrigger className="mt-2">
                       <SelectValue placeholder="Select what happened..." />
                     </SelectTrigger>
@@ -291,7 +319,7 @@ const Preparation = () => {
 
                 <div>
                   <Label>How did you feel?</Label>
-                  <Select value={selectedFeeling} onValueChange={setSelectedFeeling}>
+                  <Select value={selectedFeeling} onValueChange={handleFeelingChange}>
                     <SelectTrigger className="mt-2">
                       <SelectValue placeholder="Select feeling..." />
                     </SelectTrigger>
