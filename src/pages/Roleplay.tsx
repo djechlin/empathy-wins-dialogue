@@ -61,9 +61,8 @@ const Roleplay = () => {
 
   const [isRecording, setIsRecording] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [isSessionActive, setIsSessionActive] = useState(false);
   const [achievedTechniques, setAchievedTechniques] = useState<string[]>([]);
-  const [conversationStarted, setConversationStarted] = useState(false);
+  const [roleplayStarted, setRoleplayStarted] = useState(false);
   const [conversationMessages, setConversationMessages] = useState<ConversationMessage[]>([]);
   const [activeCues, setActiveCues] = useState<CoachingCue[]>([]);
   const [dismissedCues, setDismissedCues] = useState<string[]>([]);
@@ -254,8 +253,7 @@ const Roleplay = () => {
     [],
   );
 
-  const endSession = useCallback(() => {
-    setIsSessionActive(false);
+  const finishRoleplay = useCallback(() => {
     setIsRecording(false);
     if (timerRef.current) clearInterval(timerRef.current);
     if (messageTimerRef.current) clearInterval(messageTimerRef.current);
@@ -306,16 +304,15 @@ const Roleplay = () => {
     setDismissedCues((prev) => [...prev, cueId]);
   }, []);
 
-  const startSession = useCallback(async () => {
-    setIsSessionActive(true);
-    setConversationStarted(true);
+  const startRoleplay = useCallback(async () => {
+    setRoleplayStarted(true);
     setConversationMessages([]);
     setActiveCues([]);
     setDismissedCues([]);
     setMentionedPeople([]);
 
     toast({
-      title: 'Session Started',
+      title: 'Roleplay Started',
       description: 'Listen for names, emotions, and moments to dig deeper.',
     });
   }, [toast]);
@@ -325,11 +322,11 @@ const Roleplay = () => {
   }, [isRecording]);
 
   useEffect(() => {
-    if (isSessionActive) {
+    if (roleplayStarted) {
       timerRef.current = setInterval(() => {
         setTimeElapsed((prev) => {
           if (prev >= sessionDuration) {
-            endSession();
+            finishRoleplay();
             return sessionDuration;
           }
           return prev + 1;
@@ -384,13 +381,13 @@ const Roleplay = () => {
       if (messageTimerRef.current) clearInterval(messageTimerRef.current);
     };
   }, [
-    isSessionActive,
+    roleplayStarted,
     activeCues,
     dismissedCues,
     achievedTechniques,
     extractMentionedPeople,
     mockAchieveTechnique,
-    endSession,
+    finishRoleplay,
     mockConversation,
     predefinedCues,
     sessionDuration,
@@ -488,10 +485,10 @@ const Roleplay = () => {
                 </CardHeader>
                 <CardContent>
                   <Progress value={progressPercentage} className="mb-4" />
-                  {!conversationStarted ? (
+                  {!roleplayStarted ? (
                     <div className="text-center">
                       <p className="text-gray-600 mb-4">Ready to practice active listening? Watch for coaching cues as they speak.</p>
-                      <Button onClick={startSession} size="lg">
+                      <Button onClick={startRoleplay} size="lg">
                         Start Roleplay
                       </Button>
                     </div>
@@ -507,7 +504,7 @@ const Roleplay = () => {
                           {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                           {isRecording ? 'Pause' : 'Start Speaking'}
                         </Button>
-                        <Button onClick={endSession} variant="outline">
+                        <Button onClick={finishRoleplay} variant="outline">
                           Finish
                         </Button>
                       </div>
