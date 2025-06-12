@@ -1,10 +1,10 @@
 
+
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select';
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/ui/breadcrumb';
 import { ArrowRight, Heart, RotateCcw, Users, Check, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -62,23 +62,43 @@ const Preparation = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-4xl mx-auto">
-        {/* Breadcrumb Navigation */}
-        <div className="mb-6">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbPage className="font-medium text-blue-600">Prepare</BreadcrumbPage>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink className="text-gray-500">Roleplay</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink className="text-gray-500">Learn how you did</BreadcrumbLink>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+        {/* Progress Flow */}
+        <div className="mb-8">
+          <div className="flex items-center justify-center space-x-6">
+            {/* Step 1 - Current Step */}
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                1
+              </div>
+              <span className="text-sm font-medium text-center text-blue-600">
+                Prepare your story
+              </span>
+            </div>
+
+            <ArrowRight className="w-6 h-6 text-gray-400" />
+
+            {/* Step 2 - Future Step */}
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                2
+              </div>
+              <span className="text-sm font-medium text-center text-gray-400">
+                Roleplay
+              </span>
+            </div>
+
+            <ArrowRight className="w-6 h-6 text-gray-400" />
+
+            {/* Step 3 - Future Step */}
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                3
+              </div>
+              <span className="text-sm font-medium text-center text-gray-400">
+                Learn how you did
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className="text-center mb-8">
@@ -334,3 +354,4 @@ const Preparation = () => {
 };
 
 export default Preparation;
+
