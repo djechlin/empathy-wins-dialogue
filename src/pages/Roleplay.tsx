@@ -498,7 +498,7 @@ const Roleplay = () => {
                       <div className="flex justify-center gap-4">
                         <Button
                           onClick={toggleRecording}
-                          variant={isRecording ? 'destructive' : 'default'}
+                          variant={isRecording ? 'outline' : 'default'}
                           size="lg"
                           className="flex items-center gap-2"
                         >
@@ -509,12 +509,6 @@ const Roleplay = () => {
                           Finish Roleplay
                         </Button>
                       </div>
-                      {isRecording && (
-                        <div className="flex items-center justify-center gap-2 text-red-600">
-                          <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                          <span>Recording...</span>
-                        </div>
-                      )}
                     </div>
                   )}
                 </CardContent>
