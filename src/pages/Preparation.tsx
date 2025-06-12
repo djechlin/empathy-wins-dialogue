@@ -336,7 +336,10 @@ const Preparation = () => {
               {/* Always show the mad-lib style story template */}
               <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
                 <p className="text-green-700 text-lg font-mono">
-                  "One time, I {eventType || '_______'} and was really worried. What happened was..."
+                  "One time, I {eventType || '_______'} and was really worried.
+                </p>
+                <p className="text-green-700 text-lg font-mono">
+                  What happened was..."
                 </p>
                 <p className="text-green-600 mt-2 text-base font-sans">Tell the voter what happened</p>
                 <p className="text-green-700 text-lg font-mono mt-3">
