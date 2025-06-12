@@ -1,4 +1,3 @@
-
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
@@ -339,7 +338,7 @@ const Preparation = () => {
                 <p className="text-green-700 text-lg font-mono">
                   "One time, I {eventType || '_______'} and was really worried.
                 </p>
-                <p className="text-green-600 mt-2 text-sm">(Tell the voter what happened)</p>
+                <p className="text-green-600 mt-2 text-base font-sans">Tell the voter what happened</p>
                 <p className="text-green-700 text-lg font-mono mt-3">
                   {personType || '_______'} was really there for me and they made me feel {selectedFeeling || '_______'}"
                 </p>
