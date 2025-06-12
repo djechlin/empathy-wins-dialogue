@@ -2,19 +2,26 @@ import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select';
-import { ArrowRight, Heart, RotateCcw, Users, X } from 'lucide-react';
+import { ArrowRight, X, MessageSquare } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Preparation = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const defaultIssue = searchParams.get('issue') || '';
 
-  const [selectedIssue, setSelectedIssue] = useState(defaultIssue);
-  const [personType, setPersonType] = useState('');
-  const [eventType, setEventType] = useState('');
-  const [selectedFeeling, setSelectedFeeling] = useState('');
+  // Load from sessionStorage on mount
+  const [selectedIssue, setSelectedIssue] = useState(() => {
+    return sessionStorage.getItem('selectedIssue') || 'insulin';
+  });
+  const [personType, setPersonType] = useState(() => {
+    return sessionStorage.getItem('personType') || '';
+  });
+  const [eventType, setEventType] = useState(() => {
+    return sessionStorage.getItem('eventType') || '';
+  });
+  const [selectedFeeling, setSelectedFeeling] = useState(() => {
+    return sessionStorage.getItem('selectedFeeling') || '';
+  });
 
   const issueDetails = {
     insulin: {
@@ -42,20 +49,18 @@ const Preparation = () => {
   const currentIssue = selectedIssue ? issueDetails[selectedIssue as keyof typeof issueDetails] : null;
 
   const handleIssueClick = (value: string) => {
-    // If the same button is clicked, deselect it
-    if (selectedIssue === value) {
-      setSelectedIssue('');
-    } else {
-      setSelectedIssue(value);
-    }
+    setSelectedIssue(value);
+    sessionStorage.setItem('selectedIssue', value);
   };
 
   const handlePersonChange = (value: string) => {
     // If the same option is selected, deselect it
     if (personType === value) {
       setPersonType('');
+      sessionStorage.removeItem('personType');
     } else {
       setPersonType(value);
+      sessionStorage.setItem('personType', value);
     }
   };
 
@@ -63,8 +68,10 @@ const Preparation = () => {
     // If the same option is selected, deselect it
     if (eventType === value) {
       setEventType('');
+      sessionStorage.removeItem('eventType');
     } else {
       setEventType(value);
+      sessionStorage.setItem('eventType', value);
     }
   };
 
@@ -72,13 +79,20 @@ const Preparation = () => {
     // If the same option is selected, deselect it
     if (selectedFeeling === value) {
       setSelectedFeeling('');
+      sessionStorage.removeItem('selectedFeeling');
     } else {
       setSelectedFeeling(value);
+      sessionStorage.setItem('selectedFeeling', value);
     }
   };
 
   const handleStartRoleplay = () => {
-    navigate(`/roleplay?issue=${selectedIssue}&person=${personType}&event=${encodeURIComponent(eventType)}&feeling=${selectedFeeling}`);
+    // Save all data to sessionStorage before navigating
+    sessionStorage.setItem('selectedIssue', selectedIssue);
+    sessionStorage.setItem('personType', personType);
+    sessionStorage.setItem('eventType', eventType);
+    sessionStorage.setItem('selectedFeeling', selectedFeeling);
+    navigate('/roleplay');
   };
 
   const canProceed = () => {
@@ -142,21 +156,16 @@ const Preparation = () => {
 
               <ArrowRight className="w-6 h-6 text-blue-400" />
 
-              {/* Step 2 - Loop */}
-              <div className="flex flex-col items-center relative">
+              {/* Step 2 */}
+              <div className="flex flex-col items-center">
                 <div className="w-12 h-12 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
                   2
                 </div>
                 <span className="text-sm font-medium text-center">
-                  Connection
+                  Share
                   <br />
-                  Loop
+                  Story
                 </span>
-                <div className="absolute -bottom-8 flex items-center space-x-2 text-xs">
-                  <Heart className="w-4 h-4 text-orange-500" />
-                  <RotateCcw className="w-4 h-4 text-orange-500" />
-                  <Users className="w-4 h-4 text-orange-500" />
-                </div>
               </div>
 
               <ArrowRight className="w-6 h-6 text-blue-400" />
@@ -167,6 +176,20 @@ const Preparation = () => {
                   3
                 </div>
                 <span className="text-sm font-medium text-center">
+                  Dig
+                  <br />
+                  Deeper
+                </span>
+              </div>
+
+              <ArrowRight className="w-6 h-6 text-blue-400" />
+
+              {/* Step 4 */}
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-indigo-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                  4
+                </div>
+                <span className="text-sm font-medium text-center">
                   Explore
                   <br />
                   Together
@@ -175,15 +198,15 @@ const Preparation = () => {
 
               <ArrowRight className="w-6 h-6 text-blue-400" />
 
-              {/* Step 4 */}
+              {/* Step 5 */}
               <div className="flex flex-col items-center">
                 <div className="w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                  4
+                  5
                 </div>
                 <span className="text-sm font-medium text-center">
                   Ask for
                   <br />
-                  Support
+                  Action
                 </span>
               </div>
             </div>
@@ -193,7 +216,7 @@ const Preparation = () => {
         {/* Issue Selection */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Step 1: Frame the Issue</CardTitle>
+            <CardTitle>Frame the Issue</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
@@ -246,7 +269,7 @@ const Preparation = () => {
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
-                  <Label>What happened?</Label>
+                  <Label>Think of a time you needed healthcare, and someone was there for you.</Label>
                   <Select value={eventType} onValueChange={handleEventChange}>
                     <SelectTrigger className="mt-2">
                       <SelectValue placeholder="Select what happened..." />
@@ -293,19 +316,103 @@ const Preparation = () => {
                   </Select>
                 </div>
               </div>
+
+              <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                <p className="text-sm text-purple-900 font-medium">
+                  Think of this story, what happened, and how they made you feel. You'll share this with the voter.
+                </p>
+              </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle className="font-sans">Learn their perspective</CardTitle>
+              <CardTitle className="font-sans">Dig deeper</CardTitle>
               <p className="text-gray-600 text-sm font-sans">
-                You'll ask the voter to share their perspective. Listening well means digging deeper, not just into their beliefs, but who
-                they care about in their life.
+                Learn about who the voter cares about, in addition to their perspective and beliefs on the issue. Build common ground over
+                who both of you cherish.
               </p>
             </CardHeader>
             <CardContent className="p-6">
               <p className="text-gray-600 text-sm font-sans">You'll use this question to understand what matters to them personally.</p>
+
+              <div className="mt-4">
+                <div className="flex items-start gap-2 mb-3">
+                  <MessageSquare className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-gray-700">
+                    <p>
+                      <b>If voter says:</b>
+                    </p>
+                    <p className="font-mono">My daughter's really into all that progressive stuff, I wish she'd chill.</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-green-600">✓</span>
+                      <span className="font-medium text-purple-900 text-sm">Good to say</span>
+                    </div>
+                    <p className="font-mono text-sm text-purple-800">
+                      Wow, your daughter's really engaged. Has she always been passionate about her interests?
+                    </p>
+                  </div>
+                  <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-red-600">✗</span>
+                      <span className="font-medium text-purple-900 text-sm">Not as good</span>
+                    </div>
+                    <p className="font-mono text-sm text-purple-800">
+                      I guess you've heard about this a lot from your daughter already, is there a reason you haven't changed your mind yet?
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-sans">Explore together</CardTitle>
+              <p className="text-gray-600 text-sm font-sans">
+                Help the voter think through the issue by connecting your stories and experiences. Guide them to see new perspectives
+                without being pushy.
+              </p>
+            </CardHeader>
+            <CardContent className="p-6">
+              <p className="text-gray-600 text-sm font-sans">
+                You'll help them connect the dots between your shared experiences and the issue.
+              </p>
+
+              <div className="mt-4">
+                <div className="flex items-start gap-2 mb-3">
+                  <MessageSquare className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-gray-700">
+                    <p>
+                      <b>After sharing stories about caring for family:</b>
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-green-600">✓</span>
+                      <span className="font-medium text-purple-900 text-sm">Good to say</span>
+                    </div>
+                    <p className="font-mono text-sm text-purple-800">
+                      It sounds like we both really care about the people we love. Does that change how you think about this issue at all?
+                    </p>
+                  </div>
+                  <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-red-600">✗</span>
+                      <span className="font-medium text-purple-900 text-sm">Not as good</span>
+                    </div>
+                    <p className="font-mono text-sm text-purple-800">
+                      So you can see why we need to support this policy, right? It's obvious that everyone benefits.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -362,7 +469,7 @@ const Preparation = () => {
                         3
                       </div>
                       <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Learn their perspective:</h4>
+                        <h4 className="font-medium text-gray-900 mb-1">Dig deeper:</h4>
                         <p className="text-gray-700 font-mono text-sm">"How does this issue affect people you care about?"</p>
                       </div>
                     </div>

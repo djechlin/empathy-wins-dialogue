@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
 import { AlertCircle, Clock, Heart, Lightbulb, Mic, MicOff, User, Users } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface ConversationMessage {
   id: number;
@@ -34,9 +34,28 @@ interface MentionedPerson {
 
 const Roleplay = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const issue = searchParams.get('issue') || 'insulin';
+
+  // Load preparation data from sessionStorage
+  const selectedIssue = sessionStorage.getItem('selectedIssue') || 'insulin';
+  const personType = sessionStorage.getItem('personType') || '';
+  const eventType = sessionStorage.getItem('eventType') || '';
+  const selectedFeeling = sessionStorage.getItem('selectedFeeling') || '';
+
+  const issueDetails = {
+    insulin: {
+      title: 'Healthcare - Insulin Affordability',
+      plainLanguage: 'affordable insulin for people with diabetes',
+      organization: 'Diabetes Advocates<sup>†</sup>',
+    },
+    climate: {
+      title: 'Climate - Wildfire Management',
+      plainLanguage: 'protecting our communities from wildfires',
+      organization: 'Against Wildfires<sup>†</sup>',
+    },
+  };
+
+  const currentIssue = issueDetails[selectedIssue as keyof typeof issueDetails];
 
   const [isRecording, setIsRecording] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
@@ -63,12 +82,11 @@ const Roleplay = () => {
     [],
   );
 
-  const issueDetails = useMemo(
+  const voterPersonas = useMemo(
     () =>
       ({
-        insulin: { title: 'Lower Insulin Prices', voterPersona: 'Sarah, a working mother concerned about healthcare costs' },
-        healthcare: { title: 'Expand Healthcare Access', voterPersona: 'Mike, a small business owner in rural area' },
-        education: { title: 'Education Funding', voterPersona: 'Lisa, a parent and teacher concerned about school resources' },
+        insulin: 'Sarah, a working mother concerned about healthcare costs',
+        climate: 'Mike, a small business owner in rural area',
       }) as const,
     [],
   );
@@ -240,8 +258,8 @@ const Roleplay = () => {
     if (timerRef.current) clearInterval(timerRef.current);
     if (messageTimerRef.current) clearInterval(messageTimerRef.current);
 
-    navigate(`/report?issue=${issue}&duration=${timeElapsed}&techniques=${achievedTechniques.join(',')}`);
-  }, [navigate, issue, timeElapsed, achievedTechniques]);
+    navigate(`/report?duration=${timeElapsed}&techniques=${achievedTechniques.join(',')}`);
+  }, [navigate, timeElapsed, achievedTechniques]);
 
   const mockAchieveTechnique = useCallback(
     (techniqueId: string) => {
@@ -410,10 +428,8 @@ const Roleplay = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Persuasion Roleplay: {issueDetails[issue as keyof typeof issueDetails]?.title}
-          </h1>
-          <p className="text-gray-600">Speaking with: {issueDetails[issue as keyof typeof issueDetails]?.voterPersona}</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Persuasion Roleplay: {currentIssue?.title}</h1>
+          <p className="text-gray-600">Speaking with: {voterPersonas[selectedIssue as keyof typeof voterPersonas]}</p>
         </div>
 
         <div className="grid lg:grid-cols-4 gap-6">
@@ -600,6 +616,81 @@ const Roleplay = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Your Script */}
+            {personType && eventType && selectedFeeling && currentIssue && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Script</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4 text-sm">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
+                        1
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-1">Framing:</h5>
+                        <p className="text-gray-700 font-mono text-xs">
+                          "My name is [your name], I'm here with <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to
+                          talk about {currentIssue.plainLanguage}."
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
+                        2
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-1">Share your story:</h5>
+                        <p className="text-gray-700 font-mono text-xs">
+                          "One time, I {eventType} and was really worried. What happened was... My {personType} was really there for me.
+                          They helped me by... and that really made me feel {selectedFeeling}. Is there a time someone was really there for
+                          you?"
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
+                        3
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-1">Dig deeper:</h5>
+                        <p className="text-gray-700 font-mono text-xs">"How does this issue affect people you care about?"</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-indigo-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
+                        4
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-1">Explore together:</h5>
+                        <p className="text-gray-700 font-mono text-xs">
+                          "It sounds like we both really care about the people we love. Does that change how you think about this issue at
+                          all?"
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
+                        5
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-1">Ask for action:</h5>
+                        <p className="text-gray-700 font-mono text-xs">
+                          "Now that we've explored the issue together, would you take your phone and tell your representative Peter Gerbil
+                          how you feel, at 555-4567?"
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
