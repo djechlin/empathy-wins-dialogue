@@ -280,7 +280,8 @@ const Preparation = () => {
         <div className="space-y-4 mb-8">
           <Card>
             <CardHeader>
-              <CardTitle>💝 Your Story Opening</CardTitle>
+              <CardTitle>Share your story</CardTitle>
+              <p className="text-gray-600 text-sm">In the roleplay, you'll share a real time you were impacted by a related issue. You'll share a time someone was there for you, so you and the voter can relate as people, not as debaters.</p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-3 gap-4">
