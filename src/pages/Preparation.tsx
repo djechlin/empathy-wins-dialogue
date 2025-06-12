@@ -1,3 +1,4 @@
+
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
@@ -54,43 +55,7 @@ const Preparation = () => {
           <p className="text-gray-600">Your roadmap for persuasive conversation</p>
         </div>
 
-        {/* Issue Selection */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Step 1: Frame the Issue</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <Label className="text-base font-medium mb-4 block">Choose your issue:</Label>
-              <RadioGroup value={selectedIssue} onValueChange={setSelectedIssue} className="space-y-3">
-                <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                  <RadioGroupItem value="insulin" id="insulin" />
-                  <Label htmlFor="insulin" className="flex-1 cursor-pointer">
-                    <div className="font-medium">Healthcare - Insulin Affordability</div>
-                    <div className="text-sm text-gray-600">Help families afford life-saving diabetes medication</div>
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                  <RadioGroupItem value="climate" id="climate" />
-                  <Label htmlFor="climate" className="flex-1 cursor-pointer">
-                    <div className="font-medium">Climate - Wildfire Management</div>
-                    <div className="text-sm text-gray-600">Protect communities from increasing wildfire risks</div>
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            {/* Script Preview */}
-            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h4 className="font-medium text-blue-900 mb-2">Your opening line:</h4>
-              <p className="text-blue-800 italic text-lg">
-                "My name is [your name], I'm here with {currentIssue.organization} to talk about {currentIssue.plainLanguage}."
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Visual Flow */}
+        {/* Visual Flow - Now at the top */}
         <Card className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
           <CardContent className="p-8">
             <div className="flex items-center justify-center space-x-6 mb-6">
@@ -152,6 +117,42 @@ const Preparation = () => {
                   Support
                 </span>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Issue Selection - Now below the visual flow */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Step 1: Frame the Issue</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <Label className="text-base font-medium mb-4 block">Choose your issue:</Label>
+              <RadioGroup value={selectedIssue} onValueChange={setSelectedIssue} className="space-y-3">
+                <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                  <RadioGroupItem value="insulin" id="insulin" />
+                  <Label htmlFor="insulin" className="flex-1 cursor-pointer">
+                    <div className="font-medium">Healthcare - Insulin Affordability</div>
+                    <div className="text-sm text-gray-600">Help families afford life-saving diabetes medication</div>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                  <RadioGroupItem value="climate" id="climate" />
+                  <Label htmlFor="climate" className="flex-1 cursor-pointer">
+                    <div className="font-medium">Climate - Wildfire Management</div>
+                    <div className="text-sm text-gray-600">Protect communities from increasing wildfire risks</div>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Script Preview */}
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h4 className="font-medium text-blue-900 mb-2">Your opening line:</h4>
+              <p className="text-blue-800 italic text-lg">
+                "My name is [your name], I'm here with {currentIssue.organization} to talk about {currentIssue.plainLanguage}."
+              </p>
             </div>
           </CardContent>
         </Card>
