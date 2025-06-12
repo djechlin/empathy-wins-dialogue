@@ -1,4 +1,3 @@
-
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
@@ -147,14 +146,14 @@ const Preparation = () => {
                     <Label 
                       htmlFor="insulin" 
                       onClick={() => handleIssueClick('insulin')}
-                      className={`block cursor-pointer p-4 rounded-lg border-2 transition-all duration-200 aspect-[1.2/1] flex flex-col justify-center text-center hover:shadow-lg ${
+                      className={`block cursor-pointer p-3 rounded-lg border-2 transition-all duration-200 aspect-[1.4/1] flex flex-col justify-center text-center hover:shadow-lg ${
                         selectedIssue === 'insulin' 
                           ? 'border-blue-500 bg-blue-50 shadow-md' 
                           : 'border-gray-200 bg-white hover:border-blue-300'
                       }`}
                     >
-                      <div className="font-semibold text-lg text-blue-700 mb-2">Healthcare</div>
-                      <div className="text-sm text-gray-600">Help families afford life-saving diabetes medication</div>
+                      <div className="font-semibold text-base text-blue-700 mb-1">Healthcare</div>
+                      <div className="text-xs text-gray-600">Help families afford life-saving diabetes medication</div>
                     </Label>
                   </div>
                   
@@ -163,14 +162,14 @@ const Preparation = () => {
                     <Label 
                       htmlFor="climate" 
                       onClick={() => handleIssueClick('climate')}
-                      className={`block cursor-pointer p-4 rounded-lg border-2 transition-all duration-200 aspect-[1.2/1] flex flex-col justify-center text-center hover:shadow-lg ${
+                      className={`block cursor-pointer p-3 rounded-lg border-2 transition-all duration-200 aspect-[1.4/1] flex flex-col justify-center text-center hover:shadow-lg ${
                         selectedIssue === 'climate' 
                           ? 'border-green-500 bg-green-50 shadow-md' 
                           : 'border-gray-200 bg-white hover:border-green-300'
                       }`}
                     >
-                      <div className="font-semibold text-lg text-green-700 mb-2">Climate</div>
-                      <div className="text-sm text-gray-600">Protect communities from increasing wildfire risks</div>
+                      <div className="font-semibold text-base text-green-700 mb-1">Climate</div>
+                      <div className="text-xs text-gray-600">Protect communities from increasing wildfire risks</div>
                     </Label>
                   </div>
                 </div>
