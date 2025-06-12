@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select';
-import { ArrowRight, Heart, RotateCcw, Users } from 'lucide-react';
+import { ArrowRight, Heart, RotateCcw, Users, Check, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -23,11 +23,13 @@ const Preparation = () => {
       title: 'Healthcare - Insulin Affordability',
       plainLanguage: 'affordable insulin for people with diabetes',
       organization: 'Diabetes Advocates',
+      dontSayText: 'Hello. Is this Frank I\'m talking to? Do you have a few minutes to chat about healthcare? According to the CDC an estimated 38.4 million Americans suffer from diabetes...',
     },
     climate: {
       title: 'Climate - Wildfire Management',
       plainLanguage: 'protecting our communities from wildfires',
       organization: 'Safe Climate Advocates',
+      dontSayText: 'Hello. Is this Frank I\'m talking to? Do you have a few minutes to chat about the devastating impacts of climate change? In 2024, global carbon dioxide emission reached 41.6 billion tons...',
     },
   };
 
@@ -165,10 +167,24 @@ const Preparation = () => {
             </div>
 
             {/* Script Preview */}
-            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h4 className="font-medium text-blue-900 mb-2">Your opening line:</h4>
-              <p className="text-blue-800 italic text-lg">
+            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center mb-2">
+                <Check className="w-5 h-5 text-green-600 mr-2" />
+                <h4 className="font-medium text-green-900">Your opening line:</h4>
+              </div>
+              <p className="text-green-800 text-lg font-mono">
                 "My name is [your name], I'm here with {currentIssue.organization} to talk about {currentIssue.plainLanguage}."
+              </p>
+            </div>
+
+            {/* Don't Say This */}
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center mb-2">
+                <X className="w-5 h-5 text-red-600 mr-2" />
+                <h4 className="font-medium text-red-900">Don't say this:</h4>
+              </div>
+              <p className="text-red-800 text-sm font-mono">
+                {currentIssue.dontSayText}
               </p>
             </div>
           </CardContent>
@@ -233,7 +249,7 @@ const Preparation = () => {
 
               {personType && eventType && selectedFeeling && (
                 <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="text-green-700 italic text-lg">
+                  <p className="text-green-700 text-lg font-mono">
                     "You know, one time my {personType} {eventType}. In that moment I really felt {selectedFeeling}..."
                   </p>
                   <p className="text-green-600 mt-2 text-sm">Then you'll ask: "Is there a time someone was really there for you?"</p>
@@ -245,21 +261,21 @@ const Preparation = () => {
           <Card>
             <CardContent className="p-6">
               <h3 className="font-semibold text-gray-900 mb-2">🤝 How to Start Eliciting:</h3>
-              <p className="text-lg text-gray-700 italic">"Is there a time someone was really there for you?"</p>
+              <p className="text-lg text-gray-700 font-mono">"Is there a time someone was really there for you?"</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-6">
               <h3 className="font-semibold text-gray-900 mb-2">🔍 Start Exploring:</h3>
-              <p className="text-lg text-gray-700 italic">"How does this issue affect people you care about?"</p>
+              <p className="text-lg text-gray-700 font-mono">"How does this issue affect people you care about?"</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-6">
               <h3 className="font-semibold text-gray-900 mb-2">🎯 Tie It Together:</h3>
-              <p className="text-lg text-gray-700 italic">"Does that change how you feel about {currentIssue.title.toLowerCase()}?"</p>
+              <p className="text-lg text-gray-700 font-mono">"Does that change how you feel about {currentIssue.title.toLowerCase()}?"</p>
             </CardContent>
           </Card>
         </div>
