@@ -337,23 +337,26 @@ const Roleplay = () => {
       }, 1000);
 
       messageTimerRef.current = setInterval(() => {
-        setTimeElapsed((currentTime) => {
-          const nextMessage = mockConversation.find((msg) => msg.timestamp === currentTime + 1);
-          if (nextMessage) {
-            setConversationMessages((prev) => [...prev, nextMessage]);
+        setConversationMessages((prevMessages) => {
+          const nextMessageIndex = prevMessages.length;
+          const nextMessage = mockConversation[nextMessageIndex];
 
+          if (nextMessage) {
             // Extract mentioned people
             extractMentionedPeople(nextMessage);
 
-            // Check for new coaching cues
-            const newCues = predefinedCues.filter(
-              (cue) =>
-                cue.appearsAt === currentTime + 1 && !dismissedCues.includes(cue.id) && !activeCues.find((active) => active.id === cue.id),
-            );
+            // Check for new coaching cues based on time elapsed
+            setTimeElapsed((currentTime) => {
+              const newCues = predefinedCues.filter(
+                (cue) =>
+                  cue.appearsAt === currentTime && !dismissedCues.includes(cue.id) && !activeCues.find((active) => active.id === cue.id),
+              );
 
-            if (newCues.length > 0) {
-              setActiveCues((prev) => [...prev, ...newCues]);
-            }
+              if (newCues.length > 0) {
+                setActiveCues((prev) => [...prev, ...newCues]);
+              }
+              return currentTime;
+            });
 
             // Check for technique achievements
             if (nextMessage.speaker === 'canvasser') {
@@ -367,8 +370,11 @@ const Roleplay = () => {
                 mockAchieveTechnique('plain-language');
               }
             }
+
+            return [...prevMessages, nextMessage];
           }
-          return currentTime;
+
+          return prevMessages;
         });
       }, 2000);
     }
