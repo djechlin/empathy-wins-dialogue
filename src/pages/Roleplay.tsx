@@ -517,14 +517,13 @@ interface ContextAwareTipsBoxProps {
 }
 
 const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplayStarted, currentIssue }: ContextAwareTipsBoxProps) => {
-  const [visibleTips, setVisibleTips] = useState<Array<{ id: string; content: React.ReactNode }>>([]);
+  const [cueStack, setCueStack] = useState<Array<{ id: string; content: React.ReactNode; timestamp: number }>>([]);
+  const [openingScriptDismissed, setOpeningScriptDismissed] = useState(false);
 
+  // Initialize with opening script immediately when component mounts
   useEffect(() => {
-    const tips: Array<{ id: string; content: React.ReactNode }> = [];
-
-    // Show opening script as first cue when roleplay hasn't started
-    if (!roleplayStarted && currentIssue) {
-      tips.push({
+    if (currentIssue && !openingScriptDismissed) {
+      const openingCue = {
         id: 'opening-script',
         content: (
           <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4">
@@ -539,11 +538,32 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplaySt
             </div>
           </div>
         ),
-      });
+        timestamp: Date.now()
+      };
+      setCueStack([openingCue]);
     }
+  }, [currentIssue, openingScriptDismissed]);
+
+  // Handle opening script dismissal when roleplay starts  
+  useEffect(() => {
+    if (roleplayStarted && !openingScriptDismissed) {
+      const timer = setTimeout(() => {
+        setOpeningScriptDismissed(true);
+        setCueStack(prev => prev.filter(cue => cue.id !== 'opening-script'));
+      }, 10000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [roleplayStarted, openingScriptDismissed]);
+
+  // Handle new context-aware cues during roleplay
+  useEffect(() => {
+    if (!roleplayStarted) return;
+
+    const newCues: Array<{ id: string; content: React.ReactNode; timestamp: number }> = [];
 
     if (voterSharedContent.people.length > 0) {
-      tips.push({
+      newCues.push({
         id: 'people',
         content: (
           <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg p-4">
@@ -557,54 +577,66 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplaySt
             </div>
           </div>
         ),
+        timestamp: Date.now()
       });
     }
 
     if (voterSharedContent.feelings.length > 0) {
-      tips.push({
+      newCues.push({
         id: 'feelings',
         content: (
           <div className="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Heart className="w-5 h-5 text-purple-600" />
-              <span className="text-sm font-medium text-purple-900">Wonderful! They shared emotions!</span>
+            <div className="flex items-start gap-4">
+              <Heart className="w-8 h-8 text-purple-600 flex-shrink-0 mt-1" />
+              <div className="flex-1">
+                <p className="text-gray-800 text-sm leading-relaxed">
+                  Frank shared feelings: <strong>{voterSharedContent.feelings.join(', ')}</strong>. Ask them to tell you more about why.
+                </p>
+              </div>
             </div>
-            <p className="text-sm text-purple-700">
-              They felt <strong>{voterSharedContent.feelings.join(', ')}</strong> - Ask them to tell you more about why.
-            </p>
           </div>
         ),
+        timestamp: Date.now()
       });
     }
 
     if (currentScriptStep >= 3 && voterSharedContent.people.length === 0 && voterSharedContent.feelings.length === 0) {
-      tips.push({
+      newCues.push({
         id: 'deeper',
         content: (
           <div className="bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200 rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-5 h-5 text-amber-600" />
-              <span className="text-sm font-medium text-amber-900">Time to go deeper!</span>
+            <div className="flex items-start gap-4">
+              <Sparkles className="w-8 h-8 text-amber-600 flex-shrink-0 mt-1" />
+              <div className="flex-1">
+                <p className="text-gray-800 text-sm leading-relaxed">
+                  Time to go deeper! Try asking about their family or personal experiences with this issue.
+                </p>
+              </div>
             </div>
-            <p className="text-sm text-amber-700">Try asking about their family or personal experiences with this issue.</p>
           </div>
         ),
+        timestamp: Date.now()
       });
     }
 
-    setVisibleTips(tips.slice(0, 2)); // Show only the first 2 tips
+    // Add new cues to stack (new ones go to bottom, old ones shift up)
+    setCueStack(prev => {
+      const filtered = prev.filter(cue => cue.id === 'opening-script' || !newCues.some(newCue => newCue.id === cue.id));
+      const combined = [...filtered, ...newCues];
+      return combined.slice(-2); // Keep only the last 2 cues
+    });
 
-    // Auto-fade after 10 seconds, but not for the opening script
-    if (roleplayStarted) {
+    // Auto-dismiss new cues after 10 seconds
+    if (newCues.length > 0) {
       const timer = setTimeout(() => {
-        setVisibleTips([]);
+        setCueStack(prev => prev.filter(cue => !newCues.some(newCue => newCue.id === cue.id)));
       }, 10000);
 
       return () => clearTimeout(timer);
     }
-  }, [voterSharedContent, currentScriptStep, roleplayStarted, currentIssue]);
+  }, [voterSharedContent, currentScriptStep, roleplayStarted]);
 
-  if (visibleTips.length === 0) {
+  if (cueStack.length === 0) {
     return (
       <div className="text-center py-4 text-gray-500">
         <Bot className="w-8 h-8 mx-auto mb-2 opacity-30" />
@@ -614,10 +646,17 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplaySt
   }
 
   return (
-    <div className="space-y-3 transition-opacity duration-1000">
-      {visibleTips.map((tip) => (
-        <div key={tip.id} className="animate-in slide-in-from-bottom-2 duration-500">
-          {tip.content}
+    <div className="space-y-3">
+      {cueStack.map((cue, index) => (
+        <div 
+          key={`${cue.id}-${cue.timestamp}`} 
+          className="transition-all duration-500 ease-in-out transform"
+          style={{
+            transform: `translateY(${index * 4}px)`,
+            opacity: 1,
+          }}
+        >
+          {cue.content}
         </div>
       ))}
     </div>
