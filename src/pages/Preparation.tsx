@@ -221,11 +221,13 @@ const Preparation = () => {
                 </button>
               </div>
               {selectedIssue && (
-                <p className="text-xs text-gray-600 mt-2">
-                  {selectedIssue === 'insulin'
-                    ? 'Help families afford life-saving diabetes medication'
-                    : 'Protect communities from increasing wildfire risks'}
-                </p>
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-900 font-medium">
+                    {selectedIssue === 'insulin'
+                      ? "You'll be with Diabetes Advocates, talking to voters about lowering the price of insulin."
+                      : "You'll be talking about the increasing wildfire risk in your area. You're focusing on increased training for wildfire fighters, which mitigates the issue here and now, and gets our government to take climate change threats more seriously."}
+                  </p>
+                </div>
               )}
             </div>
           </CardContent>
