@@ -476,112 +476,22 @@ function RoleplayContent() {
               </Card>
             </div>
 
-            {/* Combined Script and Live Coaching */}
+            {/* Conversation Cues */}
             <div className="lg:col-span-2 space-y-4">
-              {/* Current Step Display */}
-              {personType && eventType && selectedFeeling && currentIssue && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{!roleplayStarted ? 'Your Opening Script' : 'Live Coaching'}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {!roleplayStarted ? (
-                      // Show step 1 prominently before roleplay starts
-                      <div className="space-y-4">
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                          <div className="flex items-start space-x-3">
-                            <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
-                              1
-                            </div>
-                            <div className="flex-1">
-                              <h5 className="font-medium text-gray-900 mb-2">Start with your framing:</h5>
-                              <div className="bg-white border border-blue-200 rounded p-3">
-                                <p className="text-gray-800 font-mono text-sm leading-relaxed">
-                                  "My name is [your name], I'm here with{' '}
-                                  <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to talk about{' '}
-                                  {currentIssue.plainLanguage}."
-                                </p>
-                              </div>
-                              <p className="text-gray-600 text-xs mt-2">
-                                This introduces you and frames the conversation around the issue.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-center text-gray-600 text-sm">
-                          <p>Once you start the roleplay, you'll receive live coaching cues as the conversation progresses.</p>
-                        </div>
-                      </div>
-                    ) : (
-                      // Show dynamic coaching based on current step
-                      <div className="space-y-4">
-                        {currentScriptStep === 1 && (
-                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <h5 className="font-medium text-blue-900 mb-2">✓ Step 1 Complete - Now listen to them</h5>
-                            <p className="text-gray-700 text-sm">Let them respond to your framing. Listen for their initial thoughts.</p>
-                          </div>
-                        )}
-
-                        {currentScriptStep === 2 && (
-                          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                            <h5 className="font-medium text-orange-900 mb-2">Share your story:</h5>
-                            <div className="bg-white border border-orange-200 rounded p-3">
-                              <p className="text-gray-800 font-mono text-sm leading-relaxed">
-                                "One time, I {eventType} and was really worried. What happened was...
-                                <br />
-                                <span className="text-gray-500">[your story]</span>
-                                <br />
-                                My {personType} was really there for me. They helped me by...
-                                <br />
-                                <span className="text-gray-500">[what they did]</span>
-                                <br />
-                                and that really made me feel {selectedFeeling}. Is there a time someone was really there for you?"
-                              </p>
-                            </div>
-                          </div>
-                        )}
-
-                        {currentScriptStep >= 3 && (
-                          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <h5 className="font-medium text-green-900 mb-2">Listen to the voter</h5>
-                            <div className="text-gray-700 text-sm space-y-2">
-                              <div className="flex items-center gap-2">
-                                <MessageCircle className="w-4 h-4 text-green-600" />
-                                <p>When they name a person, ask more about them</p>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <MessageCircle className="w-4 h-4 text-green-600" />
-                                <p>When they say how they feel, ask why</p>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <MessageCircle className="w-4 h-4 text-green-600" />
-                                <p>Look for connections to your shared values</p>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Lightbulb className="w-5 h-5 text-yellow-500" />
-                    Smart Tips
+                    Conversation Cues
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {!roleplayStarted ? (
-                    <div className="text-center py-6 text-gray-500">
-                      <Bot className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p className="text-sm">Your AI coach will share helpful tips as you chat!</p>
-                    </div>
-                  ) : (
-                    <ContextAwareTipsBox voterSharedContent={voterSharedContent} currentScriptStep={currentScriptStep} />
-                  )}
+                  <ContextAwareTipsBox 
+                    voterSharedContent={voterSharedContent} 
+                    currentScriptStep={currentScriptStep}
+                    roleplayStarted={roleplayStarted}
+                    currentIssue={currentIssue}
+                  />
                 </CardContent>
               </Card>
             </div>
@@ -599,13 +509,43 @@ interface ContextAwareTipsBoxProps {
     feelings: string[];
   };
   currentScriptStep: number;
+  roleplayStarted: boolean;
+  currentIssue?: {
+    organization: string;
+    plainLanguage: string;
+  };
 }
 
-const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep }: ContextAwareTipsBoxProps) => {
+const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplayStarted, currentIssue }: ContextAwareTipsBoxProps) => {
   const [visibleTips, setVisibleTips] = useState<Array<{ id: string; content: React.ReactNode }>>([]);
 
   useEffect(() => {
     const tips: Array<{ id: string; content: React.ReactNode }> = [];
+
+    // Show opening script as first cue when roleplay hasn't started
+    if (!roleplayStarted && currentIssue) {
+      tips.push({
+        id: 'opening-script',
+        content: (
+          <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <MessageCircle className="w-5 h-5 text-blue-600" />
+              <span className="text-sm font-medium text-blue-900">Start with your framing</span>
+            </div>
+            <div className="bg-white border border-blue-200 rounded p-3 mb-2">
+              <p className="text-gray-800 text-sm leading-relaxed">
+                "My name is [your name], I'm here with{' '}
+                <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to talk about{' '}
+                {currentIssue.plainLanguage}."
+              </p>
+            </div>
+            <p className="text-gray-600 text-xs">
+              This introduces you and frames the conversation around the issue.
+            </p>
+          </div>
+        )
+      });
+    }
 
     if (voterSharedContent.people.length > 0) {
       tips.push({
@@ -658,13 +598,15 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep }: ContextA
 
     setVisibleTips(tips.slice(0, 2)); // Show only the first 2 tips
 
-    // Auto-fade after 10 seconds
-    const timer = setTimeout(() => {
-      setVisibleTips([]);
-    }, 10000);
+    // Auto-fade after 10 seconds, but not for the opening script
+    if (roleplayStarted) {
+      const timer = setTimeout(() => {
+        setVisibleTips([]);
+      }, 10000);
 
-    return () => clearTimeout(timer);
-  }, [voterSharedContent, currentScriptStep]);
+      return () => clearTimeout(timer);
+    }
+  }, [voterSharedContent, currentScriptStep, roleplayStarted, currentIssue]);
 
   if (visibleTips.length === 0) {
     return (
