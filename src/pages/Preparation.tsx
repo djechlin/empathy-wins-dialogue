@@ -319,13 +319,6 @@ const Preparation = () => {
 
           <Card>
             <CardContent className="p-6">
-              <h3 className="font-semibold text-gray-900 mb-2">🤝 How to Start Eliciting:</h3>
-              <p className="text-lg text-gray-700 font-mono">"Is there a time someone was really there for you?"</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
               <h3 className="font-semibold text-gray-900 mb-2">🔍 Start Exploring:</h3>
               <p className="text-lg text-gray-700 font-mono">"How does this issue affect people you care about?"</p>
             </CardContent>
