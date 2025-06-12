@@ -306,14 +306,17 @@ const Preparation = () => {
                 </div>
               </div>
 
-              {personType && eventType && selectedFeeling && (
-                <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="text-green-700 text-lg font-mono">
-                    "You know, one time my {personType} {eventType}. In that moment I really felt {selectedFeeling}..."
-                  </p>
-                  <p className="text-green-600 mt-2 text-sm">Then you'll ask: "Is there a time someone was really there for you?"</p>
-                </div>
-              )}
+              {/* Always show the mad-lib style story template */}
+              <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-700 text-lg font-mono">
+                  "One time, I {eventType || '_______'} and was really worried.
+                </p>
+                <p className="text-green-600 mt-2 text-sm">(Tell the voter what happened)</p>
+                <p className="text-green-700 text-lg font-mono mt-3">
+                  {personType || '_______'} was really there for me and they made me feel {selectedFeeling || '_______'}"
+                </p>
+                <p className="text-green-600 mt-2 text-sm">Then you'll ask: "Is there a time someone was really there for you?"</p>
+              </div>
             </CardContent>
           </Card>
 
