@@ -306,6 +306,7 @@ const Roleplay = () => {
 
   const startRoleplay = useCallback(async () => {
     setRoleplayStarted(true);
+    setIsRecording(true);
     setConversationMessages([]);
     setActiveCues([]);
     setDismissedCues([]);
@@ -502,7 +503,7 @@ const Roleplay = () => {
                           className="flex items-center gap-2"
                         >
                           {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                          {isRecording ? 'Pause' : 'Start Speaking'}
+                          {isRecording ? 'Pause' : 'Resume'}
                         </Button>
                         <Button onClick={finishRoleplay} variant="outline">
                           Finish Roleplay
