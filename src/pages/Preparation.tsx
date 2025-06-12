@@ -1,9 +1,8 @@
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select';
-import { ArrowRight, Heart, RotateCcw, Users, Check, X } from 'lucide-react';
+import { ArrowRight, Heart, RotateCcw, Users, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -22,13 +21,15 @@ const Preparation = () => {
       title: 'Healthcare - Insulin Affordability',
       plainLanguage: 'affordable insulin for people with diabetes',
       organization: 'Diabetes Advocates<sup>†</sup>',
-      dontSayText: 'Hello. Is this Frank I\'m talking to? Do you have a few minutes to chat about healthcare? According to the CDC an estimated 38.4 million Americans suffer from diabetes...',
+      dontSayText:
+        "Hello. Is this Frank I'm talking to? Do you have a few minutes to chat about healthcare? According to the CDC an estimated 38.4 million Americans suffer from diabetes...",
     },
     climate: {
       title: 'Climate - Wildfire Management',
       plainLanguage: 'protecting our communities from wildfires',
       organization: 'Against Wildfires<sup>†</sup>',
-      dontSayText: 'Hello. Is this Frank I\'m talking to? Do you have a few minutes to chat about the devastating impacts of climate change? In 2024, global carbon dioxide emission reached 41.6 billion tons...',
+      dontSayText:
+        "Hello. Is this Frank I'm talking to? Do you have a few minutes to chat about the devastating impacts of climate change? In 2024, global carbon dioxide emission reached 41.6 billion tons...",
     },
   };
 
@@ -92,12 +93,8 @@ const Preparation = () => {
           <div className="flex items-center justify-center space-x-6">
             {/* Step 1 - Current Step */}
             <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                1
-              </div>
-              <span className="text-sm font-medium text-center text-blue-600 font-sans">
-                Conversation Strategy
-              </span>
+              <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">1</div>
+              <span className="text-sm font-medium text-center text-blue-600 font-sans">Conversation Strategy</span>
             </div>
 
             <ArrowRight className="w-6 h-6 text-gray-400" />
@@ -107,9 +104,7 @@ const Preparation = () => {
               <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
                 2
               </div>
-              <span className="text-sm font-medium text-center text-gray-400 font-sans">
-                Roleplay
-              </span>
+              <span className="text-sm font-medium text-center text-gray-400 font-sans">Roleplay</span>
             </div>
 
             <ArrowRight className="w-6 h-6 text-gray-400" />
@@ -119,9 +114,7 @@ const Preparation = () => {
               <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
                 3
               </div>
-              <span className="text-sm font-medium text-center text-gray-400 font-sans">
-                Learn how you did
-              </span>
+              <span className="text-sm font-medium text-center text-gray-400 font-sans">Learn how you did</span>
             </div>
           </div>
         </div>
@@ -229,47 +222,9 @@ const Preparation = () => {
               </div>
               {selectedIssue && (
                 <p className="text-xs text-gray-600 mt-2">
-                  {selectedIssue === 'insulin' 
+                  {selectedIssue === 'insulin'
                     ? 'Help families afford life-saving diabetes medication'
-                    : 'Protect communities from increasing wildfire risks'
-                  }
-                </p>
-              )}
-            </div>
-
-            {/* Script Preview */}
-            <div className="mt-6 p-4 bg-purple-50 border border-purple-300 rounded-lg shadow-sm">
-              <div className="flex items-center mb-2">
-                <Check className="w-5 h-5 text-purple-600 mr-2" />
-                <h4 className="font-medium text-purple-900">Your opening line:</h4>
-              </div>
-              {currentIssue ? (
-                <>
-                  <p className="text-purple-800 text-lg font-mono">
-                    "My name is [your name], I'm here with <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to talk about {currentIssue.plainLanguage}."
-                  </p>
-                  <p className="text-purple-700 mt-3 text-xs"><sup>†</sup> fictitious</p>
-                </>
-              ) : (
-                <p className="text-purple-700 text-base">
-                  Select an issue to see how to frame it
-                </p>
-              )}
-            </div>
-
-            {/* Don't Say This */}
-            <div className="mt-4 p-4 bg-white border border-purple-300 rounded-lg">
-              <div className="flex items-center mb-2">
-                <X className="w-5 h-5 text-purple-600 mr-2" />
-                <h4 className="font-medium text-purple-900">Don't say this:</h4>
-              </div>
-              {currentIssue ? (
-                <p className="text-purple-800 text-sm font-mono">
-                  {currentIssue.dontSayText}
-                </p>
-              ) : (
-                <p className="text-purple-700 text-base">
-                  Select an issue to see what NOT to say
+                    : 'Protect communities from increasing wildfire risks'}
                 </p>
               )}
             </div>
@@ -281,7 +236,10 @@ const Preparation = () => {
           <Card>
             <CardHeader>
               <CardTitle className="font-sans">Share your story</CardTitle>
-              <p className="text-gray-600 text-sm font-sans">In the roleplay, you'll share a real time you were impacted by a related issue. You'll share a time someone was there for you, so you and the voter can relate as people, not as debaters.</p>
+              <p className="text-gray-600 text-sm font-sans">
+                In the roleplay, you'll share a real time you were impacted by a related issue. You'll share a time someone was there for
+                you, so you and the voter can relate as people, not as debaters.
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-3 gap-4">
@@ -333,43 +291,19 @@ const Preparation = () => {
                   </Select>
                 </div>
               </div>
-
-              {/* Always show the mad-lib style story template */}
-              <div className="mt-4 p-4 bg-purple-50 border border-purple-300 rounded-lg shadow-sm">
-                <p className="text-purple-700 text-lg font-mono">
-                  "One time, I {eventType || '_______'} and was really worried. What happened was..."
-                </p>
-                <p className="text-purple-600 mt-2 text-base font-sans">Tell the voter what happened</p>
-                <p className="text-purple-700 text-lg font-mono mt-3">
-                  My {personType || '_______'} was really there for me. They helped me by...
-                </p>
-                <p className="text-purple-600 mt-2 text-base font-sans">Tell the voter what they did</p>
-                <p className="text-purple-700 text-lg font-mono mt-3">
-                  and that really made me feel {selectedFeeling || '_______'}"
-                </p>
-                <p className="text-purple-600 mt-2 text-sm">Then you'll ask: "Is there a time someone was really there for you?"</p>
-              </div>
-
-              {/* Red X box - Don't do this */}
-              <div className="mt-4 p-4 bg-white border border-purple-300 rounded-lg">
-                <div className="flex items-center mb-2">
-                  <X className="w-5 h-5 text-red-600 mr-2" />
-                  <h4 className="font-medium text-purple-900">Don't go into politics!</h4>
-                </div>
-                <p className="text-purple-800 text-lg font-mono">
-                  "One time, I got sick and was really worried. I was able to see a doctor but Congress is trying to take away access to healthcare for millions of other Americans."
-                </p>
-              </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
               <CardTitle className="font-sans">Learn their perspective</CardTitle>
-              <p className="text-gray-600 text-sm font-sans">You'll ask the voter to share their perspective. Listening well means digging deeper, not just into their beliefs, but who they care about in their life.</p>
+              <p className="text-gray-600 text-sm font-sans">
+                You'll ask the voter to share their perspective. Listening well means digging deeper, not just into their beliefs, but who
+                they care about in their life.
+              </p>
             </CardHeader>
             <CardContent className="p-6">
-              <p className="text-lg text-gray-700 font-mono">"How does this issue affect people you care about?"</p>
+              <p className="text-gray-600 text-sm font-sans">You'll use this question to understand what matters to them personally.</p>
             </CardContent>
           </Card>
 
@@ -377,91 +311,125 @@ const Preparation = () => {
             <CardHeader>
               <CardTitle className="font-sans">Ask for action</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 bg-purple-50 border border-purple-300 rounded-lg shadow-sm">
-                <div className="flex items-center mb-2">
-                  <Check className="w-5 h-5 text-purple-600 mr-2" />
-                  <h4 className="font-medium text-purple-900">Do this:</h4>
-                </div>
-                <p className="text-purple-800 text-lg font-mono">
-                  "Now that we've explored the issue together, would you take your phone and tell your representative Peter Gerbil how you feel, at 555-4567?"
-                </p>
-              </div>
-
-              <div className="p-4 bg-white border border-purple-300 rounded-lg">
-                <div className="flex items-center mb-2">
-                  <X className="w-5 h-5 text-red-600 mr-2" />
-                  <h4 className="font-medium text-purple-900">Don't do this:</h4>
-                </div>
-                <p className="text-purple-800 text-lg font-mono">
-                  "I'm so glad we talked! Think about calling your representative and urging them to vote NO on H.R. 123. Have a good day!"
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-sans text-gray-400">Your script</CardTitle>
-            </CardHeader>
             <CardContent className="p-6">
-              {canProceed() ? (
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
-                      1
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-1">Framing:</h4>
-                      <p className="text-gray-700 font-mono text-sm">
-                        "My name is [your name], I'm here with {currentIssue && <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} />} to talk about {currentIssue?.plainLanguage}."
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="text-gray-500 text-sm italic ml-9">(listen to what they say)</div>
-
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
-                      2
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-1">Share your story:</h4>
-                      <p className="text-gray-700 font-mono text-sm">
-                        "One time, I {eventType} and was really worried. What happened was... My {personType} was really there for me. They helped me by... and that really made me feel {selectedFeeling}. Is there a time someone was really there for you?"
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
-                      3
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-1">Learn their perspective:</h4>
-                      <p className="text-gray-700 font-mono text-sm">
-                        "How does this issue affect people you care about?"
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
-                      4
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-1">Ask for action:</h4>
-                      <p className="text-gray-700 font-mono text-sm">
-                        "Now that we've explored the issue together, would you take your phone and tell your representative Peter Gerbil how you feel, at 555-4567?"
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-gray-400 font-sans">Complete the preparation above to see your script</p>
-              )}
+              <p className="text-gray-600 text-sm font-sans">You'll ask them to take a specific action while you're together.</p>
             </CardContent>
           </Card>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Your Script Column */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-sans">Your script</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {canProceed() ? (
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
+                        1
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-1">Framing:</h4>
+                        <p className="text-gray-700 font-mono text-sm">
+                          "My name is [your name], I'm here with{' '}
+                          {currentIssue && <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} />} to talk about{' '}
+                          {currentIssue?.plainLanguage}."
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="text-gray-500 text-sm italic ml-9">(listen to what they say)</div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
+                        2
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-1">Share your story:</h4>
+                        <p className="text-gray-700 font-mono text-sm">
+                          "One time, I {eventType} and was really worried. What happened was... My {personType} was really there for me.
+                          They helped me by... and that really made me feel {selectedFeeling}. Is there a time someone was really there for
+                          you?"
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
+                        3
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-1">Learn their perspective:</h4>
+                        <p className="text-gray-700 font-mono text-sm">"How does this issue affect people you care about?"</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
+                        4
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-1">Ask for action:</h4>
+                        <p className="text-gray-700 font-mono text-sm">
+                          "Now that we've explored the issue together, would you take your phone and tell your representative Peter Gerbil
+                          how you feel, at 555-4567?"
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-gray-400 font-sans">Complete the preparation above to see your script</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Avoid These Pitfalls Column */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-sans text-red-600">Avoid these pitfalls</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-center mb-2">
+                      <X className="w-4 h-4 text-red-600 mr-2" />
+                      <h4 className="font-medium text-red-900 text-sm">Don't open with statistics:</h4>
+                    </div>
+                    {currentIssue ? (
+                      <p className="text-red-800 text-xs font-mono">{currentIssue.dontSayText}</p>
+                    ) : (
+                      <p className="text-red-700 text-xs">
+                        "Hello. Is this Frank I'm talking to? Do you have a few minutes to chat about healthcare? According to the CDC..."
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-center mb-2">
+                      <X className="w-4 h-4 text-red-600 mr-2" />
+                      <h4 className="font-medium text-red-900 text-sm">Don't make it political:</h4>
+                    </div>
+                    <p className="text-red-800 text-xs font-mono">
+                      "One time, I got sick and was really worried. I was able to see a doctor but Congress is trying to take away access to
+                      healthcare for millions of other Americans."
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-center mb-2">
+                      <X className="w-4 h-4 text-red-600 mr-2" />
+                      <h4 className="font-medium text-red-900 text-sm">Don't rush the ask:</h4>
+                    </div>
+                    <p className="text-red-800 text-xs font-mono">
+                      "I'm so glad we talked! Think about calling your representative and urging them to vote NO on H.R. 123. Have a good
+                      day!"
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <div className="text-center">

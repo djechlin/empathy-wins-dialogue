@@ -1,4 +1,4 @@
-import { CategoryScore, ConversationReport, KeyMoment } from '@/types/conversationReport';
+import { CategoryScore, ConversationReport, KeyMoment } from '@/types/ConversationReport';
 import { Badge } from '@/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import * as Icons from 'lucide-react';
