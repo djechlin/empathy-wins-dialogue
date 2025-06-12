@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
-import { AlertCircle, Mic, MicOff, MessageCircle, ArrowRight } from 'lucide-react';
+import { Mic, MicOff, MessageCircle, ArrowRight, Lightbulb, Bot, Heart, Users, Sparkles } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -568,58 +568,19 @@ function RoleplayContent() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Context-Aware Tips</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5 text-yellow-500" />
+                    Smart Tips
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {!roleplayStarted ? (
                     <div className="text-center py-6 text-gray-500">
-                      <AlertCircle className="w-8 h-8 mx-auto mb-3 opacity-50" />
-                      <p className="text-sm">Tips will appear here based on your conversation progress.</p>
+                      <Bot className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                      <p className="text-sm">Your AI coach will share helpful tips as you chat!</p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      {voterSharedContent.people.length > 0 && (
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                          <div className="flex items-center gap-2 mb-1">
-                            <MessageCircle className="w-4 h-4 text-blue-600" />
-                            <span className="text-sm font-medium text-blue-900">They mentioned people!</span>
-                          </div>
-                          <p className="text-xs text-blue-700">
-                            Ask follow-up questions about {voterSharedContent.people.join(', ')}. How did this affect them?
-                          </p>
-                        </div>
-                      )}
-
-                      {voterSharedContent.feelings.length > 0 && (
-                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
-                          <div className="flex items-center gap-2 mb-1">
-                            <MessageCircle className="w-4 h-4 text-purple-600" />
-                            <span className="text-sm font-medium text-purple-900">They shared feelings!</span>
-                          </div>
-                          <p className="text-xs text-purple-700">
-                            They mentioned feeling {voterSharedContent.feelings.join(', ')}. Ask why they felt that way.
-                          </p>
-                        </div>
-                      )}
-
-                      {currentScriptStep >= 3 && voterSharedContent.people.length === 0 && voterSharedContent.feelings.length === 0 && (
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                          <div className="flex items-center gap-2 mb-1">
-                            <AlertCircle className="w-4 h-4 text-yellow-600" />
-                            <span className="text-sm font-medium text-yellow-900">Listen deeper</span>
-                          </div>
-                          <p className="text-xs text-yellow-700">
-                            Try asking about their family or personal experiences related to this issue.
-                          </p>
-                        </div>
-                      )}
-
-                      {!roleplayStarted && (
-                        <div className="text-center py-4 text-gray-500">
-                          <p className="text-sm">Listen actively for emotional moments and personal connections.</p>
-                        </div>
-                      )}
-                    </div>
+                    <ContextAwareTipsBox voterSharedContent={voterSharedContent} currentScriptStep={currentScriptStep} />
                   )}
                 </CardContent>
               </Card>
@@ -631,6 +592,99 @@ function RoleplayContent() {
     </div>
   );
 }
+
+interface ContextAwareTipsBoxProps {
+  voterSharedContent: {
+    people: string[];
+    feelings: string[];
+  };
+  currentScriptStep: number;
+}
+
+const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep }: ContextAwareTipsBoxProps) => {
+  const [visibleTips, setVisibleTips] = useState<Array<{ id: string; content: React.ReactNode }>>([]);
+
+  useEffect(() => {
+    const tips: Array<{ id: string; content: React.ReactNode }> = [];
+
+    if (voterSharedContent.people.length > 0) {
+      tips.push({
+        id: 'people',
+        content: (
+          <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="w-5 h-5 text-blue-600" />
+              <span className="text-sm font-medium text-blue-900">Great! They mentioned people!</span>
+            </div>
+            <p className="text-sm text-blue-700">
+              Ask about <strong>{voterSharedContent.people.join(', ')}</strong> - How did this affect them personally?
+            </p>
+          </div>
+        ),
+      });
+    }
+
+    if (voterSharedContent.feelings.length > 0) {
+      tips.push({
+        id: 'feelings',
+        content: (
+          <div className="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Heart className="w-5 h-5 text-purple-600" />
+              <span className="text-sm font-medium text-purple-900">Wonderful! They shared emotions!</span>
+            </div>
+            <p className="text-sm text-purple-700">
+              They felt <strong>{voterSharedContent.feelings.join(', ')}</strong> - Ask them to tell you more about why.
+            </p>
+          </div>
+        ),
+      });
+    }
+
+    if (currentScriptStep >= 3 && voterSharedContent.people.length === 0 && voterSharedContent.feelings.length === 0) {
+      tips.push({
+        id: 'deeper',
+        content: (
+          <div className="bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-5 h-5 text-amber-600" />
+              <span className="text-sm font-medium text-amber-900">Time to go deeper!</span>
+            </div>
+            <p className="text-sm text-amber-700">Try asking about their family or personal experiences with this issue.</p>
+          </div>
+        ),
+      });
+    }
+
+    setVisibleTips(tips.slice(0, 2)); // Show only the first 2 tips
+
+    // Auto-fade after 10 seconds
+    const timer = setTimeout(() => {
+      setVisibleTips([]);
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, [voterSharedContent, currentScriptStep]);
+
+  if (visibleTips.length === 0) {
+    return (
+      <div className="text-center py-4 text-gray-500">
+        <Bot className="w-8 h-8 mx-auto mb-2 opacity-30" />
+        <p className="text-sm">Listening for opportunities to connect...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3 transition-opacity duration-1000">
+      {visibleTips.map((tip) => (
+        <div key={tip.id} className="animate-in slide-in-from-bottom-2 duration-500">
+          {tip.content}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const Roleplay = () => {
   const lucasMessages = useMemo(() => parseLucasReplay(), []);

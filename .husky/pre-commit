@@ -1,3 +1,4 @@
 # mistakes are still getting through easily so be thorough
 # npx lint-staged
+npm run format
 npm run check-all
