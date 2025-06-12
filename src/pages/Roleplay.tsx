@@ -505,7 +505,7 @@ const Roleplay = () => {
                           {isRecording ? 'Pause' : 'Start Speaking'}
                         </Button>
                         <Button onClick={finishRoleplay} variant="outline">
-                          Finish
+                          Finish Roleplay
                         </Button>
                       </div>
                       {isRecording && (
