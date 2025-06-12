@@ -1,3 +1,4 @@
+
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
@@ -54,7 +55,7 @@ const Preparation = () => {
           <p className="text-gray-600">Your roadmap for persuasive conversation</p>
         </div>
 
-        {/* Visual Flow - Now at the top */}
+        {/* Visual Flow */}
         <Card className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
           <CardContent className="p-8">
             <div className="flex items-center justify-center space-x-6 mb-6">
@@ -120,7 +121,7 @@ const Preparation = () => {
           </CardContent>
         </Card>
 
-        {/* Issue Selection - Now below the visual flow */}
+        {/* Issue Selection */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>Step 1: Frame the Issue</CardTitle>
@@ -128,20 +129,39 @@ const Preparation = () => {
           <CardContent className="space-y-6">
             <div>
               <Label className="text-base font-medium mb-4 block">Choose your issue:</Label>
-              <RadioGroup value={selectedIssue} onValueChange={setSelectedIssue} className="space-y-3">
-                <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                  <RadioGroupItem value="insulin" id="insulin" />
-                  <Label htmlFor="insulin" className="flex-1 cursor-pointer">
-                    <div className="font-medium">Healthcare - Insulin Affordability</div>
-                    <div className="text-sm text-gray-600">Help families afford life-saving diabetes medication</div>
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                  <RadioGroupItem value="climate" id="climate" />
-                  <Label htmlFor="climate" className="flex-1 cursor-pointer">
-                    <div className="font-medium">Climate - Wildfire Management</div>
-                    <div className="text-sm text-gray-600">Protect communities from increasing wildfire risks</div>
-                  </Label>
+              <RadioGroup value={selectedIssue} onValueChange={setSelectedIssue} className="space-y-0">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="relative">
+                    <RadioGroupItem value="insulin" id="insulin" className="sr-only" />
+                    <Label 
+                      htmlFor="insulin" 
+                      className={`block cursor-pointer p-6 rounded-lg border-2 transition-all duration-200 aspect-[1.618/1] flex flex-col justify-center text-center hover:shadow-lg ${
+                        selectedIssue === 'insulin' 
+                          ? 'border-blue-500 bg-blue-50 shadow-md' 
+                          : 'border-gray-200 bg-white hover:border-blue-300'
+                      }`}
+                    >
+                      <div className="font-semibold text-lg text-blue-700 mb-2">Healthcare</div>
+                      <div className="text-blue-600 font-medium">Insulin Affordability</div>
+                      <div className="text-sm text-gray-600 mt-2">Help families afford life-saving diabetes medication</div>
+                    </Label>
+                  </div>
+                  
+                  <div className="relative">
+                    <RadioGroupItem value="climate" id="climate" className="sr-only" />
+                    <Label 
+                      htmlFor="climate" 
+                      className={`block cursor-pointer p-6 rounded-lg border-2 transition-all duration-200 aspect-[1.618/1] flex flex-col justify-center text-center hover:shadow-lg ${
+                        selectedIssue === 'climate' 
+                          ? 'border-green-500 bg-green-50 shadow-md' 
+                          : 'border-gray-200 bg-white hover:border-green-300'
+                      }`}
+                    >
+                      <div className="font-semibold text-lg text-green-700 mb-2">Climate</div>
+                      <div className="text-green-600 font-medium">Wildfire Management</div>
+                      <div className="text-sm text-gray-600 mt-2">Protect communities from increasing wildfire risks</div>
+                    </Label>
+                  </div>
                 </div>
               </RadioGroup>
             </div>

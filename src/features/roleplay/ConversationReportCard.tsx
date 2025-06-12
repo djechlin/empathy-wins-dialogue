@@ -1,11 +1,11 @@
-import { CategoryScore, KeyMoment, ConversationReport as ReportType } from '@/types/ConversationReport';
+import { CategoryScore, ConversationReport, KeyMoment } from '@/types/conversationReport';
 import { Badge } from '@/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import * as Icons from 'lucide-react';
 import { AlertCircle, CheckCircle, Heart, TrendingUp, User, XCircle } from 'lucide-react';
 
 interface ConversationReportProps {
-  report: ReportType;
+  report: ConversationReport;
 }
 
 interface CategoryCardProps {

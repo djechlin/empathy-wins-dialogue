@@ -1,4 +1,4 @@
-import { ConversationReport } from '@/types/ConversationReport';
+import { ConversationReport } from '@/types/conversationReport';
 
 export const sampleReport: ConversationReport = {
   baseScore: 3,

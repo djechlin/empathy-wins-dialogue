@@ -4,7 +4,7 @@ import { useRealtimeFeedback } from '@/features/dialogue/hooks/useRealtimeReport
 import { expressionLabels } from '@/lib/expressionLabels';
 import { cn } from '@/lib/utils';
 import type { ChallengeStep, FeedbackId } from '@/types';
-import { ConversationReport } from '@/types/ConversationReport';
+import { ConversationReport } from '@/types/conversationReport';
 import { Button } from '@/ui/button';
 import { Check, Info, Map, MessageCircle, SquareUserRound, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
