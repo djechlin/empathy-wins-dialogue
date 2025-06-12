@@ -531,12 +531,10 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplaySt
             <div className="flex items-start gap-4">
               <MessageSquare className="w-8 h-8 text-blue-600 flex-shrink-0 mt-1" />
               <div className="flex-1">
-                <div className="bg-white border border-blue-200 rounded p-3">
-                  <p className="text-gray-800 font-mono text-sm leading-relaxed">
-                    My name is [your name], I'm here with <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to talk
-                    about {currentIssue.plainLanguage}.
-                  </p>
-                </div>
+                <p className="text-gray-800 font-mono text-sm leading-relaxed">
+                  My name is [your name], I'm here with <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to talk
+                  about {currentIssue.plainLanguage}.
+                </p>
               </div>
             </div>
           </div>
