@@ -239,37 +239,37 @@ const Preparation = () => {
             </div>
 
             {/* Script Preview */}
-            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="mt-6 p-4 bg-purple-50 border border-purple-300 rounded-lg shadow-sm">
               <div className="flex items-center mb-2">
-                <Check className="w-5 h-5 text-green-600 mr-2" />
-                <h4 className="font-medium text-green-900">Your opening line:</h4>
+                <Check className="w-5 h-5 text-purple-600 mr-2" />
+                <h4 className="font-medium text-purple-900">Your opening line:</h4>
               </div>
               {currentIssue ? (
                 <>
-                  <p className="text-green-800 text-lg font-mono">
+                  <p className="text-purple-800 text-lg font-mono">
                     "My name is [your name], I'm here with <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to talk about {currentIssue.plainLanguage}."
                   </p>
-                  <p className="text-green-700 mt-3 text-xs"><sup>†</sup> fictitious</p>
+                  <p className="text-purple-700 mt-3 text-xs"><sup>†</sup> fictitious</p>
                 </>
               ) : (
-                <p className="text-green-700 text-base">
+                <p className="text-purple-700 text-base">
                   Select an issue to see how to frame it
                 </p>
               )}
             </div>
 
             {/* Don't Say This */}
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="mt-4 p-4 bg-white border border-purple-300 rounded-lg">
               <div className="flex items-center mb-2">
-                <X className="w-5 h-5 text-red-600 mr-2" />
-                <h4 className="font-medium text-red-900">Don't say this:</h4>
+                <X className="w-5 h-5 text-purple-600 mr-2" />
+                <h4 className="font-medium text-purple-900">Don't say this:</h4>
               </div>
               {currentIssue ? (
-                <p className="text-red-800 text-sm font-mono">
+                <p className="text-purple-800 text-sm font-mono">
                   {currentIssue.dontSayText}
                 </p>
               ) : (
-                <p className="text-red-700 text-base">
+                <p className="text-purple-700 text-base">
                   Select an issue to see what NOT to say
                 </p>
               )}
@@ -336,28 +336,28 @@ const Preparation = () => {
               </div>
 
               {/* Always show the mad-lib style story template */}
-              <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-green-700 text-lg font-mono">
+              <div className="mt-4 p-4 bg-purple-50 border border-purple-300 rounded-lg shadow-sm">
+                <p className="text-purple-700 text-lg font-mono">
                   "One time, I {eventType || '_______'} and was really worried. What happened was..."
                 </p>
-                <p className="text-green-600 mt-2 text-base font-sans">Tell the voter what happened</p>
-                <p className="text-green-700 text-lg font-mono mt-3">
+                <p className="text-purple-600 mt-2 text-base font-sans">Tell the voter what happened</p>
+                <p className="text-purple-700 text-lg font-mono mt-3">
                   My {personType || '_______'} was really there for me. They helped me by...
                 </p>
-                <p className="text-green-600 mt-2 text-base font-sans">Tell the voter what they did</p>
-                <p className="text-green-700 text-lg font-mono mt-3">
+                <p className="text-purple-600 mt-2 text-base font-sans">Tell the voter what they did</p>
+                <p className="text-purple-700 text-lg font-mono mt-3">
                   and that really made me feel {selectedFeeling || '_______'}"
                 </p>
-                <p className="text-green-600 mt-2 text-sm">Then you'll ask: "Is there a time someone was really there for you?"</p>
+                <p className="text-purple-600 mt-2 text-sm">Then you'll ask: "Is there a time someone was really there for you?"</p>
               </div>
 
               {/* Red X box - Don't do this */}
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="mt-4 p-4 bg-white border border-purple-300 rounded-lg">
                 <div className="flex items-center mb-2">
-                  <X className="w-5 h-5 text-red-600 mr-2" />
-                  <h4 className="font-medium text-red-900">Don't go into politics!</h4>
+                  <X className="w-5 h-5 text-purple-600 mr-2" />
+                  <h4 className="font-medium text-purple-900">Don't go into politics!</h4>
                 </div>
-                <p className="text-red-800 text-lg font-mono">
+                <p className="text-purple-800 text-lg font-mono">
                   "One time, I got sick and was really worried. I was able to see a doctor but Congress is trying to take away access to healthcare for millions of other Americans."
                 </p>
               </div>
@@ -379,22 +379,22 @@ const Preparation = () => {
               <CardTitle className="font-sans">Ask for action</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="p-4 bg-purple-50 border border-purple-300 rounded-lg shadow-sm">
                 <div className="flex items-center mb-2">
-                  <Check className="w-5 h-5 text-green-600 mr-2" />
-                  <h4 className="font-medium text-green-900">Do this:</h4>
+                  <Check className="w-5 h-5 text-purple-600 mr-2" />
+                  <h4 className="font-medium text-purple-900">Do this:</h4>
                 </div>
-                <p className="text-green-800 text-lg font-mono">
+                <p className="text-purple-800 text-lg font-mono">
                   "Now that we've explored the issue together, would you take your phone and tell your representative Peter Gerbil how you feel, at 555-4567?"
                 </p>
               </div>
 
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="p-4 bg-white border border-purple-300 rounded-lg">
                 <div className="flex items-center mb-2">
-                  <X className="w-5 h-5 text-red-600 mr-2" />
-                  <h4 className="font-medium text-red-900">Don't do this:</h4>
+                  <X className="w-5 h-5 text-purple-600 mr-2" />
+                  <h4 className="font-medium text-purple-900">Don't do this:</h4>
                 </div>
-                <p className="text-red-800 text-lg font-mono">
+                <p className="text-purple-800 text-lg font-mono">
                   "I'm so glad we talked! Think about calling your representative and urging them to vote NO on H.R. 123. Have a good day!"
                 </p>
               </div>
