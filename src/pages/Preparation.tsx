@@ -1,5 +1,3 @@
-
-
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
@@ -70,8 +68,8 @@ const Preparation = () => {
               <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
                 1
               </div>
-              <span className="text-sm font-medium text-center text-blue-600">
-                Prepare your story
+              <span className="text-sm font-medium text-center text-blue-600 font-sans">
+                Conversation Strategy
               </span>
             </div>
 
@@ -82,7 +80,7 @@ const Preparation = () => {
               <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
                 2
               </div>
-              <span className="text-sm font-medium text-center text-gray-400">
+              <span className="text-sm font-medium text-center text-gray-400 font-sans">
                 Roleplay
               </span>
             </div>
@@ -94,7 +92,7 @@ const Preparation = () => {
               <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
                 3
               </div>
-              <span className="text-sm font-medium text-center text-gray-400">
+              <span className="text-sm font-medium text-center text-gray-400 font-sans">
                 Learn how you did
               </span>
             </div>
@@ -354,4 +352,3 @@ const Preparation = () => {
 };
 
 export default Preparation;
-
