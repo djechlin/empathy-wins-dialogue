@@ -139,41 +139,36 @@ const Preparation = () => {
           <CardContent className="space-y-6">
             <div>
               <Label className="text-base font-medium mb-4 block">Choose your issue:</Label>
-              <RadioGroup value={selectedIssue} className="space-y-0">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="relative">
-                    <RadioGroupItem value="insulin" id="insulin" className="sr-only" />
-                    <Label 
-                      htmlFor="insulin" 
-                      onClick={() => handleIssueClick('insulin')}
-                      className={`block cursor-pointer p-3 rounded-lg border-2 transition-all duration-200 aspect-[1.4/1] flex flex-col justify-center text-center hover:shadow-lg ${
-                        selectedIssue === 'insulin' 
-                          ? 'border-blue-500 bg-blue-50 shadow-md' 
-                          : 'border-gray-200 bg-white hover:border-blue-300'
-                      }`}
-                    >
-                      <div className="font-semibold text-base text-blue-700 mb-1">Healthcare</div>
-                      <div className="text-xs text-gray-600">Help families afford life-saving diabetes medication</div>
-                    </Label>
-                  </div>
-                  
-                  <div className="relative">
-                    <RadioGroupItem value="climate" id="climate" className="sr-only" />
-                    <Label 
-                      htmlFor="climate" 
-                      onClick={() => handleIssueClick('climate')}
-                      className={`block cursor-pointer p-3 rounded-lg border-2 transition-all duration-200 aspect-[1.4/1] flex flex-col justify-center text-center hover:shadow-lg ${
-                        selectedIssue === 'climate' 
-                          ? 'border-green-500 bg-green-50 shadow-md' 
-                          : 'border-gray-200 bg-white hover:border-green-300'
-                      }`}
-                    >
-                      <div className="font-semibold text-base text-green-700 mb-1">Climate</div>
-                      <div className="text-xs text-gray-600">Protect communities from increasing wildfire risks</div>
-                    </Label>
-                  </div>
-                </div>
-              </RadioGroup>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => handleIssueClick('insulin')}
+                  className={`px-4 py-2 rounded-lg border-2 transition-all duration-200 text-sm font-medium ${
+                    selectedIssue === 'insulin'
+                      ? 'border-blue-500 bg-blue-500 text-white shadow-md'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50'
+                  }`}
+                >
+                  Healthcare
+                </button>
+                <button
+                  onClick={() => handleIssueClick('climate')}
+                  className={`px-4 py-2 rounded-lg border-2 transition-all duration-200 text-sm font-medium ${
+                    selectedIssue === 'climate'
+                      ? 'border-green-500 bg-green-500 text-white shadow-md'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50'
+                  }`}
+                >
+                  Climate
+                </button>
+              </div>
+              {selectedIssue && (
+                <p className="text-xs text-gray-600 mt-2">
+                  {selectedIssue === 'insulin' 
+                    ? 'Help families afford life-saving diabetes medication'
+                    : 'Protect communities from increasing wildfire risks'
+                  }
+                </p>
+              )}
             </div>
 
             {/* Script Preview */}
