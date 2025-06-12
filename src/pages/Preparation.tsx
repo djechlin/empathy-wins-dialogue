@@ -1,3 +1,5 @@
+import Footer from '@/components/layout/Footer';
+import Navbar from '@/components/layout/Navbar';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
@@ -100,468 +102,475 @@ const Preparation = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Progress Flow */}
-        <div className="mb-8">
-          <div className="flex items-center justify-center space-x-6">
-            {/* Step 1 - Current Step */}
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">1</div>
-              <span className="text-sm font-medium text-center text-blue-600 font-sans">Conversation Strategy</span>
-            </div>
-
-            <ArrowRight className="w-6 h-6 text-gray-400" />
-
-            {/* Step 2 - Future Step */}
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                2
-              </div>
-              <span className="text-sm font-medium text-center text-gray-400 font-sans">Roleplay</span>
-            </div>
-
-            <ArrowRight className="w-6 h-6 text-gray-400" />
-
-            {/* Step 3 - Future Step */}
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                3
-              </div>
-              <span className="text-sm font-medium text-center text-gray-400 font-sans">Learn how you did</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Conversation Strategy</h1>
-          <p className="text-gray-600">Your roadmap for persuasive conversation</p>
-        </div>
-
-        {/* Visual Flow */}
-        <Card className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
-          <CardContent className="p-8">
-            <div className="flex items-center justify-center space-x-6 mb-6">
-              {/* Step 1 */}
+    <div className="min-h-screen flex flex-col bg-background">
+      <Navbar />
+      <main className="flex-grow bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+        <div className="max-w-4xl mx-auto">
+          {/* Progress Flow */}
+          <div className="mb-8">
+            <div className="flex items-center justify-center space-x-6">
+              {/* Step 1 - Current Step */}
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
                   1
                 </div>
-                <span className="text-sm font-medium text-center">
-                  Frame
-                  <br />
-                  Issue
-                </span>
+                <span className="text-sm font-medium text-center text-blue-600 font-sans">Conversation Strategy</span>
               </div>
 
-              <ArrowRight className="w-6 h-6 text-blue-400" />
+              <ArrowRight className="w-6 h-6 text-gray-400" />
 
-              {/* Step 2 */}
+              {/* Step 2 - Future Step */}
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
                   2
                 </div>
-                <span className="text-sm font-medium text-center">
-                  Share
-                  <br />
-                  Story
-                </span>
+                <span className="text-sm font-medium text-center text-gray-400 font-sans">Roleplay</span>
               </div>
 
-              <ArrowRight className="w-6 h-6 text-blue-400" />
+              <ArrowRight className="w-6 h-6 text-gray-400" />
 
-              {/* Step 3 */}
+              {/* Step 3 - Future Step */}
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
                   3
                 </div>
-                <span className="text-sm font-medium text-center">
-                  Dig
-                  <br />
-                  Deeper
-                </span>
-              </div>
-
-              <ArrowRight className="w-6 h-6 text-blue-400" />
-
-              {/* Step 4 */}
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-indigo-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                  4
-                </div>
-                <span className="text-sm font-medium text-center">
-                  Explore
-                  <br />
-                  Together
-                </span>
-              </div>
-
-              <ArrowRight className="w-6 h-6 text-blue-400" />
-
-              {/* Step 5 */}
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                  5
-                </div>
-                <span className="text-sm font-medium text-center">
-                  Ask for
-                  <br />
-                  Action
-                </span>
+                <span className="text-sm font-medium text-center text-gray-400 font-sans">Learn how you did</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Issue Selection */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Frame the Issue</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <Label className="text-base font-medium mb-4 block">Choose your issue:</Label>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => handleIssueClick('insulin')}
-                  className={`px-4 py-2 rounded-lg border-2 transition-all duration-200 text-sm font-medium ${
-                    selectedIssue === 'insulin'
-                      ? 'border-blue-500 bg-blue-500 text-white shadow-md'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50'
-                  }`}
-                >
-                  Healthcare
-                </button>
-                <button
-                  onClick={() => handleIssueClick('climate')}
-                  className={`px-4 py-2 rounded-lg border-2 transition-all duration-200 text-sm font-medium ${
-                    selectedIssue === 'climate'
-                      ? 'border-green-500 bg-green-500 text-white shadow-md'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50'
-                  }`}
-                >
-                  Climate
-                </button>
-              </div>
-              {selectedIssue && (
-                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-900 font-medium">
-                    {selectedIssue === 'insulin'
-                      ? "You'll be with Diabetes Advocates, talking to voters about lowering the price of insulin."
-                      : "You'll be talking about the increasing wildfire risk in your area. You're focusing on increased training for wildfire fighters, which mitigates the issue here and now, and gets our government to take climate change threats more seriously."}
-                  </p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Conversation Strategy</h1>
+            <p className="text-gray-600">Your roadmap for persuasive conversation</p>
+          </div>
 
-        {/* Key Phrases */}
-        <div className="space-y-4 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-sans">Share your story</CardTitle>
-              <p className="text-gray-600 text-sm font-sans">
-                In the roleplay, you'll share a real time you were impacted by a related issue. You'll share a time someone was there for
-                you, so you and the voter can relate as people, not as debaters.
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-3 gap-4">
-                <div>
-                  <Label>Think of a time you needed healthcare, and someone was there for you.</Label>
-                  <Select value={eventType} onValueChange={handleEventChange}>
-                    <SelectTrigger className="mt-2">
-                      <SelectValue placeholder="Select what happened..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {eventOptions.map((event) => (
-                        <SelectItem key={event} value={event}>
-                          {event}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label>Who was there for you?</Label>
-                  <Select value={personType} onValueChange={handlePersonChange}>
-                    <SelectTrigger className="mt-2">
-                      <SelectValue placeholder="Select someone..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {personOptions.map((person) => (
-                        <SelectItem key={person} value={person}>
-                          {person}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label>How did you feel?</Label>
-                  <Select value={selectedFeeling} onValueChange={handleFeelingChange}>
-                    <SelectTrigger className="mt-2">
-                      <SelectValue placeholder="Select feeling..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {emotionOptions.map((emotion) => (
-                        <SelectItem key={emotion} value={emotion}>
-                          {emotion}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                <p className="text-sm text-purple-900 font-medium">
-                  Think of this story, what happened, and how they made you feel. You'll share this with the voter.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-sans">Dig deeper</CardTitle>
-              <p className="text-gray-600 text-sm font-sans">
-                Learn about who the voter cares about, in addition to their perspective and beliefs on the issue. Build common ground over
-                who both of you cherish.
-              </p>
-            </CardHeader>
-            <CardContent className="p-6">
-              <p className="text-gray-600 text-sm font-sans">You'll use this question to understand what matters to them personally.</p>
-
-              <div className="mt-4">
-                <div className="flex items-start gap-2 mb-3">
-                  <MessageSquare className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm text-gray-700">
-                    <p>
-                      <b>If voter says:</b>
-                    </p>
-                    <p className="font-mono">My daughter's really into all that progressive stuff, I wish she'd chill.</p>
+          {/* Visual Flow */}
+          <Card className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-center space-x-6 mb-6">
+                {/* Step 1 */}
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                    1
                   </div>
+                  <span className="text-sm font-medium text-center">
+                    Frame
+                    <br />
+                    Issue
+                  </span>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-green-600">✓</span>
-                      <span className="font-medium text-purple-900 text-sm">Good to say</span>
-                    </div>
-                    <p className="font-mono text-sm text-purple-800">
-                      Wow, your daughter's really engaged. Has she always been passionate about her interests?
-                    </p>
+
+                <ArrowRight className="w-6 h-6 text-blue-400" />
+
+                {/* Step 2 */}
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                    2
                   </div>
-                  <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-red-600">✗</span>
-                      <span className="font-medium text-purple-900 text-sm">Not as good</span>
-                    </div>
-                    <p className="font-mono text-sm text-purple-800">
-                      I guess you've heard about this a lot from your daughter already, is there a reason you haven't changed your mind yet?
-                    </p>
+                  <span className="text-sm font-medium text-center">
+                    Share
+                    <br />
+                    Story
+                  </span>
+                </div>
+
+                <ArrowRight className="w-6 h-6 text-blue-400" />
+
+                {/* Step 3 */}
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                    3
                   </div>
+                  <span className="text-sm font-medium text-center">
+                    Dig
+                    <br />
+                    Deeper
+                  </span>
+                </div>
+
+                <ArrowRight className="w-6 h-6 text-blue-400" />
+
+                {/* Step 4 */}
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 bg-indigo-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                    4
+                  </div>
+                  <span className="text-sm font-medium text-center">
+                    Explore
+                    <br />
+                    Together
+                  </span>
+                </div>
+
+                <ArrowRight className="w-6 h-6 text-blue-400" />
+
+                {/* Step 5 */}
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                    5
+                  </div>
+                  <span className="text-sm font-medium text-center">
+                    Ask for
+                    <br />
+                    Action
+                  </span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          {/* Issue Selection */}
+          <Card className="mb-8">
             <CardHeader>
-              <CardTitle className="font-sans">Explore together</CardTitle>
-              <p className="text-gray-600 text-sm font-sans">
-                Help the voter think through the issue by connecting your stories and experiences. Guide them to see new perspectives
-                without being pushy.
-              </p>
+              <CardTitle>Frame the Issue</CardTitle>
             </CardHeader>
-            <CardContent className="p-6">
-              <p className="text-gray-600 text-sm font-sans">
-                You'll help them connect the dots between your shared experiences and the issue.
-              </p>
-
-              <div className="mt-4">
-                <div className="flex items-start gap-2 mb-3">
-                  <MessageSquare className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm text-gray-700">
-                    <p>
-                      <b>After sharing stories about caring for family:</b>
-                    </p>
-                  </div>
+            <CardContent className="space-y-6">
+              <div>
+                <Label className="text-base font-medium mb-4 block">Choose your issue:</Label>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => handleIssueClick('insulin')}
+                    className={`px-4 py-2 rounded-lg border-2 transition-all duration-200 text-sm font-medium ${
+                      selectedIssue === 'insulin'
+                        ? 'border-blue-500 bg-blue-500 text-white shadow-md'
+                        : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50'
+                    }`}
+                  >
+                    Healthcare
+                  </button>
+                  <button
+                    onClick={() => handleIssueClick('climate')}
+                    className={`px-4 py-2 rounded-lg border-2 transition-all duration-200 text-sm font-medium ${
+                      selectedIssue === 'climate'
+                        ? 'border-green-500 bg-green-500 text-white shadow-md'
+                        : 'border-gray-300 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50'
+                    }`}
+                  >
+                    Climate
+                  </button>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-green-600">✓</span>
-                      <span className="font-medium text-purple-900 text-sm">Good to say</span>
-                    </div>
-                    <p className="font-mono text-sm text-purple-800">
-                      It sounds like we both really care about the people we love. Does that change how you think about this issue at all?
+                {selectedIssue && (
+                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-900 font-medium">
+                      {selectedIssue === 'insulin'
+                        ? "You'll be with Diabetes Advocates, talking to voters about lowering the price of insulin."
+                        : "You'll be talking about the increasing wildfire risk in your area. You're focusing on increased training for wildfire fighters, which mitigates the issue here and now, and gets our government to take climate change threats more seriously."}
                     </p>
                   </div>
-                  <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-red-600">✗</span>
-                      <span className="font-medium text-purple-900 text-sm">Not as good</span>
-                    </div>
-                    <p className="font-mono text-sm text-purple-800">
-                      So you can see why we need to support this policy, right? It's obvious that everyone benefits.
-                    </p>
-                  </div>
-                </div>
+                )}
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-sans">Ask for action</CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <p className="text-gray-600 text-sm font-sans">You'll ask them to take a specific action while you're together.</p>
-            </CardContent>
-          </Card>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Your Script Column */}
+          {/* Key Phrases */}
+          <div className="space-y-4 mb-8">
             <Card>
               <CardHeader>
-                <CardTitle className="font-sans">Your script</CardTitle>
+                <CardTitle className="font-sans">Share your story</CardTitle>
+                <p className="text-gray-600 text-sm font-sans">
+                  In the roleplay, you'll share a real time you were impacted by a related issue. You'll share a time someone was there for
+                  you, so you and the voter can relate as people, not as debaters.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <Label>Think of a time you needed healthcare, and someone was there for you.</Label>
+                    <Select value={eventType} onValueChange={handleEventChange}>
+                      <SelectTrigger className="mt-2">
+                        <SelectValue placeholder="Select what happened..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {eventOptions.map((event) => (
+                          <SelectItem key={event} value={event}>
+                            {event}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Who was there for you?</Label>
+                    <Select value={personType} onValueChange={handlePersonChange}>
+                      <SelectTrigger className="mt-2">
+                        <SelectValue placeholder="Select someone..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {personOptions.map((person) => (
+                          <SelectItem key={person} value={person}>
+                            {person}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>How did you feel?</Label>
+                    <Select value={selectedFeeling} onValueChange={handleFeelingChange}>
+                      <SelectTrigger className="mt-2">
+                        <SelectValue placeholder="Select feeling..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {emotionOptions.map((emotion) => (
+                          <SelectItem key={emotion} value={emotion}>
+                            {emotion}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                  <p className="text-sm text-purple-900 font-medium">
+                    Think of this story, what happened, and how they made you feel. You'll share this with the voter.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-sans">Dig deeper</CardTitle>
+                <p className="text-gray-600 text-sm font-sans">
+                  Learn about who the voter cares about, in addition to their perspective and beliefs on the issue. Build common ground over
+                  who both of you cherish.
+                </p>
               </CardHeader>
               <CardContent className="p-6">
-                {canProceed() ? (
-                  <div className="space-y-4">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
-                        1
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Framing:</h4>
-                        <p className="text-gray-700 font-mono text-sm">
-                          "My name is [your name], I'm here with{' '}
-                          {currentIssue && <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} />} to talk about{' '}
-                          {currentIssue?.plainLanguage}."
-                        </p>
-                      </div>
+                <p className="text-gray-600 text-sm font-sans">You'll use this question to understand what matters to them personally.</p>
+
+                <div className="mt-4">
+                  <div className="flex items-start gap-2 mb-3">
+                    <MessageSquare className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm text-gray-700">
+                      <p>
+                        <b>If voter says:</b>
+                      </p>
+                      <p className="font-mono">My daughter's really into all that progressive stuff, I wish she'd chill.</p>
                     </div>
-
-                    <div className="text-gray-500 text-sm italic ml-9">(listen to what they say)</div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
-                        2
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-green-600">✓</span>
+                        <span className="font-medium text-purple-900 text-sm">Good to say</span>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Share your story:</h4>
-                        <p className="text-gray-700 font-mono text-sm">
-                          "One time, I {eventType} and was really worried. What happened was... My {personType} was really there for me.
-                          They helped me by... and that really made me feel {selectedFeeling}. Is there a time someone was really there for
-                          you?"
-                        </p>
-                      </div>
+                      <p className="font-mono text-sm text-purple-800">
+                        Wow, your daughter's really engaged. Has she always been passionate about her interests?
+                      </p>
                     </div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
-                        3
+                    <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-red-600">✗</span>
+                        <span className="font-medium text-purple-900 text-sm">Not as good</span>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Dig deeper:</h4>
-                        <div className="text-gray-600 text-sm space-y-2">
-                          <div className="flex items-center gap-2">
-                            <MessageCircle className="w-3 h-3 text-blue-500" />
-                            <p>Ask about their family.</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <MessageCircle className="w-3 h-3 text-blue-500" />
-                            <p>When they name a person, ask more about them.</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <MessageCircle className="w-3 h-3 text-blue-500" />
-                            <p>When they say how they feel, ask why.</p>
+                      <p className="font-mono text-sm text-purple-800">
+                        I guess you've heard about this a lot from your daughter already, is there a reason you haven't changed your mind
+                        yet?
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-sans">Explore together</CardTitle>
+                <p className="text-gray-600 text-sm font-sans">
+                  Help the voter think through the issue by connecting your stories and experiences. Guide them to see new perspectives
+                  without being pushy.
+                </p>
+              </CardHeader>
+              <CardContent className="p-6">
+                <p className="text-gray-600 text-sm font-sans">
+                  You'll help them connect the dots between your shared experiences and the issue.
+                </p>
+
+                <div className="mt-4">
+                  <div className="flex items-start gap-2 mb-3">
+                    <MessageSquare className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm text-gray-700">
+                      <p>
+                        <b>After sharing stories about caring for family:</b>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-green-600">✓</span>
+                        <span className="font-medium text-purple-900 text-sm">Good to say</span>
+                      </div>
+                      <p className="font-mono text-sm text-purple-800">
+                        It sounds like we both really care about the people we love. Does that change how you think about this issue at all?
+                      </p>
+                    </div>
+                    <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-red-600">✗</span>
+                        <span className="font-medium text-purple-900 text-sm">Not as good</span>
+                      </div>
+                      <p className="font-mono text-sm text-purple-800">
+                        So you can see why we need to support this policy, right? It's obvious that everyone benefits.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-sans">Ask for action</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <p className="text-gray-600 text-sm font-sans">You'll ask them to take a specific action while you're together.</p>
+              </CardContent>
+            </Card>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Your Script Column */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="font-sans">Your script</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  {canProceed() ? (
+                    <div className="space-y-4">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
+                          1
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-1">Framing:</h4>
+                          <p className="text-gray-700 font-mono text-sm">
+                            "My name is [your name], I'm here with{' '}
+                            {currentIssue && <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} />} to talk about{' '}
+                            {currentIssue?.plainLanguage}."
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="text-gray-500 text-sm italic ml-9">(listen to what they say)</div>
+
+                      <div className="flex items-start space-x-3">
+                        <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
+                          2
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-1">Share your story:</h4>
+                          <p className="text-gray-700 font-mono text-sm">
+                            "One time, I {eventType} and was really worried. What happened was... My {personType} was really there for me.
+                            They helped me by... and that really made me feel {selectedFeeling}. Is there a time someone was really there
+                            for you?"
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-3">
+                        <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
+                          3
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-1">Dig deeper:</h4>
+                          <div className="text-gray-600 text-sm space-y-2">
+                            <div className="flex items-center gap-2">
+                              <MessageCircle className="w-3 h-3 text-blue-500" />
+                              <p>Ask about their family.</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <MessageCircle className="w-3 h-3 text-blue-500" />
+                              <p>When they name a person, ask more about them.</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <MessageCircle className="w-3 h-3 text-blue-500" />
+                              <p>When they say how they feel, ask why.</p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
-                        4
+                      <div className="flex items-start space-x-3">
+                        <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
+                          4
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-1">Ask for action:</h4>
+                          <p className="text-gray-700 font-mono text-sm">
+                            "Now that we've explored the issue together, would you take your phone and tell your representative Peter Gerbil
+                            how you feel, at 555-4567?"
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Ask for action:</h4>
-                        <p className="text-gray-700 font-mono text-sm">
-                          "Now that we've explored the issue together, would you take your phone and tell your representative Peter Gerbil
-                          how you feel, at 555-4567?"
+                    </div>
+                  ) : (
+                    <p className="text-gray-400 font-sans">Complete the preparation above to see your script</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Avoid These Pitfalls Column */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="font-sans text-red-600">Avoid these pitfalls</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <div className="flex items-center mb-2">
+                        <X className="w-4 h-4 text-red-600 mr-2" />
+                        <h4 className="font-medium text-red-900 text-sm">Don't open with statistics:</h4>
+                      </div>
+                      {currentIssue ? (
+                        <p className="text-red-800 text-xs font-mono">{currentIssue.dontSayText}</p>
+                      ) : (
+                        <p className="text-red-700 text-xs">
+                          "Hello. Is this Frank I'm talking to? Do you have a few minutes to chat about healthcare? According to the CDC..."
                         </p>
+                      )}
+                    </div>
+
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <div className="flex items-center mb-2">
+                        <X className="w-4 h-4 text-red-600 mr-2" />
+                        <h4 className="font-medium text-red-900 text-sm">Don't make it political:</h4>
                       </div>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-gray-400 font-sans">Complete the preparation above to see your script</p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Avoid These Pitfalls Column */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-sans text-red-600">Avoid these pitfalls</CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <X className="w-4 h-4 text-red-600 mr-2" />
-                      <h4 className="font-medium text-red-900 text-sm">Don't open with statistics:</h4>
-                    </div>
-                    {currentIssue ? (
-                      <p className="text-red-800 text-xs font-mono">{currentIssue.dontSayText}</p>
-                    ) : (
-                      <p className="text-red-700 text-xs">
-                        "Hello. Is this Frank I'm talking to? Do you have a few minutes to chat about healthcare? According to the CDC..."
+                      <p className="text-red-800 text-xs font-mono">
+                        "One time, I got sick and was really worried. I was able to see a doctor but Congress is trying to take away access
+                        to healthcare for millions of other Americans."
                       </p>
-                    )}
-                  </div>
-
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <X className="w-4 h-4 text-red-600 mr-2" />
-                      <h4 className="font-medium text-red-900 text-sm">Don't make it political:</h4>
                     </div>
-                    <p className="text-red-800 text-xs font-mono">
-                      "One time, I got sick and was really worried. I was able to see a doctor but Congress is trying to take away access to
-                      healthcare for millions of other Americans."
-                    </p>
-                  </div>
 
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <X className="w-4 h-4 text-red-600 mr-2" />
-                      <h4 className="font-medium text-red-900 text-sm">Don't rush the ask:</h4>
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <div className="flex items-center mb-2">
+                        <X className="w-4 h-4 text-red-600 mr-2" />
+                        <h4 className="font-medium text-red-900 text-sm">Don't rush the ask:</h4>
+                      </div>
+                      <p className="text-red-800 text-xs font-mono">
+                        "I'm so glad we talked! Think about calling your representative and urging them to vote NO on H.R. 123. Have a good
+                        day!"
+                      </p>
                     </div>
-                    <p className="text-red-800 text-xs font-mono">
-                      "I'm so glad we talked! Think about calling your representative and urging them to vote NO on H.R. 123. Have a good
-                      day!"
-                    </p>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <Button onClick={handleStartRoleplay} disabled={!canProceed()} size="lg" className="px-8">
+              Start Roleplay
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+            {!canProceed() && <p className="text-gray-500 mt-2">Please complete your story above to begin</p>}
           </div>
         </div>
-
-        <div className="text-center">
-          <Button onClick={handleStartRoleplay} disabled={!canProceed()} size="lg" className="px-8">
-            Start Roleplay
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
-          {!canProceed() && <p className="text-gray-500 mt-2">Please complete your story above to begin</p>}
-        </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 };
