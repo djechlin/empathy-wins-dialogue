@@ -3,14 +3,13 @@ import { Toaster } from '@/ui/toaster';
 import { TooltipProvider } from '@/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Auth from './pages/Auth';
 import Blog from './pages/Blog';
 import CognitiveDissonance from './pages/blog/CognitiveDissonance';
 import SwingVoters from './pages/blog/SwingVoters';
 import TheNameType2Dialogue from './pages/blog/TheNameType2Dialogue';
 import TurningOutTheBase from './pages/blog/TurningOutTheBase';
-import ChallengePage from './pages/ChallengePage';
 import Index from './pages/Index';
 import Learn from './pages/Learn';
 import LearnChapter from './pages/LearnChapter';
@@ -39,11 +38,11 @@ const App = () => (
             <Route path="/blog/cognitive-dissonance" element={<CognitiveDissonance />} />
             <Route path="/blog/swing-voters" element={<SwingVoters />} />
             <Route path="/blog/turning-out-the-base" element={<TurningOutTheBase />} />
-            <Route path="/challenge" element={<ChallengePage />} />
-            <Route path="/preparation" element={<Preparation />} />
-            <Route path="/report" element={<Report />} />
+            <Route path="/challenge" element={<Navigate to="/challenge/prepare" replace />} />
+            <Route path="/challenge/prepare" element={<Preparation />} />
+            <Route path="/challenge/roleplay" element={<Roleplay />} />
+            <Route path="/challenge/competencies" element={<Report />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/roleplay" element={<Roleplay />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
