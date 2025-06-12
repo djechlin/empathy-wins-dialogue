@@ -1,3 +1,4 @@
+
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
@@ -21,13 +22,13 @@ const Preparation = () => {
     insulin: {
       title: 'Healthcare - Insulin Affordability',
       plainLanguage: 'affordable insulin for people with diabetes',
-      organization: 'Diabetes Advocates†',
+      organization: 'Diabetes Advocates<sup>†</sup>',
       dontSayText: 'Hello. Is this Frank I\'m talking to? Do you have a few minutes to chat about healthcare? According to the CDC an estimated 38.4 million Americans suffer from diabetes...',
     },
     climate: {
       title: 'Climate - Wildfire Management',
       plainLanguage: 'protecting our communities from wildfires',
-      organization: 'Against Wildfires†',
+      organization: 'Against Wildfires<sup>†</sup>',
       dontSayText: 'Hello. Is this Frank I\'m talking to? Do you have a few minutes to chat about the devastating impacts of climate change? In 2024, global carbon dioxide emission reached 41.6 billion tons...',
     },
   };
@@ -172,9 +173,9 @@ const Preparation = () => {
                 <h4 className="font-medium text-green-900">Your opening line:</h4>
               </div>
               <p className="text-green-800 text-lg font-mono">
-                "My name is [your name], I'm here with {currentIssue.organization} to talk about {currentIssue.plainLanguage}."
+                "My name is [your name], I'm here with <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to talk about {currentIssue.plainLanguage}."
               </p>
-              <p className="text-green-600 mt-3 text-xs">† fictitious</p>
+              <p className="text-green-700 mt-3 text-xs"><sup>†</sup> fictitious</p>
             </div>
 
             {/* Don't Say This */}
