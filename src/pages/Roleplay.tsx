@@ -8,7 +8,7 @@ import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
 import { AlertCircle, Mic, MicOff, MessageCircle, ArrowRight } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Parse Lucas replay data
@@ -189,6 +189,8 @@ function RoleplayContent() {
   const currentIssue = issueDetails[selectedIssue as keyof typeof issueDetails];
 
   const [roleplayStarted, setRoleplayStarted] = useState(false);
+  const [currentScriptStep, setCurrentScriptStep] = useState(1);
+  const [voterSharedContent, setVoterSharedContent] = useState<{ people: string[]; feelings: string[] }>({ people: [], feelings: [] });
 
   const voterPersonas = useMemo(
     () =>
@@ -206,10 +208,11 @@ function RoleplayContent() {
 
   const startRoleplay = useCallback(async () => {
     setRoleplayStarted(true);
+    setCurrentScriptStep(1); // Start with step 1 when roleplay begins
     await connect();
     toast({
       title: 'Roleplay Started',
-      description: 'Listen for names, emotions, and moments to dig deeper.',
+      description: 'Start with your framing, then listen for names, emotions, and moments to dig deeper.',
     });
   }, [connect, toast]);
 
@@ -224,6 +227,103 @@ function RoleplayContent() {
   }, []);
 
   const progressPercentage = useMemo(() => (timeElapsed / 600) * 100, [timeElapsed]);
+
+  // Extract people names and feelings from voter messages
+  useEffect(() => {
+    const extractSharedContent = () => {
+      const voterMessages = messages.filter((msg) => msg.role === 'assistant');
+      const people: string[] = [];
+      const feelings: string[] = [];
+
+      voterMessages.forEach((msg) => {
+        // Simple regex to extract potential people names (capitalized words after common relationship terms)
+        const peopleMatches = msg.content.match(
+          /(?:my|his|her|our) (?:brother|sister|mother|father|son|daughter|nephew|niece|cousin|friend|husband|wife|partner) (\w+)/gi,
+        );
+        if (peopleMatches) {
+          peopleMatches.forEach((match) => {
+            const name = match.split(' ').pop();
+            if (name && name.length > 0 && !people.includes(name)) {
+              people.push(name);
+            }
+          });
+        }
+
+        // Extract feeling/emotion words
+        const feelingWords = [
+          'worried',
+          'scared',
+          'anxious',
+          'happy',
+          'sad',
+          'angry',
+          'frustrated',
+          'relieved',
+          'grateful',
+          'hopeful',
+          'stressed',
+          'overwhelmed',
+          'proud',
+          'disappointed',
+          'concerned',
+          'nervous',
+          'excited',
+          'depressed',
+        ];
+        feelingWords.forEach((feeling) => {
+          if (msg.content.toLowerCase().includes(feeling) && !feelings.includes(feeling)) {
+            feelings.push(feeling);
+          }
+        });
+      });
+
+      setVoterSharedContent({ people, feelings });
+    };
+
+    if (messages.length > 0) {
+      extractSharedContent();
+    }
+  }, [messages]);
+
+  // Progress through script steps based on conversation
+  useEffect(() => {
+    if (!roleplayStarted || messages.length === 0) return;
+
+    const userMessages = messages.filter((msg) => msg.role === 'user');
+    const voterMessages = messages.filter((msg) => msg.role === 'assistant');
+
+    // Step 1: Check if user has done framing (introduced themselves and the issue)
+    if (currentScriptStep === 1 && userMessages.length > 0) {
+      const firstMessage = userMessages[0];
+      const hasFraming =
+        firstMessage.content.toLowerCase().includes('name') ||
+        firstMessage.content.toLowerCase().includes('talk about') ||
+        firstMessage.content.toLowerCase().includes(currentIssue.plainLanguage.toLowerCase());
+
+      if (hasFraming && voterMessages.length > 0) {
+        setCurrentScriptStep(2);
+      }
+    }
+
+    // Step 2: Check if user has shared their story
+    if (currentScriptStep === 2 && userMessages.length > 1) {
+      const hasSharedStory = userMessages.some(
+        (msg) =>
+          msg.content.toLowerCase().includes(eventType.toLowerCase()) ||
+          msg.content.toLowerCase().includes(personType.toLowerCase()) ||
+          msg.content.toLowerCase().includes(selectedFeeling.toLowerCase()),
+      );
+
+      if (hasSharedStory) {
+        setCurrentScriptStep(3);
+      }
+    }
+
+    // Step 3+: General listening and coaching
+    if (currentScriptStep >= 3) {
+      // Continue showing listening coaching
+    }
+  }, [messages, roleplayStarted, currentScriptStep, eventType, personType, selectedFeeling, currentIssue]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -347,115 +447,180 @@ function RoleplayContent() {
                       </div>
                     ))}
                   </div>
+
+                  {/* Voter Shared Content Footer */}
+                  {roleplayStarted && (voterSharedContent.people.length > 0 || voterSharedContent.feelings.length > 0) && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <h6 className="text-xs font-medium text-gray-500 mb-2">What Frank has shared:</h6>
+                      <div className="flex flex-wrap gap-2">
+                        {voterSharedContent.people.map((person, index) => (
+                          <span
+                            key={`person-${index}`}
+                            className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200"
+                          >
+                            👤 {person}
+                          </span>
+                        ))}
+                        {voterSharedContent.feelings.map((feeling, index) => (
+                          <span
+                            key={`feeling-${index}`}
+                            className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800 border border-purple-200"
+                          >
+                            💭 {feeling}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
 
-            {/* Live Coaching Cues */}
+            {/* Combined Script and Live Coaching */}
             <div className="lg:col-span-2 space-y-4">
-              {/* Your Script */}
+              {/* Current Step Display */}
               {personType && eventType && selectedFeeling && currentIssue && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Your Script</CardTitle>
+                    <CardTitle>{!roleplayStarted ? 'Your Opening Script' : 'Live Coaching'}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4 text-sm">
-                      <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
-                          1
-                        </div>
-                        <div>
-                          <h5 className="font-medium text-gray-900 mb-1">Framing:</h5>
-                          <p className="text-gray-700 font-mono text-xs">
-                            My name is [your name], I'm here with <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} />{' '}
-                            to talk about {currentIssue.plainLanguage}.
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
-                          2
-                        </div>
-                        <div>
-                          <h5 className="font-medium text-gray-900 mb-1">Share your story:</h5>
-                          <p className="text-gray-700 font-mono text-xs">
-                            One time, I {eventType} and was really worried. What happened was...
-                            <br />
-                            <span className="text-gray-500">[your story]</span>
-                            <br />
-                            My {personType} was really there for me. They helped me by...
-                            <br />
-                            <span className="text-gray-500">[what they did]</span>
-                            <br />
-                            and that really made me feel {selectedFeeling}. Is there a time someone was really there for you?
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
-                          3
-                        </div>
-                        <div>
-                          <h5 className="font-medium text-gray-900 mb-1">Dig deeper:</h5>
-                          <div className="text-gray-600 text-xs space-y-2">
-                            <div className="flex items-center gap-2">
-                              <MessageCircle className="w-3 h-3 text-blue-500" />
-                              <p>Ask about their family.</p>
+                    {!roleplayStarted ? (
+                      // Show step 1 prominently before roleplay starts
+                      <div className="space-y-4">
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <div className="flex items-start space-x-3">
+                            <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                              1
                             </div>
-                            <div className="flex items-center gap-2">
-                              <MessageCircle className="w-3 h-3 text-blue-500" />
-                              <p>When they name a person, ask more about them.</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <MessageCircle className="w-3 h-3 text-blue-500" />
-                              <p>When they say how they feel, ask why.</p>
+                            <div className="flex-1">
+                              <h5 className="font-medium text-gray-900 mb-2">Start with your framing:</h5>
+                              <div className="bg-white border border-blue-200 rounded p-3">
+                                <p className="text-gray-800 font-mono text-sm leading-relaxed">
+                                  "My name is [your name], I'm here with{' '}
+                                  <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to talk about{' '}
+                                  {currentIssue.plainLanguage}."
+                                </p>
+                              </div>
+                              <p className="text-gray-600 text-xs mt-2">
+                                This introduces you and frames the conversation around the issue.
+                              </p>
                             </div>
                           </div>
                         </div>
+                        <div className="text-center text-gray-600 text-sm">
+                          <p>Once you start the roleplay, you'll receive live coaching cues as the conversation progresses.</p>
+                        </div>
                       </div>
+                    ) : (
+                      // Show dynamic coaching based on current step
+                      <div className="space-y-4">
+                        {currentScriptStep === 1 && (
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h5 className="font-medium text-blue-900 mb-2">✓ Step 1 Complete - Now listen to them</h5>
+                            <p className="text-gray-700 text-sm">Let them respond to your framing. Listen for their initial thoughts.</p>
+                          </div>
+                        )}
 
-                      <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-indigo-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
-                          4
-                        </div>
-                        <div>
-                          <h5 className="font-medium text-gray-900 mb-1">Explore together:</h5>
-                          <p className="text-gray-700 font-mono text-xs">
-                            It sounds like we both really care about the people we love. Does that change how you think about this issue at
-                            all?
-                          </p>
-                        </div>
-                      </div>
+                        {currentScriptStep === 2 && (
+                          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                            <h5 className="font-medium text-orange-900 mb-2">Share your story:</h5>
+                            <div className="bg-white border border-orange-200 rounded p-3">
+                              <p className="text-gray-800 font-mono text-sm leading-relaxed">
+                                "One time, I {eventType} and was really worried. What happened was...
+                                <br />
+                                <span className="text-gray-500">[your story]</span>
+                                <br />
+                                My {personType} was really there for me. They helped me by...
+                                <br />
+                                <span className="text-gray-500">[what they did]</span>
+                                <br />
+                                and that really made me feel {selectedFeeling}. Is there a time someone was really there for you?"
+                              </p>
+                            </div>
+                          </div>
+                        )}
 
-                      <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
-                          5
-                        </div>
-                        <div>
-                          <h5 className="font-medium text-gray-900 mb-1">Ask for action:</h5>
-                          <p className="text-gray-700 font-mono text-xs">
-                            Now that we've explored the issue together, would you take your phone and tell your representative Peter Gerbil
-                            how you feel, at 555-4567?
-                          </p>
-                        </div>
+                        {currentScriptStep >= 3 && (
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <h5 className="font-medium text-green-900 mb-2">Listen to the voter</h5>
+                            <div className="text-gray-700 text-sm space-y-2">
+                              <div className="flex items-center gap-2">
+                                <MessageCircle className="w-4 h-4 text-green-600" />
+                                <p>When they name a person, ask more about them</p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <MessageCircle className="w-4 h-4 text-green-600" />
+                                <p>When they say how they feel, ask why</p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <MessageCircle className="w-4 h-4 text-green-600" />
+                                <p>Look for connections to your shared values</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
               )}
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Live Coaching</CardTitle>
+                  <CardTitle>Context-Aware Tips</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center py-8 text-gray-500">
-                    <AlertCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>Listen actively. Watch how Lucas engages with Frank in this conversation.</p>
-                  </div>
+                  {!roleplayStarted ? (
+                    <div className="text-center py-6 text-gray-500">
+                      <AlertCircle className="w-8 h-8 mx-auto mb-3 opacity-50" />
+                      <p className="text-sm">Tips will appear here based on your conversation progress.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {voterSharedContent.people.length > 0 && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                          <div className="flex items-center gap-2 mb-1">
+                            <MessageCircle className="w-4 h-4 text-blue-600" />
+                            <span className="text-sm font-medium text-blue-900">They mentioned people!</span>
+                          </div>
+                          <p className="text-xs text-blue-700">
+                            Ask follow-up questions about {voterSharedContent.people.join(', ')}. How did this affect them?
+                          </p>
+                        </div>
+                      )}
+
+                      {voterSharedContent.feelings.length > 0 && (
+                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                          <div className="flex items-center gap-2 mb-1">
+                            <MessageCircle className="w-4 h-4 text-purple-600" />
+                            <span className="text-sm font-medium text-purple-900">They shared feelings!</span>
+                          </div>
+                          <p className="text-xs text-purple-700">
+                            They mentioned feeling {voterSharedContent.feelings.join(', ')}. Ask why they felt that way.
+                          </p>
+                        </div>
+                      )}
+
+                      {currentScriptStep >= 3 && voterSharedContent.people.length === 0 && voterSharedContent.feelings.length === 0 && (
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                          <div className="flex items-center gap-2 mb-1">
+                            <AlertCircle className="w-4 h-4 text-yellow-600" />
+                            <span className="text-sm font-medium text-yellow-900">Listen deeper</span>
+                          </div>
+                          <p className="text-xs text-yellow-700">
+                            Try asking about their family or personal experiences related to this issue.
+                          </p>
+                        </div>
+                      )}
+
+                      {!roleplayStarted && (
+                        <div className="text-center py-4 text-gray-500">
+                          <p className="text-sm">Listen actively for emotional moments and personal connections.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
