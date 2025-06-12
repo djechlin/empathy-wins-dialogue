@@ -41,8 +41,8 @@ const Preparation = () => {
 
   const currentIssue = selectedIssue ? issueDetails[selectedIssue as keyof typeof issueDetails] : null;
 
-  const handleIssueChange = (value: string) => {
-    // Allow deselecting by checking if the same value is clicked
+  const handleIssueClick = (value: string) => {
+    // If the same button is clicked, deselect it
     if (selectedIssue === value) {
       setSelectedIssue('');
     } else {
@@ -140,12 +140,13 @@ const Preparation = () => {
           <CardContent className="space-y-6">
             <div>
               <Label className="text-base font-medium mb-4 block">Choose your issue:</Label>
-              <RadioGroup value={selectedIssue} onValueChange={handleIssueChange} className="space-y-0">
+              <RadioGroup value={selectedIssue} className="space-y-0">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="relative">
                     <RadioGroupItem value="insulin" id="insulin" className="sr-only" />
                     <Label 
                       htmlFor="insulin" 
+                      onClick={() => handleIssueClick('insulin')}
                       className={`block cursor-pointer p-4 rounded-lg border-2 transition-all duration-200 aspect-[1.2/1] flex flex-col justify-center text-center hover:shadow-lg ${
                         selectedIssue === 'insulin' 
                           ? 'border-blue-500 bg-blue-50 shadow-md' 
@@ -161,6 +162,7 @@ const Preparation = () => {
                     <RadioGroupItem value="climate" id="climate" className="sr-only" />
                     <Label 
                       htmlFor="climate" 
+                      onClick={() => handleIssueClick('climate')}
                       className={`block cursor-pointer p-4 rounded-lg border-2 transition-all duration-200 aspect-[1.2/1] flex flex-col justify-center text-center hover:shadow-lg ${
                         selectedIssue === 'climate' 
                           ? 'border-green-500 bg-green-50 shadow-md' 
