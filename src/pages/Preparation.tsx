@@ -3,7 +3,7 @@ import Navbar from '@/components/layout/Navbar';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
-import { ArrowRight, Heart, Search } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -347,79 +347,6 @@ const Preparation = () => {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-sans">Your script</CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                {canProceed() ? (
-                  <div className="space-y-4">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
-                        1
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Framing:</h4>
-                        <p className="text-gray-700 font-mono text-sm">
-                          "My name is [your name], I'm here with{' '}
-                          {currentIssue && <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} />} to talk about{' '}
-                          {currentIssue?.plainLanguage}.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="text-gray-500 text-sm italic ml-9">(listen to what they say)</div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
-                        2
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Build a connection:</h4>
-                        <div className="text-gray-700 text-sm space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Heart className="w-3 h-3 text-orange-500" />
-                            <span>Open Up</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Search className="w-3 h-3 text-orange-500" />
-                            <span>Dig Deeper</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
-                        3
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Explore together:</h4>
-                        <p className="text-gray-700 font-mono text-sm">
-                          It sounds like we both really care about the people we love. Does that change how you think about this issue at
-                          all?
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
-                        4
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Ask for action:</h4>
-                        <p className="text-gray-700 font-mono text-sm">
-                          Now that we've explored the issue together, would you take your phone and tell your representative Peter Gerbil
-                          how you feel, at 555-4567?
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-gray-400 font-sans">Complete the preparation above to see your script</p>
-                )}
-              </CardContent>
-            </Card>
           </div>
 
           <div className="text-center">
