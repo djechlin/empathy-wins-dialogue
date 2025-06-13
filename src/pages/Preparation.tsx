@@ -203,7 +203,7 @@ const Preparation = () => {
                   <div className="pr-3">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-green-600">✓</span>
-                      <span className="font-medium text-gray-900 text-sm">Frame</span>
+                      <span className="font-medium text-gray-900 text-sm">Cut to the chase</span>
                     </div>
                     <p className="font-mono text-sm text-gray-700">
                       <span className="font-bold">Voter:</span> Hello, who's there?
@@ -216,7 +216,7 @@ const Preparation = () => {
                   <div className="pl-3">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-red-600">✗</span>
-                      <span className="font-medium text-gray-900 text-sm">Avoid educating on the issue</span>
+                      <span className="font-medium text-gray-900 text-sm">Don't go on a lecture</span>
                     </div>
                     <p className="font-mono text-sm text-gray-700">
                       <span className="font-bold">Voter:</span> Hello, who's there?
@@ -346,7 +346,6 @@ const Preparation = () => {
                 <p className="text-gray-600 text-sm font-sans">You'll ask them to take a specific action while you're together.</p>
               </CardContent>
             </Card>
-
           </div>
 
           <div className="text-center">
