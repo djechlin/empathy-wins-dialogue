@@ -423,12 +423,12 @@ function RoleplayContent() {
                     }}
                     className="space-y-3 max-h-96 overflow-y-auto"
                   >
-                    {/* Always show voter info as first message */}
-                    <div className="flex justify-center">
-                      <div className="max-w-[90%] p-3 rounded-lg bg-gray-50 border border-gray-200">
-                        <p className="text-sm text-gray-600 italic text-center">
-                          You'll be talking with Frank Hamster, a 55 year old Registered Independent who voted in 2020 but not 2024. His
-                          representative is Peter Gerbil.
+                    {/* Show voter info as first message from Frank */}
+                    <div className="flex justify-start">
+                      <div className="max-w-[90%] p-3 rounded-lg bg-gray-100 text-gray-800">
+                        <div className="text-xs opacity-70 mb-1">Frank</div>
+                        <p className="text-sm">
+                          Hi there! I'm Frank Hamster, a 55 year old Registered Independent. I voted in 2020 but didn't make it to the polls in 2024. My representative is Peter Gerbil.
                         </p>
                       </div>
                     </div>
