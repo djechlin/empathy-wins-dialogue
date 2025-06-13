@@ -347,9 +347,7 @@ const Preparation = () => {
               </CardContent>
             </Card>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Your Script Column */}
-              <Card>
+            <Card>
                 <CardHeader>
                   <CardTitle className="font-sans">Your script</CardTitle>
                 </CardHeader>
@@ -430,8 +428,6 @@ const Preparation = () => {
                   )}
                 </CardContent>
               </Card>
-
-            </div>
           </div>
 
           <div className="text-center">
