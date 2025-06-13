@@ -18,7 +18,9 @@ ${transcript}
 ${cues.map((cue) => `- ${cue.text} (${cue.type})`).join('\n')}
 </cues>
 
-Respond with JSON:
+Respond with JSON, with your answer wrapped in <json> tags:
+
+Output example:
 <json>{"person": "Sarah", "suggestedAction": "See if he shares more about Sarah.", "mention": "Frank mentioned Sarah helped him feed his dog when he was on vacation.", "type": "person"}</json>
 
 type = "person", "feeling", or "canvasser" (for when the canvasser is going too much into facts, issues, and politics)
@@ -37,13 +39,13 @@ type = "person", "feeling", or "canvasser" (for when the canvasser is going too 
 
   const jsonMatch = data.match(/<json>(.*?)<\/json>/s);
   if (!jsonMatch) {
-    throw new Error('Invalid response format');
+    throw new Error(`No <json> match in response: ${data}`);
   }
 
   const parsedResponse = JSON.parse(jsonMatch[1]);
   return {
-    text: parsedResponse.text,
-    rationale: parsedResponse.rationale,
+    text: parsedResponse.suggestedAction,
+    rationale: parsedResponse.mention,
     type: parsedResponse.type,
   };
 }
