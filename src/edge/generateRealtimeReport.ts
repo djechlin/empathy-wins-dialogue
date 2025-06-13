@@ -163,7 +163,13 @@ export async function generateConversationCues(
 ${fullConversationTranscript}
 </transcript>
 ${existingSuggestionsText}
-DEEP CANVASSING PRINCIPLE: Steer the conversation away from facts, statistics, research costs, and lectures. Instead, focus on relationships, personal stories, and vulnerability. Avoid suggestions about policy details, data, or factual arguments.
+DEEP CANVASSING PRINCIPLES: 
+- Steer the conversation away from facts, statistics, research costs, and lectures
+- Focus on relationships, personal stories, and vulnerability
+- Avoid suggestions about policy details, data, or factual arguments
+- Use plainspoken, vulnerable language that sounds natural and authentic
+- Avoid lecturing, contorting language, or sounding artificial
+- Suggestions should help the canvasser connect genuinely with the voter
 
 You have three options for managing conversation cues:
 1. "keep" - Keep the existing suggestions as they are still relevant
@@ -199,11 +205,11 @@ For providing a new suggestion:
 </json>
 
 IMPORTANT: Structure your suggestions as:
-- text: The exact language the person can say (as a complete question or statement)
+- text: The exact language the person can say (as a complete question or statement in plainspoken, vulnerable language)
 - rationale: A brief sentence fragment explaining the idea behind the suggestion
 - type: person, feeling, or perspective
 
-Focus on suggestions that help the canvasser connect emotionally and personally, not on facts or policy arguments.`;
+Focus on suggestions that help the canvasser connect emotionally and personally using natural, authentic language. Avoid anything that sounds scripted, clinical, or artificial.`;
 
   const { data, error } = await supabase.functions.invoke('claude-report', {
     body: {
