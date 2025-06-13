@@ -157,59 +157,29 @@ export async function generateConversationCues(
       ? `\n<existing_suggestions>\n${existingSuggestions.map((cue) => `- "${cue.text}" (${cue.type}) - ${cue.rationale}`).join('\n')}\n</existing_suggestions>\n`
       : '';
 
-  const userMessage = `Based on the new messages, give the user up to 1 cue for what to try saying next to the voter. Categorize it as about a person, feeling, or perspective.
+  const userMessage = `You help canvassers with conversation cues during deep canvassing conversations. Deep canvassing focuses on relationships and vulnerability, not facts or policy arguments.
 
 <transcript>
 ${fullConversationTranscript}
 </transcript>
 ${existingSuggestionsText}
-DEEP CANVASSING PRINCIPLES: 
-- Steer the conversation away from facts, statistics, research costs, and lectures
-- Focus on relationships, personal stories, and vulnerability
-- Avoid suggestions about policy details, data, or factual arguments
-- Use plainspoken, vulnerable language that sounds natural and authentic
-- Avoid lecturing, contorting language, or sounding artificial
-- Suggestions should help the canvasser connect genuinely with the voter
 
-You have three options for managing conversation cues:
-1. "keep" - Keep the existing suggestions as they are still relevant
-2. "clear" - Clear all existing suggestions because they're no longer relevant 
-3. "new" - Provide a new suggestion (and include the cue object)
+Choose one action:
+- "keep" existing suggestions if still relevant
+- "clear" all suggestions if outdated  
+- "new" to add a suggestion
 
-Your response should be a json object with an action and optionally a cue, wrapped in <json> like follows:
+Respond with JSON:
+<json>{"action": "keep"}</json>
+<json>{"action": "clear"}</json> 
+<json>{"action": "new", "cue": {"text": "How did that make you feel?", "rationale": "explore emotions", "type": "feeling"}}</json>
 
-For keeping existing suggestions:
-<json>
-{
-  "action": "keep"
-}
-</json>
+For new suggestions:
+- text: Natural, vulnerable language the canvasser can say
+- rationale: Brief reason for the suggestion
+- type: "person", "feeling", or "perspective"
 
-For clearing existing suggestions:
-<json>
-{
-  "action": "clear"
-}
-</json>
-
-For providing a new suggestion:
-<json>
-{
-  "action": "new",
-  "cue": {
-    "text": "Can you tell me more about your brother?",
-    "rationale": "dig deeper into personal connection",
-    "type": "person"
-  }
-}
-</json>
-
-IMPORTANT: Structure your suggestions as:
-- text: The exact language the person can say (as a complete question or statement in plainspoken, vulnerable language)
-- rationale: A brief sentence fragment explaining the idea behind the suggestion
-- type: person, feeling, or perspective
-
-Focus on suggestions that help the canvasser connect emotionally and personally using natural, authentic language. Avoid anything that sounds scripted, clinical, or artificial.`;
+Focus on authentic human connection, not scripted responses.`;
 
   const { data, error } = await supabase.functions.invoke('claude-report', {
     body: {
