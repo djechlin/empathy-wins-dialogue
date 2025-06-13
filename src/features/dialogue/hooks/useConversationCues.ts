@@ -31,29 +31,34 @@ export function useConversationCues(): CueManagementResult {
     }
     setPrevIndex(messages.length - 1);
 
-    generateConversationCues(concatTranscript(messages), activeCues).then((response: ConversationCueResponse | null) => {
-      if (!response) return;
+    // Capture current activeCues at the time of the API call to avoid stale closure
+    setActiveCues(currentActiveCues => {
+      generateConversationCues(concatTranscript(messages), currentActiveCues).then((response: ConversationCueResponse | null) => {
+        if (!response) return;
 
-      switch (response.action) {
-        case 'keep':
-          // Keep existing cues, no new cue
-          setNewCue(null);
-          break;
-        case 'clear':
-          // Clear all existing cues, no new cue
-          setActiveCues([]);
-          setNewCue(null);
-          break;
-        case 'new':
-          // Add new cue to active cues
-          if (response.cue) {
-            setActiveCues((prev) => [...prev, response.cue!]);
-            setNewCue(response.cue);
-          }
-          break;
-      }
+        switch (response.action) {
+          case 'keep':
+            // Keep existing cues, no new cue
+            setNewCue(null);
+            break;
+          case 'clear':
+            // Clear all existing cues, no new cue
+            setActiveCues([]);
+            setNewCue(null);
+            break;
+          case 'new':
+            // Add new cue to active cues
+            if (response.cue) {
+              setActiveCues(prev => [...prev, response.cue!]);
+              setNewCue(response.cue);
+            }
+            break;
+        }
+      });
+      
+      return currentActiveCues; // Return unchanged state
     });
-  }, [messages, prevIndex, activeCues]);
+  }, [messages, prevIndex]);
 
   return { activeCues, newCue };
 }
