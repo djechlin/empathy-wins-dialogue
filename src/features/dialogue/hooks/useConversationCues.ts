@@ -1,6 +1,6 @@
 import { useDialogue } from '@/features/dialogue';
 import { useEffect, useState } from 'react';
-import { generateConversationCues, ConversationCue, ConversationCueResponse } from '../../../edge/generateRealtimeReport';
+import { ConversationCue, generateConversationCues } from '../../../edge/generateRealtimeReport';
 import { DialogueMessage } from '../types';
 
 const concatTranscript = (msgs: DialogueMessage[]) => {
@@ -14,15 +14,27 @@ const concatTranscript = (msgs: DialogueMessage[]) => {
 
 export interface CueManagementResult {
   activeCues: ConversationCue[];
-  newCue: ConversationCue | null;
 }
 
-export function useConversationCues(): CueManagementResult {
+export function useConversationCues(initialCue?: { organization: string; plainLanguage: string }): CueManagementResult {
   const { messages } = useDialogue();
   const [prevIndex, setPrevIndex] = useState(-1);
-  const [activeCues, setActiveCues] = useState<ConversationCue[]>([]);
-  const [newCue, setNewCue] = useState<ConversationCue | null>(null);
 
+  // Initialize with opening script if provided
+  const [activeCues, setActiveCues] = useState<ConversationCue[]>(() => {
+    if (initialCue) {
+      return [
+        {
+          text: `My name is [your name], I'm here with ${initialCue.organization} to talk about ${initialCue.plainLanguage}.`,
+          rationale: 'Opening script to introduce yourself and the issue',
+          type: 'framing',
+        },
+      ];
+    }
+    return [];
+  });
+
+  // Handle conversation cues
   useEffect(() => {
     const newMessages = messages.filter((m, index) => index > prevIndex);
     const hasNewMessage = newMessages.length > 0;
@@ -31,34 +43,12 @@ export function useConversationCues(): CueManagementResult {
     }
     setPrevIndex(messages.length - 1);
 
-    // Capture current activeCues at the time of the API call to avoid stale closure
-    setActiveCues((currentActiveCues) => {
-      generateConversationCues(concatTranscript(messages), currentActiveCues).then((response: ConversationCueResponse | null) => {
-        if (!response) return;
-
-        switch (response.action) {
-          case 'keep':
-            // Keep existing cues, no new cue
-            setNewCue(null);
-            break;
-          case 'clear':
-            // Clear all existing cues, no new cue
-            setActiveCues([]);
-            setNewCue(null);
-            break;
-          case 'new':
-            // Add new cue to active cues
-            if (response.cue) {
-              setActiveCues((prev) => [...prev, response.cue!]);
-              setNewCue(response.cue);
-            }
-            break;
-        }
-      });
-
-      return currentActiveCues; // Return unchanged state
+    generateConversationCues(concatTranscript(messages), activeCues).then((response) => {
+      if (response?.action === 'new' && response.cue && response.cue.text) {
+        setActiveCues((prev) => [...prev, response.cue]);
+      }
     });
-  }, [messages, prevIndex]);
+  }, [messages, prevIndex, activeCues]);
 
-  return { activeCues, newCue };
+  return { activeCues };
 }

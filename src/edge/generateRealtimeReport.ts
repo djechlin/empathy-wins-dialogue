@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import type { FeedbackId, ChallengeStep } from '@/types';
+import type { ChallengeStep, FeedbackId } from '@/types';
 
 export type RealtimeReport = string;
 
@@ -140,7 +140,7 @@ export async function generateRealtimeFeedback(
 export interface ConversationCue {
   text: string;
   rationale: string;
-  type: 'person' | 'feeling' | 'perspective';
+  type: 'person' | 'feeling' | 'perspective' | 'framing';
 }
 
 export interface ConversationCueResponse {
@@ -157,29 +157,42 @@ export async function generateConversationCues(
       ? `\n<existing_suggestions>\n${existingSuggestions.map((cue) => `- "${cue.text}" (${cue.type}) - ${cue.rationale}`).join('\n')}\n</existing_suggestions>\n`
       : '';
 
-  const userMessage = `You help canvassers with conversation cues during deep canvassing conversations. Deep canvassing focuses on relationships and vulnerability, not facts or policy arguments.
+  // const oldPrompt = `
+  //   Avoid going in the direction of opinions or politics.
+
+  //   <bad_example>"What's your sense of how companies should balance making profit with making medicine affordable?"</bad_example>
+
+  //   Don't prompt them to think about the issue itself. It is OK to prompt them to think about how the issue affects someone they care about.
+
+  //   <bad_example> What comes to mind when you think about healthcare?"</bad_example>
+
+  //   Don't ask permission to share something with the voter - just share it.
+  //   <bad_example>"I started caring about this because of someone in my own life - would you like to hear about that?"</bad_example>
+
+  //   The voter themselves does not count as a person.
+  //   <bad_example>"Frank, what's your own experience been with healthcare?"</bad_example>
+  // `
+
+  const userMessage = `You are an on-screen assistant the user reads while roleplaying deep canvassing. Think of your role as a "noticer." You notice important emotional cues and details the canvasser might have missed, if the canvasser was in the flow of the conversation or beginning to delve into the issue too much. Brevity is of utmost important since user will be reading this while in the middle of a conversation. Suggestions should be direct and pointed. All context should go in the sub-field with the main field just containing the suggested action.
+
+  You mainly want to notice people in the voter's life, and you want to notice times the voter shares a feeling or perspective that is really worth digging deeper into. Remember, we don't want to hash out politics, but we want to know and care where they come from.
+
+  Additionally you will notice when the canvasser goes too much into facts, issues, and politics. Nudge them to bring it back to their relationships or the voter's relationships. This cue is quite harsh, so avoid giving it twice in a row.
+
+  You will use your ability maybe 5 times in the whole 10 minute conversation, so feel free to reply with empty text "" and a description like "nothing new yet" many times.
 
 <transcript>
 ${fullConversationTranscript}
 </transcript>
+
 ${existingSuggestionsText}
 
-Choose one action:
-- "keep" existing suggestions if still relevant
-- "clear" all suggestions if outdated  
-- "new" to add a suggestion
-
 Respond with JSON:
-<json>{"action": "keep"}</json>
-<json>{"action": "clear"}</json> 
-<json>{"action": "new", "cue": {"text": "How did that make you feel?", "rationale": "explore emotions", "type": "feeling"}}</json>
+<json>{"person": "Sarah", "suggestedAction": "See if he shares more about Sarah.", "mention": "Frank mentioned Sarah helped him feed his dog when he was on vacation.", "type": "person"}</json>
 
-For new suggestions:
-- text: Natural, vulnerable language the canvasser can say
-- rationale: Brief reason for the suggestion
-- type: "person", "feeling", or "perspective"
+type = "person", "feeling", or "canvasser" (for when the canvasser is going too much into facts, issues, and politics)
 
-Focus on authentic human connection, not scripted responses.`;
+`;
 
   const { data, error } = await supabase.functions.invoke('claude-report', {
     body: {
@@ -200,7 +213,14 @@ Focus on authentic human connection, not scripted responses.`;
 
   try {
     const parsedResponse = JSON.parse(jsonMatch[1].trim());
-    return parsedResponse as ConversationCueResponse;
+    return {
+      action: 'new',
+      cue: {
+        text: parsedResponse.suggestedAction,
+        rationale: parsedResponse.mention,
+        type: parsedResponse.type,
+      },
+    } as ConversationCueResponse;
   } catch (error) {
     console.warn('Failed to parse conversation cues:', error);
     return null;

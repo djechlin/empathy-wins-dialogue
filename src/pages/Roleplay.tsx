@@ -1,15 +1,15 @@
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import { useDialogue } from '@/features/dialogue';
+import { useConversationCues } from '@/features/dialogue/hooks/useConversationCues';
 import { ReplayProvider } from '@/features/dialogue/providers/ReplayProvider';
 import { DialogueMessage } from '@/features/dialogue/types';
-import { useConversationCues } from '@/features/dialogue/hooks/useConversationCues';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
-import { Mic, MicOff, ArrowRight, Lightbulb, Bot, Heart, Sparkles, MessageSquare, Users, Brain } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ArrowRight, Bot, Brain, Flag, Heart, Lightbulb, Mic, MicOff, Sparkles, Users } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Parse Lucas replay data
@@ -17,11 +17,7 @@ const lucasReplayText = `Voter: Hello? Is someone at my door?
 
 Canvasser: Hi. My name is Lucas, and I'm interested in talking with you more about health care in America.
 
-Voter: Oh, healthcare? I don't know if I have much to say about that.
-
-Voter: I'm Frank, by the way.
-
-Voter: What organization are you with?
+Voter: Oh, healthcare? I don't know if I have much to say about that. I'm Frank, by the way.What organization are you with?
 
 Canvasser: I'm with Americans with diabetes.
 
@@ -31,71 +27,25 @@ Canvasser: Which costs big companies only a dollar to make.
 
 Canvasser: But sells for two hundred dollars.
 
-Voter: Oh, I see. Well, I don't have diabetes myself, so I haven't really thought much about insulin prices.
-
-Voter: Sounds like there's quite a markup there, but isn't that how most medications work?
-
-Voter: Companies spend money on research and then charge more to make their profit back.
-
-Voter: I tend to think the government getting involved just makes things more expensive in the long run with all the bureaucracy.
+Voter: Oh, I see. Well, I don't have diabetes myself, so I haven't really thought much about insulin prices.  Sounds like there's quite a markup there, but isn't that how most medications work? Companies spend money on research and then charge more to make their profit back.  I tend to think the government getting involved just makes things more expensive in the long run with all the bureaucracy.
 
 Canvasser: Yeah. I I think I I understand where you're coming from. Definitely government regulation can cause prices to go up. Certainly for new medication research. But insulin's been around for a hundred years. Actually, the inventor of insulin sold the patent for one dollar. So that everyone could have access to this medication. And what has happened is these companies have taken this very, very cheap to make product that sells for a dollar in Mexico and are charging people two hundred, three hundred dollars here.
 
-Voter: Hmm, I didn't know that about insulin being that old or that the inventor sold it for so little.
-
-Voter: That does make it seem different than new medications still under research.
-
-Voter: So it's that much cheaper in Mexico?
-
-Voter: That's pretty wild. I guess I can see why people would be upset about that.
-
-Voter: But I'm still not sure what the government could do that wouldn't just create more problems.
-
-Voter: You know how these things go.
+Voter: Hmm, I didn't know that about insulin being that old or that the inventor sold it for so little. That does make it seem different than new medications still under research. So it's that much cheaper in Mexico? That's pretty wild. I guess I can see why people would be upset about that.  But I'm still not sure what the government could do that wouldn't just create more problems. You know how these things go.
 
 Canvasser: I do know how these things go. And, certainly, when the government gets involved, it can cause problems. I mean, my brother has diabetes actually right now, and it's pretty difficult for him if he doesn't his health insurance doesn't cover his insulin. He's just out of luck. And I think that we should make sure that I think one of the things government can do well is it can make sure that companies don't rip off American citizens.
 
-Canvasser: Given the price difference between Mexico and the US for the same drug, you can see that or at least for my brother, it can see that he's having to pay way more than others are.
-
-Voter: I didn't realize your brother has diabetes.
-
-Voter: That must be tough for him.
-
-Voter: Is he managing okay?
-
-Voter: Does he have to pay those high prices you mentioned?
+Canvasser: Given the price difference between Mexico and the US for the same drug, you can see that or at least for my brother, it can see that he's having to pay way more than others are. I didn't realize your brother has diabetes. That must be tough for him. Is he managing okay?  Does he have to pay those high prices you mentioned?
 
 Canvasser: Yeah. He is, he's doing better, certainly. But and right now, because of his insurance plan, he doesn't have to pay as much. But if he didn't have health insurance like many people don't, or if he had a worse health insurance plan, like he was working for you know, Target, then he he would be in trouble.
 
-Voter: Well, I'm glad he has decent insurance now.
-
-Voter: I can see how that would be really stressful otherwise.
-
-Voter: His mom was worried sick.
-
-Voter: Do you think a lot of people are in that situation with insulin?
-
-Voter: Having to choose between medicine and other necessities?
-
-Voter: I'm curious - does your brother ever struggle with affording his insulin?
-
-Voter: How does that affect him and your family?
+Voter: Well, I'm glad he has decent insurance now. I can see how that would be really stressful otherwise. His mom was worried sick. Do you think a lot of people are in that situation with insulin? Having to choose between medicine and other necessities?  I'm curious - does your brother ever struggle with affording his insulin?  How does that affect him and your family?
 
 Canvasser: Oh, I'm I'm sorry to hear about your nephew. Yeah. I I mean, certainly, I think not being able to afford life saving medication because you've gotten laid off or because you're you know, your job changes is is terrible.
 
 Canvasser: My brother, like I said, doesn't struggle now because of his current job situation, but I think he is worried that if he changes jobs in the future, or, you know, gets laid off unexpectedly, that could all change, and then he could be in real trouble.
 
-Voter: That's a real worry to live with, isn't it?
-
-Voter: I can see how that would create a lot of stress.
-
-Voter: My nephew was only without his medication for about a month, but my sister was beside herself with worry.
-
-Voter: It's not right that people have to worry about basic health needs just because of job changes.
-
-Voter: What do you think would help people like your brother have more security?
-
-Voter: Is that what this insulin price cap idea would do?
+Voter: That's a real worry to live with, isn't it? I can see how that would create a lot of stress. My nephew was only without his medication for about a month, but my sister was beside herself with worry.  It's not right that people have to worry about basic health needs just because of job changes. What do you think would help people like your brother have more security? Is that what this insulin price cap idea would do?
 
 Canvasser: Yeah. Exactly. So if we were to cap the price of insulin from, say, two hundred dollars to thirty dollars even though my brother would be paying the same amount right now, if he was fired, or or, you know, he just was between jobs. He would just be able to afford it out of pocket rather than having to pay these exorbitant prices.
 
@@ -103,35 +53,13 @@ Canvasser: Oh, and your nephew too. Right? Wouldn't your, your sister wouldn't h
 
 Voter: You're right, it would have made a huge difference for them.
 
-Voter: My sister was trying to help him pay for it, but she's a single mom and it was just too much on top of her other bills.
-
-Voter: That was a really stressful time for our whole family.
-
-Voter: I hadn't really thought about it that way before - how a price cap could be like a safety net for people between jobs.
-
-Voter: That makes a lot of sense.
-
-Voter: What are you folks actually doing to try to make this happen?
-
-Voter: Is there something specific you're asking people to do?
+Voter: My sister was trying to help him pay for it, but she's a single mom and it was just too much on top of her other bills. That was a really stressful time for our whole family. I hadn't really thought about it that way before - how a price cap could be like a safety net for people between jobs. That makes a lot of sense. What are you folks actually doing to try to make this happen? Is there something specific you're asking people to do?
 
 Canvasser: Yeah. So I'm I'm glad you asked. Right now, there's some legislation in congress that is being voted on within a month. And we're trying to get people to call their representatives to tell them to vote for it so that it will significantly increase the likelihood that it passes.
 
 Voter: That makes sense. You know, after hearing about how this could help people like my nephew and your brother, I think I would be willing to make that call.
 
-Canvasser: Would that be something you'd be willing to do?
-
-Voter: Who would I need to contact exactly?
-
-Voter: Do you have the information for who my representative is?
-
-Voter: You know what? I think I would be willing to do that.
-
-Voter: After thinking about what my nephew and sister went through, and knowing your brother faces the same worry, it just seems like the right thing to do.
-
-Voter: Do you have the number I should call?
-
-Voter: And what exactly should I say when I call?
+Canvasser: Would that be something you'd be willing to do? Who would I need to contact exactly?  Do you have the information for who my representative is? You know what? I think I would be willing to do that. After thinking about what my nephew and sister went through, and knowing your brother faces the same worry, it just seems like the right thing to do. Do you have the number I should call?  And what exactly should I say when I call?
 
 Canvasser: Yeah. I have the number right here. Let me give you a card.
 
@@ -175,12 +103,12 @@ function RoleplayContent() {
     insulin: {
       title: 'Healthcare - Insulin Affordability',
       plainLanguage: 'affordable insulin for people with diabetes',
-      organization: 'Diabetes Advocates<sup>†</sup>',
+      organization: 'Diabetes Advocates',
     },
     climate: {
       title: 'Climate - Wildfire Management',
       plainLanguage: 'protecting our communities from wildfires',
-      organization: 'Against Wildfires<sup>†</sup>',
+      organization: 'Against Wildfiresj',
     },
   };
 
@@ -360,7 +288,7 @@ function RoleplayContent() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ContextAwareTipsBox roleplayStarted={roleplayStarted} currentIssue={currentIssue} />
+                  <ContextAwareTipsBox currentIssue={currentIssue} />
                 </CardContent>
               </Card>
             </div>
@@ -373,116 +301,33 @@ function RoleplayContent() {
 }
 
 interface ContextAwareTipsBoxProps {
-  roleplayStarted: boolean;
   currentIssue?: {
     organization: string;
     plainLanguage: string;
   };
 }
 
-const ContextAwareTipsBox = ({ roleplayStarted, currentIssue }: ContextAwareTipsBoxProps) => {
-  const [cueStack, setCueStack] = useState<Array<{ id: string; content: React.ReactNode; timestamp: number }>>([]);
-  const [openingScriptDismissed, setOpeningScriptDismissed] = useState(false);
-  const { activeCues, newCue } = useConversationCues();
+const ContextAwareTipsBox = ({ currentIssue }: ContextAwareTipsBoxProps) => {
+  const { activeCues } = useConversationCues(currentIssue);
 
-  // Initialize with opening script immediately when component mounts
-  useEffect(() => {
-    if (currentIssue && !openingScriptDismissed) {
-      const openingCue = {
-        id: 'opening-script',
-        content: (
-          <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-start gap-4">
-              <MessageSquare className="w-8 h-8 text-blue-600 flex-shrink-0 mt-1" />
-              <div className="flex-1">
-                <p className="text-gray-800 font-mono text-sm leading-relaxed">
-                  My name is [your name], I'm here with <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} /> to talk
-                  about {currentIssue.plainLanguage}.
-                </p>
-              </div>
-            </div>
-          </div>
-        ),
-        timestamp: Date.now(),
-      };
-      setCueStack([openingCue]);
+  const getIconAndColor = useCallback((type: string) => {
+    switch (type) {
+      case 'person':
+        return { icon: Users, colorClass: 'from-green-50 to-green-100 border-green-200', iconColor: 'text-green-600' };
+      case 'feeling':
+        return { icon: Heart, colorClass: 'from-purple-50 to-purple-100 border-purple-200', iconColor: 'text-purple-600' };
+      case 'framing':
+        return { icon: Flag, colorClass: 'from-green-50 to-green-100 border-green-200', iconColor: 'text-green-600' };
+      case 'perspective':
+        return { icon: Brain, colorClass: 'from-blue-50 to-blue-100 border-blue-200', iconColor: 'text-blue-600' };
+      case 'canvasser':
+        return { icon: Sparkles, colorClass: 'from-red-50 to-red-100 border-red-200', iconColor: 'text-red-500' };
+      default:
+        return { icon: Sparkles, colorClass: 'from-amber-50 to-amber-100 border-amber-200', iconColor: 'text-amber-600' };
     }
-  }, [currentIssue, openingScriptDismissed]);
+  }, []);
 
-  // Handle opening script dismissal when roleplay starts
-  useEffect(() => {
-    if (roleplayStarted && !openingScriptDismissed) {
-      const timer = setTimeout(() => {
-        setOpeningScriptDismissed(true);
-        setCueStack((prev) => prev.filter((cue) => cue.id !== 'opening-script'));
-      }, 10000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [roleplayStarted, openingScriptDismissed]);
-
-  // Handle all active AI-generated conversation cues
-  useEffect(() => {
-    if (!roleplayStarted) return;
-
-    const getIconAndColor = (type: string) => {
-      switch (type) {
-        case 'person':
-          return { icon: Users, colorClass: 'from-green-50 to-green-100 border-green-200', iconColor: 'text-green-600' };
-        case 'feeling':
-          return { icon: Heart, colorClass: 'from-purple-50 to-purple-100 border-purple-200', iconColor: 'text-purple-600' };
-        case 'perspective':
-          return { icon: Brain, colorClass: 'from-blue-50 to-blue-100 border-blue-200', iconColor: 'text-blue-600' };
-        default:
-          return { icon: Sparkles, colorClass: 'from-amber-50 to-amber-100 border-amber-200', iconColor: 'text-amber-600' };
-      }
-    };
-
-    // Convert all active cues to display format
-    const aiCueElements = activeCues.map((cue, index) => {
-      const { icon: IconComponent, colorClass, iconColor } = getIconAndColor(cue.type);
-
-      return {
-        id: `ai-cue-${index}`,
-        content: (
-          <div className={`bg-gradient-to-r ${colorClass} border rounded-lg p-4`}>
-            <div className="flex items-start gap-4">
-              <IconComponent className={`w-8 h-8 ${iconColor} flex-shrink-0 mt-1`} />
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">AI Suggestion</span>
-                  <span className="text-xs px-2 py-0.5 bg-white/70 rounded-full border text-gray-600">{cue.type}</span>
-                </div>
-                <p className="text-gray-800 text-sm leading-relaxed font-medium mb-1">"{cue.text}"</p>
-                <p className="text-gray-600 text-xs italic">{cue.rationale}</p>
-              </div>
-            </div>
-          </div>
-        ),
-        timestamp: Date.now(),
-      };
-    });
-
-    setCueStack((prev) => {
-      // Keep only opening script and replace with all active AI cues
-      const filtered = prev.filter((cue) => cue.id === 'opening-script');
-      return [...filtered, ...aiCueElements];
-    });
-  }, [activeCues, roleplayStarted]);
-
-  // Handle auto-dismissal of new cues (only for newly added cues)
-  useEffect(() => {
-    if (!newCue || !roleplayStarted) return;
-
-    const timer = setTimeout(() => {
-      // The AI will manage when to clear cues, so we don't auto-dismiss anymore
-      // This timeout is just for safety
-    }, 30000); // Extended to 30 seconds as backup
-
-    return () => clearTimeout(timer);
-  }, [newCue, roleplayStarted]);
-
-  if (cueStack.length === 0) {
+  if (activeCues.length === 0) {
     return (
       <div className="text-center py-4 text-gray-500">
         <Bot className="w-8 h-8 mx-auto mb-2 opacity-30" />
@@ -493,18 +338,34 @@ const ContextAwareTipsBox = ({ roleplayStarted, currentIssue }: ContextAwareTips
 
   return (
     <div className="space-y-3">
-      {cueStack.map((cue, index) => (
-        <div
-          key={`${cue.id}-${cue.timestamp}`}
-          className="transition-all duration-500 ease-in-out transform"
-          style={{
-            transform: `translateY(${index * 4}px)`,
-            opacity: 1,
-          }}
-        >
-          {cue.content}
-        </div>
-      ))}
+      {activeCues.map((cue, index) => {
+        const { icon: IconComponent, colorClass, iconColor } = getIconAndColor(cue.type);
+
+        return (
+          <div
+            key={`${cue.type}-${index}`}
+            className="transition-all duration-500 ease-in-out transform"
+            style={{
+              transform: `translateY(${index * 4}px)`,
+              opacity: 1,
+            }}
+          >
+            <div className={`bg-gradient-to-r ${colorClass} border rounded-lg p-4`}>
+              <div className="flex items-start gap-4">
+                <IconComponent className={`w-8 h-8 ${iconColor} flex-shrink-0 mt-1`} />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Cue</span>
+                    <span className="text-xs px-2 py-0.5 bg-white/70 rounded-full border text-gray-600">{cue.type}</span>
+                  </div>
+                  <p className="text-gray-800 text-sm leading-relaxed font-medium mb-1">"{cue.text}"</p>
+                  <p className="text-gray-600 text-xs italic">{cue.rationale}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
