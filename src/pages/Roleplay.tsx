@@ -428,7 +428,8 @@ function RoleplayContent() {
                       <div className="max-w-[90%] p-3 rounded-lg bg-gray-100 text-gray-800">
                         <div className="text-xs opacity-70 mb-1">Frank</div>
                         <p className="text-sm">
-                          Hi there! I'm Frank Hamster, a 55 year old Registered Independent. I voted in 2020 but didn't make it to the polls in 2024. My representative is Peter Gerbil.
+                          Hi there! I'm Frank Hamster, a 55 year old Registered Independent. I voted in 2020 but didn't make it to the polls
+                          in 2024. My representative is Peter Gerbil.
                         </p>
                       </div>
                     </div>
@@ -448,30 +449,6 @@ function RoleplayContent() {
                     ))}
                   </div>
 
-                  {/* Voter Shared Content Footer */}
-                  {roleplayStarted && (voterSharedContent.people.length > 0 || voterSharedContent.feelings.length > 0) && (
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <h6 className="text-xs font-medium text-gray-500 mb-2">What Frank has shared:</h6>
-                      <div className="flex flex-wrap gap-2">
-                        {voterSharedContent.people.map((person, index) => (
-                          <span
-                            key={`person-${index}`}
-                            className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200"
-                          >
-                            👤 {person}
-                          </span>
-                        ))}
-                        {voterSharedContent.feelings.map((feeling, index) => (
-                          <span
-                            key={`feeling-${index}`}
-                            className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800 border border-purple-200"
-                          >
-                            💭 {feeling}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
             </div>
