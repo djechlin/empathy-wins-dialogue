@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
-import { ArrowRight, BookOpen, MessageSquare, Mic, MicOff, Send, User, Users } from 'lucide-react';
+import { ArrowRight, BookOpen, Heart, MessageSquare, Mic, MicOff, Smile, User, Users } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -65,35 +65,43 @@ function RoleplayContent() {
     'from-amber-50 to-amber-100 border-amber-200 text-amber-600',
   ];
 
+  const personIcons = [
+    <User className="w-6 h-6 mb-1" />,
+    <Heart className="w-6 h-6 mb-1" />,
+    <Smile className="w-6 h-6 mb-1" />,
+    <Heart className="w-6 h-6 mb-1" />,
+    <Smile className="w-6 h-6 mb-1" />,
+    <User className="w-6 h-6 mb-1" />,
+  ];
+
   const { activeCues } = useCues({ organization: 'Frank', plainLanguage: 'The voter' });
 
-  const scriptSteps = useMemo(
-    () => [
-      {
-        text: "My name is [your name], I'm here with Diabetes Advocates to talk about affordable insulin for people with diabetes.",
-        rationale: 'Start with a warm greeting and introduce yourself as a volunteer',
-      },
-      {
-        text: 'Ask about their perspective on the issue',
-        rationale: 'Understand their current views and concerns',
-      },
-      {
-        text: 'Build a personal connection',
-        rationale: 'Find common ground and shared values',
-      },
-      {
-        text: 'Transition to exploring the issue',
-        rationale: 'Connect their values to the policy',
-      },
-      {
-        text: 'Call to action',
-        rationale: 'Ask for their support or commitment',
-      },
-    ],
-    [],
-  );
-
-  const [currentScriptIndex] = useState(0);
+  const scriptSteps = [
+    {
+      text: '"My name is [your name], I\'m here with Diabetes Advocates to talk about affordable insulin for people with diabetes."',
+      rationale: 'Introduce yourself and frame the issue',
+      color: 'bg-green-500',
+      hasQuote: true,
+    },
+    {
+      text: '<MessageSquare> "Is there anyone in your life who had trouble seeing a doctor?"\n\n<MessageSquare> "One time when I was sick, someone close to me helped me..."\n\n<Heart> Dig deeper when they share someone',
+      rationale: 'Build a connection',
+      color: 'bg-purple-500',
+      hasQuote: true,
+    },
+    {
+      text: '"Do you have any new thoughts or feelings on issue, after exploring people we know?"',
+      rationale: 'Transition to exploring the issue',
+      color: 'bg-blue-500',
+      hasQuote: true,
+    },
+    {
+      text: '"Would you take your phone and call Representative Peter Gerbil to tell him how you feel? His number is 555-4567"',
+      rationale: 'Ask for action',
+      color: 'bg-orange-500',
+      hasQuote: true,
+    },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -173,6 +181,96 @@ function RoleplayContent() {
                 </CardContent>
               </Card>
 
+              {/* Script Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="w-5 h-5 text-green-600" />
+                    Script
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {scriptSteps.map((step, index) => (
+                      <div key={`script-${index}`} className="flex items-start gap-6">
+                        <div className="flex flex-col items-center flex-shrink-0">
+                          <div
+                            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white ${step.color}`}
+                          >
+                            {index + 1}
+                          </div>
+                          {index < scriptSteps.length - 1 && <div className="w-0.5 h-4 bg-gray-200 mt-2"></div>}
+                        </div>
+                        <div className="flex-1 pt-1">
+                          <h4 className="font-medium text-gray-900 text-sm mb-2">{step.rationale}</h4>
+                          <div className="flex items-start gap-2">
+                            {step.hasQuote && !step.text.includes('<MessageSquare>') && !step.text.includes('<Heart>') && (
+                              <MessageSquare className="w-4 h-4 text-blue-500 mt-1 flex-shrink-0" />
+                            )}
+                            <p className="text-sm text-gray-600 whitespace-pre-line">
+                              {step.text.split('\n\n').map((line, i) => {
+                                if (line.startsWith('<MessageSquare>')) {
+                                  return (
+                                    <div key={i} className="flex items-start gap-2 mb-2">
+                                      <MessageSquare className="w-4 h-4 text-blue-500 mt-1 flex-shrink-0" />
+                                      <span>{line.replace('<MessageSquare>', '')}</span>
+                                    </div>
+                                  );
+                                }
+                                if (line.startsWith('<Heart>')) {
+                                  return (
+                                    <div key={i} className="flex items-start gap-2 mb-2">
+                                      <Heart className="w-4 h-4 text-red-500 mt-1 flex-shrink-0" />
+                                      <span>{line.replace('<Heart>', '')}</span>
+                                    </div>
+                                  );
+                                }
+                                return (
+                                  <div key={i} className="mb-2">
+                                    {line}
+                                  </div>
+                                );
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="lg:col-span-2 space-y-6">
+              {/* People Cues Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="w-5 h-5 text-purple-600" />
+                    People
+                  </CardTitle>
+                  <p className="text-sm text-gray-500">People the voter mentioned. Try learning more about them.</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-3">
+                    {activeCues.map((cue, index) => (
+                      <div
+                        key={`person-${index}`}
+                        className={`bg-gradient-to-r ${personColors[index % personColors.length]} border rounded-lg p-3 ${
+                          index === 0 ? 'col-span-1.5' : 'col-span-1'
+                        }`}
+                      >
+                        <div className="flex flex-col items-center text-center">
+                          {personIcons[index % personIcons.length]}
+                          <p className="font-medium text-sm">{cue.text}</p>
+                          <p className="text-xs text-gray-600">{cue.rationale}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Recent conversation */}
               <Card>
                 <CardHeader>
@@ -202,80 +300,6 @@ function RoleplayContent() {
                             {message.role === 'user' ? 'You' : message.role === 'voter_narrator' ? 'Narrator' : 'Frank'}
                           </div>
                           <p className="text-sm">{message.content}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="lg:col-span-2 space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BookOpen className="w-5 h-5 text-green-600" />
-                    Script
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3 relative h-[280px] overflow-hidden">
-                    {scriptSteps.slice(currentScriptIndex, currentScriptIndex + 2).map((step, index) => (
-                      <div
-                        key={`script-${currentScriptIndex + index}`}
-                        className="absolute w-full transition-all duration-500 ease-in-out"
-                        style={{
-                          transform: `translateY(${index * 140}px)`,
-                          opacity: index === 0 ? 1 : 0.85,
-                          zIndex: 2 - index,
-                        }}
-                      >
-                        <div
-                          className={`bg-gradient-to-r ${index === 0 ? 'from-green-50 to-green-100 border-green-200' : 'from-gray-100 to-gray-200 border-gray-300'} border rounded-lg p-4`}
-                        >
-                          <div className="flex items-start gap-4">
-                            {index === 0 && <Send className="w-8 h-8 text-green-600 flex-shrink-0 mt-1" />}
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className={`text-xs font-medium ${index === 0 ? 'text-green-600' : 'text-gray-700'}`}>
-                                  {index === 0 ? 'Current Step' : 'Next Step'}
-                                </span>
-                              </div>
-                              <p className={`text-sm leading-relaxed font-medium mb-1 ${index === 0 ? 'text-gray-800' : 'text-gray-900'}`}>
-                                "{step.text}"
-                              </p>
-                              <p className={`text-xs italic ${index === 0 ? 'text-gray-600' : 'text-gray-700'}`}>{step.rationale}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* People Cues Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="w-5 h-5 text-purple-600" />
-                    People
-                  </CardTitle>
-                  <p className="text-sm text-gray-500">People the voter mentioned. Try learning more about them.</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-3 gap-3">
-                    {activeCues.map((cue, index) => (
-                      <div
-                        key={`person-${index}`}
-                        className={`bg-gradient-to-r ${personColors[index % personColors.length]} border rounded-lg p-3 ${
-                          index === 0 ? 'col-span-1.5' : 'col-span-1'
-                        }`}
-                      >
-                        <div className="flex flex-col items-center text-center">
-                          <User className={`w-6 h-6 mb-1`} />
-                          <p className="font-medium text-sm">{cue.text}</p>
-                          <p className="text-xs text-gray-600">{cue.rationale}</p>
                         </div>
                       </div>
                     ))}

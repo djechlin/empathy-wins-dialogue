@@ -59,20 +59,20 @@ const Preparation = () => {
             <div className="flex items-center justify-center space-x-6">
               {/* Step 1 - Current Step */}
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
                   1
                 </div>
-                <span className="text-sm font-medium text-center text-blue-600 font-sans">Conversation Strategy</span>
+                <span className="text-sm font-medium text-center text-green-600 font-sans">Conversation Strategy</span>
               </div>
 
               <ArrowRight className="w-6 h-6 text-gray-400" />
 
               {/* Step 2 - Future Step */}
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
                   2
                 </div>
-                <span className="text-sm font-medium text-center text-gray-400 font-sans">Roleplay</span>
+                <span className="text-sm font-medium text-center text-blue-600 font-sans">Roleplay</span>
               </div>
 
               <ArrowRight className="w-6 h-6 text-gray-400" />
