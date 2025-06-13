@@ -431,65 +431,6 @@ const Preparation = () => {
                 </CardContent>
               </Card>
 
-              {/* Avoid These Pitfalls Column */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="font-sans text-red-600">Avoid these pitfalls</CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-2 gap-6 relative">
-                      <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 transform -translate-x-1/2"></div>
-                      <div className="pr-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-red-600">✗</span>
-                          <span className="font-medium text-gray-900 text-sm">Don't open with statistics</span>
-                        </div>
-                        {currentIssue ? (
-                          <p className="font-mono text-sm text-gray-700">{currentIssue.dontSayText}</p>
-                        ) : (
-                          <p className="font-mono text-sm text-gray-700">
-                            Hello. Is this Frank I'm talking to? Do you have a few minutes to chat about healthcare? According to the CDC...
-                          </p>
-                        )}
-                      </div>
-                      <div className="pl-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-red-600">✗</span>
-                          <span className="font-medium text-gray-900 text-sm">Don't make it political</span>
-                        </div>
-                        <p className="font-mono text-sm text-gray-700">
-                          One time, I got sick and was really worried. I was able to see a doctor but Congress is trying to take away access
-                          to healthcare for millions of other Americans.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-6 relative">
-                      <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 transform -translate-x-1/2"></div>
-                      <div className="pr-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-red-600">✗</span>
-                          <span className="font-medium text-gray-900 text-sm">Don't skip the connection</span>
-                        </div>
-                        <p className="font-mono text-sm text-gray-700">
-                          So anyway, tell me about your family and what matters to you so we can get on the same page about this issue.
-                        </p>
-                      </div>
-                      <div className="pl-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-red-600">✗</span>
-                          <span className="font-medium text-gray-900 text-sm">Don't rush the ask</span>
-                        </div>
-                        <p className="font-mono text-sm text-gray-700">
-                          I'm so glad we talked! Think about calling your representative and urging them to vote NO on H.R. 123. Have a good
-                          day!
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           </div>
 
