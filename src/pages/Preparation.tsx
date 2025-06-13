@@ -249,11 +249,9 @@ const Preparation = () => {
                         <span className="font-medium text-gray-900 text-sm">Open up</span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> Is there a time someone was really there for you?
+                        <span className="font-bold">Voter:</span> I agree with you but I don't believe in big government.
                         <br />
-                        <span className="font-bold">You:</span> Last year my dad had to go to the ER. I was so scared something serious was
-                        wrong. My sister stayed with me the whole time and kept telling me he'd be okay. When the doctor said it was just
-                        dehydration, I felt so relieved and grateful my sister was there.
+                        <span className="font-bold">You:</span> Yeah, I totally understand that. You know, last year, my dad had to go to the ER...
                       </p>
                     </div>
                     <div className="pl-3">
