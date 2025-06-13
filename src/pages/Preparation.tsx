@@ -3,7 +3,7 @@ import Navbar from '@/components/layout/Navbar';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
-import { ArrowRight, MessageSquare, MessageCircle } from 'lucide-react';
+import { ArrowRight, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -264,8 +264,8 @@ const Preparation = () => {
                       <p className="font-mono text-sm text-gray-700">
                         <span className="font-bold">Voter:</span> Is there a time someone was really there for you?
                         <br />
-                        <span className="font-bold">You:</span> Last year my dad had to go to the ER and the bill was outrageous.
-                        Healthcare costs are skyrocketing because politicians won't stand up to Big Pharma and insurance companies.
+                        <span className="font-bold">You:</span> Last year my dad had to go to the ER and the bill was outrageous. Healthcare
+                        costs are skyrocketing because politicians won't stand up to Big Pharma and insurance companies.
                       </p>
                     </div>
                   </div>
@@ -278,8 +278,7 @@ const Preparation = () => {
                         <span className="font-medium text-gray-900 text-sm">Dig deeper</span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd
-                        chill.
+                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd chill.
                         <br />
                         <span className="font-bold">You:</span> Wow, your daughter's really engaged. Has she always been passionate about
                         her interests?
@@ -293,11 +292,10 @@ const Preparation = () => {
                         </span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd
-                        chill.
+                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd chill.
                         <br />
-                        <span className="font-bold">You:</span> I guess you've heard about this a lot from your daughter already, is there
-                        a reason you haven't changed your mind yet?
+                        <span className="font-bold">You:</span> I guess you've heard about this a lot from your daughter already, is there a
+                        reason you haven't changed your mind yet?
                       </p>
                     </div>
                   </div>
@@ -314,34 +312,27 @@ const Preparation = () => {
                 </p>
               </CardHeader>
               <CardContent className="p-6">
-                <div className="mt-4">
-                  <div className="flex items-start gap-2 mb-3">
-                    <MessageSquare className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                    <div className="text-sm text-gray-700">
-                      <p>
-                        <b>After sharing stories about caring for family:</b>
-                      </p>
+                <div className="grid grid-cols-2 gap-6 relative">
+                  <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 transform -translate-x-1/2"></div>
+                  <div className="pr-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-green-600">✓</span>
+                      <span className="font-medium text-gray-900 text-sm">Good to say</span>
                     </div>
+                    <p className="font-mono text-sm text-gray-700">
+                      <span className="font-bold">You:</span> It sounds like we both really care about the people we love. Does that change
+                      how you think about this issue at all?
+                    </p>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-green-600">✓</span>
-                        <span className="font-medium text-purple-900 text-sm">Good to say</span>
-                      </div>
-                      <p className="font-mono text-sm text-purple-800">
-                        It sounds like we both really care about the people we love. Does that change how you think about this issue at all?
-                      </p>
+                  <div className="pl-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-red-600">✗</span>
+                      <span className="font-medium text-gray-900 text-sm">Not as good</span>
                     </div>
-                    <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-red-600">✗</span>
-                        <span className="font-medium text-purple-900 text-sm">Not as good</span>
-                      </div>
-                      <p className="font-mono text-sm text-purple-800">
-                        So you can see why we need to support this policy, right? It's obvious that everyone benefits.
-                      </p>
-                    </div>
+                    <p className="font-mono text-sm text-gray-700">
+                      <span className="font-bold">You:</span> So you can see why we need to support this policy, right? It's obvious that
+                      everyone benefits.
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -458,8 +449,7 @@ const Preparation = () => {
                           <p className="font-mono text-sm text-gray-700">{currentIssue.dontSayText}</p>
                         ) : (
                           <p className="font-mono text-sm text-gray-700">
-                            Hello. Is this Frank I'm talking to? Do you have a few minutes to chat about healthcare? According to the
-                            CDC...
+                            Hello. Is this Frank I'm talking to? Do you have a few minutes to chat about healthcare? According to the CDC...
                           </p>
                         )}
                       </div>
@@ -469,8 +459,8 @@ const Preparation = () => {
                           <span className="font-medium text-gray-900 text-sm">Don't make it political</span>
                         </div>
                         <p className="font-mono text-sm text-gray-700">
-                          One time, I got sick and was really worried. I was able to see a doctor but Congress is trying to take away
-                          access to healthcare for millions of other Americans.
+                          One time, I got sick and was really worried. I was able to see a doctor but Congress is trying to take away access
+                          to healthcare for millions of other Americans.
                         </p>
                       </div>
                     </div>
@@ -492,8 +482,8 @@ const Preparation = () => {
                           <span className="font-medium text-gray-900 text-sm">Don't rush the ask</span>
                         </div>
                         <p className="font-mono text-sm text-gray-700">
-                          I'm so glad we talked! Think about calling your representative and urging them to vote NO on H.R. 123. Have a
-                          good day!
+                          I'm so glad we talked! Think about calling your representative and urging them to vote NO on H.R. 123. Have a good
+                          day!
                         </p>
                       </div>
                     </div>
