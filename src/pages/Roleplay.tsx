@@ -448,7 +448,6 @@ function RoleplayContent() {
                       </div>
                     ))}
                   </div>
-
                 </CardContent>
               </Card>
             </div>
