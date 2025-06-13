@@ -136,3 +136,60 @@ export async function generateRealtimeFeedback(
     return null;
   }
 }
+
+export interface ConversationCue {
+  text: string;
+  type: 'person' | 'feeling' | 'perspective';
+}
+
+export async function generateConversationCues(
+  fullConversationTranscript: string,
+): Promise<ConversationCue | null> {
+  const userMessage = `Based on the new messages, give the user up to 1 cue for what to try saying next to the voter. Categorize it as about a person, feeling, or perspective.
+
+<transcript>
+${fullConversationTranscript}
+</transcript>
+
+Your response should be a json object with the cue text and type, wrapped in <json> like follows:
+
+<json>
+{
+  "text": "Try asking about their family member mentioned earlier",
+  "type": "person"
+}
+</json>
+
+If there are no good cues to give, return an empty object: {}`;
+
+  const { data, error } = await supabase.functions.invoke('claude-report', {
+    body: {
+      userMessage,
+    },
+  });
+
+  console.warn('Supabase edge function response - conversation cues:', { data, error });
+
+  if (error) {
+    throw new Error(`Failed to generate conversation cues: ${error.message}`);
+  }
+
+  const jsonMatch = data && data.match(/<json>(.*?)<\/json>/s);
+  if (!jsonMatch) {
+    return null;
+  }
+
+  try {
+    const parsedCue = JSON.parse(jsonMatch[1].trim());
+    
+    // If empty object, return null
+    if (Object.keys(parsedCue).length === 0) {
+      return null;
+    }
+    
+    return parsedCue as ConversationCue;
+  } catch (error) {
+    console.warn('Failed to parse conversation cues:', error);
+    return null;
+  }
+}

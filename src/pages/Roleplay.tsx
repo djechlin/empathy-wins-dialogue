@@ -3,11 +3,12 @@ import Navbar from '@/components/layout/Navbar';
 import { useDialogue } from '@/features/dialogue';
 import { ReplayProvider } from '@/features/dialogue/providers/ReplayProvider';
 import { DialogueMessage } from '@/features/dialogue/types';
+import { useConversationCues } from '@/features/dialogue/hooks/useConversationCues';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
-import { Mic, MicOff, ArrowRight, Lightbulb, Bot, Heart, Sparkles, MessageSquare, User } from 'lucide-react';
+import { Mic, MicOff, ArrowRight, Lightbulb, Bot, Heart, Sparkles, MessageSquare, User, Users, Brain } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -495,6 +496,7 @@ interface ContextAwareTipsBoxProps {
 const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplayStarted, currentIssue }: ContextAwareTipsBoxProps) => {
   const [cueStack, setCueStack] = useState<Array<{ id: string; content: React.ReactNode; timestamp: number }>>([]);
   const [openingScriptDismissed, setOpeningScriptDismissed] = useState(false);
+  const conversationCue = useConversationCues();
 
   // Initialize with opening script immediately when component mounts
   useEffect(() => {
@@ -531,6 +533,62 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplaySt
       return () => clearTimeout(timer);
     }
   }, [roleplayStarted, openingScriptDismissed]);
+
+  // Handle AI-generated conversation cues
+  useEffect(() => {
+    if (!roleplayStarted || !conversationCue) return;
+
+    const getIconAndColor = (type: string) => {
+      switch (type) {
+        case 'person':
+          return { icon: Users, colorClass: 'from-green-50 to-green-100 border-green-200', iconColor: 'text-green-600' };
+        case 'feeling':
+          return { icon: Heart, colorClass: 'from-purple-50 to-purple-100 border-purple-200', iconColor: 'text-purple-600' };
+        case 'perspective':
+          return { icon: Brain, colorClass: 'from-blue-50 to-blue-100 border-blue-200', iconColor: 'text-blue-600' };
+        default:
+          return { icon: Sparkles, colorClass: 'from-amber-50 to-amber-100 border-amber-200', iconColor: 'text-amber-600' };
+      }
+    };
+
+    const { icon: IconComponent, colorClass, iconColor } = getIconAndColor(conversationCue.type);
+
+    const aiCue = {
+      id: `ai-cue-${Date.now()}`,
+      content: (
+        <div className={`bg-gradient-to-r ${colorClass} border rounded-lg p-4`}>
+          <div className="flex items-start gap-4">
+            <IconComponent className={`w-8 h-8 ${iconColor} flex-shrink-0 mt-1`} />
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">AI Suggestion</span>
+                <span className="text-xs px-2 py-0.5 bg-white/70 rounded-full border text-gray-600">
+                  {conversationCue.type}
+                </span>
+              </div>
+              <p className="text-gray-800 text-sm leading-relaxed">
+                {conversationCue.text}
+              </p>
+            </div>
+          </div>
+        </div>
+      ),
+      timestamp: Date.now(),
+    };
+
+    setCueStack((prev) => {
+      const filtered = prev.filter((cue) => cue.id === 'opening-script');
+      const combined = [...filtered, aiCue];
+      return combined.slice(-2); // Keep only the last 2 cues
+    });
+
+    // Auto-dismiss AI cue after 15 seconds
+    const timer = setTimeout(() => {
+      setCueStack((prev) => prev.filter((cue) => cue.id !== aiCue.id));
+    }, 15000);
+
+    return () => clearTimeout(timer);
+  }, [conversationCue, roleplayStarted]);
 
   // Handle new context-aware cues during roleplay
   useEffect(() => {

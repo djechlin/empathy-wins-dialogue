@@ -251,7 +251,8 @@ const Preparation = () => {
                       <p className="font-mono text-sm text-gray-700">
                         <span className="font-bold">Voter:</span> I agree with you but I don't believe in big government.
                         <br />
-                        <span className="font-bold">You:</span> Yeah, I totally understand that. You know, last year, my dad had to go to the ER...
+                        <span className="font-bold">You:</span> Yeah, I totally understand that. You know, last year, my dad had to go to
+                        the ER...
                       </p>
                     </div>
                     <div className="pl-3">
