@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
-import { Mic, MicOff, ArrowRight, Lightbulb, Bot, Heart, Sparkles, MessageSquare, User, Users, Brain } from 'lucide-react';
+import { Mic, MicOff, ArrowRight, Lightbulb, Bot, Heart, Sparkles, MessageSquare, Users, Brain } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -170,9 +170,6 @@ function RoleplayContent() {
 
   // Load preparation data from sessionStorage
   const selectedIssue = sessionStorage.getItem('selectedIssue') || 'insulin';
-  const personType = sessionStorage.getItem('personType') || '';
-  const eventType = sessionStorage.getItem('eventType') || '';
-  const selectedFeeling = sessionStorage.getItem('selectedFeeling') || '';
 
   const issueDetails = {
     insulin: {
@@ -190,8 +187,6 @@ function RoleplayContent() {
   const currentIssue = issueDetails[selectedIssue as keyof typeof issueDetails];
 
   const [roleplayStarted, setRoleplayStarted] = useState(false);
-  const [currentScriptStep, setCurrentScriptStep] = useState(1);
-  const [voterSharedContent, setVoterSharedContent] = useState<{ people: string[]; feelings: string[] }>({ people: [], feelings: [] });
 
   const voterPersonas = useMemo(
     () =>
@@ -209,7 +204,6 @@ function RoleplayContent() {
 
   const startRoleplay = useCallback(async () => {
     setRoleplayStarted(true);
-    setCurrentScriptStep(1); // Start with step 1 when roleplay begins
     await connect();
     toast({
       title: 'Roleplay Started',
@@ -228,103 +222,6 @@ function RoleplayContent() {
   }, []);
 
   const progressPercentage = useMemo(() => (timeElapsed / 600) * 100, [timeElapsed]);
-
-  // Extract people names and feelings from voter messages
-  useEffect(() => {
-    const extractSharedContent = () => {
-      const voterMessages = messages.filter((msg) => msg.role === 'assistant');
-      const people: string[] = [];
-      const feelings: string[] = [];
-
-      voterMessages.forEach((msg) => {
-        // Simple regex to extract potential people names (capitalized words after common relationship terms)
-        const peopleMatches = msg.content.match(
-          /(?:my|his|her|our) (?:brother|sister|mother|father|son|daughter|nephew|niece|cousin|friend|husband|wife|partner) (\w+)/gi,
-        );
-        if (peopleMatches) {
-          peopleMatches.forEach((match) => {
-            const name = match.split(' ').pop();
-            if (name && name.length > 0 && !people.includes(name)) {
-              people.push(name);
-            }
-          });
-        }
-
-        // Extract feeling/emotion words
-        const feelingWords = [
-          'worried',
-          'scared',
-          'anxious',
-          'happy',
-          'sad',
-          'angry',
-          'frustrated',
-          'relieved',
-          'grateful',
-          'hopeful',
-          'stressed',
-          'overwhelmed',
-          'proud',
-          'disappointed',
-          'concerned',
-          'nervous',
-          'excited',
-          'depressed',
-        ];
-        feelingWords.forEach((feeling) => {
-          if (msg.content.toLowerCase().includes(feeling) && !feelings.includes(feeling)) {
-            feelings.push(feeling);
-          }
-        });
-      });
-
-      setVoterSharedContent({ people, feelings });
-    };
-
-    if (messages.length > 0) {
-      extractSharedContent();
-    }
-  }, [messages]);
-
-  // Progress through script steps based on conversation
-  useEffect(() => {
-    if (!roleplayStarted || messages.length === 0) return;
-
-    const userMessages = messages.filter((msg) => msg.role === 'user');
-    const voterMessages = messages.filter((msg) => msg.role === 'assistant');
-
-    // Step 1: Check if user has done framing (introduced themselves and the issue)
-    if (currentScriptStep === 1 && userMessages.length > 0) {
-      const firstMessage = userMessages[0];
-      const hasFraming =
-        firstMessage.content.toLowerCase().includes('name') ||
-        firstMessage.content.toLowerCase().includes('talk about') ||
-        firstMessage.content.toLowerCase().includes(currentIssue.plainLanguage.toLowerCase());
-
-      if (hasFraming && voterMessages.length > 0) {
-        setCurrentScriptStep(2);
-      }
-    }
-
-    // Step 2: Check if user has shared their story
-    if (currentScriptStep === 2 && userMessages.length > 1) {
-      const hasSharedStory = userMessages.some(
-        (msg) =>
-          msg.content.toLowerCase().includes(eventType.toLowerCase()) ||
-          msg.content.toLowerCase().includes(personType.toLowerCase()) ||
-          msg.content.toLowerCase().includes(selectedFeeling.toLowerCase()),
-      );
-
-      if (hasSharedStory) {
-        setCurrentScriptStep(3);
-      }
-    }
-
-    // Step 3+: General listening and coaching
-    if (currentScriptStep >= 3) {
-      // Continue showing listening coaching
-    }
-  }, [messages, roleplayStarted, currentScriptStep, eventType, personType, selectedFeeling, currentIssue]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -463,12 +360,7 @@ function RoleplayContent() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ContextAwareTipsBox
-                    voterSharedContent={voterSharedContent}
-                    currentScriptStep={currentScriptStep}
-                    roleplayStarted={roleplayStarted}
-                    currentIssue={currentIssue}
-                  />
+                  <ContextAwareTipsBox roleplayStarted={roleplayStarted} currentIssue={currentIssue} />
                 </CardContent>
               </Card>
             </div>
@@ -481,11 +373,6 @@ function RoleplayContent() {
 }
 
 interface ContextAwareTipsBoxProps {
-  voterSharedContent: {
-    people: string[];
-    feelings: string[];
-  };
-  currentScriptStep: number;
   roleplayStarted: boolean;
   currentIssue?: {
     organization: string;
@@ -493,10 +380,10 @@ interface ContextAwareTipsBoxProps {
   };
 }
 
-const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplayStarted, currentIssue }: ContextAwareTipsBoxProps) => {
+const ContextAwareTipsBox = ({ roleplayStarted, currentIssue }: ContextAwareTipsBoxProps) => {
   const [cueStack, setCueStack] = useState<Array<{ id: string; content: React.ReactNode; timestamp: number }>>([]);
   const [openingScriptDismissed, setOpeningScriptDismissed] = useState(false);
-  const conversationCue = useConversationCues();
+  const { activeCues, newCue } = useConversationCues();
 
   // Initialize with opening script immediately when component mounts
   useEffect(() => {
@@ -534,9 +421,9 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplaySt
     }
   }, [roleplayStarted, openingScriptDismissed]);
 
-  // Handle AI-generated conversation cues
+  // Handle all active AI-generated conversation cues
   useEffect(() => {
-    if (!roleplayStarted || !conversationCue) return;
+    if (!roleplayStarted) return;
 
     const getIconAndColor = (type: string) => {
       switch (type) {
@@ -551,124 +438,48 @@ const ContextAwareTipsBox = ({ voterSharedContent, currentScriptStep, roleplaySt
       }
     };
 
-    const { icon: IconComponent, colorClass, iconColor } = getIconAndColor(conversationCue.type);
+    // Convert all active cues to display format
+    const aiCueElements = activeCues.map((cue, index) => {
+      const { icon: IconComponent, colorClass, iconColor } = getIconAndColor(cue.type);
 
-    const aiCue = {
-      id: `ai-cue-${Date.now()}`,
-      content: (
-        <div className={`bg-gradient-to-r ${colorClass} border rounded-lg p-4`}>
-          <div className="flex items-start gap-4">
-            <IconComponent className={`w-8 h-8 ${iconColor} flex-shrink-0 mt-1`} />
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">AI Suggestion</span>
-                <span className="text-xs px-2 py-0.5 bg-white/70 rounded-full border text-gray-600">
-                  {conversationCue.type}
-                </span>
+      return {
+        id: `ai-cue-${index}`,
+        content: (
+          <div className={`bg-gradient-to-r ${colorClass} border rounded-lg p-4`}>
+            <div className="flex items-start gap-4">
+              <IconComponent className={`w-8 h-8 ${iconColor} flex-shrink-0 mt-1`} />
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">AI Suggestion</span>
+                  <span className="text-xs px-2 py-0.5 bg-white/70 rounded-full border text-gray-600">{cue.type}</span>
+                </div>
+                <p className="text-gray-800 text-sm leading-relaxed">{cue.text}</p>
               </div>
-              <p className="text-gray-800 text-sm leading-relaxed">
-                {conversationCue.text}
-              </p>
             </div>
           </div>
-        </div>
-      ),
-      timestamp: Date.now(),
-    };
-
-    setCueStack((prev) => {
-      const filtered = prev.filter((cue) => cue.id === 'opening-script');
-      const combined = [...filtered, aiCue];
-      return combined.slice(-2); // Keep only the last 2 cues
+        ),
+        timestamp: Date.now(),
+      };
     });
 
-    // Auto-dismiss AI cue after 15 seconds
+    setCueStack((prev) => {
+      // Keep only opening script and replace with all active AI cues
+      const filtered = prev.filter((cue) => cue.id === 'opening-script');
+      return [...filtered, ...aiCueElements];
+    });
+  }, [activeCues, roleplayStarted]);
+
+  // Handle auto-dismissal of new cues (only for newly added cues)
+  useEffect(() => {
+    if (!newCue || !roleplayStarted) return;
+
     const timer = setTimeout(() => {
-      setCueStack((prev) => prev.filter((cue) => cue.id !== aiCue.id));
-    }, 15000);
+      // The AI will manage when to clear cues, so we don't auto-dismiss anymore
+      // This timeout is just for safety
+    }, 30000); // Extended to 30 seconds as backup
 
     return () => clearTimeout(timer);
-  }, [conversationCue, roleplayStarted]);
-
-  // Handle new context-aware cues during roleplay
-  useEffect(() => {
-    if (!roleplayStarted) return;
-
-    const newCues: Array<{ id: string; content: React.ReactNode; timestamp: number }> = [];
-
-    if (voterSharedContent.people.length > 0) {
-      newCues.push({
-        id: 'people',
-        content: (
-          <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg p-4">
-            <div className="flex items-start gap-4">
-              <User className="w-8 h-8 text-green-600 flex-shrink-0 mt-1" />
-              <div className="flex-1">
-                <p className="text-gray-800 text-sm leading-relaxed">
-                  Frank mentioned <strong>{voterSharedContent.people.join(', ')}</strong>. Try asking about them.
-                </p>
-              </div>
-            </div>
-          </div>
-        ),
-        timestamp: Date.now(),
-      });
-    }
-
-    if (voterSharedContent.feelings.length > 0) {
-      newCues.push({
-        id: 'feelings',
-        content: (
-          <div className="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 rounded-lg p-4">
-            <div className="flex items-start gap-4">
-              <Heart className="w-8 h-8 text-purple-600 flex-shrink-0 mt-1" />
-              <div className="flex-1">
-                <p className="text-gray-800 text-sm leading-relaxed">
-                  Frank shared feelings: <strong>{voterSharedContent.feelings.join(', ')}</strong>. Ask them to tell you more about why.
-                </p>
-              </div>
-            </div>
-          </div>
-        ),
-        timestamp: Date.now(),
-      });
-    }
-
-    if (currentScriptStep >= 3 && voterSharedContent.people.length === 0 && voterSharedContent.feelings.length === 0) {
-      newCues.push({
-        id: 'deeper',
-        content: (
-          <div className="bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200 rounded-lg p-4">
-            <div className="flex items-start gap-4">
-              <Sparkles className="w-8 h-8 text-amber-600 flex-shrink-0 mt-1" />
-              <div className="flex-1">
-                <p className="text-gray-800 text-sm leading-relaxed">
-                  Time to go deeper! Try asking about their family or personal experiences with this issue.
-                </p>
-              </div>
-            </div>
-          </div>
-        ),
-        timestamp: Date.now(),
-      });
-    }
-
-    // Add new cues to stack (new ones go to bottom, old ones shift up)
-    setCueStack((prev) => {
-      const filtered = prev.filter((cue) => cue.id === 'opening-script' || !newCues.some((newCue) => newCue.id === cue.id));
-      const combined = [...filtered, ...newCues];
-      return combined.slice(-2); // Keep only the last 2 cues
-    });
-
-    // Auto-dismiss new cues after 10 seconds
-    if (newCues.length > 0) {
-      const timer = setTimeout(() => {
-        setCueStack((prev) => prev.filter((cue) => !newCues.some((newCue) => newCue.id === cue.id)));
-      }, 10000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [voterSharedContent, currentScriptStep, roleplayStarted]);
+  }, [newCue, roleplayStarted]);
 
   if (cueStack.length === 0) {
     return (

@@ -1,6 +1,6 @@
 import { useDialogue } from '@/features/dialogue';
 import { useEffect, useState } from 'react';
-import { generateConversationCues, ConversationCue } from '../../../edge/generateRealtimeReport';
+import { generateConversationCues, ConversationCue, ConversationCueResponse } from '../../../edge/generateRealtimeReport';
 import { DialogueMessage } from '../types';
 
 const concatTranscript = (msgs: DialogueMessage[]) => {
@@ -12,10 +12,16 @@ const concatTranscript = (msgs: DialogueMessage[]) => {
     .join('\n');
 };
 
-export function useConversationCues(): ConversationCue | null {
+export interface CueManagementResult {
+  activeCues: ConversationCue[];
+  newCue: ConversationCue | null;
+}
+
+export function useConversationCues(): CueManagementResult {
   const { messages } = useDialogue();
   const [prevIndex, setPrevIndex] = useState(-1);
-  const [conversationCue, setConversationCue] = useState<ConversationCue | null>(null);
+  const [activeCues, setActiveCues] = useState<ConversationCue[]>([]);
+  const [newCue, setNewCue] = useState<ConversationCue | null>(null);
 
   useEffect(() => {
     const newMessages = messages.filter((m, index) => index > prevIndex);
@@ -24,8 +30,30 @@ export function useConversationCues(): ConversationCue | null {
       return;
     }
     setPrevIndex(messages.length - 1);
-    generateConversationCues(concatTranscript(messages)).then(setConversationCue);
-  }, [messages, prevIndex]);
 
-  return conversationCue;
+    generateConversationCues(concatTranscript(messages), activeCues).then((response: ConversationCueResponse | null) => {
+      if (!response) return;
+
+      switch (response.action) {
+        case 'keep':
+          // Keep existing cues, no new cue
+          setNewCue(null);
+          break;
+        case 'clear':
+          // Clear all existing cues, no new cue
+          setActiveCues([]);
+          setNewCue(null);
+          break;
+        case 'new':
+          // Add new cue to active cues
+          if (response.cue) {
+            setActiveCues((prev) => [...prev, response.cue!]);
+            setNewCue(response.cue);
+          }
+          break;
+      }
+    });
+  }, [messages, prevIndex, activeCues]);
+
+  return { activeCues, newCue };
 }

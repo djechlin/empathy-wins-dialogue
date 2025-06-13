@@ -142,25 +142,57 @@ export interface ConversationCue {
   type: 'person' | 'feeling' | 'perspective';
 }
 
+export interface ConversationCueResponse {
+  action: 'keep' | 'clear' | 'new';
+  cue?: ConversationCue;
+}
+
 export async function generateConversationCues(
   fullConversationTranscript: string,
-): Promise<ConversationCue | null> {
+  existingSuggestions: ConversationCue[] = [],
+): Promise<ConversationCueResponse | null> {
+  const existingSuggestionsText =
+    existingSuggestions.length > 0
+      ? `\n<existing_suggestions>\n${existingSuggestions.map((cue) => `- ${cue.text} (${cue.type})`).join('\n')}\n</existing_suggestions>\n`
+      : '';
+
   const userMessage = `Based on the new messages, give the user up to 1 cue for what to try saying next to the voter. Categorize it as about a person, feeling, or perspective.
 
 <transcript>
 ${fullConversationTranscript}
 </transcript>
+${existingSuggestionsText}
+You have three options for managing conversation cues:
+1. "keep" - Keep the existing suggestions as they are still relevant
+2. "clear" - Clear all existing suggestions because they're no longer relevant 
+3. "new" - Provide a new suggestion (and include the cue object)
 
-Your response should be a json object with the cue text and type, wrapped in <json> like follows:
+Your response should be a json object with an action and optionally a cue, wrapped in <json> like follows:
 
+For keeping existing suggestions:
 <json>
 {
-  "text": "Try asking about their family member mentioned earlier",
-  "type": "person"
+  "action": "keep"
 }
 </json>
 
-If there are no good cues to give, return an empty object: {}`;
+For clearing existing suggestions:
+<json>
+{
+  "action": "clear"
+}
+</json>
+
+For providing a new suggestion:
+<json>
+{
+  "action": "new",
+  "cue": {
+    "text": "Try asking about their family member mentioned earlier",
+    "type": "person"
+  }
+}
+</json>`;
 
   const { data, error } = await supabase.functions.invoke('claude-report', {
     body: {
@@ -180,14 +212,8 @@ If there are no good cues to give, return an empty object: {}`;
   }
 
   try {
-    const parsedCue = JSON.parse(jsonMatch[1].trim());
-    
-    // If empty object, return null
-    if (Object.keys(parsedCue).length === 0) {
-      return null;
-    }
-    
-    return parsedCue as ConversationCue;
+    const parsedResponse = JSON.parse(jsonMatch[1].trim());
+    return parsedResponse as ConversationCueResponse;
   } catch (error) {
     console.warn('Failed to parse conversation cues:', error);
     return null;
