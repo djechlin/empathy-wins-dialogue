@@ -206,11 +206,11 @@ const Preparation = () => {
                       <span className="font-medium text-gray-900 text-sm">Frame</span>
                     </div>
                     <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">Voter:</span> "Hello, who's there?"
+                      <span className="font-bold">Voter:</span> Hello, who's there?
                       <br />
-                      <span className="font-bold">You:</span> "My name is [your name], I'm here with{' '}
+                      <span className="font-bold">You:</span> My name is [your name], I'm here with{' '}
                       {currentIssue && <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} />} to talk about{' '}
-                      {currentIssue?.plainLanguage}."
+                      {currentIssue?.plainLanguage}.
                     </p>
                   </div>
                   <div className="pl-3">
@@ -219,9 +219,9 @@ const Preparation = () => {
                       <span className="font-medium text-gray-900 text-sm">Avoid educating on the issue</span>
                     </div>
                     <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">Voter:</span> "Hello, who's there?"
+                      <span className="font-bold">Voter:</span> Hello, who's there?
                       <br />
-                      <span className="font-bold">You:</span> "{currentIssue?.dontSayText}"
+                      <span className="font-bold">You:</span> {currentIssue?.dontSayText}
                     </p>
                   </div>
                 </div>
@@ -249,11 +249,11 @@ const Preparation = () => {
                         <span className="font-medium text-gray-900 text-sm">Open up</span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> "Is there a time someone was really there for you?"
+                        <span className="font-bold">Voter:</span> Is there a time someone was really there for you?
                         <br />
-                        <span className="font-bold">You:</span> "Last year my dad had to go to the ER. I was so scared something serious was
+                        <span className="font-bold">You:</span> Last year my dad had to go to the ER. I was so scared something serious was
                         wrong. My sister stayed with me the whole time and kept telling me he'd be okay. When the doctor said it was just
-                        dehydration, I felt so relieved and grateful my sister was there."
+                        dehydration, I felt so relieved and grateful my sister was there.
                       </p>
                     </div>
                     <div className="pl-3">
@@ -262,10 +262,10 @@ const Preparation = () => {
                         <span className="font-medium text-gray-900 text-sm">Don't make it political</span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> "Is there a time someone was really there for you?"
+                        <span className="font-bold">Voter:</span> Is there a time someone was really there for you?
                         <br />
-                        <span className="font-bold">You:</span> "Last year my dad had to go to the ER and the bill was outrageous.
-                        Healthcare costs are skyrocketing because politicians won't stand up to Big Pharma and insurance companies."
+                        <span className="font-bold">You:</span> Last year my dad had to go to the ER and the bill was outrageous.
+                        Healthcare costs are skyrocketing because politicians won't stand up to Big Pharma and insurance companies.
                       </p>
                     </div>
                   </div>
@@ -278,11 +278,11 @@ const Preparation = () => {
                         <span className="font-medium text-gray-900 text-sm">Dig deeper</span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> "My daughter's really into all that progressive stuff, I wish she'd
-                        chill."
+                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd
+                        chill.
                         <br />
-                        <span className="font-bold">You:</span> "Wow, your daughter's really engaged. Has she always been passionate about
-                        her interests?"
+                        <span className="font-bold">You:</span> Wow, your daughter's really engaged. Has she always been passionate about
+                        her interests?
                       </p>
                     </div>
                     <div className="pl-3">
@@ -293,11 +293,11 @@ const Preparation = () => {
                         </span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> "My daughter's really into all that progressive stuff, I wish she'd
-                        chill."
+                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd
+                        chill.
                         <br />
-                        <span className="font-bold">You:</span> "I guess you've heard about this a lot from your daughter already, is there
-                        a reason you haven't changed your mind yet?"
+                        <span className="font-bold">You:</span> I guess you've heard about this a lot from your daughter already, is there
+                        a reason you haven't changed your mind yet?
                       </p>
                     </div>
                   </div>
@@ -374,7 +374,7 @@ const Preparation = () => {
                           <p className="text-gray-700 font-mono text-sm">
                             "My name is [your name], I'm here with{' '}
                             {currentIssue && <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} />} to talk about{' '}
-                            {currentIssue?.plainLanguage}."
+                            {currentIssue?.plainLanguage}.
                           </p>
                         </div>
                       </div>
@@ -415,8 +415,8 @@ const Preparation = () => {
                         <div>
                           <h4 className="font-medium text-gray-900 mb-1">Explore together:</h4>
                           <p className="text-gray-700 font-mono text-sm">
-                            "It sounds like we both really care about the people we love. Does that change how you think about this issue at
-                            all?"
+                            It sounds like we both really care about the people we love. Does that change how you think about this issue at
+                            all?
                           </p>
                         </div>
                       </div>
@@ -428,8 +428,8 @@ const Preparation = () => {
                         <div>
                           <h4 className="font-medium text-gray-900 mb-1">Ask for action:</h4>
                           <p className="text-gray-700 font-mono text-sm">
-                            "Now that we've explored the issue together, would you take your phone and tell your representative Peter Gerbil
-                            how you feel, at 555-4567?"
+                            Now that we've explored the issue together, would you take your phone and tell your representative Peter Gerbil
+                            how you feel, at 555-4567?
                           </p>
                         </div>
                       </div>
@@ -458,8 +458,8 @@ const Preparation = () => {
                           <p className="font-mono text-sm text-gray-700">{currentIssue.dontSayText}</p>
                         ) : (
                           <p className="font-mono text-sm text-gray-700">
-                            "Hello. Is this Frank I'm talking to? Do you have a few minutes to chat about healthcare? According to the
-                            CDC..."
+                            Hello. Is this Frank I'm talking to? Do you have a few minutes to chat about healthcare? According to the
+                            CDC...
                           </p>
                         )}
                       </div>
@@ -469,8 +469,8 @@ const Preparation = () => {
                           <span className="font-medium text-gray-900 text-sm">Don't make it political</span>
                         </div>
                         <p className="font-mono text-sm text-gray-700">
-                          "One time, I got sick and was really worried. I was able to see a doctor but Congress is trying to take away
-                          access to healthcare for millions of other Americans."
+                          One time, I got sick and was really worried. I was able to see a doctor but Congress is trying to take away
+                          access to healthcare for millions of other Americans.
                         </p>
                       </div>
                     </div>
@@ -483,7 +483,7 @@ const Preparation = () => {
                           <span className="font-medium text-gray-900 text-sm">Don't skip the connection</span>
                         </div>
                         <p className="font-mono text-sm text-gray-700">
-                          "So anyway, tell me about your family and what matters to you so we can get on the same page about this issue."
+                          So anyway, tell me about your family and what matters to you so we can get on the same page about this issue.
                         </p>
                       </div>
                       <div className="pl-3">
@@ -492,8 +492,8 @@ const Preparation = () => {
                           <span className="font-medium text-gray-900 text-sm">Don't rush the ask</span>
                         </div>
                         <p className="font-mono text-sm text-gray-700">
-                          "I'm so glad we talked! Think about calling your representative and urging them to vote NO on H.R. 123. Have a
-                          good day!"
+                          I'm so glad we talked! Think about calling your representative and urging them to vote NO on H.R. 123. Have a
+                          good day!
                         </p>
                       </div>
                     </div>
