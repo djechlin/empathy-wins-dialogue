@@ -1,7 +1,7 @@
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import { useDialogue } from '@/features/dialogue';
-import { getDebugState, usePeople } from '@/features/dialogue/hooks/usePeople';
+import { usePeople } from '@/features/dialogue/hooks/usePeople';
 import { ReplayProvider } from '@/features/dialogue/providers/ReplayProvider';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/ui/button';
@@ -16,13 +16,9 @@ function RoleplayContent() {
   const { toast } = useToast();
   const { messages, connect, disconnect, togglePause, isPaused, timeElapsed } = useDialogue();
   const { people } = usePeople();
-  const [selectedIssue, setSelectedIssue] = useState<string>(() => {
+  const [selectedIssue] = useState<string>(() => {
     return sessionStorage.getItem('selectedIssue') || '';
   });
-
-  // Check if we're running on localhost
-  const isLocalhost =
-    typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
   const [roleplayStarted, setRoleplayStarted] = useState(false);
 
@@ -105,8 +101,6 @@ function RoleplayContent() {
       hasQuote: true,
     },
   ];
-
-  const debugState = getDebugState();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -260,7 +254,7 @@ function RoleplayContent() {
                   <div className="grid grid-cols-3 gap-3">
                     {people.map((person, index) => (
                       <div
-                        key={`person-${index}`}
+                        key={person.text}
                         className={`bg-gradient-to-r ${personColors[index % personColors.length]} border rounded-lg p-3 ${
                           index === 0 ? 'col-span-1.5' : 'col-span-1'
                         }`}
@@ -268,7 +262,7 @@ function RoleplayContent() {
                         <div className="flex flex-col items-center text-center">
                           {personIcons[index % personIcons.length]}
                           <p className="font-medium text-sm">{person.text}</p>
-                          <p className="text-xs text-gray-600">{person.rationale}</p>
+                          <p className="text-xs text-gray-600 mt-1 line-clamp-2">{person.rationale}</p>
                         </div>
                       </div>
                     ))}
@@ -311,38 +305,6 @@ function RoleplayContent() {
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Debug Panel - Only show on localhost */}
-              {isLocalhost && (
-                <Card className="border-dashed border-gray-300">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-gray-500">
-                      <BookOpen className="w-5 h-5" />
-                      Debug Info
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 mb-2">Last Processed Message:</h3>
-                        <p className="text-sm bg-gray-50 p-2 rounded">{debugState.lastProcessedMessage || 'No messages yet'}</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 mb-2">People Detected:</h3>
-                        <p className="text-sm bg-gray-50 p-2 rounded">{debugState.peopleDetected.join(', ') || 'None'}</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 mb-2">Nouns Detected:</h3>
-                        <p className="text-sm bg-gray-50 p-2 rounded">{debugState.nounsDetected.join(', ') || 'None'}</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 mb-2">Possessive Nouns:</h3>
-                        <p className="text-sm bg-gray-50 p-2 rounded">{debugState.possessiveNounsDetected.join(', ') || 'None'}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
             </div>
           </div>
         </div>
