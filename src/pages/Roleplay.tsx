@@ -1,7 +1,7 @@
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import { useDialogue } from '@/features/dialogue';
-import { useConversationCues } from '@/features/dialogue/hooks/useConversationCues';
+import { useCues } from '@/features/dialogue/hooks/useConversationCues';
 import { ReplayProvider } from '@/features/dialogue/providers/ReplayProvider';
 import { DialogueMessage } from '@/features/dialogue/types';
 import { useToast } from '@/hooks/use-toast';
@@ -308,7 +308,7 @@ interface ContextAwareTipsBoxProps {
 }
 
 const ContextAwareTipsBox = ({ currentIssue }: ContextAwareTipsBoxProps) => {
-  const { activeCues } = useConversationCues(currentIssue);
+  const { activeCues } = useCues(currentIssue);
 
   const getIconAndColor = useCallback((type: string) => {
     switch (type) {

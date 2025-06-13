@@ -1,6 +1,6 @@
 import { useDialogue } from '@/features/dialogue';
 import { useEffect, useState } from 'react';
-import { ConversationCue, generateConversationCues } from '../../../edge/generateRealtimeReport';
+import { Cue, generateCues } from '../../../edge/generateRealtimeReport';
 import { DialogueMessage } from '../types';
 
 const concatTranscript = (msgs: DialogueMessage[]) => {
@@ -13,15 +13,15 @@ const concatTranscript = (msgs: DialogueMessage[]) => {
 };
 
 export interface CueManagementResult {
-  activeCues: ConversationCue[];
+  activeCues: Cue[];
 }
 
-export function useConversationCues(initialCue?: { organization: string; plainLanguage: string }): CueManagementResult {
+export function useCues(initialCue?: { organization: string; plainLanguage: string }): CueManagementResult {
   const { messages } = useDialogue();
   const [prevIndex, setPrevIndex] = useState(-1);
 
   // Initialize with opening script if provided
-  const [activeCues, setActiveCues] = useState<ConversationCue[]>(() => {
+  const [activeCues, setActiveCues] = useState<Cue[]>(() => {
     if (initialCue) {
       return [
         {
@@ -43,9 +43,9 @@ export function useConversationCues(initialCue?: { organization: string; plainLa
     }
     setPrevIndex(messages.length - 1);
 
-    generateConversationCues(concatTranscript(messages), activeCues).then((response) => {
-      if (response?.action === 'new' && response.cue && response.cue.text) {
-        setActiveCues((prev) => [...prev, response.cue]);
+    generateCues(concatTranscript(messages), activeCues).then((cue) => {
+      if (cue.text) {
+        setActiveCues((prev) => [...prev, cue]);
       }
     });
   }, [messages, prevIndex, activeCues]);
