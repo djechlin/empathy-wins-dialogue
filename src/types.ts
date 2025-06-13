@@ -12,19 +12,17 @@ export type Step = {
 export type Script = Step[];
 
 export type FeedbackId =
-  | 'framing-introduced-your-name'
-  | 'framing-named-issue-plainspoken'
-  | 'framed-uplifting'
-  | 'listened-asked-about-relationship'
-  | 'listened-dug-deeper'
-  | 'listened-shared-own-relationship'
-  | 'listened-got-vulnerable'
-  | 'explored-connected-issue'
-  | 'explored-stayed-calm'
-  | 'call-voter-interested'
-  | 'call-voter-called';
+  | 'active-listening'
+  | 'empathy'
+  | 'open-ended-questions'
+  | 'personal-stories'
+  | 'values'
+  | 'common-ground'
+  | 'challenge-assumptions'
+  | 'concrete-actions'
+  | 'follow-up';
 
-export type ChallengeStep = 'framing' | 'listening' | 'exploring' | 'calling';
+export type ChallengeStep = 'preparation' | 'roleplay' | 'reflection';
 
 export type Scenario = {
   title: string;

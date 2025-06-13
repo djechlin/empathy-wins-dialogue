@@ -1,11 +1,15 @@
 import { useDialogue } from '@/features/dialogue';
 import { useEffect, useState } from 'react';
-import { Cue, generateCues } from '../../../edge/generateRealtimeReport';
+import { generateCues } from '../../../edge/generateConversationCues';
+import { Cue } from '../../../edge/types';
 import { DialogueMessage } from '../types';
 
 const concatTranscript = (msgs: DialogueMessage[]) => {
   return msgs
     .map((msg) => {
+      if (msg.role === 'voter_narrator') {
+        return `Narrator: ${msg.content}`;
+      }
       const role = msg.role === 'user' ? 'Canvasser' : 'Voter';
       return `${role}: ${msg.content}`;
     })
@@ -44,11 +48,11 @@ export function useCues(initialCue?: { organization: string; plainLanguage: stri
     setPrevIndex(messages.length - 1);
 
     generateCues(concatTranscript(messages), activeCues).then((cue) => {
-      if (cue.text) {
+      if (cue) {
         setActiveCues((prev) => [...prev, cue]);
       }
     });
-  }, [messages, prevIndex, activeCues]);
+  }, [messages, activeCues, prevIndex]);
 
   return { activeCues };
 }

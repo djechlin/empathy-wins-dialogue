@@ -1,7 +1,7 @@
 // App-specific message types (no Hume types exposed)
 export type DialogueMessage = {
   id: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'voter_narrator';
   content: string;
   timestamp: Date;
   emotions?: Record<string, number>; // Simplified emotion scores
@@ -16,4 +16,5 @@ export type DialogueContext = {
   micFft: number[];
   timeElapsed: number;
   isPaused: boolean;
+  initialMessage?: DialogueMessage;
 };
