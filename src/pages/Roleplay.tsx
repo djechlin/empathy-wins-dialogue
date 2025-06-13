@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
-import { ArrowRight, Bot, Brain, Heart, Lightbulb, Mic, MicOff, Send, Sparkles, Users } from 'lucide-react';
+import { ArrowRight, BookOpen, MessageSquare, Mic, MicOff, Send, User, Users } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,21 +18,6 @@ function RoleplayContent() {
 
   // Load preparation data from sessionStorage
   const selectedIssue = sessionStorage.getItem('selectedIssue') || 'insulin';
-
-  const issueDetails = {
-    insulin: {
-      title: 'Healthcare - Insulin Affordability',
-      plainLanguage: 'affordable insulin for people with diabetes',
-      organization: 'Diabetes Advocates',
-    },
-    climate: {
-      title: 'Climate - Wildfire Management',
-      plainLanguage: 'protecting our communities from wildfires',
-      organization: 'Against Wildfires',
-    },
-  };
-
-  const currentIssue = issueDetails[selectedIssue as keyof typeof issueDetails];
 
   const [roleplayStarted, setRoleplayStarted] = useState(false);
 
@@ -70,6 +55,45 @@ function RoleplayContent() {
   }, []);
 
   const progressPercentage = useMemo(() => (timeElapsed / 600) * 100, [timeElapsed]);
+
+  const personColors = [
+    'from-orange-50 to-orange-100 border-orange-200 text-orange-600',
+    'from-purple-50 to-purple-100 border-purple-200 text-purple-600',
+    'from-blue-50 to-blue-100 border-blue-200 text-blue-600',
+    'from-green-50 to-green-100 border-green-200 text-green-600',
+    'from-pink-50 to-pink-100 border-pink-200 text-pink-600',
+    'from-amber-50 to-amber-100 border-amber-200 text-amber-600',
+  ];
+
+  const { activeCues } = useCues({ organization: 'Frank', plainLanguage: 'The voter' });
+
+  const scriptSteps = useMemo(
+    () => [
+      {
+        text: "My name is [your name], I'm here with Diabetes Advocates to talk about affordable insulin for people with diabetes.",
+        rationale: 'Start with a warm greeting and introduce yourself as a volunteer',
+      },
+      {
+        text: 'Ask about their perspective on the issue',
+        rationale: 'Understand their current views and concerns',
+      },
+      {
+        text: 'Build a personal connection',
+        rationale: 'Find common ground and shared values',
+      },
+      {
+        text: 'Transition to exploring the issue',
+        rationale: 'Connect their values to the policy',
+      },
+      {
+        text: 'Call to action',
+        rationale: 'Ask for their support or commitment',
+      },
+    ],
+    [],
+  );
+
+  const [currentScriptIndex] = useState(0);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -152,7 +176,10 @@ function RoleplayContent() {
               {/* Recent conversation */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Recent Messages</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5 text-blue-600" />
+                    Recent Messages
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div
@@ -187,12 +214,72 @@ function RoleplayContent() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Lightbulb className="w-5 h-5 text-yellow-500" />
-                    Cues
+                    <BookOpen className="w-5 h-5 text-green-600" />
+                    Script
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ContextAwareTipsBox currentIssue={currentIssue} />
+                  <div className="space-y-3 relative h-[280px] overflow-hidden">
+                    {scriptSteps.slice(currentScriptIndex, currentScriptIndex + 2).map((step, index) => (
+                      <div
+                        key={`script-${currentScriptIndex + index}`}
+                        className="absolute w-full transition-all duration-500 ease-in-out"
+                        style={{
+                          transform: `translateY(${index * 140}px)`,
+                          opacity: index === 0 ? 1 : 0.85,
+                          zIndex: 2 - index,
+                        }}
+                      >
+                        <div
+                          className={`bg-gradient-to-r ${index === 0 ? 'from-green-50 to-green-100 border-green-200' : 'from-gray-100 to-gray-200 border-gray-300'} border rounded-lg p-4`}
+                        >
+                          <div className="flex items-start gap-4">
+                            {index === 0 && <Send className="w-8 h-8 text-green-600 flex-shrink-0 mt-1" />}
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className={`text-xs font-medium ${index === 0 ? 'text-green-600' : 'text-gray-700'}`}>
+                                  {index === 0 ? 'Current Step' : 'Next Step'}
+                                </span>
+                              </div>
+                              <p className={`text-sm leading-relaxed font-medium mb-1 ${index === 0 ? 'text-gray-800' : 'text-gray-900'}`}>
+                                "{step.text}"
+                              </p>
+                              <p className={`text-xs italic ${index === 0 ? 'text-gray-600' : 'text-gray-700'}`}>{step.rationale}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* People Cues Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="w-5 h-5 text-purple-600" />
+                    People
+                  </CardTitle>
+                  <p className="text-sm text-gray-500">People the voter mentioned. Try learning more about them.</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-3">
+                    {activeCues.map((cue, index) => (
+                      <div
+                        key={`person-${index}`}
+                        className={`bg-gradient-to-r ${personColors[index % personColors.length]} border rounded-lg p-3 ${
+                          index === 0 ? 'col-span-1.5' : 'col-span-1'
+                        }`}
+                      >
+                        <div className="flex flex-col items-center text-center">
+                          <User className={`w-6 h-6 mb-1`} />
+                          <p className="font-medium text-sm">{cue.text}</p>
+                          <p className="text-xs text-gray-600">{cue.rationale}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -203,76 +290,6 @@ function RoleplayContent() {
     </div>
   );
 }
-
-interface ContextAwareTipsBoxProps {
-  currentIssue?: {
-    organization: string;
-    plainLanguage: string;
-  };
-}
-
-const ContextAwareTipsBox = ({ currentIssue }: ContextAwareTipsBoxProps) => {
-  const { activeCues } = useCues(currentIssue);
-
-  const getIconAndColor = useCallback((type: string) => {
-    switch (type) {
-      case 'person':
-        return { icon: Users, colorClass: 'from-purple-50 to-purple-100 border-purple-200', iconColor: 'text-purple-600' };
-      case 'feeling':
-        return { icon: Heart, colorClass: 'from-pink-50 to-pink-100 border-pink-200', iconColor: 'text-pink-600' };
-      case 'framing':
-        return { icon: Send, colorClass: 'from-green-50 to-green-100 border-green-200', iconColor: 'text-green-600' };
-      case 'perspective':
-        return { icon: Brain, colorClass: 'from-blue-50 to-blue-100 border-blue-200', iconColor: 'text-blue-600' };
-      case 'canvasser':
-        return { icon: Sparkles, colorClass: 'from-amber-50 to-amber-100 border-amber-200', iconColor: 'text-amber-600' };
-      default:
-        return { icon: Sparkles, colorClass: 'from-gray-50 to-gray-100 border-gray-200', iconColor: 'text-gray-600' };
-    }
-  }, []);
-
-  if (activeCues.length === 0) {
-    return (
-      <div className="text-center py-4 text-gray-500">
-        <Bot className="w-8 h-8 mx-auto mb-2 opacity-30" />
-        <p className="text-sm">Listening for opportunities to connect...</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-3">
-      {activeCues.map((cue, index) => {
-        const { icon: IconComponent, colorClass, iconColor } = getIconAndColor(cue.type);
-
-        return (
-          <div
-            key={`${cue.type}-${index}`}
-            className="transition-all duration-500 ease-in-out transform"
-            style={{
-              transform: `translateY(${index * 4}px)`,
-              opacity: 1,
-            }}
-          >
-            <div className={`bg-gradient-to-r ${colorClass} border rounded-lg p-4`}>
-              <div className="flex items-start gap-4">
-                <IconComponent className={`w-8 h-8 ${iconColor} flex-shrink-0 mt-1`} />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Cue</span>
-                    <span className="text-xs px-2 py-0.5 bg-white/70 rounded-full border text-gray-600">{cue.type}</span>
-                  </div>
-                  <p className="text-gray-800 text-sm leading-relaxed font-medium mb-1">"{cue.text}"</p>
-                  <p className="text-gray-600 text-xs italic">{cue.rationale}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
 
 const Roleplay = () => {
   const selectedIssue = sessionStorage.getItem('selectedIssue') || 'insulin';

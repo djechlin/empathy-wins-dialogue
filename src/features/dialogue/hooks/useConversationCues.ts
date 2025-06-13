@@ -47,9 +47,9 @@ export function useCues(initialCue?: { organization: string; plainLanguage: stri
     }
     setPrevIndex(messages.length - 1);
 
-    generateCues(concatTranscript(messages), activeCues).then((cue) => {
-      if (cue && cue.text) {
-        setActiveCues((prev) => [...prev, cue]);
+    generateCues(concatTranscript(messages), activeCues).then((newCues) => {
+      if (newCues) {
+        setActiveCues(newCues);
       }
     });
   }, [messages, activeCues, prevIndex]);
