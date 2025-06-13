@@ -139,6 +139,7 @@ export async function generateRealtimeFeedback(
 
 export interface ConversationCue {
   text: string;
+  rationale: string;
   type: 'person' | 'feeling' | 'perspective';
 }
 
@@ -153,7 +154,7 @@ export async function generateConversationCues(
 ): Promise<ConversationCueResponse | null> {
   const existingSuggestionsText =
     existingSuggestions.length > 0
-      ? `\n<existing_suggestions>\n${existingSuggestions.map((cue) => `- ${cue.text} (${cue.type})`).join('\n')}\n</existing_suggestions>\n`
+      ? `\n<existing_suggestions>\n${existingSuggestions.map((cue) => `- "${cue.text}" (${cue.type}) - ${cue.rationale}`).join('\n')}\n</existing_suggestions>\n`
       : '';
 
   const userMessage = `Based on the new messages, give the user up to 1 cue for what to try saying next to the voter. Categorize it as about a person, feeling, or perspective.
@@ -162,6 +163,8 @@ export async function generateConversationCues(
 ${fullConversationTranscript}
 </transcript>
 ${existingSuggestionsText}
+DEEP CANVASSING PRINCIPLE: Steer the conversation away from facts, statistics, research costs, and lectures. Instead, focus on relationships, personal stories, and vulnerability. Avoid suggestions about policy details, data, or factual arguments.
+
 You have three options for managing conversation cues:
 1. "keep" - Keep the existing suggestions as they are still relevant
 2. "clear" - Clear all existing suggestions because they're no longer relevant 
@@ -188,11 +191,19 @@ For providing a new suggestion:
 {
   "action": "new",
   "cue": {
-    "text": "Try asking about their family member mentioned earlier",
+    "text": "Can you tell me more about your brother?",
+    "rationale": "dig deeper into personal connection",
     "type": "person"
   }
 }
-</json>`;
+</json>
+
+IMPORTANT: Structure your suggestions as:
+- text: The exact language the person can say (as a complete question or statement)
+- rationale: A brief sentence fragment explaining the idea behind the suggestion
+- type: person, feeling, or perspective
+
+Focus on suggestions that help the canvasser connect emotionally and personally, not on facts or policy arguments.`;
 
   const { data, error } = await supabase.functions.invoke('claude-report', {
     body: {

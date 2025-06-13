@@ -453,7 +453,8 @@ const ContextAwareTipsBox = ({ roleplayStarted, currentIssue }: ContextAwareTips
                   <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">AI Suggestion</span>
                   <span className="text-xs px-2 py-0.5 bg-white/70 rounded-full border text-gray-600">{cue.type}</span>
                 </div>
-                <p className="text-gray-800 text-sm leading-relaxed">{cue.text}</p>
+                <p className="text-gray-800 text-sm leading-relaxed font-medium mb-1">"{cue.text}"</p>
+                <p className="text-gray-600 text-xs italic">{cue.rationale}</p>
               </div>
             </div>
           </div>

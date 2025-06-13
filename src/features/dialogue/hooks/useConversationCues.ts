@@ -32,7 +32,7 @@ export function useConversationCues(): CueManagementResult {
     setPrevIndex(messages.length - 1);
 
     // Capture current activeCues at the time of the API call to avoid stale closure
-    setActiveCues(currentActiveCues => {
+    setActiveCues((currentActiveCues) => {
       generateConversationCues(concatTranscript(messages), currentActiveCues).then((response: ConversationCueResponse | null) => {
         if (!response) return;
 
@@ -49,13 +49,13 @@ export function useConversationCues(): CueManagementResult {
           case 'new':
             // Add new cue to active cues
             if (response.cue) {
-              setActiveCues(prev => [...prev, response.cue!]);
+              setActiveCues((prev) => [...prev, response.cue!]);
               setNewCue(response.cue);
             }
             break;
         }
       });
-      
+
       return currentActiveCues; // Return unchanged state
     });
   }, [messages, prevIndex]);
