@@ -2,17 +2,15 @@ import DoDont from '@/components/DoDont';
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import NumberCircle from '@/components/NumberCircle';
-import PrepareCard from '@/components/PrepareCard';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/ui/tabs';
 import { ArrowRight } from 'lucide-react';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSessionStorageState from 'use-session-storage-state';
 
 const Prepare = () => {
   const navigate = useNavigate();
-  const [expandedCard, setExpandedCard] = useState<number | null>(0);
 
   const [selectedIssue, setSelectedIssue] = useSessionStorageState('selected-issue', {
     defaultValue: 'insulin',
@@ -175,42 +173,48 @@ const Prepare = () => {
           </div>
 
           <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 justify-items-center">
+            <Tabs defaultValue="0" className="w-full">
+              <TabsList className="grid w-full grid-cols-4 h-auto p-2 bg-white shadow-sm">
+                {prepareSteps.map((step, index) => (
+                  <TabsTrigger
+                    key={index}
+                    value={index.toString()}
+                    className="flex flex-col items-center text-center p-4 h-32 data-[state=active]:bg-blue-50 data-[state=active]:border-blue-200 data-[state=active]:border-2"
+                  >
+                    <NumberCircle number={step.stepNumber} color={step.stepColor} />
+                    <span className="text-xs font-medium mt-2 leading-tight">{step.title}</span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              
               {prepareSteps.map((step, index) => (
-                <PrepareCard
-                  key={index}
-                  {...step}
-                  isExpanded={expandedCard === index}
-                  onToggle={() => setExpandedCard(expandedCard === index ? null : index)}
-                />
+                <TabsContent key={index} value={index.toString()} className="mt-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-3">
+                        <NumberCircle number={step.stepNumber} color={step.stepColor} />
+                        {step.title}
+                      </CardTitle>
+                      <p className="text-gray-600 mt-2">{step.description}</p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        {step.doDontExamples.map((example, exampleIndex) => (
+                          <DoDont
+                            key={exampleIndex}
+                            doHeading={example.doHeading}
+                            dontHeading={example.dontHeading}
+                            voter={example.voter}
+                            do={example.do}
+                            dont={example.dont}
+                          />
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
               ))}
-            </div>
-
-            {/* Expanded content area */}
-            {expandedCard !== null && (
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <NumberCircle number={prepareSteps[expandedCard].stepNumber} color={prepareSteps[expandedCard].stepColor} />
-                    {prepareSteps[expandedCard].title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    {prepareSteps[expandedCard].doDontExamples.map((example, index) => (
-                      <DoDont
-                        key={index}
-                        doHeading={example.doHeading}
-                        dontHeading={example.dontHeading}
-                        voter={example.voter}
-                        do={example.do}
-                        dont={example.dont}
-                      />
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            </Tabs>
           </div>
 
           <div className="mt-8 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white text-center shadow-lg">
