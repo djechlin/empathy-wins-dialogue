@@ -160,7 +160,6 @@ const Prepare = () => {
             </CardContent>
           </Card>
 
-          {/* Prominent Start Roleplay section */}
           <div className="mb-8 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white text-center shadow-lg">
             <h2 className="text-xl font-bold mb-2">Ready to practice?</h2>
             <p className="mb-4 text-green-50">Start your roleplay session and put these strategies into action</p>
@@ -174,18 +173,13 @@ const Prepare = () => {
             </Button>
           </div>
 
-          <div className="mb-8">
-            <PrepareCard {...prepareSteps[0]} />
-          </div>
-
-          <div className="space-y-4 mb-8">
-            {prepareSteps.slice(1).map((step, index) => (
-              <PrepareCard key={index + 1} {...step} />
-            ))}
-          </div>
+          {prepareSteps.map((step, index) => (
+            <div key={index} className={index === 0 ? "mb-8" : "mb-4"}>
+              <PrepareCard {...step} />
+            </div>
+          ))}
         </div>
 
-        {/* Floating Action Button - stays visible while scrolling */}
         <div className="fixed bottom-6 right-6 z-50 opacity-90 hover:opacity-100 transition-opacity duration-300">
           <Button
             onClick={() => navigate('/challenge/roleplay')}
