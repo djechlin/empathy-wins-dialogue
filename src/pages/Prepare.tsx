@@ -53,9 +53,13 @@ const Prepare = () => {
         {
           doHeading: 'Use everyday language about regular people',
           dontHeading: "Don't go into society's ills",
-          voter: "Isn't insulin already affordable?",
-          do: 'Actually, when someone here in Townsville loses their job, they have to pay hundreds of dollars out of pocket.',
-          dont: 'Due to Congressional inaction, once an employee loses their employee-sponsored healthcare benefits...',
+          voter: selectedIssue === 'insulin' ? "Isn't insulin already affordable?" : "Aren't we already doing enough about climate change?",
+          do: selectedIssue === 'insulin' 
+            ? 'Actually, when someone here in Townsville loses their job, they have to pay hundreds of dollars out of pocket.'
+            : 'Actually, my neighbor had to evacuate their home twice last year because of flooding. It\'s really affecting people right here.',
+          dont: selectedIssue === 'insulin'
+            ? 'Due to Congressional inaction, once an employee loses their employee-sponsored healthcare benefits...'
+            : 'Due to fossil fuel companies\' influence, global carbon dioxide emissions reached 41.6 billion tons in 2024...',
         },
       ],
     },
@@ -64,14 +68,18 @@ const Prepare = () => {
       stepColor: 'orange' as const,
       title: 'Build a connection',
       description:
-        'Share a personal healthcare story to build connection, then learn about who the voter cares about. Ask about their family and when they name someone, ask more about them.',
+        'Share a personal story to build connection, then learn about who the voter cares about. Ask about their family and when they name someone, ask more about them.',
       doDontExamples: [
         {
           doHeading: 'Open up',
           dontHeading: "Don't make it political",
           voter: "I agree with you but I don't believe in big government.",
-          do: 'Yeah, I totally understand that. You know, last year, my dad had to go to the ER...',
-          dont: "Last year my dad had to go to the ER and the bill was outrageous. Healthcare costs are skyrocketing because politicians won't stand up to Big Pharma and insurance companies.",
+          do: selectedIssue === 'insulin'
+            ? 'Yeah, I totally understand that. You know, last year, my dad had to go to the ER...'
+            : 'Yeah, I totally understand that. You know, last summer, my family had to evacuate because of the wildfire...',
+          dont: selectedIssue === 'insulin'
+            ? "Last year my dad had to go to the ER and the bill was outrageous. Healthcare costs are skyrocketing because politicians won't stand up to Big Pharma and insurance companies."
+            : "Last summer my family had to evacuate because of the wildfire and it was devastating. Climate change is accelerating because politicians won't stand up to fossil fuel companies.",
         },
         {
           doHeading: 'Dig deeper',
@@ -92,9 +100,13 @@ const Prepare = () => {
         {
           doHeading: 'Redirect the conversation to relationships',
           dontHeading: "Don't start debating",
-          voter: 'Most people on welfare are just lazy.',
-          do: "I see where you're coming from, but you mentioned a time your son didn't have insurance for a while, and he sounds really hard-working. Maybe it's important to be there for people like your son?",
-          dont: "Actually that's a myth that was spread by the media going back to the 1980s.",
+          voter: selectedIssue === 'insulin' ? 'Most people on welfare are just lazy.' : 'Most climate activists are just alarmists.',
+          do: selectedIssue === 'insulin'
+            ? "I see where you're coming from, but you mentioned a time your son didn't have insurance for a while, and he sounds really hard-working. Maybe it's important to be there for people like your son?"
+            : "I see where you're coming from, but you mentioned your daughter's apartment flooded last year, and that must have been really scary for you as a parent. Maybe it's important to protect people like your daughter?",
+          dont: selectedIssue === 'insulin'
+            ? "Actually that's a myth that was spread by the media going back to the 1980s."
+            : "Actually that's a myth that was spread by fossil fuel companies going back to the 1980s.",
         },
       ],
     },
@@ -129,8 +141,8 @@ const Prepare = () => {
           <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Prepare for your roleplay</h1>
           <div className="mb-8 text-center">
             <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto mb-4">
-              A persuasion conversation starts with framing the issue in everyday terms, then building a connection before
-              diving into the issue.
+              A persuasion conversation starts with framing the issue in everyday terms, then building a connection before diving into the
+              issue.
             </p>
             <div className="text-md text-gray-600 mb-4">
               <p className="mb-3">First, select your issue:</p>
@@ -173,7 +185,6 @@ const Prepare = () => {
                     <NumberCircle number={prepareSteps[expandedCard].stepNumber} color={prepareSteps[expandedCard].stepColor} />
                     {prepareSteps[expandedCard].title}
                   </CardTitle>
-                  <p className="text-gray-600">{prepareSteps[expandedCard].description}</p>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
