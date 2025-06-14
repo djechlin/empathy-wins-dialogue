@@ -86,9 +86,9 @@ const Prepare = () => {
           <div className="mb-8 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white text-center shadow-lg">
             <h2 className="text-xl font-bold mb-2">Ready to practice?</h2>
             <p className="mb-4 text-green-50">Start your roleplay session and put these strategies into action</p>
-            <Button 
-              onClick={() => navigate('/challenge/roleplay')} 
-              size="lg" 
+            <Button
+              onClick={() => navigate('/challenge/roleplay')}
+              size="lg"
               className="px-8 bg-white text-green-600 hover:bg-green-50 font-semibold shadow-md"
             >
               Start Roleplay
@@ -200,20 +200,14 @@ const Prepare = () => {
             </Card>
           </div>
 
-          <div className="text-center">
-            <Button onClick={() => navigate('/challenge/roleplay')} size="lg" className="px-8">
-              Start Roleplay
-              <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
-          </div>
         </div>
 
         {/* Floating Action Button - stays visible while scrolling */}
-        <div className="fixed bottom-6 right-6 z-50">
-          <Button 
-            onClick={() => navigate('/challenge/roleplay')} 
-            size="lg" 
-            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold shadow-xl rounded-full animate-pulse"
+        <div className="fixed bottom-6 right-6 z-50 opacity-90 hover:opacity-100 transition-opacity duration-300">
+          <Button
+            onClick={() => navigate('/challenge/roleplay')}
+            size="lg"
+            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold shadow-xl rounded-full hover:scale-105 transition-transform duration-200"
           >
             Start Roleplay
             <ArrowRight className="ml-2 w-4 h-4" />
