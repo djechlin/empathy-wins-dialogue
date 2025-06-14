@@ -121,7 +121,6 @@ const Prepare = () => {
                 <Settings className="w-6 h-6 text-gray-600" />
                 Choose your issue
               </CardTitle>
-              <p className="text-gray-600 text-sm font-sans">Select the issue you'll be advocating for in this roleplay session.</p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
@@ -140,13 +139,6 @@ const Prepare = () => {
                   >
                     Climate
                   </Button>
-                </div>
-                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-900 font-medium">
-                    {selectedIssue === 'insulin'
-                      ? "You'll be with Diabetes Advocates, talking to voters about lowering the price of insulin."
-                      : "You'll be talking about the increasing wildfire risk in your area. You're focusing on increased training for wildfire fighters, which mitigates the issue here and now, and gets our government to take climate change threats more seriously."}
-                  </p>
                 </div>
               </div>
             </CardContent>
