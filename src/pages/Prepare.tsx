@@ -1,14 +1,17 @@
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import PrepareCard from '@/components/PrepareCard';
+import DoDont from '@/components/DoDont';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { ArrowRight, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useSessionStorageState from 'use-session-storage-state';
+import { useState } from 'react';
 
 const Prepare = () => {
   const navigate = useNavigate();
+  const [expandedCard, setExpandedCard] = useState<number | null>(null);
 
   const [selectedIssue, setSelectedIssue] = useSessionStorageState('selected-issue', {
     defaultValue: 'insulin',
@@ -146,14 +149,52 @@ const Prepare = () => {
 
           <div className="mb-8 text-center">
             <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
-              The flow of a persuasion conversation starts with framing the issue in everyday terms, then focusing on building a connection before exploring the issue. Finally, ask the voter for an action as commitment, which if they complete, they'll certainly remember.
+              The flow of a persuasion conversation starts with framing the issue in everyday terms, then focusing on building a connection
+              before exploring the issue. Finally, ask the voter for an action as commitment, which if they complete, they'll certainly
+              remember.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 max-w-2xl mx-auto">
-            {prepareSteps.map((step, index) => (
-              <PrepareCard key={index} {...step} />
-            ))}
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {prepareSteps.map((step, index) => (
+                <PrepareCard 
+                  key={index} 
+                  {...step} 
+                  isExpanded={expandedCard === index}
+                  onToggle={() => setExpandedCard(expandedCard === index ? null : index)}
+                />
+              ))}
+            </div>
+            
+            {/* Expanded content area */}
+            {expandedCard !== null && (
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-semibold">
+                      {prepareSteps[expandedCard].stepNumber}
+                    </span>
+                    {prepareSteps[expandedCard].title}
+                  </CardTitle>
+                  <p className="text-gray-600">{prepareSteps[expandedCard].description}</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {prepareSteps[expandedCard].doDontExamples.map((example, index) => (
+                      <DoDont
+                        key={index}
+                        doHeading={example.doHeading}
+                        dontHeading={example.dontHeading}
+                        voter={example.voter}
+                        do={example.do}
+                        dont={example.dont}
+                      />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           <div className="mt-8 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white text-center shadow-lg">
