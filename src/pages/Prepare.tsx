@@ -125,7 +125,9 @@ const Prepare = () => {
         {
           doHeading: 'Ask for an action right now',
           dontHeading: "Don't ask them just to think about it",
-          do: "I'm really glad we had this conversation. I want to ask, could you take your phone and call Representative Gerbil, his number is 555-4567, and tell him how you feel?",
+          do: selectedIssue === 'insulin' 
+            ? "I'm really glad we had this conversation. I want to ask, could you take your phone and call Representative Gerbil, his number is 555-4567, and tell him you support the state bill to cap insulin costs?"
+            : "I'm really glad we had this conversation. I want to ask, could you take your phone and call Representative Gerbil, his number is 555-4567, and tell him you support the state bill to train wildfire fighters?",
           dont: 'Thanks for chatting. I hope you think about supporting this in the future',
         },
         {
