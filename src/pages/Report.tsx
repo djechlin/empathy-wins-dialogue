@@ -6,7 +6,6 @@ import { Button } from '@/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
 import {
-  ArrowRight,
   CheckCircle,
   Clock,
   Heart,

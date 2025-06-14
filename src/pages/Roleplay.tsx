@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
-import { ArrowRight, BookOpen, Heart, MessageSquare, Mic, MicOff, Smile, User, Users } from 'lucide-react';
+import { BookOpen, Heart, MessageSquare, Mic, MicOff, Smile, User, Users } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 

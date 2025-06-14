@@ -9,15 +9,6 @@ import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useSessionStorageState from 'use-session-storage-state';
 
-const StepIndicator = ({ number, color, label, isLast }: { number: number; color: string; label: string; isLast?: boolean }) => (
-  <>
-    <div className="flex flex-col items-center">
-      <div className={`w-12 h-12 ${color} text-white rounded-full flex items-center justify-center font-bold text-lg mb-2`}>{number}</div>
-      <span className="text-sm font-medium text-center">{label}</span>
-    </div>
-    {!isLast && <ArrowRight className="w-6 h-6 text-blue-400" />}
-  </>
-);
 
 const Prepare = () => {
   const navigate = useNavigate();
@@ -57,20 +48,15 @@ const Prepare = () => {
             <p className="text-gray-600">Your roadmap for persuasive conversation</p>
           </div>
 
-          <Card className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
-            <CardContent className="p-8">
-              <div className="flex items-center justify-center space-x-6 mb-6">
-                <StepIndicator number={1} color="bg-blue-500" label="Frame Issue" />
-                <StepIndicator number={2} color="bg-orange-500" label="Build Connection" />
-                <StepIndicator number={3} color="bg-green-500" label="Explore Together" />
-                <StepIndicator number={4} color="bg-purple-500" label="Ask for Action" isLast={true} />
-              </div>
-            </CardContent>
-          </Card>
 
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Frame the Issue</CardTitle>
+              <CardTitle className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                  1
+                </div>
+                Frame the Issue
+              </CardTitle>
               <p className="text-gray-600 text-sm font-sans">
                 Use concrete, plain-spoken language to introduce yourself and the issue. Avoid opening with statistics or data.
               </p>
@@ -117,7 +103,12 @@ const Prepare = () => {
           <div className="space-y-4 mb-8">
             <Card>
               <CardHeader>
-                <CardTitle className="font-sans">Build a connection</CardTitle>
+                <CardTitle className="font-sans flex items-center gap-3">
+                  <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                    2
+                  </div>
+                  Build a connection
+                </CardTitle>
                 <p className="text-gray-600 text-sm font-sans">
                   Share a personal healthcare story to build connection, then learn about who the voter cares about. Ask about their family
                   and when they name someone, ask more about them.
@@ -148,7 +139,12 @@ const Prepare = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle className="font-sans">Explore together</CardTitle>
+                <CardTitle className="font-sans flex items-center gap-3">
+                  <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                    3
+                  </div>
+                  Explore together
+                </CardTitle>
                 <p className="text-gray-600 text-sm font-sans">
                   Help the voter think through the issue by connecting your stories and experiences. Guide them to see new perspectives
                   without being pushy.
@@ -166,7 +162,12 @@ const Prepare = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle className="font-sans">Ask for action</CardTitle>
+                <CardTitle className="font-sans flex items-center gap-3">
+                  <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                    4
+                  </div>
+                  Ask for action
+                </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
                 <p className="text-gray-600 text-sm font-sans">You'll ask them to take a specific action while you're together.</p>
