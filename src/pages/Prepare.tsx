@@ -1,11 +1,12 @@
+import DosDonts from '@/components/DosDonts';
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
 import { ArrowRight } from 'lucide-react';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useSessionStorageState from 'use-session-storage-state';
 
 const StepIndicator = ({ number, color, label, isLast }: { number: number; color: string; label: string; isLast?: boolean }) => (
   <>
@@ -20,8 +21,8 @@ const StepIndicator = ({ number, color, label, isLast }: { number: number; color
 const Prepare = () => {
   const navigate = useNavigate();
 
-  const [selectedIssue, setSelectedIssue] = useState(() => {
-    return sessionStorage.getItem('selectedIssue') || 'insulin';
+  const [selectedIssue, setSelectedIssue] = useSessionStorageState('selected-issue', {
+    defaultValue: 'insulin',
   });
 
   const issueDetails = {
@@ -42,11 +43,6 @@ const Prepare = () => {
   };
 
   const currentIssue = selectedIssue ? issueDetails[selectedIssue as keyof typeof issueDetails] : null;
-
-  const handleIssueClick = (value: string) => {
-    setSelectedIssue(value);
-    sessionStorage.setItem('selectedIssue', value);
-  };
 
   const handleStartRoleplay = () => {
     // Save selected issue to sessionStorage before navigating
@@ -116,60 +112,37 @@ const Prepare = () => {
                 <Label className="text-base font-medium mb-4 block">Choose your issue:</Label>
                 <div className="flex gap-3">
                   <Button
-                    onClick={() => handleIssueClick('insulin')}
+                    onClick={() => setSelectedIssue('insulin')}
                     variant={selectedIssue === 'insulin' ? 'blue' : 'blue-outline'}
                     size="sm"
                   >
                     Healthcare
                   </Button>
                   <Button
-                    onClick={() => handleIssueClick('climate')}
+                    onClick={() => setSelectedIssue('climate')}
                     variant={selectedIssue === 'climate' ? 'green' : 'green-outline'}
                     size="sm"
                   >
                     Climate
                   </Button>
                 </div>
-                {selectedIssue && (
-                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p className="text-sm text-blue-900 font-medium">
-                      {selectedIssue === 'insulin'
-                        ? "You'll be with Diabetes Advocates, talking to voters about lowering the price of insulin."
-                        : "You'll be talking about the increasing wildfire risk in your area. You're focusing on increased training for wildfire fighters, which mitigates the issue here and now, and gets our government to take climate change threats more seriously."}
-                    </p>
-                  </div>
-                )}
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-900 font-medium">
+                    {selectedIssue === 'insulin'
+                      ? "You'll be with Diabetes Advocates, talking to voters about lowering the price of insulin."
+                      : "You'll be talking about the increasing wildfire risk in your area. You're focusing on increased training for wildfire fighters, which mitigates the issue here and now, and gets our government to take climate change threats more seriously."}
+                  </p>
+                </div>
               </div>
 
-              {selectedIssue && (
-                <div className="grid grid-cols-2 gap-6 relative">
-                  <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 transform -translate-x-1/2"></div>
-                  <div className="pr-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-green-600">✓</span>
-                      <span className="font-medium text-gray-900 text-sm">Cut to the chase</span>
-                    </div>
-                    <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">Voter:</span> Hello, who's there?
-                      <br />
-                      <span className="font-bold">You:</span> My name is [your name], I'm here with{' '}
-                      {currentIssue && <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} />} to talk about{' '}
-                      {currentIssue?.plainLanguage}.
-                    </p>
-                  </div>
-                  <div className="pl-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-red-600">✗</span>
-                      <span className="font-medium text-gray-900 text-sm">Don't go on a lecture</span>
-                    </div>
-                    <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">Voter:</span> Hello, who's there?
-                      <br />
-                      <span className="font-bold">You:</span> {currentIssue?.dontSayText}
-                    </p>
-                  </div>
-                </div>
-              )}
+              <DosDonts
+                doHeading="Cut to the chase"
+                dontHeading="Don't go on a lecture"
+                doVoter="Hello, who's there?"
+                doCanvasser={`My name is [your name], I'm here with ${currentIssue ? currentIssue.organization.replace(/<[^>]*>/g, '') : ''} to talk about ${currentIssue?.plainLanguage}.`}
+                dontVoter="Hello, who's there?"
+                dontCanvasser={currentIssue?.dontSayText || ''}
+              />
             </CardContent>
           </Card>
 
@@ -184,63 +157,23 @@ const Prepare = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-6 relative">
-                    <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 transform -translate-x-1/2"></div>
-                    <div className="pr-3">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-green-600">✓</span>
-                        <span className="font-medium text-gray-900 text-sm">Open up</span>
-                      </div>
-                      <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> I agree with you but I don't believe in big government.
-                        <br />
-                        <span className="font-bold">You:</span> Yeah, I totally understand that. You know, last year, my dad had to go to
-                        the ER...
-                      </p>
-                    </div>
-                    <div className="pl-3">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-red-600">✗</span>
-                        <span className="font-medium text-gray-900 text-sm">Don't make it political</span>
-                      </div>
-                      <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> Is there a time someone was really there for you?
-                        <br />
-                        <span className="font-bold">You:</span> Last year my dad had to go to the ER and the bill was outrageous. Healthcare
-                        costs are skyrocketing because politicians won't stand up to Big Pharma and insurance companies.
-                      </p>
-                    </div>
-                  </div>
+                  <DosDonts
+                    doHeading="Open up"
+                    dontHeading="Don't make it political"
+                    doVoter="I agree with you but I don't believe in big government."
+                    doCanvasser="Yeah, I totally understand that. You know, last year, my dad had to go to the ER..."
+                    dontVoter="Is there a time someone was really there for you?"
+                    dontCanvasser="Last year my dad had to go to the ER and the bill was outrageous. Healthcare costs are skyrocketing because politicians won't stand up to Big Pharma and insurance companies."
+                  />
 
-                  <div className="grid grid-cols-2 gap-6 relative">
-                    <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 transform -translate-x-1/2"></div>
-                    <div className="pr-3">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-green-600">✓</span>
-                        <span className="font-medium text-gray-900 text-sm">Dig deeper</span>
-                      </div>
-                      <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd chill.
-                        <br />
-                        <span className="font-bold">You:</span> Wow, your daughter's really engaged. Has she always been passionate about
-                        her interests?
-                      </p>
-                    </div>
-                    <div className="pl-3">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-red-600">✗</span>
-                        <span className="font-medium text-gray-900 text-sm">
-                          Don't jump into the issue when they share something personal
-                        </span>
-                      </div>
-                      <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd chill.
-                        <br />
-                        <span className="font-bold">You:</span> I guess you've heard about this a lot from your daughter already, is there a
-                        reason you haven't changed your mind yet?
-                      </p>
-                    </div>
-                  </div>
+                  <DosDonts
+                    doHeading="Dig deeper"
+                    dontHeading="Don't jump into the issue when they share something personal"
+                    doVoter="My daughter's really into all that progressive stuff, I wish she'd chill."
+                    doCanvasser="Wow, your daughter's really engaged. Has she always been passionate about her interests?"
+                    dontVoter="My daughter's really into all that progressive stuff, I wish she'd chill."
+                    dontCanvasser="I guess you've heard about this a lot from your daughter already, is there a reason you haven't changed your mind yet?"
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -254,29 +187,12 @@ const Prepare = () => {
                 </p>
               </CardHeader>
               <CardContent className="p-6">
-                <div className="grid grid-cols-2 gap-6 relative">
-                  <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 transform -translate-x-1/2"></div>
-                  <div className="pr-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-green-600">✓</span>
-                      <span className="font-medium text-gray-900 text-sm">Good to say</span>
-                    </div>
-                    <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">You:</span> It sounds like we both really care about the people we love. Does that change
-                      how you think about this issue at all?
-                    </p>
-                  </div>
-                  <div className="pl-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-red-600">✗</span>
-                      <span className="font-medium text-gray-900 text-sm">Not as good</span>
-                    </div>
-                    <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">You:</span> So you can see why we need to support this policy, right? It's obvious that
-                      everyone benefits.
-                    </p>
-                  </div>
-                </div>
+                <DosDonts
+                  doHeading="Good to say"
+                  dontHeading="Not as good"
+                  doCanvasser="It sounds like we both really care about the people we love. Does that change how you think about this issue at all?"
+                  dontCanvasser="So you can see why we need to support this policy, right? It's obvious that everyone benefits."
+                />
               </CardContent>
             </Card>
 
