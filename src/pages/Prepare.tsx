@@ -114,7 +114,7 @@ const Prepare = () => {
           doHeading: 'Respect however far they came toward your position',
           dontHeading: "Don't ruin your connection by being pushy",
           voter: "This is a lot to think about, I'll maybe call later",
-          do: "Thank you so much for considering it. I really enjoyed talking with you.",
+          do: 'Thank you so much for considering it. I really enjoyed talking with you.',
           dont: "If you do it now then you won't have to worry about it later",
         },
       ],
@@ -133,25 +133,25 @@ const Prepare = () => {
               before exploring the issue. Finally, ask the voter for an action as commitment. If they complete it, they'll certainly
               remember.
             </p>
-            <p className="text-md text-gray-600 mb-4">
-              First, select your issue:
-              <Button
-                onClick={() => setSelectedIssue('insulin')}
-                variant={selectedIssue === 'insulin' ? 'blue' : 'blue-outline'}
-                size="sm"
-                className="mx-2"
-              >
-                Healthcare
-              </Button>
-              <Button
-                onClick={() => setSelectedIssue('climate')}
-                variant={selectedIssue === 'climate' ? 'green' : 'green-outline'}
-                size="sm"
-                className="mx-2"
-              >
-                Climate
-              </Button>
-            </p>
+            <div className="text-md text-gray-600 mb-4">
+              <p className="mb-3">First, select your issue:</p>
+              <div className="flex gap-3 justify-center">
+                <Button
+                  onClick={() => setSelectedIssue('insulin')}
+                  variant={selectedIssue === 'insulin' ? 'blue' : 'blue-outline'}
+                  size="default"
+                >
+                  Healthcare
+                </Button>
+                <Button
+                  onClick={() => setSelectedIssue('climate')}
+                  variant={selectedIssue === 'climate' ? 'green' : 'green-outline'}
+                  size="default"
+                >
+                  Climate
+                </Button>
+              </div>
+            </div>
           </div>
 
           <div className="max-w-5xl mx-auto">
