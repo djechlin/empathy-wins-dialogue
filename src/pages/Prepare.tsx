@@ -173,6 +173,7 @@ const Prepare = () => {
           </div>
 
           <div className="max-w-5xl mx-auto">
+            <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Four steps to effective persuasion</h2>
             <Tabs defaultValue="0" className="w-full">
               <TabsList className="grid w-full grid-cols-4 h-auto p-2 bg-white shadow-sm">
                 {prepareSteps.map((step, index) => (
