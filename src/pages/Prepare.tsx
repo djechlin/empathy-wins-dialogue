@@ -5,7 +5,7 @@ import DoDont from '@/components/DoDont';
 import NumberCircle from '@/components/NumberCircle';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
-import { ArrowRight, Settings } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useSessionStorageState from 'use-session-storage-state';
 import { useState } from 'react';
@@ -40,7 +40,7 @@ const Prepare = () => {
     {
       stepNumber: 1,
       stepColor: 'green' as const,
-      title: 'Frame the issue',
+      title: `Frame ${selectedIssue === 'insulin' ? 'healthcare' : 'climate'}`,
       description: 'Use concrete, plain-spoken language to introduce yourself and the issue. Avoid opening with statistics or data.',
       doDontExamples: [
         {
@@ -119,40 +119,30 @@ const Prepare = () => {
       <Navbar />
       <main className="flex-grow bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <div className="max-w-4xl mx-auto">
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3">
-                <Settings className="w-6 h-6 text-gray-600" />
-                Choose your issue
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <div className="flex gap-3">
-                  <Button
-                    onClick={() => setSelectedIssue('insulin')}
-                    variant={selectedIssue === 'insulin' ? 'blue' : 'blue-outline'}
-                    size="sm"
-                  >
-                    Healthcare
-                  </Button>
-                  <Button
-                    onClick={() => setSelectedIssue('climate')}
-                    variant={selectedIssue === 'climate' ? 'green' : 'green-outline'}
-                    size="sm"
-                  >
-                    Climate
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           <div className="mb-8 text-center">
-            <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
+            <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto mb-4">
               The flow of a persuasion conversation starts with framing the issue in everyday terms, then focusing on building a connection
               before exploring the issue. Finally, ask the voter for an action as commitment, which if they complete, they'll certainly
               remember.
+            </p>
+            <p className="text-md text-gray-600 mb-4">
+              First, select your issue:
+              <Button
+                onClick={() => setSelectedIssue('insulin')}
+                variant={selectedIssue === 'insulin' ? 'blue' : 'blue-outline'}
+                size="sm"
+                className="mx-2"
+              >
+                Healthcare
+              </Button>
+              <Button
+                onClick={() => setSelectedIssue('climate')}
+                variant={selectedIssue === 'climate' ? 'green' : 'green-outline'}
+                size="sm"
+                className="mx-2"
+              >
+                Climate
+              </Button>
             </p>
           </div>
 
