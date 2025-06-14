@@ -5,7 +5,7 @@ import { Button } from '@/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table';
-import { CheckCircle, Clock, Heart, Home, Minus, Play, RotateCcw, Square, Users, XCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, Clock, Heart, Home, Minus, Play, RotateCcw, Square, Users, XCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -207,6 +207,39 @@ const Report = () => {
       <Navbar />
       <main className="flex-grow bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <div className="max-w-4xl mx-auto">
+          {/* Progress Flow */}
+          <div className="mb-8">
+            <div className="flex items-center justify-center space-x-6">
+              {/* Step 1 - Completed */}
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                  ✓
+                </div>
+                <span className="text-sm font-medium text-center text-green-600 font-sans">Conversation Strategy</span>
+              </div>
+
+              <ArrowRight className="w-6 h-6 text-gray-400" />
+
+              {/* Step 2 - Completed */}
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                  ✓
+                </div>
+                <span className="text-sm font-medium text-center text-green-600 font-sans">Roleplay</span>
+              </div>
+
+              <ArrowRight className="w-6 h-6 text-gray-400" />
+
+              {/* Step 3 - Current Step */}
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                  3
+                </div>
+                <span className="text-sm font-medium text-center text-blue-600 font-sans">Learn how you did</span>
+              </div>
+            </div>
+          </div>
+
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Your Persuasion Report</h1>
             <p className="text-xl text-gray-600">{issueDetails[issue as keyof typeof issueDetails]?.title} Session</p>
