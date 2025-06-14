@@ -1,5 +1,6 @@
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
+import StepNavigation from '@/components/StepNavigation';
 import { useDialogue } from '@/features/dialogue';
 import { usePeople } from '@/features/dialogue/hooks/usePeople';
 import { useConversationSession } from '@/features/dialogue';
@@ -111,48 +112,7 @@ function RoleplayContent() {
       <Navbar />
       <main className="flex-grow bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
-            <table className="w-full max-w-2xl mx-auto table-fixed">
-              <tbody>
-                <tr className="align-middle">
-                  <td className="w-1/4 min-w-[120px] text-center">
-                    <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-2xl mx-auto">
-                      1
-                    </div>
-                  </td>
-                  <td className="w-1/12 min-w-[40px] text-center align-middle">
-                    <ArrowRight className="w-7 h-7 text-gray-300 mx-auto" />
-                  </td>
-                  <td className="w-1/4 min-w-[120px] text-center">
-                    <div className="w-16 h-16 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-2xl mx-auto">
-                      2
-                    </div>
-                  </td>
-                  <td className="w-1/12 min-w-[40px] text-center align-middle">
-                    <ArrowRight className="w-7 h-7 text-gray-300 mx-auto" />
-                  </td>
-                  <td className="w-1/4 min-w-[120px] text-center">
-                    <div className="w-16 h-16 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-2xl mx-auto">
-                      3
-                    </div>
-                  </td>
-                </tr>
-                <tr className="align-top">
-                  <td className="text-center pt-2 min-w-[120px]">
-                    <span className="text-base font-semibold text-blue-600 font-sans">Prepare</span>
-                  </td>
-                  <td></td>
-                  <td className="text-center pt-2 min-w-[120px]">
-                    <span className="text-base font-semibold text-gray-400 font-sans">Roleplay</span>
-                  </td>
-                  <td></td>
-                  <td className="text-center pt-2 min-w-[120px]">
-                    <span className="text-base font-semibold text-gray-400 font-sans">Learn how you did</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <StepNavigation stepNumber={2} />
 
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Roleplay</h1>

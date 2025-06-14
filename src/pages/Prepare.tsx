@@ -1,6 +1,7 @@
 import DosDonts from '@/components/DosDonts';
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
+import StepNavigation from '@/components/StepNavigation';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Label } from '@/ui/label';
@@ -44,45 +45,12 @@ const Prepare = () => {
 
   const currentIssue = selectedIssue ? issueDetails[selectedIssue as keyof typeof issueDetails] : null;
 
-  const handleStartRoleplay = () => {
-    // Save selected issue to sessionStorage before navigating
-    sessionStorage.setItem('selectedIssue', selectedIssue);
-    navigate('/challenge/roleplay');
-  };
-
-  const canProceed = () => {
-    return selectedIssue;
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
       <main className="flex-grow bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <div className="max-w-4xl mx-auto">
-          <div className="mb-8 flex items-center justify-center space-x-6">
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">1</div>
-              <span className="text-sm font-medium text-center text-blue-600 font-sans">Prepare</span>
-            </div>
-
-            <ArrowRight className="w-6 h-6 text-gray-400" />
-
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                2
-              </div>
-              <span className="text-sm font-medium text-center text-gray-400 font-sans">Roleplay</span>
-            </div>
-
-            <ArrowRight className="w-6 h-6 text-gray-400" />
-
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                3
-              </div>
-              <span className="text-sm font-medium text-center text-gray-400 font-sans">Learn how you did</span>
-            </div>
-          </div>
+          <StepNavigation stepNumber={1} />
 
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Prepare</h1>
@@ -207,11 +175,10 @@ const Prepare = () => {
           </div>
 
           <div className="text-center">
-            <Button onClick={handleStartRoleplay} disabled={!canProceed()} size="lg" className="px-8">
+            <Button onClick={() => navigate('/challenge/roleplay')} size="lg" className="px-8">
               Start Roleplay
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
-            {!canProceed() && <p className="text-gray-500 mt-2">Please select an issue above to begin</p>}
           </div>
         </div>
       </main>
