@@ -20,8 +20,7 @@ const Prepare = () => {
       title: 'Healthcare - Insulin Affordability',
       plainLanguage: 'affordable insulin for people with diabetes',
       organization: 'Diabetes Advocates<sup>†</sup>',
-      dontSayText:
-        "Hello. Is this Frank I'm talking to? Do you have a few minutes to chat about healthcare? According to the CDC an estimated 38.4 million Americans suffer from diabetes...",
+      dontSayText: "Hello. Is this Frank I'm talking to? Do you have a few minutes to chat about healthcare?",
     },
     climate: {
       title: 'Climate - Wildfire Management',
@@ -52,9 +51,7 @@ const Prepare = () => {
                 <Settings className="w-6 h-6 text-gray-600" />
                 Choose your issue
               </CardTitle>
-              <p className="text-gray-600 text-sm font-sans">
-                Select the issue you'll be advocating for in this roleplay session.
-              </p>
+              <p className="text-gray-600 text-sm font-sans">Select the issue you'll be advocating for in this roleplay session.</p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
@@ -85,11 +82,25 @@ const Prepare = () => {
             </CardContent>
           </Card>
 
+          {/* Prominent Start Roleplay section */}
+          <div className="mb-8 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white text-center shadow-lg">
+            <h2 className="text-xl font-bold mb-2">Ready to practice?</h2>
+            <p className="mb-4 text-green-50">Start your roleplay session and put these strategies into action</p>
+            <Button 
+              onClick={() => navigate('/challenge/roleplay')} 
+              size="lg" 
+              className="px-8 bg-white text-green-600 hover:bg-green-50 font-semibold shadow-md"
+            >
+              Start Roleplay
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+          </div>
+
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
-                Frame the Issue
+                Frame the issue
               </CardTitle>
               <p className="text-gray-600 text-sm font-sans">
                 Use concrete, plain-spoken language to introduce yourself and the issue. Avoid opening with statistics or data.
@@ -98,11 +109,17 @@ const Prepare = () => {
             <CardContent className="space-y-6">
               <DosDonts
                 doHeading="Cut to the chase"
-                dontHeading="Don't go on a lecture"
-                doVoter="Hello, who's there?"
+                dontHeading="Don't ask for permission to talk when they already are"
+                voter="Hello, who's there?"
                 doCanvasser={`My name is [your name], I'm here with ${currentIssue ? currentIssue.organization.replace(/<[^>]*>/g, '') : ''} to talk about ${currentIssue?.plainLanguage}.`}
-                dontVoter="Hello, who's there?"
                 dontCanvasser={currentIssue?.dontSayText || ''}
+              />
+              <DosDonts
+                doHeading="Use everyday language about regular people"
+                dontHeading="Don't go into society's ills"
+                voter="Isn't insulin already affordable?"
+                doCanvasser="Actually, when someone here in Townsville loses their job, they have to pay hundreds of dollars out of pocket."
+                dontCanvasser="Due to Congressional inaction, once an employee loses their employee-sponsored healthcare benefits..."
               />
             </CardContent>
           </Card>
@@ -124,18 +141,16 @@ const Prepare = () => {
                   <DosDonts
                     doHeading="Open up"
                     dontHeading="Don't make it political"
-                    doVoter="I agree with you but I don't believe in big government."
+                    voter="I agree with you but I don't believe in big government."
                     doCanvasser="Yeah, I totally understand that. You know, last year, my dad had to go to the ER..."
-                    dontVoter="Is there a time someone was really there for you?"
                     dontCanvasser="Last year my dad had to go to the ER and the bill was outrageous. Healthcare costs are skyrocketing because politicians won't stand up to Big Pharma and insurance companies."
                   />
 
                   <DosDonts
                     doHeading="Dig deeper"
                     dontHeading="Don't jump into the issue when they share something personal"
-                    doVoter="My daughter's really into all that progressive stuff, I wish she'd chill."
+                    voter="My daughter's really into all that progressive stuff, I wish she'd chill."
                     doCanvasser="Wow, your daughter's really engaged. Has she always been passionate about her interests?"
-                    dontVoter="My daughter's really into all that progressive stuff, I wish she'd chill."
                     dontCanvasser="I guess you've heard about this a lot from your daughter already, is there a reason you haven't changed your mind yet?"
                   />
                 </div>
@@ -155,10 +170,11 @@ const Prepare = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <DosDonts
-                  doHeading="Good to say"
-                  dontHeading="Not as good"
-                  doCanvasser="It sounds like we both really care about the people we love. Does that change how you think about this issue at all?"
-                  dontCanvasser="So you can see why we need to support this policy, right? It's obvious that everyone benefits."
+                  doHeading="Redirect the conversation to relationships"
+                  dontHeading="Don't start debating"
+                  voter="Most people on welfare are just lazy."
+                  doCanvasser="I see where you're coming from, but you mentioned a time your son didn't have insurance for a while, and he sounds really hard-working. Maybe it's important to be there for people like your son?"
+                  dontCanvasser="Actually that's a myth that was spread by the media going back to the 1980s."
                 />
               </CardContent>
             </Card>
@@ -169,9 +185,17 @@ const Prepare = () => {
                   <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold text-sm">4</div>
                   Ask for action
                 </CardTitle>
+                <p className="text-gray-600 text-sm font-sans">
+                  You'll finish the conversation by asking the voter to take a specific action while you're together.
+                </p>
               </CardHeader>
               <CardContent className="p-6">
-                <p className="text-gray-600 text-sm font-sans">You'll ask them to take a specific action while you're together.</p>
+                <DosDonts
+                  doHeading="Ask for an action right now"
+                  dontHeading="Don't ask them just to think about it"
+                  doCanvasser="I'm really glad we had this conversation. I want to ask, could you take your phone and call Representative Gerbil, his number is 555-4567, and tell him how you feel?"
+                  dontCanvasser="Thanks for chatting. I hope you think about supporting this in the future"
+                />
               </CardContent>
             </Card>
           </div>
@@ -182,6 +206,18 @@ const Prepare = () => {
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </div>
+        </div>
+
+        {/* Floating Action Button - stays visible while scrolling */}
+        <div className="fixed bottom-6 right-6 z-50">
+          <Button 
+            onClick={() => navigate('/challenge/roleplay')} 
+            size="lg" 
+            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold shadow-xl rounded-full animate-pulse"
+          >
+            Start Roleplay
+            <ArrowRight className="ml-2 w-4 h-4" />
+          </Button>
         </div>
       </main>
       <Footer />
