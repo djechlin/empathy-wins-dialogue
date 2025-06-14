@@ -115,7 +115,6 @@ const Prepare = () => {
       <Navbar />
       <main className="flex-grow bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <div className="max-w-4xl mx-auto">
-
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
@@ -153,7 +152,13 @@ const Prepare = () => {
             </CardContent>
           </Card>
 
-          <div className="mb-8 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white text-center shadow-lg">
+          {prepareSteps.map((step, index) => (
+            <div key={index} className="mb-4">
+              <PrepareCard {...step} />
+            </div>
+          ))}
+
+          <div className="mt-8 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white text-center shadow-lg">
             <h2 className="text-xl font-bold mb-2">Ready to practice?</h2>
             <p className="mb-4 text-green-50">Start your roleplay session and put these strategies into action</p>
             <Button
@@ -165,12 +170,6 @@ const Prepare = () => {
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </div>
-
-          {prepareSteps.map((step, index) => (
-            <div key={index} className={index === 0 ? 'mb-8' : 'mb-4'}>
-              <PrepareCard {...step} />
-            </div>
-          ))}
         </div>
 
         <div className="fixed bottom-6 right-6 z-50 opacity-90 hover:opacity-100 transition-opacity duration-300">
