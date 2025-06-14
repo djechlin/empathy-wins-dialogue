@@ -1,17 +1,16 @@
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import StepNavigation from '@/components/StepNavigation';
-import { useDialogue } from '@/features/dialogue';
+import { useConversationSession, useDialogue } from '@/features/dialogue';
 import { usePeople } from '@/features/dialogue/hooks/usePeople';
-import { useConversationSession } from '@/features/dialogue';
 import { DialogueProvider } from '@/features/dialogue/providers/DialogueProvider';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
 import { BookOpen, Heart, MessageSquare, Mic, MicOff, Smile, User, Users } from 'lucide-react';
-import { useCallback, useMemo, useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function RoleplayContent() {
   const navigate = useNavigate();
@@ -303,7 +302,6 @@ function RoleplayContent() {
 }
 
 const Roleplay = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
   const selectedIssue = sessionStorage.getItem('selectedIssue') || 'insulin';
 
   const voterPersonas = useMemo(
@@ -324,13 +322,6 @@ const Roleplay = () => {
     }),
     [selectedIssue, voterPersonas],
   );
-
-  // Set source to replay on component mount
-  useEffect(() => {
-    if (!searchParams.get('source')) {
-      setSearchParams({ source: 'replay' });
-    }
-  }, [searchParams, setSearchParams]);
 
   return (
     <DialogueProvider initialMessage={initialMessage}>
