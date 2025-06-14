@@ -28,6 +28,10 @@ export const buttonVariants = cva(
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
+        blue: 'bg-blue-500 text-white hover:bg-blue-600 border-2 border-blue-500 shadow-md',
+        'blue-outline': 'border-2 border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50',
+        green: 'bg-green-500 text-white hover:bg-green-600 border-2 border-green-500 shadow-md',
+        'green-outline': 'border-2 border-gray-300 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50',
       },
       size: {
         default: 'h-10 px-4 py-2',

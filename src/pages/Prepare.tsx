@@ -117,14 +117,14 @@ const Prepare = () => {
                 <div className="flex gap-3">
                   <Button
                     onClick={() => handleIssueClick('insulin')}
-                    variant={selectedIssue === 'insulin' ? 'default' : 'outline'}
+                    variant={selectedIssue === 'insulin' ? 'blue' : 'blue-outline'}
                     size="sm"
                   >
                     Healthcare
                   </Button>
                   <Button
                     onClick={() => handleIssueClick('climate')}
-                    variant={selectedIssue === 'climate' ? 'default' : 'outline'}
+                    variant={selectedIssue === 'climate' ? 'green' : 'green-outline'}
                     size="sm"
                   >
                     Climate
