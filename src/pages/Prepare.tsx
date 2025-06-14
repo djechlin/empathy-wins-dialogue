@@ -10,9 +10,7 @@ import { useNavigate } from 'react-router-dom';
 const StepIndicator = ({ number, color, label, isLast }: { number: number; color: string; label: string; isLast?: boolean }) => (
   <>
     <div className="flex flex-col items-center">
-      <div className={`w-12 h-12 ${color} text-white rounded-full flex items-center justify-center font-bold text-lg mb-2`}>
-        {number}
-      </div>
+      <div className={`w-12 h-12 ${color} text-white rounded-full flex items-center justify-center font-bold text-lg mb-2`}>{number}</div>
       <span className="text-sm font-medium text-center">{label}</span>
     </div>
     {!isLast && <ArrowRight className="w-6 h-6 text-blue-400" />}
@@ -67,9 +65,7 @@ const Prepare = () => {
         <div className="max-w-4xl mx-auto">
           <div className="mb-8 flex items-center justify-center space-x-6">
             <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                1
-              </div>
+              <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">1</div>
               <span className="text-sm font-medium text-center text-blue-600 font-sans">Prepare</span>
             </div>
 
@@ -119,26 +115,20 @@ const Prepare = () => {
               <div>
                 <Label className="text-base font-medium mb-4 block">Choose your issue:</Label>
                 <div className="flex gap-3">
-                  <button
+                  <Button
                     onClick={() => handleIssueClick('insulin')}
-                    className={`px-4 py-2 rounded-lg border-2 transition-all duration-200 text-sm font-medium ${
-                      selectedIssue === 'insulin'
-                        ? 'border-blue-500 bg-blue-500 text-white shadow-md'
-                        : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50'
-                    }`}
+                    variant={selectedIssue === 'insulin' ? 'default' : 'outline'}
+                    size="sm"
                   >
                     Healthcare
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => handleIssueClick('climate')}
-                    className={`px-4 py-2 rounded-lg border-2 transition-all duration-200 text-sm font-medium ${
-                      selectedIssue === 'climate'
-                        ? 'border-green-500 bg-green-500 text-white shadow-md'
-                        : 'border-gray-300 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50'
-                    }`}
+                    variant={selectedIssue === 'climate' ? 'default' : 'outline'}
+                    size="sm"
                   >
                     Climate
-                  </button>
+                  </Button>
                 </div>
                 {selectedIssue && (
                   <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -160,7 +150,8 @@ const Prepare = () => {
                       <span className="font-medium text-gray-900 text-sm">Cut to the chase</span>
                     </div>
                     <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">Voter:</span> Hello, who's there?<br />
+                      <span className="font-bold">Voter:</span> Hello, who's there?
+                      <br />
                       <span className="font-bold">You:</span> My name is [your name], I'm here with{' '}
                       {currentIssue && <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} />} to talk about{' '}
                       {currentIssue?.plainLanguage}.
@@ -172,7 +163,8 @@ const Prepare = () => {
                       <span className="font-medium text-gray-900 text-sm">Don't go on a lecture</span>
                     </div>
                     <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">Voter:</span> Hello, who's there?<br />
+                      <span className="font-bold">Voter:</span> Hello, who's there?
+                      <br />
                       <span className="font-bold">You:</span> {currentIssue?.dontSayText}
                     </p>
                   </div>
@@ -200,8 +192,10 @@ const Prepare = () => {
                         <span className="font-medium text-gray-900 text-sm">Open up</span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> I agree with you but I don't believe in big government.<br />
-                        <span className="font-bold">You:</span> Yeah, I totally understand that. You know, last year, my dad had to go to the ER...
+                        <span className="font-bold">Voter:</span> I agree with you but I don't believe in big government.
+                        <br />
+                        <span className="font-bold">You:</span> Yeah, I totally understand that. You know, last year, my dad had to go to
+                        the ER...
                       </p>
                     </div>
                     <div className="pl-3">
@@ -210,8 +204,10 @@ const Prepare = () => {
                         <span className="font-medium text-gray-900 text-sm">Don't make it political</span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> Is there a time someone was really there for you?<br />
-                        <span className="font-bold">You:</span> Last year my dad had to go to the ER and the bill was outrageous. Healthcare costs are skyrocketing because politicians won't stand up to Big Pharma and insurance companies.
+                        <span className="font-bold">Voter:</span> Is there a time someone was really there for you?
+                        <br />
+                        <span className="font-bold">You:</span> Last year my dad had to go to the ER and the bill was outrageous. Healthcare
+                        costs are skyrocketing because politicians won't stand up to Big Pharma and insurance companies.
                       </p>
                     </div>
                   </div>
@@ -224,18 +220,24 @@ const Prepare = () => {
                         <span className="font-medium text-gray-900 text-sm">Dig deeper</span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd chill.<br />
-                        <span className="font-bold">You:</span> Wow, your daughter's really engaged. Has she always been passionate about her interests?
+                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd chill.
+                        <br />
+                        <span className="font-bold">You:</span> Wow, your daughter's really engaged. Has she always been passionate about
+                        her interests?
                       </p>
                     </div>
                     <div className="pl-3">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-red-600">✗</span>
-                        <span className="font-medium text-gray-900 text-sm">Don't jump into the issue when they share something personal</span>
+                        <span className="font-medium text-gray-900 text-sm">
+                          Don't jump into the issue when they share something personal
+                        </span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd chill.<br />
-                        <span className="font-bold">You:</span> I guess you've heard about this a lot from your daughter already, is there a reason you haven't changed your mind yet?
+                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd chill.
+                        <br />
+                        <span className="font-bold">You:</span> I guess you've heard about this a lot from your daughter already, is there a
+                        reason you haven't changed your mind yet?
                       </p>
                     </div>
                   </div>
@@ -260,7 +262,8 @@ const Prepare = () => {
                       <span className="font-medium text-gray-900 text-sm">Good to say</span>
                     </div>
                     <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">You:</span> It sounds like we both really care about the people we love. Does that change how you think about this issue at all?
+                      <span className="font-bold">You:</span> It sounds like we both really care about the people we love. Does that change
+                      how you think about this issue at all?
                     </p>
                   </div>
                   <div className="pl-3">
@@ -269,7 +272,8 @@ const Prepare = () => {
                       <span className="font-medium text-gray-900 text-sm">Not as good</span>
                     </div>
                     <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">You:</span> So you can see why we need to support this policy, right? It's obvious that everyone benefits.
+                      <span className="font-bold">You:</span> So you can see why we need to support this policy, right? It's obvious that
+                      everyone benefits.
                     </p>
                   </div>
                 </div>
