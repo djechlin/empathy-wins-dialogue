@@ -129,7 +129,7 @@ const Prepare = () => {
           <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Prepare for your roleplay</h1>
           <div className="mb-8 text-center">
             <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto mb-4">
-              The flow of a persuasion conversation starts with framing the issue in everyday terms, then focusing on building a connection
+              A persuasion conversation starts with framing the issue in everyday terms, then focusing on building a connection
               before exploring the issue and asking for a commitment.
             </p>
             <div className="text-md text-gray-600 mb-4">
