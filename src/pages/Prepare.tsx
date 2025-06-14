@@ -1,14 +1,14 @@
+import DoDont from '@/components/DoDont';
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
-import PrepareCard from '@/components/PrepareCard';
-import DoDont from '@/components/DoDont';
 import NumberCircle from '@/components/NumberCircle';
+import PrepareCard from '@/components/PrepareCard';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { ArrowRight } from 'lucide-react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSessionStorageState from 'use-session-storage-state';
-import { useState } from 'react';
 
 const Prepare = () => {
   const navigate = useNavigate();
@@ -125,17 +125,18 @@ const Prepare = () => {
         {
           doHeading: 'Ask for an action right now',
           dontHeading: "Don't ask them just to think about it",
-          do: selectedIssue === 'insulin' 
-            ? "I'm really glad we had this conversation. I want to ask, could you take your phone and call Representative Gerbil, his number is 555-4567, and tell him you support the state bill to cap insulin costs?"
-            : "I'm really glad we had this conversation. I want to ask, could you take your phone and call Representative Gerbil, his number is 555-4567, and tell him you support the state bill to train wildfire fighters?",
-          dont: 'Thanks for chatting. I hope you think about supporting this in the future',
+          do:
+            selectedIssue === 'insulin'
+              ? "I'm really glad we had this conversation. I want to ask, could you take your phone and call Representative Gerbil, his number is 555-4567, and tell him you support the state bill to cap insulin costs?"
+              : "I'm really glad we had this conversation. I want to ask, could you take your phone and call Representative Gerbil, his number is 555-4567, and tell him you support the state bill to train wildfire fighters?",
+          dont: 'Thanks for chatting. I hope you think about supporting this in the future.',
         },
         {
           doHeading: 'Respect however far they came toward your position',
           dontHeading: "Don't ruin your connection by being pushy",
-          voter: "This is a lot to think about, I'll maybe call later",
+          voter: "This is a lot to think about, I'll maybe call later.",
           do: 'Thank you so much for considering it. I really enjoyed talking with you.',
-          dont: "If you do it now then you won't have to worry about it later",
+          dont: "If you do it now then you won't have to worry about it later.",
         },
       ],
     },

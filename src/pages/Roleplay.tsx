@@ -37,7 +37,7 @@ function RoleplayContent() {
   const finishRoleplay = useCallback(() => {
     // Sync conversation messages to session
     setMessages(messages);
-    
+
     // Save transcript to session storage for report
     const transcript = messages
       .map((msg) => {
@@ -46,7 +46,7 @@ function RoleplayContent() {
       })
       .join('\n\n');
     sessionStorage.setItem('report.transcript', transcript);
-    
+
     disconnect();
     navigate('/challenge/competencies');
   }, [disconnect, navigate, messages, setMessages]);

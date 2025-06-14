@@ -41,7 +41,7 @@ const Report = () => {
     if (savedTranscript) {
       return savedTranscript;
     }
-    
+
     // Then check conversation session messages
     if (hasMessages) {
       return messages
@@ -51,7 +51,7 @@ const Report = () => {
         })
         .join('\n\n');
     }
-    
+
     // Fallback to lucas.txt for testing
     return lucasTranscript;
   }, [hasMessages, messages]);
