@@ -1,7 +1,6 @@
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import PrepareCard from '@/components/PrepareCard';
-import StepNavigation from '@/components/StepNavigation';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { ArrowRight, Settings } from 'lucide-react';
@@ -116,12 +115,6 @@ const Prepare = () => {
       <Navbar />
       <main className="flex-grow bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <div className="max-w-4xl mx-auto">
-          <StepNavigation stepNumber={1} />
-
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Prepare</h1>
-            <p className="text-gray-600">Your roadmap for persuasive conversation</p>
-          </div>
 
           <Card className="mb-8">
             <CardHeader>
@@ -174,7 +167,7 @@ const Prepare = () => {
           </div>
 
           {prepareSteps.map((step, index) => (
-            <div key={index} className={index === 0 ? "mb-8" : "mb-4"}>
+            <div key={index} className={index === 0 ? 'mb-8' : 'mb-4'}>
               <PrepareCard {...step} />
             </div>
           ))}
