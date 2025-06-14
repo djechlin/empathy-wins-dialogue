@@ -40,7 +40,7 @@ const Prepare = () => {
     {
       stepNumber: 1,
       stepColor: 'green' as const,
-      title: `Frame ${selectedIssue === 'insulin' ? 'healthcare' : 'climate'}`,
+      title: `Frame the ${selectedIssue === 'insulin' ? 'healthcare' : 'climate'} issue`,
       description: 'Use concrete, plain-spoken language to introduce yourself and the issue. Avoid opening with statistics or data.',
       doDontExamples: [
         {
