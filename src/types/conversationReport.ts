@@ -16,7 +16,13 @@ export interface CategoryScore {
   icon: string; // lucide icon name
   score: number; // 1-10
   feedback: string;
-  examples: string[];
+  examples: ExampleQuote[];
+}
+
+export interface ExampleQuote {
+  quote: string; // Direct quote from the conversation
+  type: 'positive' | 'negative'; // Whether this is a good or bad example
+  analysis: string; // Short explanation of why this is good/bad
 }
 
 export interface KeyMoment {

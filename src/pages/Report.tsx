@@ -4,19 +4,49 @@ import { Badge } from '@/ui/badge';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
-import { ArrowRight, CheckCircle, Clock, Heart, Home, RotateCcw, XCircle, Target, Ear, Compass, MessageSquareX, Search, HelpCircle } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import {
+  ArrowRight,
+  CheckCircle,
+  Clock,
+  Heart,
+  Home,
+  RotateCcw,
+  XCircle,
+  Target,
+  Ear,
+  Compass,
+  MessageSquareX,
+  Search,
+  HelpCircle,
+} from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { createCompetencyReportPrompt } from '@/lib/deepCanvassingPrompt';
 import { ConversationReport } from '@/types/ConversationReport';
+import { useConversationSession } from '@/features/dialogue';
 import lucasTranscript from '@/features/dialogue/providers/replays/lucas.txt?raw';
 
 const Report = () => {
   const navigate = useNavigate();
+  const { messages, hasMessages } = useConversationSession();
   const [isLoading, setIsLoading] = useState(true);
   const [report, setReport] = useState<ConversationReport | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Convert dialogue messages to transcript format
+  const getTranscript = useCallback(() => {
+    if (hasMessages) {
+      return messages
+        .map((msg) => {
+          const role = msg.role === 'user' ? 'Canvasser' : 'Voter';
+          return `${role}: ${msg.content}`;
+        })
+        .join('\n\n');
+    }
+    // Fallback to lucas.txt for testing
+    return lucasTranscript;
+  }, [hasMessages, messages]);
 
   useEffect(() => {
     const generateReport = async () => {
@@ -24,7 +54,8 @@ const Report = () => {
         setIsLoading(true);
         setError(null);
 
-        const prompt = createCompetencyReportPrompt(lucasTranscript);
+        const transcript = getTranscript();
+        const prompt = createCompetencyReportPrompt(transcript);
 
         const { data, error: supabaseError } = await supabase.functions.invoke('claude-report', {
           body: {
@@ -53,7 +84,7 @@ const Report = () => {
     };
 
     generateReport();
-  }, []);
+  }, [getTranscript]);
 
   const getIconComponent = (iconName: string) => {
     switch (iconName) {
@@ -245,7 +276,10 @@ const Report = () => {
                             {category.examples.map((example, idx) => {
                               const isPositive = example.type === 'positive';
                               return (
-                                <div key={idx} className={`p-3 rounded-lg border ${isPositive ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                                <div
+                                  key={idx}
+                                  className={`p-3 rounded-lg border ${isPositive ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}
+                                >
                                   <div className="flex items-start gap-2 mb-2">
                                     {isPositive ? (
                                       <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -256,9 +290,7 @@ const Report = () => {
                                       <blockquote className={`italic text-sm mb-1 ${isPositive ? 'text-green-800' : 'text-red-800'}`}>
                                         "{example.quote}"
                                       </blockquote>
-                                      <p className={`text-xs ${isPositive ? 'text-green-700' : 'text-red-700'}`}>
-                                        {example.analysis}
-                                      </p>
+                                      <p className={`text-xs ${isPositive ? 'text-green-700' : 'text-red-700'}`}>{example.analysis}</p>
                                     </div>
                                   </div>
                                 </div>

@@ -15,8 +15,12 @@ export const sampleReport: ConversationReport = {
       feedback:
         "Excellent opening! You introduced yourself and the issue clearly, then immediately moved to the 1-10 question. This is exactly what deep canvassing recommends - no 'exit phrases' or small talk, just straight to the point.",
       examples: [
-        { quote: "hey I'm here to talk about expanding bike lane access!", type: 'positive', analysis: 'Direct, clear introduction without small talk' },
-        { quote: "Immediate 1-10 question without delays", type: 'positive', analysis: 'Got straight to the point efficiently' }
+        {
+          quote: "hey I'm here to talk about expanding bike lane access!",
+          type: 'positive',
+          analysis: 'Direct, clear introduction without small talk',
+        },
+        { quote: 'Immediate 1-10 question without delays', type: 'positive', analysis: 'Got straight to the point efficiently' },
       ],
     },
     {
@@ -27,8 +31,16 @@ export const sampleReport: ConversationReport = {
       feedback:
         'You started to share personal details about Karen and your first date, which was a good beginning. However, the vulnerability felt surface-level. Deep canvassing asks you to name someone you love, say what you love about them, and describe a moment they were really there for you. Your story stayed at the facts level rather than showing deep emotional connection.',
       examples: [
-        { quote: 'Mentioned Karen and your first date at the wine bar', type: 'negative', analysis: 'Stayed at surface level, didn\'t share what you love about her' },
-        { quote: "Shared that you've been married for a year", type: 'negative', analysis: 'Gave facts instead of vulnerable emotional connection' }
+        {
+          quote: 'Mentioned Karen and your first date at the wine bar',
+          type: 'negative',
+          analysis: "Stayed at surface level, didn't share what you love about her",
+        },
+        {
+          quote: "Shared that you've been married for a year",
+          type: 'negative',
+          analysis: 'Gave facts instead of vulnerable emotional connection',
+        },
       ],
     },
     {
@@ -39,9 +51,17 @@ export const sampleReport: ConversationReport = {
       feedback:
         "Great job practicing reflection and picking up on the voter's interests! You noticed their love for the neighborhood, walking downtown, and the farmers market. You used their words back to them and built on their interests. This created genuine connection.",
       examples: [
-        { quote: 'Asked about what they enjoy in the neighborhood', type: 'positive', analysis: 'Good question to understand their connection to place' },
-        { quote: 'Reflected their concerns about parking and restaurant closures', type: 'positive', analysis: 'Showed you were listening to their specific concerns' },
-        { quote: 'Built on their mention of the park and exercise', type: 'positive', analysis: 'Connected to their interests and values' }
+        {
+          quote: 'Asked about what they enjoy in the neighborhood',
+          type: 'positive',
+          analysis: 'Good question to understand their connection to place',
+        },
+        {
+          quote: 'Reflected their concerns about parking and restaurant closures',
+          type: 'positive',
+          analysis: 'Showed you were listening to their specific concerns',
+        },
+        { quote: 'Built on their mention of the park and exercise', type: 'positive', analysis: 'Connected to their interests and values' },
       ],
     },
     {
@@ -52,9 +72,21 @@ export const sampleReport: ConversationReport = {
       feedback:
         'You did well avoiding fact-dumping and political jargon. You kept the conversation personal and connected to their experience. However, you could have asked more probing questions about their feelings and experiences rather than mostly sharing your own perspective.',
       examples: [
-        { quote: 'Connected bike lanes to their restaurant experiences', type: 'positive', analysis: 'Made the issue personally relevant to their life' },
-        { quote: 'Avoided political terminology and statistics', type: 'positive', analysis: 'Kept conversation personal rather than policy-focused' },
-        { quote: 'Let them draw their own conclusions about community benefits', type: 'positive', analysis: 'Guided discovery rather than lecturing' }
+        {
+          quote: 'Connected bike lanes to their restaurant experiences',
+          type: 'positive',
+          analysis: 'Made the issue personally relevant to their life',
+        },
+        {
+          quote: 'Avoided political terminology and statistics',
+          type: 'positive',
+          analysis: 'Kept conversation personal rather than policy-focused',
+        },
+        {
+          quote: 'Let them draw their own conclusions about community benefits',
+          type: 'positive',
+          analysis: 'Guided discovery rather than lecturing',
+        },
       ],
     },
   ],

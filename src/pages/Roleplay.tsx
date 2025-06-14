@@ -2,6 +2,7 @@ import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import { useDialogue } from '@/features/dialogue';
 import { usePeople } from '@/features/dialogue/hooks/usePeople';
+import { useConversationSession } from '@/features/dialogue';
 import { ReplayProvider } from '@/features/dialogue/providers/ReplayProvider';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/ui/button';
@@ -16,6 +17,7 @@ function RoleplayContent() {
   const { toast } = useToast();
   const { messages, connect, disconnect, togglePause, isPaused, timeElapsed } = useDialogue();
   const { people } = usePeople();
+  const { setMessages } = useConversationSession();
   const [selectedIssue] = useState<string>(() => {
     return sessionStorage.getItem('selectedIssue') || '';
   });
@@ -32,9 +34,11 @@ function RoleplayContent() {
   );
 
   const finishRoleplay = useCallback(() => {
+    // Sync conversation messages to session
+    setMessages(messages);
     disconnect();
-    navigate(`/challenge/competencies?duration=${timeElapsed}&techniques=`);
-  }, [disconnect, navigate, timeElapsed]);
+    navigate('/challenge/competencies');
+  }, [disconnect, navigate, messages, setMessages]);
 
   const startRoleplay = useCallback(async () => {
     setRoleplayStarted(true);
