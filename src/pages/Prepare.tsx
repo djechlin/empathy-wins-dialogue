@@ -186,7 +186,7 @@ const Prepare = () => {
                   </TabsTrigger>
                 ))}
               </TabsList>
-              
+
               {prepareSteps.map((step, index) => (
                 <TabsContent key={index} value={index.toString()} className="mt-6">
                   <Card>
@@ -195,7 +195,6 @@ const Prepare = () => {
                         <NumberCircle number={step.stepNumber} color={step.stepColor} />
                         {step.title}
                       </CardTitle>
-                      <p className="text-gray-600 mt-2">{step.description}</p>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-6">
