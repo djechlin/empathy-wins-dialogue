@@ -20,23 +20,25 @@ interface PrepareCardProps {
   doDontExamples: DoDontExample[];
 }
 
-const PrepareCard = ({ stepNumber, stepColor, title, description, doDontExamples }: PrepareCardProps) => {
+const PrepareCard = ({ stepNumber, stepColor, title, doDontExamples }: PrepareCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <Card>
-      <CardHeader className="cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-        <CardTitle className="font-sans flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <NumberCircle number={stepNumber} color={stepColor} />
-            {title}
-          </div>
+    <Card
+      className={`cursor-pointer hover:shadow-lg transition-shadow duration-200 ${isExpanded ? 'h-auto' : 'h-auto min-h-[200px] aspect-[3/4]'}`}
+    >
+      <CardHeader
+        className={`${isExpanded ? 'h-auto' : 'h-full'} flex flex-col justify-center items-center text-center p-6`}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex flex-col items-center gap-4">
+          <NumberCircle number={stepNumber} color={stepColor} />
+          <CardTitle className="font-sans text-xl">{title}</CardTitle>
           <div className="flex items-center gap-2 bg-purple-100 text-purple-700 px-3 py-1 rounded-full border border-purple-200">
             <span className="text-sm font-medium">{isExpanded ? 'Close' : 'See examples'}</span>
             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </div>
-        </CardTitle>
-        <p className="text-gray-600 text-sm font-sans">{description}</p>
+        </div>
       </CardHeader>
       {isExpanded && (
         <CardContent className="p-6 pt-0">

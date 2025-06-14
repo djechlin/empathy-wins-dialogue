@@ -144,11 +144,17 @@ const Prepare = () => {
             </CardContent>
           </Card>
 
-          {prepareSteps.map((step, index) => (
-            <div key={index} className="mb-4">
-              <PrepareCard {...step} />
-            </div>
-          ))}
+          <div className="mb-8 text-center">
+            <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
+              The flow of a persuasion conversation starts with framing the issue in everyday terms, then focusing on building a connection before exploring the issue. Finally, ask the voter for an action as commitment, which if they complete, they'll certainly remember.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 max-w-2xl mx-auto">
+            {prepareSteps.map((step, index) => (
+              <PrepareCard key={index} {...step} />
+            ))}
+          </div>
 
           <div className="mt-8 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white text-center shadow-lg">
             <h2 className="text-xl font-bold mb-2">Ready to practice?</h2>
