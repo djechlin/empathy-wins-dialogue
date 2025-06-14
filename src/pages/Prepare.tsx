@@ -110,6 +110,13 @@ const Prepare = () => {
           do: "I'm really glad we had this conversation. I want to ask, could you take your phone and call Representative Gerbil, his number is 555-4567, and tell him how you feel?",
           dont: 'Thanks for chatting. I hope you think about supporting this in the future',
         },
+        {
+          doHeading: 'Respect however far they came toward your position',
+          dontHeading: "Don't ruin your connection by being pushy",
+          voter: "This is a lot to think about, I'll maybe call later",
+          do: "Thank you so much for considering it. I really enjoyed talking with you.",
+          dont: "If you do it now then you won't have to worry about it later",
+        },
       ],
     },
   ];
