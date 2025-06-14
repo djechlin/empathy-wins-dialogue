@@ -7,10 +7,21 @@ import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const StepIndicator = ({ number, color, label, isLast }: { number: number; color: string; label: string; isLast?: boolean }) => (
+  <>
+    <div className="flex flex-col items-center">
+      <div className={`w-12 h-12 ${color} text-white rounded-full flex items-center justify-center font-bold text-lg mb-2`}>
+        {number}
+      </div>
+      <span className="text-sm font-medium text-center">{label}</span>
+    </div>
+    {!isLast && <ArrowRight className="w-6 h-6 text-blue-400" />}
+  </>
+);
+
 const Prepare = () => {
   const navigate = useNavigate();
 
-  // Load from sessionStorage on mount
   const [selectedIssue, setSelectedIssue] = useState(() => {
     return sessionStorage.getItem('selectedIssue') || 'insulin';
   });
@@ -54,36 +65,30 @@ const Prepare = () => {
       <Navbar />
       <main className="flex-grow bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <div className="max-w-4xl mx-auto">
-          {/* Progress Flow */}
-          <div className="mb-8">
-            <div className="flex items-center justify-center space-x-6">
-              {/* Step 1 - Current Step */}
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                  1
-                </div>
-                <span className="text-sm font-medium text-center text-blue-600 font-sans">Prepare</span>
+          <div className="mb-8 flex items-center justify-center space-x-6">
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                1
               </div>
+              <span className="text-sm font-medium text-center text-blue-600 font-sans">Prepare</span>
+            </div>
 
-              <ArrowRight className="w-6 h-6 text-gray-400" />
+            <ArrowRight className="w-6 h-6 text-gray-400" />
 
-              {/* Step 2 - Future Step */}
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                  2
-                </div>
-                <span className="text-sm font-medium text-center text-gray-400 font-sans">Roleplay</span>
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                2
               </div>
+              <span className="text-sm font-medium text-center text-gray-400 font-sans">Roleplay</span>
+            </div>
 
-              <ArrowRight className="w-6 h-6 text-gray-400" />
+            <ArrowRight className="w-6 h-6 text-gray-400" />
 
-              {/* Step 3 - Future Step */}
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                  3
-                </div>
-                <span className="text-sm font-medium text-center text-gray-400 font-sans">Learn how you did</span>
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
+                3
               </div>
+              <span className="text-sm font-medium text-center text-gray-400 font-sans">Learn how you did</span>
             </div>
           </div>
 
@@ -92,68 +97,17 @@ const Prepare = () => {
             <p className="text-gray-600">Your roadmap for persuasive conversation</p>
           </div>
 
-          {/* Visual Flow */}
           <Card className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
             <CardContent className="p-8">
               <div className="flex items-center justify-center space-x-6 mb-6">
-                {/* Step 1 */}
-                <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                    1
-                  </div>
-                  <span className="text-sm font-medium text-center">
-                    Frame
-                    <br />
-                    Issue
-                  </span>
-                </div>
-
-                <ArrowRight className="w-6 h-6 text-blue-400" />
-
-                {/* Step 2 */}
-                <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                    2
-                  </div>
-                  <span className="text-sm font-medium text-center">
-                    Build
-                    <br />
-                    Connection
-                  </span>
-                </div>
-
-                <ArrowRight className="w-6 h-6 text-blue-400" />
-
-                {/* Step 3 */}
-                <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                    3
-                  </div>
-                  <span className="text-sm font-medium text-center">
-                    Explore
-                    <br />
-                    Together
-                  </span>
-                </div>
-
-                <ArrowRight className="w-6 h-6 text-blue-400" />
-
-                {/* Step 4 */}
-                <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                    4
-                  </div>
-                  <span className="text-sm font-medium text-center">
-                    Ask for
-                    <br />
-                    Action
-                  </span>
-                </div>
+                <StepIndicator number={1} color="bg-blue-500" label="Frame Issue" />
+                <StepIndicator number={2} color="bg-orange-500" label="Build Connection" />
+                <StepIndicator number={3} color="bg-green-500" label="Explore Together" />
+                <StepIndicator number={4} color="bg-purple-500" label="Ask for Action" isLast={true} />
               </div>
             </CardContent>
           </Card>
 
-          {/* Issue Selection */}
           <Card className="mb-8">
             <CardHeader>
               <CardTitle>Frame the Issue</CardTitle>
@@ -206,8 +160,7 @@ const Prepare = () => {
                       <span className="font-medium text-gray-900 text-sm">Cut to the chase</span>
                     </div>
                     <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">Voter:</span> Hello, who's there?
-                      <br />
+                      <span className="font-bold">Voter:</span> Hello, who's there?<br />
                       <span className="font-bold">You:</span> My name is [your name], I'm here with{' '}
                       {currentIssue && <span dangerouslySetInnerHTML={{ __html: currentIssue.organization }} />} to talk about{' '}
                       {currentIssue?.plainLanguage}.
@@ -219,8 +172,7 @@ const Prepare = () => {
                       <span className="font-medium text-gray-900 text-sm">Don't go on a lecture</span>
                     </div>
                     <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">Voter:</span> Hello, who's there?
-                      <br />
+                      <span className="font-bold">Voter:</span> Hello, who's there?<br />
                       <span className="font-bold">You:</span> {currentIssue?.dontSayText}
                     </p>
                   </div>
@@ -229,7 +181,6 @@ const Prepare = () => {
             </CardContent>
           </Card>
 
-          {/* Key Phrases */}
           <div className="space-y-4 mb-8">
             <Card>
               <CardHeader>
@@ -249,10 +200,8 @@ const Prepare = () => {
                         <span className="font-medium text-gray-900 text-sm">Open up</span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> I agree with you but I don't believe in big government.
-                        <br />
-                        <span className="font-bold">You:</span> Yeah, I totally understand that. You know, last year, my dad had to go to
-                        the ER...
+                        <span className="font-bold">Voter:</span> I agree with you but I don't believe in big government.<br />
+                        <span className="font-bold">You:</span> Yeah, I totally understand that. You know, last year, my dad had to go to the ER...
                       </p>
                     </div>
                     <div className="pl-3">
@@ -261,10 +210,8 @@ const Prepare = () => {
                         <span className="font-medium text-gray-900 text-sm">Don't make it political</span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> Is there a time someone was really there for you?
-                        <br />
-                        <span className="font-bold">You:</span> Last year my dad had to go to the ER and the bill was outrageous. Healthcare
-                        costs are skyrocketing because politicians won't stand up to Big Pharma and insurance companies.
+                        <span className="font-bold">Voter:</span> Is there a time someone was really there for you?<br />
+                        <span className="font-bold">You:</span> Last year my dad had to go to the ER and the bill was outrageous. Healthcare costs are skyrocketing because politicians won't stand up to Big Pharma and insurance companies.
                       </p>
                     </div>
                   </div>
@@ -277,24 +224,18 @@ const Prepare = () => {
                         <span className="font-medium text-gray-900 text-sm">Dig deeper</span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd chill.
-                        <br />
-                        <span className="font-bold">You:</span> Wow, your daughter's really engaged. Has she always been passionate about
-                        her interests?
+                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd chill.<br />
+                        <span className="font-bold">You:</span> Wow, your daughter's really engaged. Has she always been passionate about her interests?
                       </p>
                     </div>
                     <div className="pl-3">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-red-600">✗</span>
-                        <span className="font-medium text-gray-900 text-sm">
-                          Don't jump into the issue when they share something personal
-                        </span>
+                        <span className="font-medium text-gray-900 text-sm">Don't jump into the issue when they share something personal</span>
                       </div>
                       <p className="font-mono text-sm text-gray-700">
-                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd chill.
-                        <br />
-                        <span className="font-bold">You:</span> I guess you've heard about this a lot from your daughter already, is there a
-                        reason you haven't changed your mind yet?
+                        <span className="font-bold">Voter:</span> My daughter's really into all that progressive stuff, I wish she'd chill.<br />
+                        <span className="font-bold">You:</span> I guess you've heard about this a lot from your daughter already, is there a reason you haven't changed your mind yet?
                       </p>
                     </div>
                   </div>
@@ -319,8 +260,7 @@ const Prepare = () => {
                       <span className="font-medium text-gray-900 text-sm">Good to say</span>
                     </div>
                     <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">You:</span> It sounds like we both really care about the people we love. Does that change
-                      how you think about this issue at all?
+                      <span className="font-bold">You:</span> It sounds like we both really care about the people we love. Does that change how you think about this issue at all?
                     </p>
                   </div>
                   <div className="pl-3">
@@ -329,8 +269,7 @@ const Prepare = () => {
                       <span className="font-medium text-gray-900 text-sm">Not as good</span>
                     </div>
                     <p className="font-mono text-sm text-gray-700">
-                      <span className="font-bold">You:</span> So you can see why we need to support this policy, right? It's obvious that
-                      everyone benefits.
+                      <span className="font-bold">You:</span> So you can see why we need to support this policy, right? It's obvious that everyone benefits.
                     </p>
                   </div>
                 </div>
