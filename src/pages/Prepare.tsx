@@ -2,6 +2,7 @@ import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import PrepareCard from '@/components/PrepareCard';
 import DoDont from '@/components/DoDont';
+import NumberCircle from '@/components/NumberCircle';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { ArrowRight, Settings } from 'lucide-react';
@@ -11,7 +12,7 @@ import { useState } from 'react';
 
 const Prepare = () => {
   const navigate = useNavigate();
-  const [expandedCard, setExpandedCard] = useState<number | null>(null);
+  const [expandedCard, setExpandedCard] = useState<number | null>(0);
 
   const [selectedIssue, setSelectedIssue] = useSessionStorageState('selected-issue', {
     defaultValue: 'insulin',
@@ -158,23 +159,21 @@ const Prepare = () => {
           <div className="max-w-5xl mx-auto">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               {prepareSteps.map((step, index) => (
-                <PrepareCard 
-                  key={index} 
-                  {...step} 
+                <PrepareCard
+                  key={index}
+                  {...step}
                   isExpanded={expandedCard === index}
                   onToggle={() => setExpandedCard(expandedCard === index ? null : index)}
                 />
               ))}
             </div>
-            
+
             {/* Expanded content area */}
             {expandedCard !== null && (
               <Card className="mt-6">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-semibold">
-                      {prepareSteps[expandedCard].stepNumber}
-                    </span>
+                    <NumberCircle number={prepareSteps[expandedCard].stepNumber} color={prepareSteps[expandedCard].stepColor} />
                     {prepareSteps[expandedCard].title}
                   </CardTitle>
                   <p className="text-gray-600">{prepareSteps[expandedCard].description}</p>

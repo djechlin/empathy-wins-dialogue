@@ -1,6 +1,5 @@
 import NumberCircle from '@/components/NumberCircle';
 import { Card, CardHeader, CardTitle } from '@/ui/card';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface DoDontExample {
   doHeading: string;
@@ -32,10 +31,6 @@ const PrepareCard = ({ stepNumber, stepColor, title, isExpanded = false, onToggl
         <div className="flex flex-col items-center gap-2">
           <NumberCircle number={stepNumber} color={stepColor} />
           <CardTitle className="font-sans text-sm">{title}</CardTitle>
-          <div className="flex items-center gap-2 bg-purple-100 text-purple-700 px-3 py-1 rounded-full border border-purple-200 text-xs">
-            <span className="text-sm font-medium">{isExpanded ? 'Close' : 'Examples'}</span>
-            {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-          </div>
         </div>
       </CardHeader>
     </Card>
