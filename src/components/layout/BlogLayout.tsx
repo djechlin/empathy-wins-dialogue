@@ -1,6 +1,5 @@
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
-import { Badge } from '@/ui/badge';
 import { Button } from '@/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import React from 'react';
@@ -11,11 +10,10 @@ interface BlogLayoutProps {
   title: string;
   date: string;
   readTime: string;
-  category: string;
   description?: string;
 }
 
-const BlogLayout: React.FC<BlogLayoutProps> = ({ children, title, date, readTime, category, description }) => {
+const BlogLayout: React.FC<BlogLayoutProps> = ({ children, title, date, readTime, description }) => {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -31,7 +29,6 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({ children, title, date, readTime
             <div className="prose prose-lg prose-gray max-w-none">
               <header className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
-                  <Badge variant="secondary">{category}</Badge>
                   <span className="text-sm text-gray-500">{readTime}</span>
                 </div>
                 <h1 className="text-4xl font-bold text-gray-900 mb-4 font-heading">{title}</h1>

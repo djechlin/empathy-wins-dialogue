@@ -2,7 +2,7 @@ import BlogLayout from '@/components/layout/BlogLayout';
 
 const SwingVoters = () => {
   return (
-    <BlogLayout title="What's Really Going On With Swing Voters?" date="December 2024" readTime="6 min read" category="Politics">
+    <BlogLayout title="What's Really Going On With Swing Voters?" date="December 2024" readTime="6 min read">
       <p>
         Every election cycle, we hear endless talk about swing voters—the mythical persuadables who will supposedly decide the outcome. But
         beneath the polling data and campaign strategies lies a more complex reality about who these voters actually are, what drives their

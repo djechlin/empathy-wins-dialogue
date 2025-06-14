@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
-import { Badge } from '@/ui/badge';
 
 const Blog = () => {
   const blogPosts = [
@@ -13,7 +12,6 @@ const Blog = () => {
       description:
         'Why meaningful political conversations require System 2 thinking and how cognitive dissonance exploration happens in deliberate, slow thinking.',
       date: 'December 2024',
-      category: '',
       readTime: '9 min read',
     },
     {
@@ -21,7 +19,6 @@ const Blog = () => {
       title: 'What Every Activist Should Know About Turning Out the Base',
       description: 'Why mobilizing your supporters often yields better returns than persuading swing voters.',
       date: 'December 2024',
-      category: '',
       readTime: '7 min read',
     },
     {
@@ -29,7 +26,6 @@ const Blog = () => {
       title: "What's Really Going On With Swing Voters?",
       description: 'The complex reality behind the mythical persuadables who supposedly decide elections.',
       date: 'December 2024',
-      category: 'Politics',
       readTime: '6 min read',
     },
     {
@@ -37,7 +33,6 @@ const Blog = () => {
       title: "The Role of Cognitive Dissonance in Changing One's Mind",
       description: 'Understanding how psychological safety enables productive conversations through cognitive dissonance.',
       date: 'December 2024',
-      category: '',
       readTime: '8 min read',
     },
   ];
@@ -60,7 +55,6 @@ const Blog = () => {
               <Card key={post.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="secondary">{post.category}</Badge>
                     <span className="text-sm text-gray-500">{post.readTime}</span>
                   </div>
                   <CardTitle className="text-2xl">
