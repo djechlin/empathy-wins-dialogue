@@ -27,10 +27,14 @@ const PrepareCard = ({ stepNumber, stepColor, title, isExpanded = false, onToggl
       }`}
       onClick={onToggle}
     >
-      <CardHeader className="h-full flex flex-col justify-center items-center text-center p-4">
-        <div className="flex flex-col items-center gap-2">
-          <NumberCircle number={stepNumber} color={stepColor} />
-          <CardTitle className="font-sans text-sm">{title}</CardTitle>
+      <CardHeader className="h-full flex flex-col items-center text-center p-4">
+        <div className="flex flex-col items-center h-full">
+          <div className="mt-4">
+            <NumberCircle number={stepNumber} color={stepColor} />
+          </div>
+          <div className="flex-1 flex items-center justify-center px-2">
+            <CardTitle className="font-sans text-sm leading-tight">{title}</CardTitle>
+          </div>
         </div>
       </CardHeader>
     </Card>
