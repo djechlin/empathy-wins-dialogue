@@ -4,11 +4,9 @@ import Navbar from '@/components/layout/Navbar';
 import StepNavigation from '@/components/StepNavigation';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
-import { Label } from '@/ui/label';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useSessionStorageState from 'use-session-storage-state';
-
 
 const Prepare = () => {
   const navigate = useNavigate();
@@ -48,22 +46,18 @@ const Prepare = () => {
             <p className="text-gray-600">Your roadmap for persuasive conversation</p>
           </div>
 
-
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                  1
-                </div>
-                Frame the Issue
+                <Settings className="w-6 h-6 text-gray-600" />
+                Choose your issue
               </CardTitle>
               <p className="text-gray-600 text-sm font-sans">
-                Use concrete, plain-spoken language to introduce yourself and the issue. Avoid opening with statistics or data.
+                Select the issue you'll be advocating for in this roleplay session.
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <Label className="text-base font-medium mb-4 block">Choose your issue:</Label>
                 <div className="flex gap-3">
                   <Button
                     onClick={() => setSelectedIssue('insulin')}
@@ -88,7 +82,20 @@ const Prepare = () => {
                   </p>
                 </div>
               </div>
+            </CardContent>
+          </Card>
 
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
+                Frame the Issue
+              </CardTitle>
+              <p className="text-gray-600 text-sm font-sans">
+                Use concrete, plain-spoken language to introduce yourself and the issue. Avoid opening with statistics or data.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
               <DosDonts
                 doHeading="Cut to the chase"
                 dontHeading="Don't go on a lecture"
@@ -104,9 +111,7 @@ const Prepare = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="font-sans flex items-center gap-3">
-                  <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                    2
-                  </div>
+                  <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-sm">2</div>
                   Build a connection
                 </CardTitle>
                 <p className="text-gray-600 text-sm font-sans">
@@ -140,9 +145,7 @@ const Prepare = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="font-sans flex items-center gap-3">
-                  <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                    3
-                  </div>
+                  <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
                   Explore together
                 </CardTitle>
                 <p className="text-gray-600 text-sm font-sans">
@@ -163,9 +166,7 @@ const Prepare = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="font-sans flex items-center gap-3">
-                  <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                    4
-                  </div>
+                  <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold text-sm">4</div>
                   Ask for action
                 </CardTitle>
               </CardHeader>
