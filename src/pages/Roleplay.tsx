@@ -108,32 +108,46 @@ function RoleplayContent() {
       <main className="flex-grow bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
-            <div className="flex items-center justify-center space-x-6">
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                  ✓
-                </div>
-                <span className="text-sm font-medium text-center text-green-600 font-sans">Conversation Strategy</span>
-              </div>
-
-              <ArrowRight className="w-6 h-6 text-gray-400" />
-
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                  2
-                </div>
-                <span className="text-sm font-medium text-center text-blue-600 font-sans">Roleplay</span>
-              </div>
-
-              <ArrowRight className="w-6 h-6 text-gray-400" />
-
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-lg mb-2">
-                  3
-                </div>
-                <span className="text-sm font-medium text-center text-gray-400 font-sans">Learn how you did</span>
-              </div>
-            </div>
+            <table className="w-full max-w-2xl mx-auto table-fixed">
+              <tbody>
+                <tr className="align-middle">
+                  <td className="w-1/4 min-w-[120px] text-center">
+                    <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-2xl mx-auto">
+                      1
+                    </div>
+                  </td>
+                  <td className="w-1/12 min-w-[40px] text-center align-middle">
+                    <ArrowRight className="w-7 h-7 text-gray-300 mx-auto" />
+                  </td>
+                  <td className="w-1/4 min-w-[120px] text-center">
+                    <div className="w-16 h-16 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-2xl mx-auto">
+                      2
+                    </div>
+                  </td>
+                  <td className="w-1/12 min-w-[40px] text-center align-middle">
+                    <ArrowRight className="w-7 h-7 text-gray-300 mx-auto" />
+                  </td>
+                  <td className="w-1/4 min-w-[120px] text-center">
+                    <div className="w-16 h-16 bg-white border-2 border-gray-300 text-gray-400 rounded-full flex items-center justify-center font-bold text-2xl mx-auto">
+                      3
+                    </div>
+                  </td>
+                </tr>
+                <tr className="align-top">
+                  <td className="text-center pt-2 min-w-[120px]">
+                    <span className="text-base font-semibold text-blue-600 font-sans">Prepare</span>
+                  </td>
+                  <td></td>
+                  <td className="text-center pt-2 min-w-[120px]">
+                    <span className="text-base font-semibold text-gray-400 font-sans">Roleplay</span>
+                  </td>
+                  <td></td>
+                  <td className="text-center pt-2 min-w-[120px]">
+                    <span className="text-base font-semibold text-gray-400 font-sans">Learn how you did</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           <div className="text-center mb-6">

@@ -5,47 +5,18 @@ import { Button } from '@/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table';
-import { ArrowRight, CheckCircle, Clock, Heart, Home, Minus, Play, RotateCcw, Square, Users, XCircle } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { ArrowRight, CheckCircle, Clock, Heart, Home, Minus, RotateCcw, Users, XCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const Report = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
-  const [practiceTimer, setPracticeTimer] = useState(60);
-  const [isPracticing, setIsPracticing] = useState(false);
-  const [activeSnippet, setActiveSnippet] = useState<string | null>(null);
-
-  const practiceTimerRef = useRef<NodeJS.Timeout>();
 
   const issue = searchParams.get('issue') || 'insulin';
   const duration = parseInt(searchParams.get('duration') || '0');
   const achievedTechniques = searchParams.get('techniques')?.split(',').filter(Boolean) || [];
-
-  const practiceSnippets = [
-    {
-      id: 'neighbor-daughter',
-      title: 'Follow up on family mention',
-      voterText: "My neighbor's daughter is diabetic and they've really struggled with the costs.",
-      challenge: "Practice asking about the daughter's specific situation",
-      suggestedResponse: "How old is their daughter? What's been the hardest part for them?",
-    },
-    {
-      id: 'angry-emotion',
-      title: 'Dig deeper into emotions',
-      voterText: 'It makes me angry, honestly. No one should have to ration their medication.',
-      challenge: 'Validate their anger and explore it further',
-      suggestedResponse: 'That anger makes complete sense. What specifically makes you angriest about this situation?',
-    },
-    {
-      id: 'wife-emma',
-      title: 'Personal connection opportunity',
-      voterText: "Actually, my wife Emma has diabetes too. We're lucky to have good insurance now.",
-      challenge: 'Connect on their personal experience',
-      suggestedResponse: "Tell me about Emma's experience. What worries you most about her care?",
-    },
-  ];
 
   const techniques = [
     { id: 'plain-language', text: 'Used sensory language' },
@@ -121,37 +92,6 @@ const Report = () => {
 
     return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    if (isPracticing) {
-      practiceTimerRef.current = setInterval(() => {
-        setPracticeTimer((prev) => {
-          if (prev <= 1) {
-            stopPractice();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-
-    return () => {
-      if (practiceTimerRef.current) clearInterval(practiceTimerRef.current);
-    };
-  }, [isPracticing]);
-
-  const startPractice = (snippetId: string) => {
-    setActiveSnippet(snippetId);
-    setPracticeTimer(60);
-    setIsPracticing(true);
-  };
-
-  const stopPractice = () => {
-    setIsPracticing(false);
-    setActiveSnippet(null);
-    setPracticeTimer(60);
-    if (practiceTimerRef.current) clearInterval(practiceTimerRef.current);
-  };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -268,78 +208,6 @@ const Report = () => {
                     <p className="text-gray-600">Techniques Used</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Practice Snippets Section */}
-            <Card className="border-purple-200 bg-purple-50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-purple-800">
-                  <Play className="w-6 h-6" />
-                  Practice Key Moments
-                </CardTitle>
-                <CardDescription className="text-purple-700">
-                  Retry specific conversation moments with focused 1-minute practice sessions
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {practiceSnippets.map((snippet) => (
-                    <div key={snippet.id} className="border border-purple-200 rounded-lg p-4 bg-white">
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="flex-1">
-                          <h4 className="font-medium text-purple-800 mb-1">{snippet.title}</h4>
-                          <p className="text-sm text-gray-600 italic mb-2">Voter: "{snippet.voterText}"</p>
-                          <p className="text-sm text-purple-700 mb-2">
-                            <strong>Challenge:</strong> {snippet.challenge}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            <strong>Suggested approach:</strong> {snippet.suggestedResponse}
-                          </p>
-                        </div>
-                        <div className="ml-4 flex flex-col items-end gap-2">
-                          {activeSnippet === snippet.id && isPracticing ? (
-                            <div className="text-center">
-                              <div className="text-2xl font-bold text-purple-600 mb-1">
-                                {Math.floor(practiceTimer / 60)}:{(practiceTimer % 60).toString().padStart(2, '0')}
-                              </div>
-                              <Button onClick={stopPractice} variant="outline" size="sm">
-                                <Square className="w-4 h-4 mr-1" />
-                                Stop
-                              </Button>
-                            </div>
-                          ) : (
-                            <Button
-                              onClick={() => startPractice(snippet.id)}
-                              size="sm"
-                              className="bg-purple-600 hover:bg-purple-700"
-                              disabled={isPracticing}
-                            >
-                              <Play className="w-4 h-4 mr-1" />
-                              Practice (1 min)
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                      {activeSnippet === snippet.id && isPracticing && (
-                        <div className="mt-3 p-3 bg-purple-100 rounded-lg border-l-4 border-purple-500">
-                          <p className="text-sm text-purple-800">
-                            <strong>Now practicing:</strong> Respond to what they just said. Focus on {snippet.challenge.toLowerCase()}.
-                          </p>
-                          <Progress value={((60 - practiceTimer) / 60) * 100} className="mt-2" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                {isPracticing && (
-                  <div className="mt-4 p-3 bg-purple-100 rounded-lg">
-                    <p className="text-sm text-purple-800">
-                      <strong>Tip:</strong> Speak out loud as if you're responding to the voter. Focus on the specific challenge for this
-                      moment.
-                    </p>
-                  </div>
-                )}
               </CardContent>
             </Card>
 

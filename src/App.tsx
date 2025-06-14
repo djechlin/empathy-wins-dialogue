@@ -14,7 +14,7 @@ import Index from './pages/Index';
 import Learn from './pages/Learn';
 import LearnChapter from './pages/LearnChapter';
 import NotFound from './pages/NotFound';
-import Preparation from './pages/Preparation';
+import Prepare from './pages/Prepare';
 import Report from './pages/Report';
 import Roleplay from './pages/Roleplay';
 import StartingOut from './pages/StartingOut';
@@ -39,7 +39,7 @@ const App = () => (
             <Route path="/blog/swing-voters" element={<SwingVoters />} />
             <Route path="/blog/turning-out-the-base" element={<TurningOutTheBase />} />
             <Route path="/challenge" element={<Navigate to="/challenge/prepare" replace />} />
-            <Route path="/challenge/prepare" element={<Preparation />} />
+            <Route path="/challenge/prepare" element={<Prepare />} />
             <Route path="/challenge/roleplay" element={<Roleplay />} />
             <Route path="/challenge/competencies" element={<Report />} />
             <Route path="/auth" element={<Auth />} />

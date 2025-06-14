@@ -7,7 +7,7 @@ import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Preparation = () => {
+const Prepare = () => {
   const navigate = useNavigate();
 
   // Load from sessionStorage on mount
@@ -88,7 +88,7 @@ const Preparation = () => {
           </div>
 
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Conversation Strategy</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Prepare</h1>
             <p className="text-gray-600">Your roadmap for persuasive conversation</p>
           </div>
 
@@ -361,4 +361,4 @@ const Preparation = () => {
   );
 };
 
-export default Preparation;
+export default Prepare;

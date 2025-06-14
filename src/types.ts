@@ -22,7 +22,7 @@ export type FeedbackId =
   | 'concrete-actions'
   | 'follow-up';
 
-export type ChallengeStep = 'preparation' | 'roleplay' | 'reflection';
+export type ChallengeStep = 'prepare' | 'roleplay' | 'reflection';
 
 export type Scenario = {
   title: string;
