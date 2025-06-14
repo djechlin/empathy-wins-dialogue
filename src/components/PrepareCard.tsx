@@ -29,10 +29,10 @@ const PrepareCard = ({ stepNumber, stepColor, title, isExpanded = false, onToggl
     >
       <CardHeader className="h-full flex flex-col items-center text-center p-4">
         <div className="flex flex-col items-center h-full">
-          <div className="mt-4">
+          <div className="mt-6">
             <NumberCircle number={stepNumber} color={stepColor} />
           </div>
-          <div className="flex-1 flex items-center justify-center px-2">
+          <div className="flex-1 flex items-start justify-center px-2 mt-3">
             <CardTitle className="font-sans text-sm leading-tight">{title}</CardTitle>
           </div>
         </div>
