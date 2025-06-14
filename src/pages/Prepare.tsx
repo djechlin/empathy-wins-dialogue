@@ -123,7 +123,7 @@ const Prepare = () => {
           <div className="mb-8 text-center">
             <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto mb-4">
               The flow of a persuasion conversation starts with framing the issue in everyday terms, then focusing on building a connection
-              before exploring the issue. Finally, ask the voter for an action as commitment, which if they complete, they'll certainly
+              before exploring the issue. Finally, ask the voter for an action as commitment. If they complete it, they'll certainly
               remember.
             </p>
             <p className="text-md text-gray-600 mb-4">
