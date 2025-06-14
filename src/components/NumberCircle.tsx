@@ -21,9 +21,7 @@ const NumberCircle = ({ number, color, size = 'md' }: NumberCircleProps) => {
   };
 
   return (
-    <div
-      className={`${colorClasses[color]} ${sizeClasses[size]} text-white rounded-full flex items-center justify-center font-bold`}
-    >
+    <div className={`${colorClasses[color]} ${sizeClasses[size]} text-white rounded-full flex items-center justify-center font-bold`}>
       {number}
     </div>
   );

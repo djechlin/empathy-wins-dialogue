@@ -1,13 +1,12 @@
-interface DosDontsProps {
+interface DoDontProps {
   doHeading: string;
   dontHeading: string;
-  doVoter?: string;
-  doCanvasser: string;
-  dontVoter?: string;
-  dontCanvasser: string;
+  voter?: string;
+  do: string;
+  dont: string;
 }
 
-const DosDonts = ({ doHeading, dontHeading, doVoter, doCanvasser, dontVoter, dontCanvasser }: DosDontsProps) => {
+const DoDont = ({ doHeading, dontHeading, voter, do: doText, dont: dontText }: DoDontProps) => {
   return (
     <div className="grid grid-cols-2 gap-6 relative">
       <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 transform -translate-x-1/2"></div>
@@ -17,13 +16,13 @@ const DosDonts = ({ doHeading, dontHeading, doVoter, doCanvasser, dontVoter, don
           <span className="font-medium text-gray-900 text-sm">{doHeading}</span>
         </div>
         <p className="font-mono text-sm text-gray-700">
-          {doVoter && (
+          {voter && (
             <>
-              <span className="font-bold">Voter:</span> {doVoter}
+              <span className="font-bold">Voter:</span> {voter}
               <br />
             </>
           )}
-          <span className="font-bold">You:</span> {doCanvasser}
+          <span className="font-bold">You:</span> {doText}
         </p>
       </div>
       <div className="pl-3">
@@ -32,17 +31,17 @@ const DosDonts = ({ doHeading, dontHeading, doVoter, doCanvasser, dontVoter, don
           <span className="font-medium text-gray-900 text-sm">{dontHeading}</span>
         </div>
         <p className="font-mono text-sm text-gray-700">
-          {dontVoter && (
+          {voter && (
             <>
-              <span className="font-bold">Voter:</span> {dontVoter}
+              <span className="font-bold">Voter:</span> {voter}
               <br />
             </>
           )}
-          <span className="font-bold">You:</span> {dontCanvasser}
+          <span className="font-bold">You:</span> {dontText}
         </p>
       </div>
     </div>
   );
 };
 
-export default DosDonts;
+export default DoDont;
