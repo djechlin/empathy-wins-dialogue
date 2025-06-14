@@ -6,7 +6,7 @@ const CognitiveDissonanceBlog = () => {
       title="The Role of Cognitive Dissonance in Changing One's Mind"
       date="December 2024"
       readTime="8 min read"
-      category="Psychology"
+      category=""
     >
       <p>
         In the realm of political dialogue and empathetic persuasion, one of the most powerful yet misunderstood psychological phenomena is

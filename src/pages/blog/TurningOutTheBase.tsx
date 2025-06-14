@@ -6,7 +6,7 @@ const TurningOutTheBase = () => {
       title="What Every Activist Should Know About Turning Out the Base"
       date="December 2024"
       readTime="7 min read"
-      category="Activism"
+      category=""
     >
       <p>
         In the world of political campaigns and social movements, there's an ongoing debate about where to focus limited time and resources:

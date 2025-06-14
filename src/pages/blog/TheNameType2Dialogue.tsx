@@ -6,7 +6,7 @@ const TheNameType2Dialogue = () => {
       title="The Name Type2Dialogue"
       date="December 2024"
       readTime="5 min read"
-      category="Psychology"
+      category=""
       description="Understanding why meaningful political conversations require System 2 thinking"
     >
       <p>

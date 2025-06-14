@@ -13,7 +13,7 @@ const Blog = () => {
       description:
         'Why meaningful political conversations require System 2 thinking and how cognitive dissonance exploration happens in deliberate, slow thinking.',
       date: 'December 2024',
-      category: 'Psychology',
+      category: '',
       readTime: '9 min read',
     },
     {
@@ -21,7 +21,7 @@ const Blog = () => {
       title: 'What Every Activist Should Know About Turning Out the Base',
       description: 'Why mobilizing your supporters often yields better returns than persuading swing voters.',
       date: 'December 2024',
-      category: 'Activism',
+      category: '',
       readTime: '7 min read',
     },
     {
@@ -37,7 +37,7 @@ const Blog = () => {
       title: "The Role of Cognitive Dissonance in Changing One's Mind",
       description: 'Understanding how psychological safety enables productive conversations through cognitive dissonance.',
       date: 'December 2024',
-      category: 'Psychology',
+      category: '',
       readTime: '8 min read',
     },
   ];
