@@ -13,7 +13,10 @@ export const mockConversationReport: ConversationReport = {
       icon: 'BookOpen',
       score: 8,
       feedback: 'Successfully grabbed their attention and kept them engaged throughout the conversation.',
-      examples: ['Asked about voting likelihood on 1-10 scale', 'Successfully elicited their story about their father'],
+      examples: [
+        { quote: 'Asked about voting likelihood on 1-10 scale', type: 'positive', analysis: 'Good opening technique' },
+        { quote: 'Successfully elicited their story about their father', type: 'positive', analysis: 'Created personal connection' }
+      ],
     },
     {
       id: 'vulnerability',
@@ -22,8 +25,8 @@ export const mockConversationReport: ConversationReport = {
       score: 9,
       feedback: "Excellent use of vulnerable storytelling! You shared a personal connection and used the word 'love' effectively.",
       examples: [
-        'I vote because I love my daughter and want her to have good healthcare',
-        "That reminds me of when my mom was sick and couldn't afford her medication",
+        { quote: 'I vote because I love my daughter and want her to have good healthcare', type: 'positive', analysis: 'Shared vulnerable personal story using "love"' },
+        { quote: "That reminds me of when my mom was sick and couldn't afford her medication", type: 'positive', analysis: 'Connected personal experience to issue' }
       ],
     },
     {
@@ -32,7 +35,10 @@ export const mockConversationReport: ConversationReport = {
       icon: 'MessageCircle',
       score: 7,
       feedback: 'Good listening skills, but could have asked more follow-up questions about their personal experiences.',
-      examples: ['That sounds really difficult for you', 'Tell me more about that situation'],
+      examples: [
+        { quote: 'That sounds really difficult for you', type: 'positive', analysis: 'Showed empathy and validated feelings' },
+        { quote: 'Tell me more about that situation', type: 'positive', analysis: 'Asked follow-up to dig deeper' }
+      ],
     },
     {
       id: 'exploredIssueTogether',
@@ -40,7 +46,10 @@ export const mockConversationReport: ConversationReport = {
       icon: 'Users',
       score: 6,
       feedback: 'Made some personal connections but could have drawn more explicit parallels between your stories.',
-      examples: ['We both have family members we care about', 'It sounds like family is important to both of us'],
+      examples: [
+        { quote: 'We both have family members we care about', type: 'positive', analysis: 'Drew connection between stories' },
+        { quote: 'It sounds like family is important to both of us', type: 'positive', analysis: 'Found common ground through shared values' }
+      ],
     },
   ],
   keyMoments: [

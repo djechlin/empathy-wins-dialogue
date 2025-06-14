@@ -4,7 +4,7 @@ import { Badge } from '@/ui/badge';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
 import { Progress } from '@/ui/progress';
-import { ArrowRight, CheckCircle, Clock, Heart, Home, RotateCcw, XCircle, Target, Ear, Compass } from 'lucide-react';
+import { ArrowRight, CheckCircle, Clock, Heart, Home, RotateCcw, XCircle, Target, Ear, Compass, MessageSquareX, Search, HelpCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -57,10 +57,16 @@ const Report = () => {
 
   const getIconComponent = (iconName: string) => {
     switch (iconName) {
-      case 'target':
-        return Target;
+      case 'message-x':
+        return MessageSquareX;
+      case 'search':
+        return Search;
       case 'heart':
         return Heart;
+      case 'help-circle':
+        return HelpCircle;
+      case 'target':
+        return Target;
       case 'ear':
         return Ear;
       case 'compass':
@@ -233,13 +239,32 @@ const Report = () => {
                           </div>
                         </div>
                         <p className="text-gray-700 mb-3">{category.feedback}</p>
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           <h4 className="font-medium text-sm text-gray-600">Examples from your conversation:</h4>
-                          <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                            {category.examples.map((example, idx) => (
-                              <li key={idx}>{example}</li>
-                            ))}
-                          </ul>
+                          <div className="space-y-3">
+                            {category.examples.map((example, idx) => {
+                              const isPositive = example.type === 'positive';
+                              return (
+                                <div key={idx} className={`p-3 rounded-lg border ${isPositive ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                                  <div className="flex items-start gap-2 mb-2">
+                                    {isPositive ? (
+                                      <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                                    ) : (
+                                      <XCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+                                    )}
+                                    <div className="flex-1">
+                                      <blockquote className={`italic text-sm mb-1 ${isPositive ? 'text-green-800' : 'text-red-800'}`}>
+                                        "{example.quote}"
+                                      </blockquote>
+                                      <p className={`text-xs ${isPositive ? 'text-green-700' : 'text-red-700'}`}>
+                                        {example.analysis}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
                       </div>
                     );

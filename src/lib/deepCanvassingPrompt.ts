@@ -1,9 +1,9 @@
 /**
  * Generate a deep canvassing competency assessment prompt for claude-report
- * 
+ *
  * This prompt analyzes conversations for deep canvassing techniques and returns
  * structured feedback following the ConversationReport interface.
- * 
+ *
  * @param transcript The conversation transcript to analyze
  * @returns A formatted prompt string for claude-report
  */
@@ -12,10 +12,10 @@ export function createCompetencyReportPrompt(transcript: string): string {
 
 Deep canvassing is about creating genuine human connection through vulnerability, empathetic listening, and helping people explore their own values. Key competencies include:
 
-1. **Grabbed Attention**: How well did the canvasser engage the voter and maintain their interest?
-2. **Vulnerability**: Did the canvasser share personal, vulnerable stories using the word "love" and connecting to someone they care about?
-3. **Empathetic Listening**: How well did the canvasser listen, reflect, and ask follow-up questions about the voter's feelings and experiences?
-4. **Issue Exploration**: Did the canvasser help the voter explore the issue through personal connection rather than facts or arguments?
+1. **Don't Lecture**: Avoid giving facts, statistics, or policy arguments. Instead focus on personal stories and emotional connection.
+2. **Dig Deeper**: Ask follow-up questions about feelings, experiences, and the people in the voter's life. Explore their emotions and personal connections.
+3. **Personal Framing**: Share vulnerable personal stories that connect to the issue. Use names and specific details about people you care about.
+4. **Explore by Questions**: Help the voter discover their own thoughts and feelings through questions rather than telling them what to think.
 
 Analyze this conversation and provide detailed feedback:
 
@@ -38,12 +38,18 @@ interface ConversationReport {
 }
 
 interface CategoryScore {
-  id: string; // 'attention', 'vulnerability', 'listening', 'exploration'
+  id: string; // 'dont_lecture', 'dig_deeper', 'personal_framing', 'explore_by_questions'
   name: string; // Display name for the category
-  icon: string; // lucide icon name (e.g., 'target', 'heart', 'ear', 'compass')
+  icon: string; // lucide icon name (e.g., 'message-x', 'search', 'heart', 'help-circle')
   score: number; // 1-10 rating for this competency
   feedback: string; // Detailed feedback paragraph
-  examples: string[]; // 2-3 specific examples from the conversation
+  examples: ExampleQuote[]; // 2-4 specific examples from the conversation with analysis
+}
+
+interface ExampleQuote {
+  quote: string; // Direct quote from the conversation
+  type: 'positive' | 'negative'; // Whether this is a good or bad example
+  analysis: string; // Short explanation of why this is good/bad
 }
 
 interface KeyMoment {
