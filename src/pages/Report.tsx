@@ -36,6 +36,13 @@ const Report = () => {
 
   // Convert dialogue messages to transcript format
   const getTranscript = useCallback(() => {
+    // First check session storage for saved transcript
+    const savedTranscript = sessionStorage.getItem('report.transcript');
+    if (savedTranscript) {
+      return savedTranscript;
+    }
+    
+    // Then check conversation session messages
     if (hasMessages) {
       return messages
         .map((msg) => {
@@ -44,6 +51,7 @@ const Report = () => {
         })
         .join('\n\n');
     }
+    
     // Fallback to lucas.txt for testing
     return lucasTranscript;
   }, [hasMessages, messages]);

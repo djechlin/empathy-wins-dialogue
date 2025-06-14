@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { DialogueMessage } from '../types';
 import { HumeDialogueProvider } from './HumeDialogueProvider';
 import { MockDialogueProvider } from './MockDialogueProvider';
+import { ReplayProvider } from './ReplayProvider';
 
 export type DialogueSource =
   | { type: 'deepgram' }
@@ -15,6 +16,7 @@ export type DialogueSource =
 interface DialogueProviderProps {
   children: ReactNode;
   className?: string;
+  initialMessage?: DialogueMessage;
 }
 
 export function DialogueProvider(props: DialogueProviderProps) {
@@ -74,7 +76,11 @@ export function DialogueProvider(props: DialogueProviderProps) {
         </HumeDialogueProvider>
       );
     case 'replay':
-      throw new Error('Replay provider not implemented yet');
+      return (
+        <ReplayProvider className={props.className} initialMessage={props.initialMessage}>
+          {props.children}
+        </ReplayProvider>
+      );
     default:
       throw new Error(`Unknown dialogue provider: ${source.type}`);
   }

@@ -25,10 +25,7 @@ const PrepareCard = ({ stepNumber, stepColor, title, description, doDontExamples
 
   return (
     <Card>
-      <CardHeader 
-        className="cursor-pointer" 
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
+      <CardHeader className="cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
         <CardTitle className="font-sans flex items-center justify-between">
           <div className="flex items-center gap-3">
             <NumberCircle number={stepNumber} color={stepColor} />
@@ -36,11 +33,7 @@ const PrepareCard = ({ stepNumber, stepColor, title, description, doDontExamples
           </div>
           <div className="flex items-center gap-2 bg-purple-100 text-purple-700 px-3 py-1 rounded-full border border-purple-200">
             <span className="text-sm font-medium">{isExpanded ? 'Close' : 'See examples'}</span>
-            {isExpanded ? (
-              <ChevronUp className="w-4 h-4" />
-            ) : (
-              <ChevronDown className="w-4 h-4" />
-            )}
+            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </div>
         </CardTitle>
         <p className="text-gray-600 text-sm font-sans">{description}</p>

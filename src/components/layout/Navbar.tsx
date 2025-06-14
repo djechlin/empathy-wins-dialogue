@@ -9,9 +9,9 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
-  
+
   const isInChallenge = location.pathname.startsWith('/challenge');
-  
+
   const getCurrentStep = () => {
     if (location.pathname === '/challenge/prepare') return 1;
     if (location.pathname === '/challenge/roleplay') return 2;
@@ -68,7 +68,9 @@ const Navbar = () => {
                     >
                       {step.number}
                     </div>
-                    <span className={`text-xs font-medium text-center font-sans ${step.number === getCurrentStep() ? 'text-blue-600' : 'text-gray-400'}`}>
+                    <span
+                      className={`text-xs font-medium text-center font-sans ${step.number === getCurrentStep() ? 'text-blue-600' : 'text-gray-400'}`}
+                    >
                       {step.label}
                     </span>
                   </Link>
