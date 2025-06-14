@@ -100,7 +100,7 @@ function RoleplayContent() {
     {
       text: '<MessageSquare> "Is there anyone in your life who had trouble seeing a doctor?"\n\n<MessageSquare> "One time when I was sick, someone close to me helped me..."\n\n<Heart> Dig deeper when they share someone',
       rationale: 'Build a connection',
-      color: 'bg-purple-500',
+      color: 'bg-orange-500',
       hasQuote: true,
     },
     {
@@ -112,7 +112,7 @@ function RoleplayContent() {
     {
       text: '"Would you take your phone and call Representative Peter Gerbil to tell him how you feel? His number is 555-4567"',
       rationale: 'Ask for action',
-      color: 'bg-orange-500',
+      color: 'bg-purple-500',
       hasQuote: true,
     },
   ];
