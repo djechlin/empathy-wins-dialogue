@@ -1,6 +1,7 @@
 import DosDonts from '@/components/DosDonts';
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
+import NumberCircle from '@/components/NumberCircle';
 import StepNavigation from '@/components/StepNavigation';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
@@ -99,7 +100,7 @@ const Prepare = () => {
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
+                <NumberCircle number={1} color="green" />
                 Frame the issue
               </CardTitle>
               <p className="text-gray-600 text-sm font-sans">
@@ -128,7 +129,7 @@ const Prepare = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="font-sans flex items-center gap-3">
-                  <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-sm">2</div>
+                  <NumberCircle number={2} color="orange" />
                   Build a connection
                 </CardTitle>
                 <p className="text-gray-600 text-sm font-sans">
@@ -160,7 +161,7 @@ const Prepare = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="font-sans flex items-center gap-3">
-                  <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
+                  <NumberCircle number={3} color="blue" />
                   Explore together
                 </CardTitle>
                 <p className="text-gray-600 text-sm font-sans">
@@ -182,7 +183,7 @@ const Prepare = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="font-sans flex items-center gap-3">
-                  <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold text-sm">4</div>
+                  <NumberCircle number={4} color="purple" />
                   Ask for action
                 </CardTitle>
                 <p className="text-gray-600 text-sm font-sans">
@@ -199,7 +200,6 @@ const Prepare = () => {
               </CardContent>
             </Card>
           </div>
-
         </div>
 
         {/* Floating Action Button - stays visible while scrolling */}
