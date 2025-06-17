@@ -1,27 +1,49 @@
+
 import React from 'react';
 import { Button } from '@/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
+  const navigate = useNavigate();
+
+  const handleStartChallenge = () => {
+    navigate('/challenge');
+  };
+
   return (
     <section className="py-24 md:py-32 bg-background">
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="animate-fade-in">
-            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-dialogue-darkblue mb-8 font-light">Empathy Wins Elections.</h1>
-            <p className="text-lg md:text-xl font-serif text-foreground mb-10 max-w-lg leading-relaxed">
-              Persuasion happens not by talking and informing, but through creating a shared space where we listen to those we disagree
-              with. Type2Dialogue helps people create that space in their political conversations and whenever the chance arises to share
-              our values with others.
+            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-dialogue-darkblue mb-8 font-light">
+              Practice Political Conversations That Win Elections
+            </h1>
+            <p className="text-lg md:text-xl font-serif text-foreground mb-8 max-w-lg leading-relaxed">
+              Master empathetic dialogue through AI-powered roleplay with real voter personas. 
+              Perfect your canvassing skills in a risk-free environment.
             </p>
-            <p className="text-xl font-serif italic text-dialogue-darkblue mb-12">Launching soon!</p>
+            <div className="bg-dialogue-blue/10 border border-dialogue-blue/20 rounded-lg p-6 mb-8">
+              <p className="text-dialogue-darkblue font-medium mb-2">✓ Practice with realistic voter scenarios</p>
+              <p className="text-dialogue-darkblue font-medium mb-2">✓ Get real-time coaching feedback</p>
+              <p className="text-dialogue-darkblue font-medium">✓ Build skills that increase voter persuasion</p>
+            </div>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-dialogue-purple hover:bg-dialogue-darkblue text-white">
-                Get Notified
+              <Button 
+                size="lg" 
+                className="bg-dialogue-purple hover:bg-dialogue-darkblue text-white text-lg px-8 py-4"
+                onClick={handleStartChallenge}
+              >
+                Start Your First Roleplay
               </Button>
-              <Button size="lg" variant="outline" className="border-dialogue-purple text-dialogue-purple hover:bg-dialogue-blue">
-                Learn More
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-dialogue-purple text-dialogue-purple hover:bg-dialogue-blue text-lg px-8 py-4"
+              >
+                See How It Works
               </Button>
             </div>
+            <p className="text-sm text-gray-600 mt-4">Free to try • No signup required • 5 minutes</p>
           </div>
 
           <div className="rounded-lg overflow-hidden shadow-xl animate-fade-in">
