@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/ui/button';
 import { Card, CardContent } from '@/ui/card';
 import { useNavigate } from 'react-router-dom';
-import { BarChart3, Users, Target, TrendingUp } from 'lucide-react';
+import { BarChart3, Users, Target, TrendingUp, BookOpen, GraduationCap, MessageSquare } from 'lucide-react';
 
 const CampaignManagerSection = () => {
   const navigate = useNavigate();
@@ -28,25 +28,25 @@ const CampaignManagerSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <Card className="text-center border-dialogue-blue/20">
             <CardContent className="p-6">
-              <BarChart3 className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
-              <h3 className="font-semibold text-lg mb-2">Measure Progress</h3>
-              <p className="text-sm text-gray-600">Track your team's conversation skills and improvement over time</p>
+              <BookOpen className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+              <h3 className="font-semibold text-lg mb-2">Case Studies</h3>
+              <p className="text-sm text-gray-600">Real campaign success stories showing measurable improvements in voter persuasion</p>
             </CardContent>
           </Card>
           
           <Card className="text-center border-dialogue-blue/20">
             <CardContent className="p-6">
-              <Users className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
-              <h3 className="font-semibold text-lg mb-2">Scale Training</h3>
-              <p className="text-sm text-gray-600">Train dozens of volunteers simultaneously with consistent quality</p>
+              <GraduationCap className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+              <h3 className="font-semibold text-lg mb-2">Training for Canvassers</h3>
+              <p className="text-sm text-gray-600">Comprehensive modules to prepare volunteers for effective door-to-door conversations</p>
             </CardContent>
           </Card>
           
           <Card className="text-center border-dialogue-blue/20">
             <CardContent className="p-6">
-              <Target className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
-              <h3 className="font-semibold text-lg mb-2">Target Practice</h3>
-              <p className="text-sm text-gray-600">Practice with voter personas specific to your district and issues</p>
+              <MessageSquare className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+              <h3 className="font-semibold text-lg mb-2">Coaching for Activists</h3>
+              <p className="text-sm text-gray-600">Personalized guidance for activists and citizens to improve political dialogue skills</p>
             </CardContent>
           </Card>
           
