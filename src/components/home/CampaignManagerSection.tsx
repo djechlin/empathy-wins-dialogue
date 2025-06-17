@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Button } from '@/ui/button';
 import { Card, CardContent } from '@/ui/card';
 import { useNavigate } from 'react-router-dom';
-import { BarChart3, Users, Target, TrendingUp, BookOpen, GraduationCap, MessageSquare } from 'lucide-react';
+import { GraduationCap, MessageSquare, TrendingUp } from 'lucide-react';
 
 const CampaignManagerSection = () => {
   const navigate = useNavigate();
@@ -25,15 +24,7 @@ const CampaignManagerSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <Card className="text-center border-dialogue-blue/20">
-            <CardContent className="p-6">
-              <BookOpen className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
-              <h3 className="font-semibold text-lg mb-2">Case Studies</h3>
-              <p className="text-sm text-gray-600">Real campaign success stories showing measurable improvements in voter persuasion</p>
-            </CardContent>
-          </Card>
-          
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <Card className="text-center border-dialogue-blue/20">
             <CardContent className="p-6">
               <GraduationCap className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
