@@ -5,7 +5,7 @@ const TheNameType2Dialogue = () => {
     <BlogLayout
       title="The Name Type2Dialogue"
       date="December 2024"
-      readTime="5 min read"
+      readTime="4 min read"
       description="Understanding why meaningful political conversations require System 2 thinking"
     >
       <p>

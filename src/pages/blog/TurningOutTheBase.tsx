@@ -2,7 +2,7 @@ import BlogLayout from '@/components/layout/BlogLayout';
 
 const TurningOutTheBase = () => {
   return (
-    <BlogLayout title="What Every Activist Should Know About Turning Out the Base" date="December 2024" readTime="7 min read">
+    <BlogLayout title="What Every Activist Should Know About Turning Out the Base" date="December 2024" readTime="4 min read">
       <p>
         In the world of political campaigns and social movements, there's an ongoing debate about where to focus limited time and resources:
         persuading swing voters or mobilizing your base. While swing voters get most of the attention, the mathematics of modern politics

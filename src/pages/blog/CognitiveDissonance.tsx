@@ -2,7 +2,7 @@ import BlogLayout from '@/components/layout/BlogLayout';
 
 const CognitiveDissonanceBlog = () => {
   return (
-    <BlogLayout title="The Role of Cognitive Dissonance in Changing One's Mind" date="December 2024" readTime="8 min read">
+    <BlogLayout title="The Role of Cognitive Dissonance in Changing One's Mind" date="December 2024" readTime="4 min read">
       <p>
         In the realm of political dialogue and empathetic persuasion, one of the most powerful yet misunderstood psychological phenomena is
         cognitive dissonance. Understanding how this mental process works—and how to create the psychological safety necessary to navigate
