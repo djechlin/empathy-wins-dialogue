@@ -1,4 +1,4 @@
-import { ConversationReport } from '@/types/conversationReport';
+import { ConversationReport } from '@/types/ConversationReport';
 
 export const mockConversationReport: ConversationReport = {
   baseScore: 3,

@@ -15,12 +15,10 @@ const CampaignManagerSection = () => {
     <section className="py-16 bg-gradient-to-br from-dialogue-blue/5 to-dialogue-purple/5">
       <div className="container-custom">
         <div className="text-center mb-12">
-          <h2 className="font-serif text-4xl md:text-5xl text-dialogue-darkblue mb-6">
-            Train Your Team to Win More Conversations
-          </h2>
+          <h2 className="font-serif text-4xl md:text-5xl text-dialogue-darkblue mb-6">Train Your Team to Win More Conversations</h2>
           <p className="text-xl text-foreground max-w-3xl mx-auto leading-relaxed">
-            Campaign managers use type2dialogue to scale effective canvassing training. 
-            Your volunteers practice with AI before they knock on real doors.
+            Campaign managers use type2dialogue to scale effective canvassing training. Your volunteers practice with AI before they knock
+            on real doors.
           </p>
         </div>
 
@@ -32,7 +30,7 @@ const CampaignManagerSection = () => {
               <p className="text-sm text-gray-600">Comprehensive modules to prepare volunteers for effective door-to-door conversations</p>
             </CardContent>
           </Card>
-          
+
           <Card className="text-center border-dialogue-blue/20">
             <CardContent className="p-6">
               <MessageSquare className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
@@ -40,7 +38,7 @@ const CampaignManagerSection = () => {
               <p className="text-sm text-gray-600">Personalized guidance for activists and citizens to improve political dialogue skills</p>
             </CardContent>
           </Card>
-          
+
           <Card className="text-center border-dialogue-blue/20">
             <CardContent className="p-6">
               <TrendingUp className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
@@ -57,8 +55,8 @@ const CampaignManagerSection = () => {
               <p className="text-lg opacity-90 mb-6">
                 See why campaign managers choose type2dialogue to prepare their teams for real voter conversations.
               </p>
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-white text-dialogue-darkblue hover:bg-dialogue-blue hover:text-white text-lg px-8 py-4"
                 onClick={handleStartChallenge}
               >

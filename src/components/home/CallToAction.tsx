@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
@@ -22,8 +21,8 @@ const CallToAction = () => {
                 Join the movement of campaigns using empathetic dialogue training to win more conversations and elections.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-white text-dialogue-darkblue hover:bg-dialogue-blue hover:text-white text-lg px-8 py-4"
                   onClick={handleStartChallenge}
                 >

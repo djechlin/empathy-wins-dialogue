@@ -4,6 +4,7 @@ import { Button } from '@/ui/button';
 import { LogIn, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
+import { blogPosts } from '@/data/blogPosts';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -86,9 +87,28 @@ const Navbar = () => {
               <Link to="/challenge" className="text-foreground hover:text-dialogue-purple transition-colors">
                 Challenge
               </Link>
-              <Link to="/blog" className="text-foreground hover:text-dialogue-purple transition-colors">
-                Blog
-              </Link>
+              <div className="relative group">
+                <Link to="/blog" className="text-foreground hover:text-dialogue-purple transition-colors">
+                  Blog
+                </Link>
+                <div className="absolute top-full left-0 bg-white border border-gray-200 shadow-lg rounded-md py-2 min-w-[320px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  {blogPosts.map((post) => (
+                    <Link key={post.id} to={`/blog/${post.id}`} className="block px-4 py-3 hover:bg-gray-50 transition-colors">
+                      <div className="font-medium text-gray-900 text-sm mb-1 leading-tight">{post.title}</div>
+                      <div className="text-xs text-gray-500 flex items-center gap-2">
+                        <span>{post.readTime}</span>
+                        <span>•</span>
+                        <span>{post.date}</span>
+                      </div>
+                    </Link>
+                  ))}
+                  <div className="border-t border-gray-100 mt-2 pt-2">
+                    <Link to="/blog" className="block px-4 py-2 text-sm text-dialogue-purple hover:text-dialogue-darkblue font-medium">
+                      View all posts →
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </>
           )}
         </div>
