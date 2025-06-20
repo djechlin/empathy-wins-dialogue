@@ -95,10 +95,8 @@ const Navbar = () => {
                   {blogPosts.map((post) => (
                     <Link key={post.id} to={`/blog/${post.id}`} className="block px-4 py-3 hover:bg-gray-50 transition-colors">
                       <div className="font-medium text-gray-900 text-sm mb-1 leading-tight">{post.title}</div>
-                      <div className="text-xs text-gray-500 flex items-center gap-2">
+                      <div className="text-xs text-gray-500">
                         <span>{post.readTime}</span>
-                        <span>•</span>
-                        <span>{post.date}</span>
                       </div>
                     </Link>
                   ))}
