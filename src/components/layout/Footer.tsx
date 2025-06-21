@@ -4,73 +4,58 @@ import { MessageCircle } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-dialogue-neutral py-12 mt-16">
+    <footer className="bg-dialogue-neutral py-8 mt-16">
       <div className="container-custom">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <MessageCircle className="h-6 w-6 text-dialogue-purple" />
-              <span className="font-heading font-bold text-xl text-dialogue-darkblue">type2dialogue</span>
-            </div>
-            <p className="text-muted-foreground mb-4">Building bridges through empathetic political conversations that win elections.</p>
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <MessageCircle className="h-6 w-6 text-dialogue-purple" />
+            <span className="font-heading font-bold text-xl text-dialogue-darkblue">type2dialogue</span>
           </div>
-
-
-          <div>
-            <h3 className="font-heading font-semibold mb-4">Company</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
-            </ul>
-          </div>
+          <p className="text-muted-foreground text-sm">Building bridges through empathetic political conversations that win elections.</p>
         </div>
 
-        <div className="border-t border-border mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
+        <div className="flex flex-wrap justify-center items-center gap-6 mb-6 text-sm">
+          <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
+            About Us
+          </Link>
+          <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
+            Contact
+          </Link>
+          <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
+            Privacy Policy
+          </Link>
+          <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
+            Terms of Service
+          </Link>
+          <span className="text-muted-foreground">|</span>
+          <a
+            href="http://type2dialogue.substack.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-dialogue-purple transition-colors"
+          >
+            Substack
+          </a>
+          <a
+            href="https://x.com/type2dialogue"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-dialogue-purple transition-colors"
+          >
+            X
+          </a>
+          <a
+            href="https://bsky.app/profile/type2dialogue.bsky.social"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-dialogue-purple transition-colors"
+          >
+            Bluesky
+          </a>
+        </div>
+
+        <div className="text-center">
           <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} type2dialogue. All rights reserved.</p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <a
-              href="http://type2dialogue.substack.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-dialogue-purple"
-            >
-              Substack
-            </a>
-            <a
-              href="https://x.com/type2dialogue"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-dialogue-purple"
-            >
-              X
-            </a>
-            <a
-              href="https://bsky.app/profile/type2dialogue.bsky.social"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-dialogue-purple"
-            >
-              Bluesky
-            </a>
-          </div>
         </div>
       </div>
     </footer>
