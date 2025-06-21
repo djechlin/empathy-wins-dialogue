@@ -97,13 +97,28 @@ const Footer = () => {
         <div className="border-t border-border mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} type2dialogue. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <a href="http://type2dialogue.substack.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-dialogue-purple">
+            <a
+              href="http://type2dialogue.substack.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-dialogue-purple"
+            >
               Substack
             </a>
-            <a href="https://x.com/type2dialogue" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-dialogue-purple">
-              Twitter/X
+            <a
+              href="https://x.com/type2dialogue"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-dialogue-purple"
+            >
+              X
             </a>
-            <a href="https://bsky.app/profile/type2dialogue.bsky.social" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-dialogue-purple">
+            <a
+              href="https://bsky.app/profile/type2dialogue.bsky.social"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-dialogue-purple"
+            >
               Bluesky
             </a>
           </div>
