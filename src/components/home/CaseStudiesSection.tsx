@@ -5,42 +5,42 @@ import { TrendingUp, Users, MessageSquare } from 'lucide-react';
 const CaseStudiesSection = () => {
   const caseStudies = [
     {
-      title: 'Massachusetts Senate Campaign',
-      metric: '12% increase in persuasion rate',
+      title: 'Pennsylvania 2020 Presidential',
+      metric: '+3.1 votes per 100 calls',
       description:
-        'Canvassers trained with type2dialogue moved 12% more voters from oppose to support compared to traditional training methods.',
+        'Deep canvassing phone program by People\'s Action achieved overall addition of 3.1 votes for each 100 calls towards Biden\'s vote margin, larger than 2016 margin in key battleground states.',
       icon: TrendingUp,
     },
     {
-      title: 'California Assembly Race',
-      metric: '85% volunteer retention',
-      description: 'Campaign saw dramatic improvement in volunteer confidence and retention after implementing AI roleplay training.',
+      title: 'Philadelphia 2022 Elections',
+      metric: '15% higher turnout',
+      description: 'Changing the Conversation Together\'s deep canvassing resulted in Philadelphia voters turning out at 15% higher rate than their neighbors in crucial Senate and gubernatorial races.',
       icon: Users,
     },
     {
-      title: 'Ohio Ballot Initiative',
-      metric: '3x more meaningful conversations',
+      title: 'Transgender Rights Study',
+      metric: '3+ month durability',
       description:
-        'Volunteers reported having deeper, more productive conversations with voters after practicing vulnerability techniques.',
+        'Broockman & Kalla\'s landmark Science study found 10-minute deep canvass conversations substantially reduced transphobia for 3+ months, with effects greater than national attitude shifts from 1998-2012.',
       icon: MessageSquare,
     },
     {
-      title: 'Texas Congressional District',
-      metric: '40% reduction in training time',
-      description: 'Campaign managers cut volunteer training time in half while achieving better conversation outcomes.',
+      title: 'Immigration Attitudes Research',
+      metric: '+4% pro-immigrant support',
+      description: 'Berkeley study of 6,800 voters found deep canvassing increased pro-immigrant policy support from 29% to 33%, with effects lasting 4+ months.',
       icon: TrendingUp,
     },
     {
-      title: 'Florida Governor Race',
-      metric: 'Net +4 point shift',
+      title: '2022 Election Lies Experiment',
+      metric: '+4.2% mail-in voting support',
       description:
-        'Districts using type2dialogue training showed 4-point improvement in candidate favorability compared to control groups.',
+        'Broockman-Kalla experiment in Missouri, Idaho, and Georgia found deep canvassing increased mail-in voting support by 4.2 percentage points and reduced fraud beliefs by 1.9 points.',
       icon: Users,
     },
     {
-      title: 'Colorado State Senate',
-      metric: '95% would recommend',
-      description: 'Nearly all campaign staff said they would use type2dialogue again and recommend it to other campaigns.',
+      title: 'Philadelphia 2020 Presidential',
+      metric: '10% increased turnout',
+      description: 'Changing the Conversation Together\'s Philadelphia deep canvassing resulted in voters participating at 10% higher rate than comparable neighbors in Biden\'s Pennsylvania victory.',
       icon: MessageSquare,
     },
   ];
@@ -49,10 +49,9 @@ const CaseStudiesSection = () => {
     <section className="py-16 bg-white">
       <div className="container-custom">
         <div className="text-center mb-12">
-          <h2 className="font-serif text-4xl md:text-5xl text-dialogue-darkblue mb-6">Proven Results Across Campaigns</h2>
+          <h2 className="font-serif text-4xl md:text-5xl text-dialogue-darkblue mb-6">Evidence-Based Deep Canvassing</h2>
           <p className="text-xl text-foreground max-w-3xl mx-auto leading-relaxed">
-            Campaign managers across the country are seeing measurable improvements in voter persuasion and volunteer performance with
-            type2dialogue training.
+            Academic research and real campaign results demonstrate the measurable impact of deep canvassing techniques on voter persuasion and turnout.
           </p>
         </div>
 
