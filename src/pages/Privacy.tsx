@@ -26,14 +26,14 @@ const Privacy = () => {
                 </ul>
 
                 <p className="mb-4">
-                  When you use the roleplay, audio is sent to our voice provider to generate a response. It is not saved by third parties. 
-                  It is saved for up to 30 days by Type2Dialogue, for the purpose of checking for issues with voice processing, like 
-                  whether the voice assistant understands words clearly. Audio data is never used for AI training.
+                  When you use the roleplay, audio is sent to our voice provider to generate a response. It is not saved by third parties.
+                  It is saved for up to 30 days by Type2Dialogue, for the purpose of checking for issues with voice processing, like whether
+                  the voice assistant understands words clearly. Audio data is never used for AI training.
                 </p>
 
                 <p className="mb-6">
-                  Textual transcripts of roleplays are saved for up to 2 years. They may be anonymized and used to train AI developed 
-                  by Type2Dialogue, but not train major providers like ChatGPT.
+                  Textual transcripts of roleplays are saved for up to 2 years. They may be anonymized and used to train AI developed by
+                  Type2Dialogue, but not train major providers like ChatGPT.
                 </p>
 
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4">Cookies and Similar Technologies</h2>
@@ -47,8 +47,8 @@ const Privacy = () => {
 
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4">Changes to This Policy</h2>
                 <p className="mb-6">
-                  We may update this privacy policy from time to time. We will notify you of any material changes by posting the new 
-                  policy in the app. Changes in data retention or usage won't apply retroactively without explicit consent.
+                  We may update this privacy policy from time to time. We will notify you of any material changes by posting the new policy
+                  in the app. Changes in data retention or usage won't apply retroactively without explicit consent.
                 </p>
 
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4">Contact Us</h2>

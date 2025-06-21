@@ -4,6 +4,7 @@ import { TooltipProvider } from '@/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import About from './pages/About';
 import Auth from './pages/Auth';
 import ChallengeLayout from './components/layout/ChallengeLayout';
 import Blog from './pages/Blog';
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="roleplay" element={<Roleplay />} />
               <Route path="competencies" element={<Report />} />
             </Route>
+            <Route path="/about" element={<About />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/privacy" element={<Privacy />} />
 
