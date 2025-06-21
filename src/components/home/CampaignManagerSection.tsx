@@ -62,7 +62,7 @@ const CampaignManagerSection = () => {
               >
                 Start Roleplay
               </Button>
-              <p className="text-sm opacity-75 mt-3">5 minutes • No signup required</p>
+              <p className="text-sm opacity-75 mt-3">10 minutes • No signup required</p>
             </CardContent>
           </Card>
         </div>
