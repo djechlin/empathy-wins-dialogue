@@ -16,11 +16,10 @@ const About = () => {
 
               <div className="prose prose-lg max-w-none">
                 <p className="text-lg leading-relaxed">
-                  Type2Dialogue is a startup founded by Daniel Echlin for the purpose of improving political discourse. 
-                  Our present focus is improving the efficacy of the canvassing experience, primarily by training canvassers 
-                  to use deep canvassing techniques. The training makes use of AI to implement a voice roleplay and generate 
-                  detailed feedback, a capability that did not exist a few years ago and enables us to train canvassers 
-                  anytime, anywhere.
+                  Type2Dialogue is a startup founded by Daniel Echlin for the purpose of improving political discourse. Our present focus is
+                  improving the efficacy of the canvassing experience, primarily by training canvassers to use deep canvassing techniques.
+                  The training makes use of AI to implement a voice roleplay and generate detailed feedback, a capability that did not exist
+                  a few years ago and enables us to train canvassers anytime, anywhere.
                 </p>
               </div>
             </CardContent>
