@@ -51,18 +51,18 @@ const CampaignManagerSection = () => {
         <div className="text-center">
           <Card className="bg-gradient-to-r from-green-500 to-blue-600 text-white max-w-2xl mx-auto">
             <CardContent className="p-8">
-              <h3 className="font-serif text-2xl mb-4">Ready to Transform Your Campaign Training?</h3>
+              <h3 className="font-serif text-2xl mb-4">Try Your First Roleplay</h3>
               <p className="text-lg opacity-90 mb-6">
-                See why campaign managers choose type2dialogue to prepare their teams for real voter conversations.
+                Practice deep canvassing with our voice assistant in a realistic voter conversation.
               </p>
               <Button
                 size="lg"
                 className="bg-white text-green-600 hover:bg-green-50 font-semibold shadow-md text-lg px-8 py-4"
                 onClick={handleStartChallenge}
               >
-                Try the Challenge Now
+                Start Roleplay
               </Button>
-              <p className="text-sm opacity-75 mt-3">Experience what your volunteers will practice with</p>
+              <p className="text-sm opacity-75 mt-3">5 minutes • No signup required</p>
             </CardContent>
           </Card>
         </div>
