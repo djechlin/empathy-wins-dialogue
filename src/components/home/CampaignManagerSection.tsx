@@ -3,16 +3,18 @@ import { Button } from '@/ui/button';
 import { Card, CardContent } from '@/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { GraduationCap, MessageSquare, TrendingUp } from 'lucide-react';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const CampaignManagerSection = () => {
   const navigate = useNavigate();
+  const { elementRef, isVisible } = useScrollAnimation();
 
   const handleStartChallenge = () => {
     navigate('/challenge');
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-dialogue-blue/5 to-dialogue-purple/5">
+    <section ref={elementRef} className={`py-16 bg-gradient-to-br from-dialogue-blue/5 to-dialogue-purple/5 animate-on-scroll ${isVisible ? 'animate-in-view' : ''}`}>
       <div className="container-custom">
         <div className="text-center mb-12">
           <h2 className="font-serif text-4xl md:text-5xl text-dialogue-darkblue mb-6">Train Your Team to Win More Conversations</h2>

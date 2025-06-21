@@ -1,8 +1,11 @@
 import React from 'react';
 import { Card, CardContent } from '@/ui/card';
 import { TrendingUp, Users, MessageSquare } from 'lucide-react';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const CaseStudiesSection = () => {
+  const { elementRef, isVisible } = useScrollAnimation();
+  
   const caseStudies = [
     {
       title: 'Pennsylvania 2020 Presidential',
@@ -55,7 +58,7 @@ const CaseStudiesSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-white">
+    <section ref={elementRef} className={`py-16 bg-white animate-on-scroll ${isVisible ? 'animate-in-view' : ''}`}>
       <div className="container-custom">
         <div className="text-center mb-12">
           <h2 className="font-serif text-4xl md:text-5xl text-dialogue-darkblue mb-6">Evidence-Based Deep Canvassing</h2>
