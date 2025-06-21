@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-dialogue-neutral py-12 mt-16">
       <div className="container-custom">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
               <MessageCircle className="h-6 w-6 text-dialogue-purple" />
@@ -15,57 +15,6 @@ const Footer = () => {
             <p className="text-muted-foreground mb-4">Building bridges through empathetic political conversations that win elections.</p>
           </div>
 
-          <div>
-            <h3 className="font-heading font-semibold mb-4">Platform</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-                  How It Works
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-                  Topics
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-                  Success Stories
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-                  Electoral Impact
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-heading font-semibold mb-4">Resources</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-                  Dialogue Guide
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-                  Research
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-                  Workshops
-                </Link>
-              </li>
-            </ul>
-          </div>
 
           <div>
             <h3 className="font-heading font-semibold mb-4">Company</h3>
