@@ -57,7 +57,7 @@ const CampaignManagerSection = () => {
               </p>
               <Button
                 size="lg"
-                className="bg-white text-dialogue-darkblue hover:bg-dialogue-blue hover:text-white text-lg px-8 py-4"
+                className="bg-dialogue-blue text-dialogue-darkblue hover:bg-dialogue-blue/80 text-lg px-8 py-4"
                 onClick={handleStartChallenge}
               >
                 Try the Challenge Now
