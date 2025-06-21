@@ -58,7 +58,7 @@ const CaseStudiesSection = () => {
     <section className="py-16 bg-white">
       <div className="container-custom">
         <div className="text-center mb-12">
-          <h2 className="font-serif text-4xl md:text-5xl text-dialogue-purple mb-6">Evidence-Based Deep Canvassing</h2>
+          <h2 className="font-serif text-4xl md:text-5xl text-dialogue-darkblue mb-6">Evidence-Based Deep Canvassing</h2>
           <p className="text-xl text-foreground max-w-3xl mx-auto leading-relaxed">
             Academic research and real campaign results demonstrate the measurable impact of deep canvassing techniques on voter persuasion
             and turnout.
