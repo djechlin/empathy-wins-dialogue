@@ -72,7 +72,7 @@ const CaseStudiesSection = () => {
               <Card key={index} className="border-dialogue-blue/20 hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <IconComponent className="w-8 h-8 text-dialogue-darkblue mb-4" />
-                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">{study.title}</h3>
+                  <h3 className="font-semibold text-lg mb-2 text-dialogue-purple">{study.title}</h3>
                   <div className="text-2xl font-bold text-dialogue-darkblue mb-3">{study.metric}</div>
                   <p className="text-sm text-gray-600 leading-relaxed mb-3">{study.description}</p>
                   <p className="text-xs text-gray-500 italic">{study.citation}</p>
