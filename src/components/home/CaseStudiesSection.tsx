@@ -22,9 +22,9 @@ const CaseStudiesSection = () => {
     },
     {
       title: 'Transgender Rights Study',
-      metric: '3+ month durability',
+      metric: '10% attitude shift',
       description:
-        "Broockman & Kalla's landmark study found 10-minute deep canvass conversations substantially reduced transphobia for 3+ months, with effects greater than national attitude shifts from 1998-2012.",
+        "Broockman & Kalla's landmark study found 10-minute deep canvass conversations substantially reduced transphobia with 10-point attitude change, effects greater than national shifts from 1998-2012.",
       citation: 'Broockman & Kalla, Science, 2016',
       icon: MessageSquare,
     },
@@ -45,7 +45,7 @@ const CaseStudiesSection = () => {
       icon: Users,
     },
     {
-      title: 'Deep Canvassing Durability',
+      title: 'Trail, BC Climate Action',
       metric: '9-month lasting effects',
       description:
         'Studies by Josh Kalla and David Brockman found that persuasion effects from deep canvassing lasted up to 9 months–much longer than common campaign outreach methods.',
