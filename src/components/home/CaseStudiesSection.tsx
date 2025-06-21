@@ -46,9 +46,9 @@ const CaseStudiesSection = () => {
     },
     {
       title: 'Trail, BC Climate Action',
-      metric: '40% persuasion rate',
+      metric: 'Unanimous council vote',
       description:
-        'Deep canvassing campaign in rural British Columbia achieved 40% persuasion rate on climate action. City council voted unanimously for 100% renewable energy by 2050 after 1,000+ conversations.',
+        'Deep canvassing campaign in rural British Columbia engaged over 1,000 residents in climate conversations. City council subsequently voted unanimously to transition to 100% renewable energy by 2050.',
       citation: 'Yale Climate Communication Program, 2022',
       icon: TrendingUp,
     },
