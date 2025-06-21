@@ -49,7 +49,7 @@ const CampaignManagerSection = () => {
         </div>
 
         <div className="text-center">
-          <Card className="bg-dialogue-darkblue text-white max-w-2xl mx-auto">
+          <Card className="bg-gradient-to-r from-green-500 to-blue-600 text-white max-w-2xl mx-auto">
             <CardContent className="p-8">
               <h3 className="font-serif text-2xl mb-4">Ready to Transform Your Campaign Training?</h3>
               <p className="text-lg opacity-90 mb-6">
@@ -57,7 +57,7 @@ const CampaignManagerSection = () => {
               </p>
               <Button
                 size="lg"
-                className="bg-dialogue-blue text-dialogue-darkblue hover:bg-dialogue-blue/80 text-lg px-8 py-4"
+                className="bg-white text-green-600 hover:bg-green-50 font-semibold shadow-md text-lg px-8 py-4"
                 onClick={handleStartChallenge}
               >
                 Try the Challenge Now
