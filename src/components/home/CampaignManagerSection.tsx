@@ -14,7 +14,10 @@ const CampaignManagerSection = () => {
   };
 
   return (
-    <section ref={elementRef} className={`py-16 bg-gradient-to-br from-dialogue-blue/5 to-dialogue-purple/5 animate-on-scroll ${isVisible ? 'animate-in-view' : ''}`}>
+    <section
+      ref={elementRef}
+      className={`py-16 bg-gradient-to-br from-dialogue-blue/5 to-dialogue-purple/5 animate-on-scroll ${isVisible ? 'animate-in-view' : ''}`}
+    >
       <div className="container-custom">
         <div className="text-center mb-12">
           <h2 className="font-serif text-4xl md:text-5xl text-dialogue-darkblue mb-6">Train Your Team to Win More Conversations</h2>

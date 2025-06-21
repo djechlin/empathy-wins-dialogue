@@ -5,7 +5,7 @@ import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const CaseStudiesSection = () => {
   const { elementRef, isVisible } = useScrollAnimation();
-  
+
   const caseStudies = [
     {
       title: 'Pennsylvania 2020 Presidential',
