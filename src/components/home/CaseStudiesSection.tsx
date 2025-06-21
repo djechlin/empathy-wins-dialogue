@@ -45,10 +45,10 @@ const CaseStudiesSection = () => {
       icon: Users,
     },
     {
-      title: 'Trail, BC Climate Action',
-      metric: 'Unanimous council vote',
+      title: 'Deep Canvassing Durability',
+      metric: '9-month lasting effects',
       description:
-        'Deep canvassing campaign in rural British Columbia engaged over 1,000 residents in climate conversations. City council subsequently voted unanimously to transition to 100% renewable energy by 2050.',
+        'Studies by Josh Kalla and David Brockman found that persuasion effects from deep canvassing lasted up to 9 months–much longer than common campaign outreach methods.',
       citation: 'Yale Climate Communication Program, 2022',
       icon: TrendingUp,
     },
