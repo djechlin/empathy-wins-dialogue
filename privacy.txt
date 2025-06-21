@@ -1,0 +1,31 @@
+# Privacy Policy
+
+*Last updated: June 21, 2025*
+
+## Data We Store on Our Servers
+
+When you create an account and use our app, we collect and store information necessary for app functionality, including:
+- Account registration information (email, username)
+- App progress and activity data (such as course completion, achievements, and usage history)
+
+When you use the roleplay, audio is sent to our voice provider to generate a response. It is not saved by third parties. It is saved for up to 30 days by Type2Dialogue, for the purpose of checking for issues with voice processing, like whether the voice assistant understands words clearly. Audio data is never used for AI training.
+
+Textual transcripts of roleplays are saved for up to 2 years. They may be anonymized and used to train AI developed by Type2Dialogue, but not train major providers like ChatGPT.
+
+## Cookies and Similar Technologies
+We use cookies and similar technologies to:
+- Keep you logged into your account
+- Remember your preferences and settings
+- Analyze app usage patterns
+- Improve app performance and functionality
+
+
+
+## Changes to This Policy
+
+We may update this privacy policy from time to time. We will notify you of any material changes by posting the new policy in the app. Changes in data retention or usage won't apply retroactively without explicit consent.
+
+## Contact Us
+
+If you have questions about this privacy policy, please contact us at daniel@type2dialogue.com.
+

@@ -18,6 +18,9 @@ const Footer = () => {
           <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
             About
           </Link>
+          <Link to="/privacy" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
+            Privacy
+          </Link>
           <a href="mailto:daniel@type2dialogue.com" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
             Contact
           </a>

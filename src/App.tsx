@@ -16,6 +16,7 @@ import Learn from './pages/Learn';
 import LearnChapter from './pages/LearnChapter';
 import NotFound from './pages/NotFound';
 import Prepare from './pages/Prepare';
+import Privacy from './pages/Privacy';
 import Report from './pages/Report';
 import Roleplay from './pages/Roleplay';
 import StartingOut from './pages/StartingOut';
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="competencies" element={<Report />} />
             </Route>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/privacy" element={<Privacy />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
