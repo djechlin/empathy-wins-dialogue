@@ -16,17 +16,11 @@ const Footer = () => {
 
         <div className="flex flex-wrap justify-center items-center gap-6 mb-6 text-sm">
           <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-            About Us
+            About
           </Link>
           <a href="mailto:daniel@type2dialogue.com" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
             Contact
           </a>
-          <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-            Privacy Policy
-          </Link>
-          <Link to="#" className="text-muted-foreground hover:text-dialogue-purple transition-colors">
-            Terms of Service
-          </Link>
           <span className="text-muted-foreground">|</span>
           <a
             href="http://type2dialogue.substack.com/"
