@@ -2,6 +2,7 @@ import { getHumeAccessToken } from '@/edge/getHumeAccessToken';
 import { ToolCallHandler, useVoice as useHumeVoice, VoiceContextType, VoiceProvider } from '@humeai/voice-react';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useStopwatch } from 'react-timer-hook';
+import useWakeLock from 'react-use-wake-lock';
 import { DialogueContext, DialogueMessage } from '../types';
 import { DialogueContextObject } from './DialogueContextObject';
 
@@ -68,16 +69,27 @@ function fromHumeStatus(status: VoiceStatus): 'connected' | 'connecting' | 'not-
 function InnerDialogueProvider({ children }: { children: ReactNode }) {
   const humeVoice = useHumeVoice();
   const { seconds: secondsElapsed, pause, start, isRunning } = useStopwatch({ autoStart: false });
+  const { request: requestWakeLock, release: releaseWakeLock } = useWakeLock();
 
   const connect = useCallback(async () => {
     await humeVoice.connect();
     start();
-  }, [humeVoice, start]);
+    try {
+      requestWakeLock();
+    } catch (error) {
+      console.error('Wake lock not supported or failed:', error);
+    }
+  }, [humeVoice, start, requestWakeLock]);
 
   const disconnect = useCallback(() => {
     humeVoice.disconnect();
     pause();
-  }, [humeVoice, pause]);
+    try {
+      releaseWakeLock();
+    } catch (error) {
+      console.error('Failed to release wake lock:', error);
+    }
+  }, [humeVoice, pause, releaseWakeLock]);
 
   const messages: DialogueMessage[] = useMemo(
     () => humeVoice.messages.map((msg, index) => transformHumeMessage(msg, index)).filter((msg): msg is DialogueMessage => msg !== null),
@@ -100,6 +112,17 @@ function InnerDialogueProvider({ children }: { children: ReactNode }) {
     },
     [humeVoice, isRunning, pause, start],
   );
+
+  // Cleanup wake lock on unmount
+  useEffect(() => {
+    return () => {
+      try {
+        releaseWakeLock();
+      } catch (error) {
+        console.error('Failed to release wake lock on unmount:', error);
+      }
+    };
+  }, [releaseWakeLock]);
 
   const dialogueContext: DialogueContext = useMemo(
     () => ({
