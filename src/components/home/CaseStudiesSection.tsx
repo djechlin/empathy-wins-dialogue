@@ -13,10 +13,10 @@ const CaseStudiesSection = () => {
       icon: TrendingUp,
     },
     {
-      title: 'Philadelphia 2022 Elections',
+      title: 'Philadelphia 2022 Midterms',
       metric: '15% higher turnout',
       description:
-        "Changing the Conversation Together's deep canvassing resulted in Philadelphia voters turning out at 15% higher rate than their neighbors in crucial Senate and gubernatorial races.",
+        "Changing the Conversation Together's deep canvassing resulted in Philadelphia voters turning out at 15% higher rate than their neighbors in 2022 Senate (Fetterman) and gubernatorial (Shapiro) races.",
       citation: 'Philadelphia Citizen, 2024',
       icon: Users,
     },
@@ -45,12 +45,12 @@ const CaseStudiesSection = () => {
       icon: Users,
     },
     {
-      title: 'Philadelphia 2020 Presidential',
-      metric: '10% increased turnout',
+      title: 'Trail, BC Climate Action',
+      metric: '40% persuasion rate',
       description:
-        "Changing the Conversation Together's Philadelphia deep canvassing resulted in voters participating at 10% higher rate than comparable neighbors in Biden's Pennsylvania victory.",
-      citation: 'Philadelphia Citizen, 2024',
-      icon: MessageSquare,
+        'Deep canvassing campaign in rural British Columbia achieved 40% persuasion rate on climate action. City council voted unanimously for 100% renewable energy by 2050 after 1,000+ conversations.',
+      citation: 'Yale Climate Communication Program, 2022',
+      icon: TrendingUp,
     },
   ];
 
@@ -71,9 +71,9 @@ const CaseStudiesSection = () => {
             return (
               <Card key={index} className="border-dialogue-blue/20 hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
-                  <IconComponent className="w-8 h-8 text-dialogue-purple mb-4" />
+                  <IconComponent className="w-8 h-8 text-dialogue-darkblue mb-4" />
                   <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">{study.title}</h3>
-                  <div className="text-2xl font-bold text-dialogue-purple mb-3">{study.metric}</div>
+                  <div className="text-2xl font-bold text-dialogue-darkblue mb-3">{study.metric}</div>
                   <p className="text-sm text-gray-600 leading-relaxed mb-3">{study.description}</p>
                   <p className="text-xs text-gray-500 italic">{study.citation}</p>
                 </CardContent>
