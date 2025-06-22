@@ -31,15 +31,7 @@ const Hero = () => {
               >
                 Start Your First Roleplay
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-dialogue-purple text-dialogue-purple hover:bg-dialogue-blue text-lg px-8 py-4"
-              >
-                See How It Works
-              </Button>
             </div>
-            <p className="text-sm text-gray-600 mt-4">Free to try • No signup required • 5 minutes</p>
           </div>
 
           <div className="rounded-lg overflow-hidden shadow-xl animate-fade-in">
