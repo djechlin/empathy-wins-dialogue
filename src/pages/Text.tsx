@@ -52,15 +52,20 @@ const Text = () => {
     setIsLoading(true);
 
     try {
+      // Build the conversation context for the prompt
+      const conversationHistory = messages.map((m) => `${m.isUser ? 'User' : 'Alex'}: ${m.text}`).join('\n');
+      const fullPrompt = `You are roleplaying as Alex, a friend who needs to be convinced to attend the Good Trouble Lives On anti-Trump protest on July 17th. You should be initially hesitant but open to discussion. The user is trying to convince you to come to the protest. Be conversational and natural like you're texting a friend. Don't be too political initially - act like a normal friend who might be unsure about going to a protest.
+
+Previous conversation:
+${conversationHistory}
+
+User: ${inputValue}
+
+Respond as Alex:`;
+
       const { data, error } = await supabase.functions.invoke('text-friend', {
         body: {
-          userMessage: inputValue,
-          context:
-            "You are roleplaying as a friend who needs to be convinced to attend the Good Trouble Lives On anti-Trump protest on July 17th. You should be initially hesitant but open to discussion. The user is trying to convince you to come to the protest. Be conversational and natural like you're texting a friend. Don't be too political initially - act like a normal friend who might be unsure about going to a protest.",
-          conversation_history: messages.map((m) => ({
-            role: m.isUser ? 'user' : 'assistant',
-            content: m.text,
-          })),
+          userMessage: fullPrompt,
         },
       });
 
@@ -70,7 +75,7 @@ const Text = () => {
 
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.response || 'Sorry, I had trouble responding. Can you try again?',
+        text: data?.response || data?.content || data || 'Sorry, I had trouble responding. Can you try again?',
         isUser: false,
         timestamp: new Date(),
       };
