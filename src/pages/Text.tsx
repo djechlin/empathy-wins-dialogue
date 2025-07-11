@@ -26,7 +26,7 @@ const Text = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [alexGeneration, setAlexGeneration] = useState('genz');
-  const [currentSuggestion, setCurrentSuggestion] = useState<string>('');
+  const [currentSuggestion, setCurrentSuggestion] = useState<string>('bestie the tea is HOT today ☕🔥');
   const [isComplete, setIsComplete] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
