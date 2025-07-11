@@ -18,7 +18,7 @@ const Text = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hey! What's up?",
+      text: "yo what's good bestie? ✨",
       isUser: false,
       timestamp: new Date(Date.now() - 1000 * 60 * 5),
     },
@@ -156,7 +156,7 @@ COMPLETE should be true only when Alex has clearly and definitively agreed to at
 
       setMessages((prev) => [...prev, aiResponse]);
       setCurrentSuggestion(suggestion);
-      
+
       if (complete) {
         setIsComplete(true);
         setCurrentSuggestion(''); // Clear suggestion when complete
@@ -257,7 +257,7 @@ COMPLETE should be true only when Alex has clearly and definitively agreed to at
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={isComplete ? "Alex agreed to go! 🎉" : "Type a message..."}
+              placeholder={isComplete ? 'Alex agreed to go! 🎉' : 'Type a message...'}
               className="flex-1 min-h-[40px] max-h-[120px] resize-none"
               disabled={isLoading || isComplete}
             />
@@ -280,7 +280,7 @@ COMPLETE should be true only when Alex has clearly and definitively agreed to at
           )}
         </div>
       </Card>
-      
+
       {isComplete && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Card className="p-8 text-center max-w-md mx-4 bg-white">
@@ -288,12 +288,8 @@ COMPLETE should be true only when Alex has clearly and definitively agreed to at
               <PartyPopper className="mx-auto h-16 w-16 text-green-500 animate-bounce" />
             </div>
             <h2 className="text-2xl font-bold text-green-700 mb-2">Success! 🎉</h2>
-            <p className="text-gray-600 mb-4">
-              Alex agreed to attend the Good Trouble Lives On protest on July 17th!
-            </p>
-            <p className="text-sm text-gray-500">
-              Great job convincing your friend to take action for democracy!
-            </p>
+            <p className="text-gray-600 mb-4">Alex agreed to attend the Good Trouble Lives On protest on July 17th!</p>
+            <p className="text-sm text-gray-500">Great job convincing your friend to take action for democracy!</p>
           </Card>
         </div>
       )}
