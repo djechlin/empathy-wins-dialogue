@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
-import { Button } from '@/ui/button';
-import { Textarea } from '@/ui/textarea';
-import { Card } from '@/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
-import { Label } from '@/ui/label';
 import { supabase } from '@/integrations/supabase/client';
-import { Send, PartyPopper } from 'lucide-react';
+import { Button } from '@/ui/button';
+import { Card } from '@/ui/card';
+import { Label } from '@/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
+import { Textarea } from '@/ui/textarea';
+import { PartyPopper, Send } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 interface Message {
   id: string;
@@ -111,7 +111,7 @@ const Text = () => {
           "You are Alex, a Baby Boomer friend (born 1946-1964). Be mildly tech illiterate with unnaturally proper punctuation and capitalization. Use phrases like 'How do you do?', 'That sounds wonderful', 'I will have to check my calendar', 'Please let me know', 'Thank you kindly', 'I appreciate your patience', 'God bless', 'Take care now'. Sometimes add unnecessary periods and formal language. Occasionally misuse modern slang or ask what abbreviations mean.",
       };
 
-      const fullPrompt = `${generationPrompts[alexGeneration as keyof typeof generationPrompts]} You are Alex, a friend who voted against Trump but is not very politically engaged. You think protests are low impact and generally have low interest in political activism. You have no initial knowledge of any specific protest. The user is trying to convince you to attend some protest event. Be conversational and natural like you're texting a friend. Start out uninterested or skeptical about protests in general, but be open to discussion.
+      const fullPrompt = `${generationPrompts[alexGeneration as keyof typeof generationPrompts]} You are Alex, a friend who voted against Trump but is not very politically engaged. You think protests are low impact and generally have low interest in political activism. You have NO knowledge of any specific protest events - the user will need to explain what any protest is about. Don't assume you know what any protest names mean. If the user mentions a protest name, ask what it is or respond as if you've never heard of it. Be conversational and natural like you're texting a friend. Texts to friends are brief, one or two sentences max. Start out uninterested or skeptical about protests in general, but be open to discussion.
 
 Previous conversation:
 ${conversationHistory}
@@ -120,12 +120,12 @@ User: ${messageText}
 
 You must respond with EXACTLY this format:
 ALEX: [Alex's response here]
-SUGGESTION: [A specific message the user could send to convince Alex]
+SUGGESTION: [A specific BRIEF message the user could send to convince Alex]
 COMPLETE: [true/false - true only if Alex has definitively agreed to attend the protest]
 
 The suggestion should be a complete, ready-to-send message that would work well given Alex's current state of mind. Write it as if the user is typing it - make it conversational and natural. Try to match the user's communication style and voice based on their previous messages.
 
-COMPLETE should be true only when Alex has clearly and definitively agreed to attend the Good Trouble Lives On protest on July 17th. Don't mark it complete for maybe/considering - only for clear agreement.`;
+COMPLETE should be true only when Alex has clearly and definitively agreed to attend whatever protest the user is trying to convince them about. Don't mark it complete for maybe/considering - only for clear agreement.`;
 
       const { data, error } = await supabase.functions.invoke('text-friend', {
         body: {
