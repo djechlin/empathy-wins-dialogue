@@ -26,6 +26,7 @@ const Text = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [alexGeneration, setAlexGeneration] = useState('genz');
+  const [currentHint, setCurrentHint] = useState<string>('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -80,7 +81,11 @@ ${conversationHistory}
 
 User: ${inputValue}
 
-Respond as Alex:`;
+You must respond with EXACTLY this format:
+ALEX: [Alex's response here]
+HINT: [A helpful hint for the user on what to say next to convince Alex]
+
+The hint should suggest specific persuasion strategies, emotional appeals, or logical arguments that would work well with Alex's current state of mind. Keep the hint concise and actionable.`;
 
       const { data, error } = await supabase.functions.invoke('text-friend', {
         body: {
@@ -92,14 +97,24 @@ Respond as Alex:`;
         throw error;
       }
 
+      const fullResponse = data?.response || data?.content || data || 'Sorry, I had trouble responding. Can you try again?';
+      
+      // Parse the response to extract Alex's message and hint
+      const alexMatch = fullResponse.match(/ALEX:\s*(.*?)(?=\nHINT:|$)/s);
+      const hintMatch = fullResponse.match(/HINT:\s*(.*?)$/s);
+      
+      const alexMessage = alexMatch ? alexMatch[1].trim() : fullResponse;
+      const hint = hintMatch ? hintMatch[1].trim() : '';
+
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: data?.response || data?.content || data || 'Sorry, I had trouble responding. Can you try again?',
+        text: alexMessage,
         isUser: false,
         timestamp: new Date(),
       };
 
       setMessages((prev) => [...prev, aiResponse]);
+      setCurrentHint(hint);
     } catch (error) {
       console.error('Error sending message:', error);
       const errorMessage: Message = {
@@ -211,6 +226,12 @@ Respond as Alex:`;
               <Send size={16} />
             </Button>
           </div>
+          {currentHint && (
+            <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
+              <span className="font-medium">💡 Hint: </span>
+              {currentHint}
+            </div>
+          )}
         </div>
       </Card>
     </div>
