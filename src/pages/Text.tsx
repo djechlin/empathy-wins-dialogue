@@ -26,7 +26,7 @@ const Text = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [alexGeneration, setAlexGeneration] = useState('genz');
-  const [currentHint, setCurrentHint] = useState<string>('');
+  const [currentSuggestion, setCurrentSuggestion] = useState<string>('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -49,9 +49,10 @@ const Text = () => {
   const sendMessage = async () => {
     if (!inputValue.trim()) return;
 
+    const messageText = inputValue;
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: inputValue,
+      text: messageText,
       isUser: true,
       timestamp: new Date(),
     };
@@ -60,18 +61,51 @@ const Text = () => {
     setInputValue('');
     setIsLoading(true);
 
-    try {
-      // Build the conversation context for the prompt
-      const conversationHistory = messages.map((m) => `${m.isUser ? 'User' : 'Alex'}: ${m.text}`).join('\n');
+    await handleAIResponse(messageText);
+  };
 
-      // Generation-specific character traits
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const handleSuggestionClick = () => {
+    if (currentSuggestion && !isLoading) {
+      const suggestionToSend = currentSuggestion;
+      setInputValue(suggestionToSend);
+      setCurrentSuggestion('');
+      
+      // Auto-send the suggestion with the captured value
+      setTimeout(() => {
+        // Create and send the message directly with the suggestion text
+        const userMessage: Message = {
+          id: Date.now().toString(),
+          text: suggestionToSend,
+          isUser: true,
+          timestamp: new Date(),
+        };
+        
+        setMessages((prev) => [...prev, userMessage]);
+        setInputValue('');
+        setIsLoading(true);
+        
+        // Continue with the AI response logic
+        handleAIResponse(suggestionToSend);
+      }, 100);
+    }
+  };
+
+  const handleAIResponse = async (messageText: string) => {
+    try {
+      const conversationHistory = messages.map((m) => `${m.isUser ? 'User' : 'Alex'}: ${m.text}`).join('\n');
+      
       const generationPrompts = {
         genz: "You are Alex, a Gen Z friend (born 1997-2012). Use heavy Gen Z slang like 'no cap', 'fr fr', 'periodt', 'slaps', 'hits different', 'bussin', 'slay', 'it's giving...', 'main character energy', 'understood the assignment', 'lowkey/highkey', 'bet', 'say less', 'that's so valid', 'we love to see it', 'this ain't it chief'. Use lots of emojis and abbreviations. Be very casual with punctuation and caps.",
-        millennial:
-          "You are Alex, a Millennial friend (born 1981-1996). Use Millennial slang like 'lit', 'fam', 'squad', 'salty', 'basic', 'extra', 'ghosting', 'adulting', 'I can't even', 'goals', 'mood', 'same', 'yas queen', 'living my best life', 'it's a vibe', 'sending good vibes', 'that's fire', 'no shade', 'thirsty'. Reference pop culture from the 2000s-2010s.",
+        millennial: "You are Alex, a Millennial friend (born 1981-1996). Use Millennial slang like 'lit', 'fam', 'squad', 'salty', 'basic', 'extra', 'ghosting', 'adulting', 'I can't even', 'goals', 'mood', 'same', 'yas queen', 'living my best life', 'it's a vibe', 'sending good vibes', 'that's fire', 'no shade', 'thirsty'. Reference pop culture from the 2000s-2010s.",
         genx: "You are Alex, a Gen X friend (born 1965-1980). Use Gen X slang like 'whatever', 'as if', 'talk to the hand', 'phat', 'tight', 'dope', 'wicked', 'rad', 'tubular', 'gnarly', 'bogus', 'my bad', 'all that and a bag of chips', 'don't go there', 'psych!', 'what's the 411?', 'that's so random'. Be somewhat cynical and sarcastic.",
-        boomer:
-          "You are Alex, a Baby Boomer friend (born 1946-1964). Be mildly tech illiterate with unnaturally proper punctuation and capitalization. Use phrases like 'How do you do?', 'That sounds wonderful', 'I will have to check my calendar', 'Please let me know', 'Thank you kindly', 'I appreciate your patience', 'God bless', 'Take care now'. Sometimes add unnecessary periods and formal language. Occasionally misuse modern slang or ask what abbreviations mean.",
+        boomer: "You are Alex, a Baby Boomer friend (born 1946-1964). Be mildly tech illiterate with unnaturally proper punctuation and capitalization. Use phrases like 'How do you do?', 'That sounds wonderful', 'I will have to check my calendar', 'Please let me know', 'Thank you kindly', 'I appreciate your patience', 'God bless', 'Take care now'. Sometimes add unnecessary periods and formal language. Occasionally misuse modern slang or ask what abbreviations mean.",
       };
 
       const fullPrompt = `${generationPrompts[alexGeneration as keyof typeof generationPrompts]} You are Alex, a friend who voted against Trump but is not very politically engaged. You think protests are low impact and generally have low interest in political activism. You have no initial knowledge of any specific protest. The user is trying to convince you to attend some protest event. Be conversational and natural like you're texting a friend. Start out uninterested or skeptical about protests in general, but be open to discussion.
@@ -79,13 +113,13 @@ const Text = () => {
 Previous conversation:
 ${conversationHistory}
 
-User: ${inputValue}
+User: ${messageText}
 
 You must respond with EXACTLY this format:
 ALEX: [Alex's response here]
-HINT: [A helpful hint for the user on what to say next to convince Alex]
+SUGGESTION: [A specific message the user could send to convince Alex]
 
-The hint should suggest specific persuasion strategies, emotional appeals, or logical arguments that would work well with Alex's current state of mind. Keep the hint concise and actionable.`;
+The suggestion should be a complete, ready-to-send message that would work well given Alex's current state of mind. Write it as if the user is typing it - make it conversational and natural. Try to match the user's communication style and voice based on their previous messages.`;
 
       const { data, error } = await supabase.functions.invoke('text-friend', {
         body: {
@@ -99,12 +133,11 @@ The hint should suggest specific persuasion strategies, emotional appeals, or lo
 
       const fullResponse = data?.response || data?.content || data || 'Sorry, I had trouble responding. Can you try again?';
       
-      // Parse the response to extract Alex's message and hint
-      const alexMatch = fullResponse.match(/ALEX:\s*(.*?)(?=\nHINT:|$)/s);
-      const hintMatch = fullResponse.match(/HINT:\s*(.*?)$/s);
+      const alexMatch = fullResponse.match(/ALEX:\s*(.*?)(?=\nSUGGESTION:|$)/s);
+      const suggestionMatch = fullResponse.match(/SUGGESTION:\s*(.*?)$/s);
       
       const alexMessage = alexMatch ? alexMatch[1].trim() : fullResponse;
-      const hint = hintMatch ? hintMatch[1].trim() : '';
+      const suggestion = suggestionMatch ? suggestionMatch[1].trim() : '';
 
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -114,7 +147,7 @@ The hint should suggest specific persuasion strategies, emotional appeals, or lo
       };
 
       setMessages((prev) => [...prev, aiResponse]);
-      setCurrentHint(hint);
+      setCurrentSuggestion(suggestion);
     } catch (error) {
       console.error('Error sending message:', error);
       const errorMessage: Message = {
@@ -126,13 +159,6 @@ The hint should suggest specific persuasion strategies, emotional appeals, or lo
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
     }
   };
 
@@ -226,10 +252,22 @@ The hint should suggest specific persuasion strategies, emotional appeals, or lo
               <Send size={16} />
             </Button>
           </div>
-          {currentHint && (
-            <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
-              <span className="font-medium">💡 Hint: </span>
-              {currentHint}
+          {currentSuggestion && (
+            <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1">
+                  <span className="font-medium">💬 Suggestion: </span>
+                  {currentSuggestion}
+                </div>
+                <Button
+                  onClick={handleSuggestionClick}
+                  size="sm"
+                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs"
+                  disabled={isLoading}
+                >
+                  Send
+                </Button>
+              </div>
             </div>
           )}
         </div>
