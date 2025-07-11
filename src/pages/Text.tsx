@@ -5,7 +5,7 @@ import { Card } from '@/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
 import { Label } from '@/ui/label';
 import { supabase } from '@/integrations/supabase/client';
-import { Send } from 'lucide-react';
+import { Send, PartyPopper } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -27,6 +27,7 @@ const Text = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [alexGeneration, setAlexGeneration] = useState('genz');
   const [currentSuggestion, setCurrentSuggestion] = useState<string>('');
+  const [isComplete, setIsComplete] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -47,7 +48,7 @@ const Text = () => {
   }, [messages, isLoading]);
 
   const sendMessage = async () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || isComplete) return;
 
     const messageText = inputValue;
     const userMessage: Message = {
@@ -72,7 +73,7 @@ const Text = () => {
   };
 
   const handleSuggestionClick = () => {
-    if (currentSuggestion && !isLoading) {
+    if (currentSuggestion && !isLoading && !isComplete) {
       const suggestionToSend = currentSuggestion;
       setInputValue(suggestionToSend);
       setCurrentSuggestion('');
@@ -120,8 +121,11 @@ User: ${messageText}
 You must respond with EXACTLY this format:
 ALEX: [Alex's response here]
 SUGGESTION: [A specific message the user could send to convince Alex]
+COMPLETE: [true/false - true only if Alex has definitively agreed to attend the protest]
 
-The suggestion should be a complete, ready-to-send message that would work well given Alex's current state of mind. Write it as if the user is typing it - make it conversational and natural. Try to match the user's communication style and voice based on their previous messages.`;
+The suggestion should be a complete, ready-to-send message that would work well given Alex's current state of mind. Write it as if the user is typing it - make it conversational and natural. Try to match the user's communication style and voice based on their previous messages.
+
+COMPLETE should be true only when Alex has clearly and definitively agreed to attend the Good Trouble Lives On protest on July 17th. Don't mark it complete for maybe/considering - only for clear agreement.`;
 
       const { data, error } = await supabase.functions.invoke('text-friend', {
         body: {
@@ -136,10 +140,12 @@ The suggestion should be a complete, ready-to-send message that would work well 
       const fullResponse = data?.response || data?.content || data || 'Sorry, I had trouble responding. Can you try again?';
 
       const alexMatch = fullResponse.match(/ALEX:\s*(.*?)(?=\nSUGGESTION:|$)/s);
-      const suggestionMatch = fullResponse.match(/SUGGESTION:\s*(.*?)$/s);
+      const suggestionMatch = fullResponse.match(/SUGGESTION:\s*(.*?)(?=\nCOMPLETE:|$)/s);
+      const completeMatch = fullResponse.match(/COMPLETE:\s*(.*?)$/s);
 
       const alexMessage = alexMatch ? alexMatch[1].trim() : fullResponse;
       const suggestion = suggestionMatch ? suggestionMatch[1].trim() : '';
+      const complete = completeMatch ? completeMatch[1].trim().toLowerCase() === 'true' : false;
 
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -150,6 +156,11 @@ The suggestion should be a complete, ready-to-send message that would work well 
 
       setMessages((prev) => [...prev, aiResponse]);
       setCurrentSuggestion(suggestion);
+      
+      if (complete) {
+        setIsComplete(true);
+        setCurrentSuggestion(''); // Clear suggestion when complete
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       const errorMessage: Message = {
@@ -246,11 +257,11 @@ The suggestion should be a complete, ready-to-send message that would work well 
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Type a message..."
+              placeholder={isComplete ? "Alex agreed to go! 🎉" : "Type a message..."}
               className="flex-1 min-h-[40px] max-h-[120px] resize-none"
-              disabled={isLoading}
+              disabled={isLoading || isComplete}
             />
-            <Button onClick={sendMessage} disabled={!inputValue.trim() || isLoading} className="px-4">
+            <Button onClick={sendMessage} disabled={!inputValue.trim() || isLoading || isComplete} className="px-4">
               <Send size={16} />
             </Button>
           </div>
@@ -261,12 +272,7 @@ The suggestion should be a complete, ready-to-send message that would work well 
                   <span className="font-medium">💬 Suggestion: </span>
                   {currentSuggestion}
                 </div>
-                <Button
-                  onClick={handleSuggestionClick}
-                  size="sm"
-                  className="px-3 py-1 text-xs"
-                  disabled={isLoading}
-                >
+                <Button onClick={handleSuggestionClick} size="sm" className="px-3 py-1 text-xs" disabled={isLoading || isComplete}>
                   <Send size={12} />
                 </Button>
               </div>
@@ -274,6 +280,23 @@ The suggestion should be a complete, ready-to-send message that would work well 
           )}
         </div>
       </Card>
+      
+      {isComplete && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="p-8 text-center max-w-md mx-4 bg-white">
+            <div className="mb-4">
+              <PartyPopper className="mx-auto h-16 w-16 text-green-500 animate-bounce" />
+            </div>
+            <h2 className="text-2xl font-bold text-green-700 mb-2">Success! 🎉</h2>
+            <p className="text-gray-600 mb-4">
+              Alex agreed to attend the Good Trouble Lives On protest on July 17th!
+            </p>
+            <p className="text-sm text-gray-500">
+              Great job convincing your friend to take action for democracy!
+            </p>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
