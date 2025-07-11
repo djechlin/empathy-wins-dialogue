@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/ui/button';
 import { Textarea } from '@/ui/textarea';
 import { Card } from '@/ui/card';
+import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
+import { Label } from '@/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { Send } from 'lucide-react';
 
@@ -23,6 +25,7 @@ const Text = () => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [alexGeneration, setAlexGeneration] = useState('millennial');
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -54,7 +57,16 @@ const Text = () => {
     try {
       // Build the conversation context for the prompt
       const conversationHistory = messages.map((m) => `${m.isUser ? 'User' : 'Alex'}: ${m.text}`).join('\n');
-      const fullPrompt = `You are roleplaying as Alex, a friend who needs to be convinced to attend the Good Trouble Lives On anti-Trump protest on July 17th. You should be initially hesitant but open to discussion. The user is trying to convince you to come to the protest. Be conversational and natural like you're texting a friend. Don't be too political initially - act like a normal friend who might be unsure about going to a protest.
+      
+      // Generation-specific character traits
+      const generationPrompts = {
+        genz: "You are Alex, a Gen Z friend (born 1997-2012). Use heavy Gen Z slang like 'no cap', 'fr fr', 'periodt', 'slaps', 'hits different', 'bussin', 'slay', 'it's giving...', 'main character energy', 'understood the assignment', 'lowkey/highkey', 'bet', 'say less', 'that's so valid', 'we love to see it', 'this ain't it chief'. Use lots of emojis and abbreviations. Be very casual with punctuation and caps.",
+        millennial: "You are Alex, a Millennial friend (born 1981-1996). Use Millennial slang like 'lit', 'fam', 'squad', 'salty', 'basic', 'extra', 'ghosting', 'adulting', 'I can't even', 'goals', 'mood', 'same', 'yas queen', 'living my best life', 'it's a vibe', 'sending good vibes', 'that's fire', 'no shade', 'thirsty'. Reference pop culture from the 2000s-2010s.",
+        genx: "You are Alex, a Gen X friend (born 1965-1980). Use Gen X slang like 'whatever', 'as if', 'talk to the hand', 'phat', 'tight', 'dope', 'wicked', 'rad', 'tubular', 'gnarly', 'bogus', 'my bad', 'all that and a bag of chips', 'don't go there', 'psych!', 'what's the 411?', 'that's so random'. Be somewhat cynical and sarcastic.",
+        boomer: "You are Alex, a Baby Boomer friend (born 1946-1964). Be mildly tech illiterate with unnaturally proper punctuation and capitalization. Use phrases like 'How do you do?', 'That sounds wonderful', 'I will have to check my calendar', 'Please let me know', 'Thank you kindly', 'I appreciate your patience', 'God bless', 'Take care now'. Sometimes add unnecessary periods and formal language. Occasionally misuse modern slang or ask what abbreviations mean."
+      };
+
+      const fullPrompt = `${generationPrompts[alexGeneration as keyof typeof generationPrompts]} You are Alex, a friend who voted against Trump but is not very politically engaged. You think protests are low impact and generally have low interest in political activism. You have no initial knowledge of any specific protest. The user is trying to convince you to attend some protest event. Be conversational and natural like you're texting a friend. Start out uninterested or skeptical about protests in general, but be open to discussion.
 
 Previous conversation:
 ${conversationHistory}
@@ -106,13 +118,36 @@ Respond as Alex:`;
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-white shadow-xl">
         <div className="border-b px-4 py-3">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">A</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-semibold text-sm">A</span>
+              </div>
+              <div>
+                <h1 className="font-semibold text-gray-900">Alex</h1>
+                <p className="text-sm text-green-500">Online</p>
+              </div>
             </div>
-            <div>
-              <h1 className="font-semibold text-gray-900">Alex</h1>
-              <p className="text-sm text-green-500">Online</p>
+            <div className="text-right">
+              <p className="text-xs text-gray-500 mb-1">Alex vibes as</p>
+              <RadioGroup value={alexGeneration} onValueChange={setAlexGeneration} className="flex space-x-2">
+                <div className="flex items-center space-x-1">
+                  <RadioGroupItem value="genz" id="genz" className="w-3 h-3" />
+                  <Label htmlFor="genz" className="text-xs">Gen Z</Label>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <RadioGroupItem value="millennial" id="millennial" className="w-3 h-3" />
+                  <Label htmlFor="millennial" className="text-xs">Millennial</Label>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <RadioGroupItem value="genx" id="genx" className="w-3 h-3" />
+                  <Label htmlFor="genx" className="text-xs">Gen X</Label>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <RadioGroupItem value="boomer" id="boomer" className="w-3 h-3" />
+                  <Label htmlFor="boomer" className="text-xs">Boomer</Label>
+                </div>
+              </RadioGroup>
             </div>
           </div>
         </div>
