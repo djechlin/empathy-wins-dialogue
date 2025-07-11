@@ -21,6 +21,7 @@ import Privacy from './pages/Privacy';
 import Report from './pages/Report';
 import Roleplay from './pages/Roleplay';
 import StartingOut from './pages/StartingOut';
+import Text from './pages/Text';
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/text" element={<Text />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
