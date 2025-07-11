@@ -76,7 +76,7 @@ const Text = () => {
       const suggestionToSend = currentSuggestion;
       setInputValue(suggestionToSend);
       setCurrentSuggestion('');
-      
+
       // Auto-send the suggestion with the captured value
       setTimeout(() => {
         // Create and send the message directly with the suggestion text
@@ -86,11 +86,11 @@ const Text = () => {
           isUser: true,
           timestamp: new Date(),
         };
-        
+
         setMessages((prev) => [...prev, userMessage]);
         setInputValue('');
         setIsLoading(true);
-        
+
         // Continue with the AI response logic
         handleAIResponse(suggestionToSend);
       }, 100);
@@ -100,12 +100,14 @@ const Text = () => {
   const handleAIResponse = async (messageText: string) => {
     try {
       const conversationHistory = messages.map((m) => `${m.isUser ? 'User' : 'Alex'}: ${m.text}`).join('\n');
-      
+
       const generationPrompts = {
         genz: "You are Alex, a Gen Z friend (born 1997-2012). Use heavy Gen Z slang like 'no cap', 'fr fr', 'periodt', 'slaps', 'hits different', 'bussin', 'slay', 'it's giving...', 'main character energy', 'understood the assignment', 'lowkey/highkey', 'bet', 'say less', 'that's so valid', 'we love to see it', 'this ain't it chief'. Use lots of emojis and abbreviations. Be very casual with punctuation and caps.",
-        millennial: "You are Alex, a Millennial friend (born 1981-1996). Use Millennial slang like 'lit', 'fam', 'squad', 'salty', 'basic', 'extra', 'ghosting', 'adulting', 'I can't even', 'goals', 'mood', 'same', 'yas queen', 'living my best life', 'it's a vibe', 'sending good vibes', 'that's fire', 'no shade', 'thirsty'. Reference pop culture from the 2000s-2010s.",
+        millennial:
+          "You are Alex, a Millennial friend (born 1981-1996). Use Millennial slang like 'lit', 'fam', 'squad', 'salty', 'basic', 'extra', 'ghosting', 'adulting', 'I can't even', 'goals', 'mood', 'same', 'yas queen', 'living my best life', 'it's a vibe', 'sending good vibes', 'that's fire', 'no shade', 'thirsty'. Reference pop culture from the 2000s-2010s.",
         genx: "You are Alex, a Gen X friend (born 1965-1980). Use Gen X slang like 'whatever', 'as if', 'talk to the hand', 'phat', 'tight', 'dope', 'wicked', 'rad', 'tubular', 'gnarly', 'bogus', 'my bad', 'all that and a bag of chips', 'don't go there', 'psych!', 'what's the 411?', 'that's so random'. Be somewhat cynical and sarcastic.",
-        boomer: "You are Alex, a Baby Boomer friend (born 1946-1964). Be mildly tech illiterate with unnaturally proper punctuation and capitalization. Use phrases like 'How do you do?', 'That sounds wonderful', 'I will have to check my calendar', 'Please let me know', 'Thank you kindly', 'I appreciate your patience', 'God bless', 'Take care now'. Sometimes add unnecessary periods and formal language. Occasionally misuse modern slang or ask what abbreviations mean.",
+        boomer:
+          "You are Alex, a Baby Boomer friend (born 1946-1964). Be mildly tech illiterate with unnaturally proper punctuation and capitalization. Use phrases like 'How do you do?', 'That sounds wonderful', 'I will have to check my calendar', 'Please let me know', 'Thank you kindly', 'I appreciate your patience', 'God bless', 'Take care now'. Sometimes add unnecessary periods and formal language. Occasionally misuse modern slang or ask what abbreviations mean.",
       };
 
       const fullPrompt = `${generationPrompts[alexGeneration as keyof typeof generationPrompts]} You are Alex, a friend who voted against Trump but is not very politically engaged. You think protests are low impact and generally have low interest in political activism. You have no initial knowledge of any specific protest. The user is trying to convince you to attend some protest event. Be conversational and natural like you're texting a friend. Start out uninterested or skeptical about protests in general, but be open to discussion.
@@ -132,10 +134,10 @@ The suggestion should be a complete, ready-to-send message that would work well 
       }
 
       const fullResponse = data?.response || data?.content || data || 'Sorry, I had trouble responding. Can you try again?';
-      
+
       const alexMatch = fullResponse.match(/ALEX:\s*(.*?)(?=\nSUGGESTION:|$)/s);
       const suggestionMatch = fullResponse.match(/SUGGESTION:\s*(.*?)$/s);
-      
+
       const alexMessage = alexMatch ? alexMatch[1].trim() : fullResponse;
       const suggestion = suggestionMatch ? suggestionMatch[1].trim() : '';
 
@@ -253,7 +255,7 @@ The suggestion should be a complete, ready-to-send message that would work well 
             </Button>
           </div>
           {currentSuggestion && (
-            <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+            <div className="mt-2 p-3 bg-purple-50 border border-purple-200 rounded text-sm text-purple-700">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
                   <span className="font-medium">💬 Suggestion: </span>
@@ -262,10 +264,10 @@ The suggestion should be a complete, ready-to-send message that would work well 
                 <Button
                   onClick={handleSuggestionClick}
                   size="sm"
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs"
+                  className="px-3 py-1 text-xs"
                   disabled={isLoading}
                 >
-                  Send
+                  <Send size={12} />
                 </Button>
               </div>
             </div>
