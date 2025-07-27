@@ -6,6 +6,8 @@ import { Textarea } from '@/ui/textarea';
 import { ExternalLink, PartyPopper, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 
 interface Message {
   id: string;
@@ -296,135 +298,139 @@ COMPLETE should be true only when Alex has clearly and definitively agreed to at
 
 const Relational = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Relational Organizing
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Inspire people you're close with to support our democracy efforts, and to support <i>you</i>. 
-            The most powerful political conversations happen between people who trust each other.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          <Card className="p-6">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Practice Conversations</h2>
-            <p className="text-gray-600 mb-6">
-              Practice convincing a friend to join you at a protest or political action. 
-              Choose their generation for authentic conversation styles.
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="max-w-4xl mx-auto px-4 py-12">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Relational Organizing
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Inspire people you're close with to support our democracy efforts, and to support <i>you</i>. 
+              The most powerful political conversations happen between people who trust each other.
             </p>
-            <TextWidget />
-          </Card>
+          </div>
 
-          <div className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
             <Card className="p-6">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">Organizations & Resources</h2>
-              <div className="space-y-4">
-                <div className="border-l-4 border-blue-500 pl-4">
-                  <h3 className="font-semibold text-gray-900">Braver Angels</h3>
-                  <p className="text-gray-600 text-sm mb-2">
-                    Bringing Americans together to bridge the partisan divide
-                  </p>
-                  <Button variant="outline" size="sm" asChild>
-                    <a href="https://braverangels.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                      Visit Website <ExternalLink size={14} />
-                    </a>
-                  </Button>
-                </div>
-
-                <div className="border-l-4 border-green-500 pl-4">
-                  <h3 className="font-semibold text-gray-900">NAACP</h3>
-                  <p className="text-gray-600 text-sm mb-2">
-                    Advancing justice through democracy, education, and advocacy
-                  </p>
-                  <Button variant="outline" size="sm" asChild>
-                    <a href="https://naacp.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                      Visit Website <ExternalLink size={14} />
-                    </a>
-                  </Button>
-                </div>
-
-                <div className="border-l-4 border-purple-500 pl-4">
-                  <h3 className="font-semibold text-gray-900">League of Women Voters</h3>
-                  <p className="text-gray-600 text-sm mb-2">
-                    Empowering voters and defending democracy
-                  </p>
-                  <Button variant="outline" size="sm" asChild>
-                    <a href="https://lwv.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                      Visit Website <ExternalLink size={14} />
-                    </a>
-                  </Button>
-                </div>
-
-                <div className="border-l-4 border-red-500 pl-4">
-                  <h3 className="font-semibold text-gray-900">Indivisible</h3>
-                  <p className="text-gray-600 text-sm mb-2">
-                    Local groups working for progressive change
-                  </p>
-                  <Button variant="outline" size="sm" asChild>
-                    <a href="https://indivisible.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                      Visit Website <ExternalLink size={14} />
-                    </a>
-                  </Button>
-                </div>
-              </div>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">Practice Conversations</h2>
+              <p className="text-gray-600 mb-6">
+                Practice convincing a friend to join you at a protest or political action. 
+                Choose their generation for authentic conversation styles.
+              </p>
+              <TextWidget />
             </Card>
 
-            <Card className="p-6">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">Key Articles</h2>
-              <div className="space-y-3">
-                <a 
-                  href="https://naacp.org/resources/relational-organizing" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-gray-900">NAACP Relational Organizing Guide</h4>
-                      <p className="text-sm text-gray-600">Building power through relationships</p>
-                    </div>
-                    <ExternalLink size={16} className="text-gray-400" />
+            <div className="space-y-6">
+              <Card className="p-6">
+                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Organizations & Resources</h2>
+                <div className="space-y-4">
+                  <div className="border-l-4 border-blue-500 pl-4">
+                    <h3 className="font-semibold text-gray-900">Braver Angels</h3>
+                    <p className="text-gray-600 text-sm mb-2">
+                      Bringing Americans together to bridge the partisan divide
+                    </p>
+                    <Button variant="outline" size="sm" asChild>
+                      <a href="https://braverangels.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                        Visit Website <ExternalLink size={14} />
+                      </a>
+                    </Button>
                   </div>
-                </a>
 
-                <a 
-                  href="https://lwv.org/blog/how-talk-friends-and-family-about-voting" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-gray-900">Talking to Friends & Family About Voting</h4>
-                      <p className="text-sm text-gray-600">League of Women Voters guide</p>
-                    </div>
-                    <ExternalLink size={16} className="text-gray-400" />
+                  <div className="border-l-4 border-green-500 pl-4">
+                    <h3 className="font-semibold text-gray-900">NAACP</h3>
+                    <p className="text-gray-600 text-sm mb-2">
+                      Advancing justice through democracy, education, and advocacy
+                    </p>
+                    <Button variant="outline" size="sm" asChild>
+                      <a href="https://naacp.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                        Visit Website <ExternalLink size={14} />
+                      </a>
+                    </Button>
                   </div>
-                </a>
 
-                <a 
-                  href="https://indivisible.org/resource/relational-organizing-toolkit" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-gray-900">Indivisible Organizing Toolkit</h4>
-                      <p className="text-sm text-gray-600">Practical strategies for activists</p>
-                    </div>
-                    <ExternalLink size={16} className="text-gray-400" />
+                  <div className="border-l-4 border-purple-500 pl-4">
+                    <h3 className="font-semibold text-gray-900">League of Women Voters</h3>
+                    <p className="text-gray-600 text-sm mb-2">
+                      Empowering voters and defending democracy
+                    </p>
+                    <Button variant="outline" size="sm" asChild>
+                      <a href="https://lwv.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                        Visit Website <ExternalLink size={14} />
+                      </a>
+                    </Button>
                   </div>
-                </a>
-              </div>
-            </Card>
+
+                  <div className="border-l-4 border-red-500 pl-4">
+                    <h3 className="font-semibold text-gray-900">Indivisible</h3>
+                    <p className="text-gray-600 text-sm mb-2">
+                      Local groups working for progressive change
+                    </p>
+                    <Button variant="outline" size="sm" asChild>
+                      <a href="https://indivisible.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                        Visit Website <ExternalLink size={14} />
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Key Articles</h2>
+                <div className="space-y-3">
+                  <a 
+                    href="https://naacp.org/resources/relational-organizing" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">NAACP Relational Organizing Guide</h4>
+                        <p className="text-sm text-gray-600">Building power through relationships</p>
+                      </div>
+                      <ExternalLink size={16} className="text-gray-400" />
+                    </div>
+                  </a>
+
+                  <a 
+                    href="https://lwv.org/blog/how-talk-friends-and-family-about-voting" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Talking to Friends & Family About Voting</h4>
+                        <p className="text-sm text-gray-600">League of Women Voters guide</p>
+                      </div>
+                      <ExternalLink size={16} className="text-gray-400" />
+                    </div>
+                  </a>
+
+                  <a 
+                    href="https://indivisible.org/resource/relational-organizing-toolkit" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Indivisible Organizing Toolkit</h4>
+                        <p className="text-sm text-gray-600">Practical strategies for activists</p>
+                      </div>
+                      <ExternalLink size={16} className="text-gray-400" />
+                    </div>
+                  </a>
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 
