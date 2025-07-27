@@ -331,11 +331,14 @@ const Relational = () => {
                     <p className="text-gray-600 text-sm mb-2">
                       Bringing Americans together to bridge the partisan divide
                     </p>
-                    <Button variant="outline" size="sm" asChild>
-                      <a href="https://braverangels.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                        Visit Website <ExternalLink size={14} />
-                      </a>
-                    </Button>
+                    <a 
+                      href="https://braverangels.org" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-purple-500 hover:text-purple-600 text-sm flex items-center gap-1 transition-colors"
+                    >
+                      Visit Website <ExternalLink size={12} />
+                    </a>
                   </div>
 
                   <div className="border-l-4 border-green-500 pl-4">
@@ -343,11 +346,14 @@ const Relational = () => {
                     <p className="text-gray-600 text-sm mb-2">
                       Advancing justice through democracy, education, and advocacy
                     </p>
-                    <Button variant="outline" size="sm" asChild>
-                      <a href="https://naacp.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                        Visit Website <ExternalLink size={14} />
-                      </a>
-                    </Button>
+                    <a 
+                      href="https://naacp.org" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-purple-500 hover:text-purple-600 text-sm flex items-center gap-1 transition-colors"
+                    >
+                      Visit Website <ExternalLink size={12} />
+                    </a>
                   </div>
 
                   <div className="border-l-4 border-purple-500 pl-4">
@@ -355,11 +361,14 @@ const Relational = () => {
                     <p className="text-gray-600 text-sm mb-2">
                       Empowering voters and defending democracy
                     </p>
-                    <Button variant="outline" size="sm" asChild>
-                      <a href="https://lwv.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                        Visit Website <ExternalLink size={14} />
-                      </a>
-                    </Button>
+                    <a 
+                      href="https://lwv.org" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-purple-500 hover:text-purple-600 text-sm flex items-center gap-1 transition-colors"
+                    >
+                      Visit Website <ExternalLink size={12} />
+                    </a>
                   </div>
 
                   <div className="border-l-4 border-red-500 pl-4">
@@ -367,11 +376,14 @@ const Relational = () => {
                     <p className="text-gray-600 text-sm mb-2">
                       Local groups working for progressive change
                     </p>
-                    <Button variant="outline" size="sm" asChild>
-                      <a href="https://indivisible.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                        Visit Website <ExternalLink size={14} />
-                      </a>
-                    </Button>
+                    <a 
+                      href="https://indivisible.org" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-purple-500 hover:text-purple-600 text-sm flex items-center gap-1 transition-colors"
+                    >
+                      Visit Website <ExternalLink size={12} />
+                    </a>
                   </div>
                 </div>
               </Card>
