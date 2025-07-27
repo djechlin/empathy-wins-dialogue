@@ -315,10 +315,6 @@ const Relational = () => {
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             <Card className="p-6">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">Relational Organizing Practice: bring your friend to a protest</h2>
-              <p className="text-gray-600 mb-6">
-                Practice convincing a friend to join you at a protest or political action. 
-                Choose their generation for authentic conversation styles.
-              </p>
               <TextWidget />
             </Card>
 
