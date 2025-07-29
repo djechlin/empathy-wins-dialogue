@@ -23,7 +23,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { createCompetencyReportPrompt } from '@/lib/deepCanvassingPrompt';
-import { ConversationReport } from '@/types/conversationReport';
+import { ConversationReport } from '@/types/ConversationReport';
 import { useConversationSession } from '@/features/dialogue';
 import lucasTranscript from '@/features/dialogue/providers/replays/lucas.txt?raw';
 

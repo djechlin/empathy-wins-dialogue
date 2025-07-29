@@ -303,12 +303,10 @@ const Relational = () => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <div className="max-w-4xl mx-auto px-4 py-12">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Relational Organizing
-            </h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Relational Organizing</h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Inspire people you're close with to support our democracy efforts, and to support <i>you</i>. 
-              The most powerful political conversations happen between people who trust each other.
+              Inspire people you're close with to support our democracy efforts, and to support <i>you</i>. The most powerful political
+              conversations happen between people who trust each other.
             </p>
           </div>
 
@@ -324,13 +322,11 @@ const Relational = () => {
                 <div className="space-y-4">
                   <div className="border-l-4 border-blue-500 pl-4">
                     <h3 className="font-semibold text-gray-900">Braver Angels</h3>
-                    <p className="text-gray-600 text-sm mb-2">
-                      Bringing Americans together to bridge the partisan divide
-                    </p>
-                    <a 
-                      href="https://braverangels.org" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <p className="text-gray-600 text-sm mb-2">Bringing Americans together to bridge the partisan divide</p>
+                    <a
+                      href="https://braverangels.org"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-purple-500 hover:text-purple-600 text-sm flex items-center gap-1 transition-colors"
                     >
                       Visit Website <ExternalLink size={12} />
@@ -339,13 +335,11 @@ const Relational = () => {
 
                   <div className="border-l-4 border-green-500 pl-4">
                     <h3 className="font-semibold text-gray-900">NAACP</h3>
-                    <p className="text-gray-600 text-sm mb-2">
-                      Advancing justice through democracy, education, and advocacy
-                    </p>
-                    <a 
-                      href="https://naacp.org" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <p className="text-gray-600 text-sm mb-2">Advancing justice through democracy, education, and advocacy</p>
+                    <a
+                      href="https://naacp.org"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-purple-500 hover:text-purple-600 text-sm flex items-center gap-1 transition-colors"
                     >
                       Visit Website <ExternalLink size={12} />
@@ -354,13 +348,11 @@ const Relational = () => {
 
                   <div className="border-l-4 border-purple-500 pl-4">
                     <h3 className="font-semibold text-gray-900">League of Women Voters</h3>
-                    <p className="text-gray-600 text-sm mb-2">
-                      Empowering voters and defending democracy
-                    </p>
-                    <a 
-                      href="https://lwv.org" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <p className="text-gray-600 text-sm mb-2">Empowering voters and defending democracy</p>
+                    <a
+                      href="https://lwv.org"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-purple-500 hover:text-purple-600 text-sm flex items-center gap-1 transition-colors"
                     >
                       Visit Website <ExternalLink size={12} />
@@ -369,13 +361,11 @@ const Relational = () => {
 
                   <div className="border-l-4 border-red-500 pl-4">
                     <h3 className="font-semibold text-gray-900">Indivisible</h3>
-                    <p className="text-gray-600 text-sm mb-2">
-                      Local groups working for progressive change
-                    </p>
-                    <a 
-                      href="https://indivisible.org" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <p className="text-gray-600 text-sm mb-2">Local groups working for progressive change</p>
+                    <a
+                      href="https://indivisible.org"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-purple-500 hover:text-purple-600 text-sm flex items-center gap-1 transition-colors"
                     >
                       Visit Website <ExternalLink size={12} />
@@ -387,9 +377,9 @@ const Relational = () => {
               <Card className="p-6">
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4">Key Articles</h2>
                 <div className="space-y-3">
-                  <a 
-                    href="https://naacp.org/resources/relational-organizing" 
-                    target="_blank" 
+                  <a
+                    href="https://naacp.org/resources/relational-organizing"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
@@ -402,9 +392,9 @@ const Relational = () => {
                     </div>
                   </a>
 
-                  <a 
-                    href="https://lwv.org/blog/how-talk-friends-and-family-about-voting" 
-                    target="_blank" 
+                  <a
+                    href="https://lwv.org/blog/how-talk-friends-and-family-about-voting"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
@@ -417,9 +407,9 @@ const Relational = () => {
                     </div>
                   </a>
 
-                  <a 
-                    href="https://indivisible.org/resource/relational-organizing-toolkit" 
-                    target="_blank" 
+                  <a
+                    href="https://indivisible.org/resource/relational-organizing-toolkit"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
