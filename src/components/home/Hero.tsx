@@ -13,10 +13,9 @@ const Hero = () => {
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="animate-fade-in">
-            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-dialogue-darkblue mb-8 font-light">Empathy wins elections.</h1>
+            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-dialogue-darkblue mb-8 font-light">Technology Meets Empathy.</h1>
             <p className="text-lg md:text-xl font-serif text-foreground mb-8 max-w-lg leading-relaxed">
-              Master empathetic dialogue through AI-powered roleplay with real voter personas. Perfect your canvassing skills in a risk-free
-              environment.
+              AI-enabled tools for organizers doing the hardest kind of work—changing minds, building commitment, and mobilizing action.
             </p>
             <div className="bg-dialogue-blue/10 border border-dialogue-blue/20 rounded-lg p-6 mb-8">
               <p className="text-dialogue-darkblue font-medium mb-2">✓ Practice with realistic voter scenarios</p>
