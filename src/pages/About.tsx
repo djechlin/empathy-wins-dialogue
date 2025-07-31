@@ -61,8 +61,7 @@ const About = () => {
             <CardContent className="p-8 text-center">
               <h2 className="text-2xl font-bold text-gray-900 mb-4 font-heading">Get in Touch</h2>
               <p className="text-gray-600 mb-6">
-                Interested in learning more about type2dialogue or collaborating on civic technology projects? 
-                Feel free to reach out.
+                Interested in collaborating on civic tech or research projects?
               </p>
               <Button 
                 onClick={() => window.location.href = 'mailto:daniel@type2dialogue.com'}
