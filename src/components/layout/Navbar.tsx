@@ -60,9 +60,8 @@ const Navbar = () => {
 
         <div className="flex items-center">
           <Button 
-            variant="outline" 
             asChild
-            className="border-dialogue-blue/30 text-dialogue-darkblue hover:bg-dialogue-blue/10"
+            className="bg-dialogue-blue hover:bg-dialogue-blue/90 text-white"
           >
             <a href="mailto:about@type2dialogue.com">
               Get in touch
