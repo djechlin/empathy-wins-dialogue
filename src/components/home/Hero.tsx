@@ -1,7 +1,7 @@
 import { Button } from '@/ui/button';
 import { Card, CardContent } from '@/ui/card';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, FileText, BookOpen, MessagesSquare } from 'lucide-react';
+import { MessageSquare, FileText, BookOpen, MessagesSquare, Info } from 'lucide-react';
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const Hero = () => {
             <p className="text-lg md:text-xl font-serif text-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
               Type2Dialogue provides AI-enabled tools for organizers doing the hardest kind of work—changing minds, building commitment, and mobilizing action.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
               <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={handleStartChallenge}>
                 <CardContent className="p-6 text-center">
                   <MessagesSquare className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
@@ -41,6 +41,14 @@ const Hero = () => {
                   <BookOpen className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
                   <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Misinformation or disagreement?</h3>
                   <p className="text-sm text-foreground/70">type2dialogue's substack, focusing on persuasion and information</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/about')}>
+                <CardContent className="p-6 text-center">
+                  <Info className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">About</h3>
+                  <p className="text-sm text-foreground/70">Learn more about type2dialogue and its founder, Daniel</p>
                 </CardContent>
               </Card>
             </div>
