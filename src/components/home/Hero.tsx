@@ -17,11 +17,6 @@ const Hero = () => {
             <p className="text-lg md:text-xl font-serif text-foreground mb-8 max-w-lg leading-relaxed">
               Type2Dialogue provides AI-enabled tools for organizers doing the hardest kind of work—changing minds, building commitment, and mobilizing action.
             </p>
-            <div className="bg-dialogue-blue/10 border border-dialogue-blue/20 rounded-lg p-6 mb-8">
-              <p className="text-dialogue-darkblue font-medium mb-2">✓ Practice with realistic voter scenarios</p>
-              <p className="text-dialogue-darkblue font-medium mb-2">✓ Get real-time coaching feedback</p>
-              <p className="text-dialogue-darkblue font-medium">✓ Build skills that increase voter persuasion</p>
-            </div>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 size="lg"
