@@ -13,7 +13,7 @@ const Hero = () => {
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="animate-fade-in">
-            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-dialogue-darkblue mb-8 font-light">Civic tech designed for dialogue.</h1>
+            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-dialogue-darkblue mb-8 font-light">Civic tech for persuasion.</h1>
             <p className="text-lg md:text-xl font-serif text-foreground mb-8 max-w-lg leading-relaxed">
               AI-enabled tools for organizers doing the hardest kind of work—changing minds, building commitment, and mobilizing action.
             </p>
