@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { Button } from '@/ui/button';
 import { blogPosts } from '@/data/blogPosts';
 
 const Navbar = () => {
@@ -57,6 +58,17 @@ const Navbar = () => {
           )}
         </div>
 
+        <div className="flex items-center">
+          <Button 
+            variant="outline" 
+            asChild
+            className="border-dialogue-blue/30 text-dialogue-darkblue hover:bg-dialogue-blue/10"
+          >
+            <a href="mailto:about@type2dialogue.com">
+              Get in touch
+            </a>
+          </Button>
+        </div>
       </div>
     </nav>
   );
