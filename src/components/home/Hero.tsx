@@ -15,7 +15,7 @@ const Hero = () => {
           <div className="animate-fade-in">
             <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-dialogue-darkblue mb-8 font-light">Civic tech for dialogue.</h1>
             <p className="text-lg md:text-xl font-serif text-foreground mb-8 max-w-lg leading-relaxed">
-              AI-enabled tools for organizers doing the hardest kind of work—changing minds, building commitment, and mobilizing action.
+              Type2Dialogue provides AI-enabled tools for organizers doing the hardest kind of work—changing minds, building commitment, and mobilizing action.
             </p>
             <div className="bg-dialogue-blue/10 border border-dialogue-blue/20 rounded-lg p-6 mb-8">
               <p className="text-dialogue-darkblue font-medium mb-2">✓ Practice with realistic voter scenarios</p>
