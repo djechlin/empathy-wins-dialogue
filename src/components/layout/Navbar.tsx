@@ -61,7 +61,7 @@ const Navbar = () => {
         <div className="flex items-center">
           <Button 
             asChild
-            className="bg-dialogue-blue hover:bg-dialogue-blue/90 text-white"
+            className="bg-dialogue-purple hover:bg-dialogue-purple/90 text-white"
           >
             <a href="mailto:about@type2dialogue.com">
               Get in touch
