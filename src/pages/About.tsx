@@ -39,7 +39,7 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-background to-dialogue-blue/5">
       <Navbar />
 
       <main className="container-custom py-16">
