@@ -50,7 +50,7 @@ const About = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-6 font-heading">About Daniel</h1>
               <div className="prose prose-lg max-w-none">
                 <p className="text-gray-700 leading-relaxed mb-6">
-                  Daniel is an experienced Google engineer and experienced organizer in deep canvassing. He is interested in the role of empathy and vulnerability in persuasion and developing AI-based tools to improve organizing.
+                  Daniel is a software engineer who built and sold Unroll.me as part of the original five-person team, later working on fullstack development and infrastructure at Google and MongoDB. He is an experienced organizer in deep canvassing and is interested in the role of empathy and vulnerability in persuasion and developing AI-based tools to improve organizing.
                 </p>
               </div>
             </CardContent>
