@@ -30,7 +30,7 @@ const Hero = () => {
 
               <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={() => window.open('https://type2dialogue.substack.com', '_blank')}>
                 <CardContent className="p-6 text-center">
-                  <FileText className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+                  <BookOpen className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
                   <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Misinformation or disagreement?</h3>
                   <p className="text-sm text-foreground/70">type2dialogue's substack, focusing on persuasion and information</p>
                 </CardContent>
