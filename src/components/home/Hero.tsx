@@ -1,5 +1,7 @@
 import { Button } from '@/ui/button';
+import { Card, CardContent } from '@/ui/card';
 import { useNavigate } from 'react-router-dom';
+import { MessageSquare, Users, BookOpen } from 'lucide-react';
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -17,14 +19,32 @@ const Hero = () => {
             <p className="text-lg md:text-xl font-serif text-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
               Type2Dialogue provides AI-enabled tools for organizers doing the hardest kind of work—changing minds, building commitment, and mobilizing action.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                className="bg-dialogue-purple hover:bg-dialogue-darkblue text-white text-lg px-8 py-4"
-                onClick={handleStartChallenge}
-              >
-                Start Your First Roleplay
-              </Button>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={handleStartChallenge}>
+                <CardContent className="p-6 text-center">
+                  <MessageSquare className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Voter persuasion roleplay</h3>
+                  <p className="text-sm text-foreground/70">Practice deep canvassing conversations with AI-powered realistic voter scenarios</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer opacity-60">
+                <CardContent className="p-6 text-center">
+                  <Users className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Team training platform</h3>
+                  <p className="text-sm text-foreground/70">Train your canvassing team with structured learning modules</p>
+                  <span className="text-xs text-dialogue-purple font-medium">Coming Soon</span>
+                </CardContent>
+              </Card>
+
+              <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer opacity-60">
+                <CardContent className="p-6 text-center">
+                  <BookOpen className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Learning resources</h3>
+                  <p className="text-sm text-foreground/70">Access research-backed guides and best practices for political dialogue</p>
+                  <span className="text-xs text-dialogue-purple font-medium">Coming Soon</span>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
