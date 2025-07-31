@@ -1,7 +1,7 @@
 import { Button } from '@/ui/button';
 import { Card, CardContent } from '@/ui/card';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, FileText, BookOpen } from 'lucide-react';
+import { MessageSquare, FileText, BookOpen, MessagesSquare } from 'lucide-react';
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const Hero = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={handleStartChallenge}>
                 <CardContent className="p-6 text-center">
-                  <MessageSquare className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+                  <MessagesSquare className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
                   <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Voter persuasion roleplay</h3>
                   <p className="text-sm text-foreground/70">Practice deep canvassing conversations with AI-powered realistic voter scenarios</p>
                 </CardContent>
