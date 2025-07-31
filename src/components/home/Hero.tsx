@@ -28,20 +28,19 @@ const Hero = () => {
                 </CardContent>
               </Card>
 
+              <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/text')}>
+                <CardContent className="p-6 text-center">
+                  <MessageSquare className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Mobilize a friend chat roleplay</h3>
+                  <p className="text-sm text-foreground/70">Practice persuasive conversations to mobilize friends and family</p>
+                </CardContent>
+              </Card>
+
               <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={() => window.open('https://type2dialogue.substack.com', '_blank')}>
                 <CardContent className="p-6 text-center">
                   <BookOpen className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
                   <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Misinformation or disagreement?</h3>
                   <p className="text-sm text-foreground/70">type2dialogue's substack, focusing on persuasion and information</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer opacity-60">
-                <CardContent className="p-6 text-center">
-                  <BookOpen className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
-                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Learning resources</h3>
-                  <p className="text-sm text-foreground/70">Access research-backed guides and best practices for political dialogue</p>
-                  <span className="text-xs text-dialogue-purple font-medium">Coming Soon</span>
                 </CardContent>
               </Card>
             </div>
