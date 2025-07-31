@@ -32,7 +32,7 @@ const Hero = () => {
                 <CardContent className="p-6 text-center">
                   <MessageSquare className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
                   <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Chat roleplay: mobilize a friend</h3>
-                  <p className="text-sm text-foreground/70">Practice persuasive conversations to mobilize friends and family</p>
+                  <p className="text-sm text-foreground/70">Practice a relational conversation, motivating a friend to vote</p>
                 </CardContent>
               </Card>
 
