@@ -44,113 +44,31 @@ const About = () => {
 
       <main className="container-custom py-16">
         <div className="max-w-4xl mx-auto">
-          {/* Hero Section */}
-          <div className="text-center mb-16">
-            <h1 className="text-5xl font-bold text-gray-900 mb-6 font-heading">Type2Dialogue</h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Building AI-powered civic technology tools to strengthen democratic participation 
-              and improve political discourse through empathetic conversation training.
-            </p>
-          </div>
-
-          {/* About Section */}
+          {/* About Daniel Section */}
           <Card className="mb-12">
             <CardContent className="p-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6 font-heading">Our Mission</h2>
+              <h1 className="text-3xl font-bold text-gray-900 mb-6 font-heading">About Daniel</h1>
               <div className="prose prose-lg max-w-none">
                 <p className="text-gray-700 leading-relaxed mb-6">
-                  Type2Dialogue focuses on developing innovative civic technology tools that help bridge political divides. 
-                  Our flagship platform uses AI-powered voice technology to train political organizers and canvassers in 
-                  deep canvassing techniques - an evidence-based approach to changing minds through empathetic conversation.
-                </p>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                  Traditional canvassing often relies on surface-level interactions that fail to create meaningful change. 
-                  Our technology enables realistic roleplay scenarios with AI feedback, allowing organizers to practice 
-                  difficult conversations in a safe environment before engaging with real voters.
-                </p>
-                <p className="text-gray-700 leading-relaxed">
-                  We believe technology should bring people together rather than drive them apart. Our tools are designed 
-                  to strengthen democratic institutions by improving how we talk to each other about the issues that matter most.
+                  Daniel is an experienced Google engineer and experienced organizer in deep canvassing. He is interested in the role of empathy and vulnerability in persuasion and developing AI-based tools to improve organizing.
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Projects Section */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 font-heading">Our Tools</h2>
-            <div className="grid gap-6">
-              {projects.map((project, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="text-dialogue-purple">
-                          {project.icon}
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-semibold text-gray-900">{project.title}</h3>
-                          <span className="text-sm text-dialogue-purple font-medium">{project.status}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 mb-4">{project.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">{project.tech}</span>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => project.link.startsWith('http') ? window.open(project.link, '_blank') : window.location.href = project.link}
-                      >
-                        {project.link.startsWith('http') ? 'Visit Site' : 'Try Demo'}
-                        <ExternalLink className="w-4 h-4 ml-2" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-
-          {/* Research & Writing Section */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 font-heading">Research & Insights</h2>
-            <div className="grid gap-4">
-              {writings.map((post, index) => (
-                <Card key={index} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{post.title}</h3>
-                        <p className="text-gray-600 text-sm">{post.description}</p>
-                      </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => window.location.href = post.link}
-                      >
-                        <FileText className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-
           {/* Contact Section */}
           <Card>
             <CardContent className="p-8 text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4 font-heading">Partner With Us</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 font-heading">Get in Touch</h2>
               <p className="text-gray-600 mb-6">
-                Interested in using our civic technology tools for your organization or learning more about our approach? 
-                Let's start a conversation.
+                Interested in learning more about type2dialogue or collaborating on civic technology projects? 
+                Feel free to reach out.
               </p>
               <Button 
                 onClick={() => window.location.href = 'mailto:daniel@type2dialogue.com'}
                 className="bg-dialogue-purple hover:bg-dialogue-purple/90"
               >
-                Get in Touch
+                Contact Daniel
                 <ExternalLink className="w-4 h-4 ml-2" />
               </Button>
             </CardContent>
