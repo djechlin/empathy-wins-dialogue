@@ -23,7 +23,7 @@ const Hero = () => {
               <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={handleStartChallenge}>
                 <CardContent className="p-6 text-center">
                   <MessagesSquare className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
-                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Voter persuasion roleplay</h3>
+                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Voice roleplay: voter persuasion</h3>
                   <p className="text-sm text-foreground/70">Practice deep canvassing conversations with AI-powered realistic voter scenarios</p>
                 </CardContent>
               </Card>
@@ -31,7 +31,7 @@ const Hero = () => {
               <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/text')}>
                 <CardContent className="p-6 text-center">
                   <MessageSquare className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
-                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Mobilize a friend chat roleplay</h3>
+                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Chat roleplay: mobilize a friend</h3>
                   <p className="text-sm text-foreground/70">Practice persuasive conversations to mobilize friends and family</p>
                 </CardContent>
               </Card>
