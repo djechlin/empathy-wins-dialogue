@@ -1,15 +1,10 @@
-import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Button } from '@/ui/button';
-import { LogIn, ArrowRight } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { User } from '@supabase/supabase-js';
+import { ArrowRight } from 'lucide-react';
 import { blogPosts } from '@/data/blogPosts';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState<User | null>(null);
 
   const isInChallenge = location.pathname.startsWith('/challenge');
 
@@ -26,28 +21,6 @@ const Navbar = () => {
     { number: 3, label: 'Learn how you did', path: '/challenge/competencies' },
   ];
 
-  useEffect(() => {
-    // Set up auth state listener
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleAuthClick = () => {
-    if (user) {
-      supabase.auth.signOut();
-    } else {
-      navigate('/auth');
-    }
-  };
 
   return (
     <nav className="py-4 border-b border-border bg-white sticky top-0 z-50">
@@ -111,15 +84,6 @@ const Navbar = () => {
           )}
         </div>
 
-        <div className="flex items-center gap-4">
-          <Button variant="outline" className="hidden sm:flex" onClick={handleAuthClick}>
-            {user ? 'Log Out' : 'Log In'}
-          </Button>
-          <Button className="bg-dialogue-purple hover:bg-dialogue-darkblue" onClick={() => navigate('/auth')}>
-            <LogIn className="mr-2 h-4 w-4" />
-            {user ? 'Dashboard' : 'Sign Up'}
-          </Button>
-        </div>
       </div>
     </nav>
   );
