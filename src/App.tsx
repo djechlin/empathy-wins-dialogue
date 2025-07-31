@@ -23,7 +23,7 @@ import Roleplay from './pages/Roleplay';
 import StartingOut from './pages/StartingOut';
 import Text from './pages/Text';
 import Relational from './pages/Relational';
-import Portfolio from './pages/Portfolio';
+
 
 const queryClient = new QueryClient();
 
@@ -55,7 +55,6 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/text" element={<Text />} />
             <Route path="/relational" element={<Relational />} />
-            <Route path="/portfolio" element={<Portfolio />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
