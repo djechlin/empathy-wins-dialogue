@@ -1,7 +1,7 @@
 import { Button } from '@/ui/button';
 import { Card, CardContent } from '@/ui/card';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, FileText, BookOpen, MessagesSquare } from 'lucide-react';
+import { MessageSquare, FileText, BookOpen, MessagesSquare, HelpCircle } from 'lucide-react';
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -38,9 +38,9 @@ const Hero = () => {
 
               <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={() => window.open('https://type2dialogue.substack.com', '_blank')}>
                 <CardContent className="p-6 text-center">
-                  <BookOpen className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+                  <HelpCircle className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
                   <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Misinformation or disagreement?</h3>
-                  <p className="text-sm text-foreground/70">type2dialogue's substack, focusing on persuasion and information</p>
+                  <p className="text-sm text-foreground/70">Learn more about type2dialogue and its founder Daniel</p>
                 </CardContent>
               </Card>
             </div>
