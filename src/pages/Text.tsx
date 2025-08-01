@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
 import { Textarea } from '@/ui/textarea';
 import { PartyPopper, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import Navbar from '@/components/layout/Navbar';
 
 interface Message {
   id: string;
@@ -176,7 +177,9 @@ COMPLETE should be true only when Alex has clearly and definitively agreed to at
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="flex items-center justify-center p-4 pt-20">
       <Card className="w-full max-w-md bg-white shadow-xl">
         <div className="border-b px-4 py-3">
           <div className="flex items-center justify-between">
@@ -293,6 +296,7 @@ COMPLETE should be true only when Alex has clearly and definitively agreed to at
           </Card>
         </div>
       )}
+      </div>
     </div>
   );
 };
