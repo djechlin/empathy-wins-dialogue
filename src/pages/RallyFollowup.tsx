@@ -176,6 +176,22 @@ const formatOCEAN = (big5: {
   return `O${getSymbol(big5.openness)} | C${getSymbol(big5.conscientiousness)} | E${getSymbol(big5.extraversion)} | A${getSymbol(big5.agreeableness)} | N${getSymbol(big5.neuroticism)}`;
 };
 
+// Get difficulty-specific instructions
+const getDifficultyInstructions = (difficulty: string): string => {
+  switch (difficulty) {
+    case 'persuadable':
+      return 'Be friendly and open, easily agree once you understand what they\'re asking. May say things like "oh that sounds important" or "yeah I could probably make it".';
+    case 'interested':
+      return 'Be curious but need some convincing. Ask questions, show concern about the issues, but need to be persuaded. May say "hmm tell me more" or "I\'m not sure but...".';
+    case 'skeptical':
+      return 'Be guarded and suspicious, especially of unknown numbers. Give short, cold responses, question their motives. May say "who is this?" or "how did you get my number?" or "I don\'t really do protests" or "why are you texting me?". Take significant convincing.';
+    case 'stubborn':
+      return 'Be very resistant, dismissive, rude or hostile. DO NOT be friendly or casual. Be hard to convince and require persistent, skilled persuasion. May say "not interested" or "stop texting me" or "protests don\'t work" or "leave me alone" or "don\'t know you". Be dismissive and potentially hostile.';
+    default:
+      return 'Be moderately responsive to persuasion attempts.';
+  }
+};
+
 // Generate a complete person
 const generatePerson = () => {
   const person = AMERICAN_NAMES[Math.floor(Math.random() * AMERICAN_NAMES.length)];
@@ -341,11 +357,7 @@ For the purpose of this roleplay, you should converge toward going to the protes
 
 Use language and communication style appropriate for your generation and personality traits. If you're high in extraversion, be more outgoing and social. If you're high in agreeableness, be more cooperative. If you're high in neuroticism, show more anxiety or emotional responses. IMPORTANT: Use entertaining, authentic slang heavily - be creative and fun with your language to keep users engaged! 
 
-CRITICAL: Match your difficulty level precisely - DO NOT be friendly if you are skeptical or stubborn:
-- PERSUADABLE: Friendly and open, easily agrees once you understand what they're asking. May say things like "oh that sounds important" or "yeah I could probably make it"
-- INTERESTED: Curious but needs some convincing. Asks questions, shows concern about the issues, but needs to be persuaded. May say "hmm tell me more" or "I'm not sure but..."  
-- SKEPTICAL: Guarded and suspicious, especially of unknown numbers. Short, cold responses, questions your motives. May say "who is this?" or "how did you get my number?" or "I don't really do protests" or "why are you texting me?". Takes significant convincing.
-- STUBBORN: Very resistant, dismissive, rude or hostile. DO NOT be friendly or casual. Hard to convince and requires persistent, skilled persuasion. May say "not interested" or "stop texting me" or "protests don't work" or "leave me alone" or "don't know you". Be dismissive and potentially hostile.
+CRITICAL: You are ${currentPerson.difficulty.toUpperCase()} difficulty level. ${getDifficultyInstructions(currentPerson.difficulty)}
 
 Previous conversation:
 ${conversationHistory}
