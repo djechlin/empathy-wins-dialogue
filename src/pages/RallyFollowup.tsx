@@ -1,6 +1,9 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
+import { Input } from '@/ui/input';
+import { Label } from '@/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
 import { Textarea } from '@/ui/textarea';
 import { Dice6, PartyPopper, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -213,6 +216,10 @@ const RallyFollowup = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [showFullPrompt, setShowFullPrompt] = useState(false);
   const [showPersona, setShowPersona] = useState(false);
+  const [organizerName, setOrganizerName] = useState('');
+  const [leaderPotential, setLeaderPotential] = useState<string>('');
+  const [comment, setComment] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -266,6 +273,54 @@ const RallyFollowup = () => {
     }
   };
 
+  const handleResultsSubmit = async () => {
+    if (!organizerName.trim() || !leaderPotential || !comment.trim()) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const conversationData = {
+        person: {
+          name: currentPerson.name,
+          gender: currentPerson.gender,
+          age: currentPerson.age,
+          generation: currentPerson.generation,
+          big5: currentPerson.big5,
+          difficulty: currentPerson.difficulty,
+          personalityString: currentPerson.personalityString,
+        },
+        messages: messages,
+        results: {
+          organizerName: organizerName.trim(),
+          leaderPotential: parseInt(leaderPotential),
+          comment: comment.trim(),
+          conversationComplete: isComplete,
+          messageCount: messages.length,
+        },
+      };
+
+      const { error } = await supabase.functions.invoke('rally-followup-results', {
+        body: conversationData,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      alert('Results submitted successfully!');
+      // Reset form
+      setOrganizerName('');
+      setLeaderPotential('');
+      setComment('');
+    } catch (error) {
+      console.error('Error submitting results:', error);
+      alert('Failed to submit results. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleAIResponse = async (messageText: string) => {
     try {
@@ -447,14 +502,71 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
       </Card>
 
       {isComplete && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="p-8 text-center max-w-md mx-4 bg-white">
-            <div className="mb-4">
-              <PartyPopper className="mx-auto h-16 w-16 text-green-500 animate-bounce" />
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="p-8 max-w-lg mx-4 bg-white max-h-[90vh] overflow-y-auto">
+            <div className="text-center mb-6">
+              <div className="mb-4">
+                <PartyPopper className="mx-auto h-16 w-16 text-green-500 animate-bounce" />
+              </div>
+              <h2 className="text-2xl font-bold text-green-700 mb-2">Success! 🎉</h2>
+              <p className="text-gray-600 mb-4">{currentPerson.name} agreed to attend the Good Trouble Lives On protest on July 17th!</p>
+              <p className="text-sm text-gray-500 mb-6">Great job convincing your friend to take action for democracy!</p>
             </div>
-            <h2 className="text-2xl font-bold text-green-700 mb-2">Success! 🎉</h2>
-            <p className="text-gray-600 mb-4">{currentPerson.name} agreed to attend the Good Trouble Lives On protest on July 17th!</p>
-            <p className="text-sm text-gray-500">Great job convincing your friend to take action for democracy!</p>
+
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold mb-4">Organizer Assessment</h3>
+
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="organizer-name" className="text-sm font-medium">
+                    Organizer Name
+                  </Label>
+                  <Input
+                    id="organizer-name"
+                    value={organizerName}
+                    onChange={(e) => setOrganizerName(e.target.value)}
+                    placeholder="Enter organizer name"
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium mb-3 block">Leader Potential? (1-10)</Label>
+                  <RadioGroup value={leaderPotential} onValueChange={setLeaderPotential} className="flex flex-wrap gap-2">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                      <div key={num} className="flex items-center space-x-1">
+                        <RadioGroupItem value={num.toString()} id={`potential-${num}`} className="w-4 h-4" />
+                        <Label htmlFor={`potential-${num}`} className="text-sm">
+                          {num}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+
+                <div>
+                  <Label htmlFor="comment" className="text-sm font-medium">
+                    Comment
+                  </Label>
+                  <Textarea
+                    id="comment"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Add your assessment comments..."
+                    className="mt-1"
+                    rows={2}
+                  />
+                </div>
+
+                <Button
+                  onClick={handleResultsSubmit}
+                  disabled={isSubmitting || !organizerName.trim() || !leaderPotential || !comment.trim()}
+                  className="w-full"
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
+                </Button>
+              </div>
+            </div>
           </Card>
         </div>
       )}
