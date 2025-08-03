@@ -215,13 +215,11 @@ const RallyFollowup = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
-  const [showFullPrompt, setShowFullPrompt] = useState(false);
   const [showPersona, setShowPersona] = useState(false);
   const [organizerName, setOrganizerName] = useState('');
   const [leaderPotential, setLeaderPotential] = useState<string>('');
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [conversationsCompleted, setConversationsCompleted] = useState(0);
   const [completedCombinations, setCompletedCombinations] = useState<Set<string>>(new Set());
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -311,8 +309,7 @@ const RallyFollowup = () => {
       }
 
       alert('Results submitted successfully!');
-      // Increment completed conversations counter and track demographics
-      setConversationsCompleted((prev) => prev + 1);
+      // Track demographic combination
       const combination = `${currentPerson.gender}-${currentPerson.generation}`;
       setCompletedCombinations((prev) => new Set(prev).add(combination));
       // Reset form
@@ -448,23 +445,6 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                 </div>
               </div>
 
-              {showFullPrompt && (
-                <Card className="mx-4 mt-2 mb-2 p-3 bg-gray-50 border-gray-200">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-sm font-medium text-gray-700">AI Prompt Preview</h3>
-                    <Button onClick={() => setShowFullPrompt(false)} size="sm" variant="ghost">
-                      ✕
-                    </Button>
-                  </div>
-                  <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-white p-2 rounded border overflow-x-auto">
-                    {messages.length > 0
-                      ? `${currentPerson.personalityString}
-
-You are ${currentPerson.name}, a friend who voted against Trump but is not very politically engaged...`
-                      : 'Send a message to see the full prompt'}
-                  </pre>
-                </Card>
-              )}
 
               <div className="h-96 overflow-y-auto p-4 space-y-4">
                 {messages.map((message) => (
@@ -497,9 +477,7 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
 
               <div className="border-t p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <Button onClick={() => setShowFullPrompt(!showFullPrompt)} size="sm" variant="ghost" className="text-xs">
-                    {showFullPrompt ? 'Hide' : 'Show'} AI Prompt
-                  </Button>
+                  <div></div>
                   <div className="text-xs text-gray-500">
                     {messages.length === 0 ? 'Start the conversation!' : `${messages.length} messages`}
                   </div>
@@ -591,31 +569,39 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
               </div>
 
               <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-sm text-gray-600 text-center mb-3">
-                  Conversations completed this session: <span className="font-semibold text-gray-800">{conversationsCompleted}</span>
-                </p>
-                
                 <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-xs text-gray-600 text-center mb-2">Coverage Progress (10 types total)</p>
+                  <p className="text-sm text-gray-600 text-center mb-2">Coverage this session</p>
                   <div className="grid grid-cols-5 gap-1 text-xs">
                     {['gen-alpha', 'gen-z', 'millennial', 'gen-x', 'boomer'].map((gen) => (
                       <div key={gen} className="text-center">
                         <div className="text-gray-600 mb-1 font-medium">
-                          {gen === 'gen-alpha' ? 'Gen α' : gen === 'gen-z' ? 'Gen Z' : gen === 'millennial' ? 'Mill' : gen === 'gen-x' ? 'Gen X' : 'Boom'}
+                          {gen === 'gen-alpha'
+                            ? 'Gen α'
+                            : gen === 'gen-z'
+                              ? 'Gen Z'
+                              : gen === 'millennial'
+                                ? 'Mill'
+                                : gen === 'gen-x'
+                                  ? 'Gen X'
+                                  : 'Boom'}
                         </div>
                         <div className="space-y-1">
-                          <div className={`w-6 h-6 mx-auto rounded border-2 flex items-center justify-center ${
-                            completedCombinations.has(`M-${gen}`) 
-                              ? 'bg-green-100 border-green-500 text-green-700' 
-                              : 'bg-white border-gray-300 text-gray-400'
-                          }`}>
+                          <div
+                            className={`w-6 h-6 mx-auto rounded border-2 flex items-center justify-center ${
+                              completedCombinations.has(`M-${gen}`)
+                                ? 'bg-green-100 border-green-500 text-green-700'
+                                : 'bg-white border-gray-300 text-gray-400'
+                            }`}
+                          >
                             {completedCombinations.has(`M-${gen}`) ? '✓' : 'M'}
                           </div>
-                          <div className={`w-6 h-6 mx-auto rounded border-2 flex items-center justify-center ${
-                            completedCombinations.has(`F-${gen}`) 
-                              ? 'bg-green-100 border-green-500 text-green-700' 
-                              : 'bg-white border-gray-300 text-gray-400'
-                          }`}>
+                          <div
+                            className={`w-6 h-6 mx-auto rounded border-2 flex items-center justify-center ${
+                              completedCombinations.has(`F-${gen}`)
+                                ? 'bg-green-100 border-green-500 text-green-700'
+                                : 'bg-white border-gray-300 text-gray-400'
+                            }`}
+                          >
                             {completedCombinations.has(`F-${gen}`) ? '✓' : 'F'}
                           </div>
                         </div>
@@ -623,9 +609,7 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
                     ))}
                   </div>
                   <div className="mt-2 text-center">
-                    <span className="text-xs text-gray-500">
-                      {completedCombinations.size}/10 completed
-                    </span>
+                    <span className="text-xs text-gray-500">{completedCombinations.size}/10 completed</span>
                   </div>
                 </div>
               </div>
