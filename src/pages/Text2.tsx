@@ -127,7 +127,7 @@ The suggestion should be a complete, ready-to-send message that would work well 
 
 COMPLETE should be true only when Alex has clearly and definitively agreed to attend whatever protest the user is trying to convince them about. Don't mark it complete for maybe/considering - only for clear agreement.`;
 
-      const { data, error } = await supabase.functions.invoke('text-friend', {
+      const { data, error } = await supabase.functions.invoke('rally-followup', {
         body: {
           userMessage: fullPrompt,
         },
