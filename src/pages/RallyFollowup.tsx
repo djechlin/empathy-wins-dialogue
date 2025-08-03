@@ -5,7 +5,7 @@ import { Input } from '@/ui/input';
 import { Label } from '@/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
 import { Textarea } from '@/ui/textarea';
-import { Dice6, PartyPopper, Send } from 'lucide-react';
+import { Dice6, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface Message {
@@ -274,8 +274,8 @@ const RallyFollowup = () => {
   };
 
   const handleResultsSubmit = async () => {
-    if (!organizerName.trim() || !leaderPotential || !comment.trim()) {
-      alert('Please fill in all fields');
+    if (!organizerName.trim() || !leaderPotential) {
+      alert('Please fill in organizer name and leader potential');
       return;
     }
 
@@ -501,74 +501,57 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
         </div>
       </Card>
 
-      {messages.length > 0 && messages.some(m => !m.isUser) && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="p-8 max-w-lg mx-4 bg-white max-h-[90vh] overflow-y-auto">
-            <div className="text-center mb-6">
-              <div className="mb-4">
-                <PartyPopper className="mx-auto h-16 w-16 text-green-500 animate-bounce" />
-              </div>
-              <h2 className="text-2xl font-bold text-blue-700 mb-2">Assessment Time! 📝</h2>
-              <p className="text-gray-600 mb-4">You've started a conversation with {currentPerson.name}.</p>
-              <p className="text-sm text-gray-500 mb-6">Please fill out the organizer assessment form below.</p>
+      {messages.length > 0 && messages.some((m) => !m.isUser) && (
+        <Card className="mt-4 p-6 bg-gray-50 border-gray-200">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">📝 Organizer Assessment</h3>
+
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="organizer-name" className="text-sm font-medium">
+                Organizer Name
+              </Label>
+              <Input
+                id="organizer-name"
+                value={organizerName}
+                onChange={(e) => setOrganizerName(e.target.value)}
+                placeholder="Enter organizer name"
+                className="mt-1"
+              />
             </div>
 
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold mb-4">Organizer Assessment</h3>
-
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="organizer-name" className="text-sm font-medium">
-                    Organizer Name
-                  </Label>
-                  <Input
-                    id="organizer-name"
-                    value={organizerName}
-                    onChange={(e) => setOrganizerName(e.target.value)}
-                    placeholder="Enter organizer name"
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium mb-3 block">Leader Potential? (1-10)</Label>
-                  <RadioGroup value={leaderPotential} onValueChange={setLeaderPotential} className="flex flex-wrap gap-2">
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                      <div key={num} className="flex items-center space-x-1">
-                        <RadioGroupItem value={num.toString()} id={`potential-${num}`} className="w-4 h-4" />
-                        <Label htmlFor={`potential-${num}`} className="text-sm">
-                          {num}
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                </div>
-
-                <div>
-                  <Label htmlFor="comment" className="text-sm font-medium">
-                    Comment
-                  </Label>
-                  <Textarea
-                    id="comment"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder="Add your assessment comments..."
-                    className="mt-1"
-                    rows={2}
-                  />
-                </div>
-
-                <Button
-                  onClick={handleResultsSubmit}
-                  disabled={isSubmitting || !organizerName.trim() || !leaderPotential || !comment.trim()}
-                  className="w-full"
-                >
-                  {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
-                </Button>
-              </div>
+            <div>
+              <Label className="text-sm font-medium mb-3 block">Leader Potential? (1-10)</Label>
+              <RadioGroup value={leaderPotential} onValueChange={setLeaderPotential} className="flex flex-wrap gap-2">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                  <div key={num} className="flex items-center space-x-1">
+                    <RadioGroupItem value={num.toString()} id={`potential-${num}`} className="w-4 h-4" />
+                    <Label htmlFor={`potential-${num}`} className="text-sm">
+                      {num}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
             </div>
-          </Card>
-        </div>
+
+            <div>
+              <Label htmlFor="comment" className="text-sm font-medium">
+                Comment (optional)
+              </Label>
+              <Textarea
+                id="comment"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Add your assessment comments..."
+                className="mt-1"
+                rows={2}
+              />
+            </div>
+
+            <Button onClick={handleResultsSubmit} disabled={isSubmitting || !organizerName.trim() || !leaderPotential} className="w-full">
+              {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
+            </Button>
+          </div>
+        </Card>
       )}
     </div>
   );
