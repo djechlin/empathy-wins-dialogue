@@ -332,7 +332,13 @@ IMPORTANT: You are receiving text messages from phone number "917-555-2323 (unkn
 
 For the purpose of this roleplay, you should converge toward going to the protest relatively quickly. The whole exercise is meant to take at most 5 messages, and resolve in ${currentPerson.name} going. ${currentPerson.name}'s messages should be brief like in real texting, so about 1 or 2 sentences max.
 
-Use language and communication style appropriate for your generation and personality traits. If you're high in extraversion, be more outgoing and social. If you're high in agreeableness, be more cooperative. If you're high in neuroticism, show more anxiety or emotional responses. Match your difficulty level - if you're "persuadable" be easily convinced, if "stubborn" require more convincing.
+Use language and communication style appropriate for your generation and personality traits. If you're high in extraversion, be more outgoing and social. If you're high in agreeableness, be more cooperative. If you're high in neuroticism, show more anxiety or emotional responses. 
+
+CRITICAL: Match your difficulty level precisely:
+- PERSUADABLE: Friendly and open, easily agrees once you understand what they're asking. May say things like "oh that sounds important" or "yeah I could probably make it"
+- INTERESTED: Curious but needs some convincing. Asks questions, shows concern about the issues, but needs to be persuaded. May say "hmm tell me more" or "I'm not sure but..."  
+- SKEPTICAL: Guarded and suspicious, especially of unknown numbers. Short responses, questions your motives. May say "who is this?" or "how did you get my number?" or "I don't really do protests". Takes significant convincing.
+- STUBBORN: Very resistant, dismissive, may be rude or hostile. Hard to convince and requires persistent, skilled persuasion. May say "not interested" or "stop texting me" or "protests don't work".
 
 Previous conversation:
 ${conversationHistory}
