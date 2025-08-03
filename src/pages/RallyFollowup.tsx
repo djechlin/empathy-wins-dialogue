@@ -501,16 +501,16 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
         </div>
       </Card>
 
-      {isComplete && (
+      {messages.length > 0 && messages.some(m => !m.isUser) && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <Card className="p-8 max-w-lg mx-4 bg-white max-h-[90vh] overflow-y-auto">
             <div className="text-center mb-6">
               <div className="mb-4">
                 <PartyPopper className="mx-auto h-16 w-16 text-green-500 animate-bounce" />
               </div>
-              <h2 className="text-2xl font-bold text-green-700 mb-2">Success! 🎉</h2>
-              <p className="text-gray-600 mb-4">{currentPerson.name} agreed to attend the Good Trouble Lives On protest on July 17th!</p>
-              <p className="text-sm text-gray-500 mb-6">Great job convincing your friend to take action for democracy!</p>
+              <h2 className="text-2xl font-bold text-blue-700 mb-2">Assessment Time! 📝</h2>
+              <p className="text-gray-600 mb-4">You've started a conversation with {currentPerson.name}.</p>
+              <p className="text-sm text-gray-500 mb-6">Please fill out the organizer assessment form below.</p>
             </div>
 
             <div className="border-t pt-6">
