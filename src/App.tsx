@@ -22,7 +22,7 @@ import Report from './pages/Report';
 import Roleplay from './pages/Roleplay';
 import StartingOut from './pages/StartingOut';
 import Text from './pages/Text';
-import Text2 from './pages/Text2';
+import RallyFollowup from './pages/RallyFollowup';
 import Relational from './pages/Relational';
 
 const queryClient = new QueryClient();
@@ -54,7 +54,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/text" element={<Text />} />
-            <Route path="/text2" element={<Text2 />} />
+            <Route path="/rally-followup" element={<RallyFollowup />} />
             <Route path="/relational" element={<Relational />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

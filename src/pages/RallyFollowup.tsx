@@ -14,7 +14,7 @@ interface Message {
   timestamp: Date;
 }
 
-const Text2 = () => {
+const RallyFollowup = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -297,4 +297,4 @@ COMPLETE should be true only when Alex has clearly and definitively agreed to at
   );
 };
 
-export default Text2;
+export default RallyFollowup;
