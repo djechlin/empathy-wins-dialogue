@@ -221,6 +221,7 @@ const RallyFollowup = () => {
   const [leaderPotential, setLeaderPotential] = useState<string>('');
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [conversationsCompleted, setConversationsCompleted] = useState(0);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -309,6 +310,8 @@ const RallyFollowup = () => {
       }
 
       alert('Results submitted successfully!');
+      // Increment completed conversations counter
+      setConversationsCompleted(prev => prev + 1);
       // Reset form
       setOrganizerName('');
       setLeaderPotential('');
@@ -406,181 +409,191 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
             <p className="text-gray-600">Text AI personas to generate organizer training data</p>
           </div>
 
-        <div className="flex gap-4 items-start">
-          <Card className="w-full max-w-md bg-white shadow-xl">
-            <div className="border-b px-4 py-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                    <span className="text-white font-semibold text-sm">{currentPerson.name.charAt(0)}</span>
-                  </div>
-                  <div>
-                    <h1 className="font-semibold text-gray-900">{currentPerson.name}</h1>
-                    <p className="text-sm text-green-500">Online</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="flex flex-col gap-1">
-                    <Button onClick={regeneratePerson} size="sm" variant="outline">
-                      <Dice6 size={16} className="mr-1" />
-                      New Person
-                    </Button>
-                    <Button onClick={() => setShowPersona(!showPersona)} size="sm" variant="ghost" className="text-xs">
-                      {showPersona ? 'Hide' : 'Show'} Persona
-                    </Button>
-                  </div>
-                  {showPersona && (
-                    <div className="text-xs text-gray-600 mt-2 text-right">
-                      <div>
-                        {currentPerson.age}y {currentPerson.generation} {currentPerson.gender}
-                      </div>
-                      <div>{currentPerson.difficulty}</div>
-                      <div className="font-mono">{formatOCEAN(currentPerson.big5)}</div>
+          <div className="flex gap-4 items-start">
+            <Card className="w-full max-w-md bg-white shadow-xl">
+              <div className="border-b px-4 py-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold text-sm">{currentPerson.name.charAt(0)}</span>
                     </div>
-                  )}
+                    <div>
+                      <h1 className="font-semibold text-gray-900">{currentPerson.name}</h1>
+                      <p className="text-sm text-green-500">Online</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="flex flex-col gap-1">
+                      <Button onClick={regeneratePerson} size="sm" variant="outline">
+                        <Dice6 size={16} className="mr-1" />
+                        New Person
+                      </Button>
+                      <Button onClick={() => setShowPersona(!showPersona)} size="sm" variant="ghost" className="text-xs">
+                        {showPersona ? 'Hide' : 'Show'} Persona
+                      </Button>
+                    </div>
+                    {showPersona && (
+                      <div className="text-xs text-gray-600 mt-2 text-right">
+                        <div>
+                          {currentPerson.age}y {currentPerson.generation} {currentPerson.gender}
+                        </div>
+                        <div>{currentPerson.difficulty}</div>
+                        <div className="font-mono">{formatOCEAN(currentPerson.big5)}</div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {showFullPrompt && (
-              <Card className="mx-4 mt-2 mb-2 p-3 bg-gray-50 border-gray-200">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-sm font-medium text-gray-700">AI Prompt Preview</h3>
-                  <Button onClick={() => setShowFullPrompt(false)} size="sm" variant="ghost">
-                    ✕
-                  </Button>
-                </div>
-                <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-white p-2 rounded border overflow-x-auto">
-                  {messages.length > 0
-                    ? `${currentPerson.personalityString}
+              {showFullPrompt && (
+                <Card className="mx-4 mt-2 mb-2 p-3 bg-gray-50 border-gray-200">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-sm font-medium text-gray-700">AI Prompt Preview</h3>
+                    <Button onClick={() => setShowFullPrompt(false)} size="sm" variant="ghost">
+                      ✕
+                    </Button>
+                  </div>
+                  <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-white p-2 rounded border overflow-x-auto">
+                    {messages.length > 0
+                      ? `${currentPerson.personalityString}
 
 You are ${currentPerson.name}, a friend who voted against Trump but is not very politically engaged...`
-                    : 'Send a message to see the full prompt'}
-                </pre>
-              </Card>
-            )}
-
-            <div className="h-96 overflow-y-auto p-4 space-y-4">
-              {messages.map((message) => (
-                <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-                  <Card className={`max-w-xs p-3 ${message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'}`}>
-                    <p className="text-sm">{message.text}</p>
-                    <p className={`text-xs mt-1 ${message.isUser ? 'text-blue-100' : 'text-gray-500'}`}>
-                      {message.timestamp.toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
-                  </Card>
-                </div>
-              ))}
-
-              {isLoading && (
-                <div className="flex justify-start">
-                  <Card className="max-w-xs p-3 bg-gray-100">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                    </div>
-                  </Card>
-                </div>
+                      : 'Send a message to see the full prompt'}
+                  </pre>
+                </Card>
               )}
-              <div ref={messagesEndRef} />
-            </div>
 
-            <div className="border-t p-4">
-              <div className="flex items-center justify-between mb-2">
-                <Button onClick={() => setShowFullPrompt(!showFullPrompt)} size="sm" variant="ghost" className="text-xs">
-                  {showFullPrompt ? 'Hide' : 'Show'} AI Prompt
-                </Button>
-                <div className="text-xs text-gray-500">
-                  {messages.length === 0 ? 'Start the conversation!' : `${messages.length} messages`}
+              <div className="h-96 overflow-y-auto p-4 space-y-4">
+                {messages.map((message) => (
+                  <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
+                    <Card className={`max-w-xs p-3 ${message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'}`}>
+                      <p className="text-sm">{message.text}</p>
+                      <p className={`text-xs mt-1 ${message.isUser ? 'text-blue-100' : 'text-gray-500'}`}>
+                        {message.timestamp.toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </p>
+                    </Card>
+                  </div>
+                ))}
+
+                {isLoading && (
+                  <div className="flex justify-start">
+                    <Card className="max-w-xs p-3 bg-gray-100">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      </div>
+                    </Card>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              <div className="border-t p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Button onClick={() => setShowFullPrompt(!showFullPrompt)} size="sm" variant="ghost" className="text-xs">
+                    {showFullPrompt ? 'Hide' : 'Show'} AI Prompt
+                  </Button>
+                  <div className="text-xs text-gray-500">
+                    {messages.length === 0 ? 'Start the conversation!' : `${messages.length} messages`}
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <Textarea
+                    ref={inputRef}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder={
+                      isComplete
+                        ? `${currentPerson.name} agreed to go! 🎉`
+                        : messages.length === 0
+                          ? `Say hi to ${currentPerson.name}...`
+                          : 'Type a message...'
+                    }
+                    className="flex-1 min-h-[40px] max-h-[120px] resize-none"
+                    disabled={isLoading || isComplete}
+                  />
+                  <Button onClick={sendMessage} disabled={!inputValue.trim() || isLoading || isComplete} className="px-4">
+                    <Send size={16} />
+                  </Button>
                 </div>
               </div>
-              <div className="flex space-x-2">
-                <Textarea
-                  ref={inputRef}
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder={
-                    isComplete
-                      ? `${currentPerson.name} agreed to go! 🎉`
-                      : messages.length === 0
-                        ? `Say hi to ${currentPerson.name}...`
-                        : 'Type a message...'
-                  }
-                  className="flex-1 min-h-[40px] max-h-[120px] resize-none"
-                  disabled={isLoading || isComplete}
-                />
-                <Button onClick={sendMessage} disabled={!inputValue.trim() || isLoading || isComplete} className="px-4">
-                  <Send size={16} />
+            </Card>
+
+            <Card className="w-full max-w-md p-6 bg-white border-gray-200 shadow-lg">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">📝 Organizer Assessment</h3>
+              {messages.length === 0 ? (
+                <p className="text-sm text-gray-500 mb-4">
+                  Complete this assessment after you finish your conversation with {currentPerson.name}.
+                </p>
+              ) : !messages.some((m) => !m.isUser) ? (
+                <p className="text-sm text-gray-500 mb-4">Start your conversation, then complete this assessment when finished.</p>
+              ) : (
+                <p className="text-sm text-gray-500 mb-4">Complete this assessment based on your conversation with {currentPerson.name}.</p>
+              )}
+
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="organizer-name" className="text-sm font-medium">
+                    Organizer Name
+                  </Label>
+                  <Input
+                    id="organizer-name"
+                    value={organizerName}
+                    onChange={(e) => setOrganizerName(e.target.value)}
+                    placeholder="Enter organizer name"
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium mb-3 block">Leader Potential? (1-10)</Label>
+                  <RadioGroup value={leaderPotential} onValueChange={setLeaderPotential} className="flex flex-wrap gap-2">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                      <div key={num} className="flex items-center space-x-1">
+                        <RadioGroupItem value={num.toString()} id={`potential-${num}`} className="w-4 h-4" />
+                        <Label htmlFor={`potential-${num}`} className="text-sm">
+                          {num}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+
+                <div>
+                  <Label htmlFor="comment" className="text-sm font-medium">
+                    Comment (optional)
+                  </Label>
+                  <Textarea
+                    id="comment"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Add your assessment comments..."
+                    className="mt-1"
+                    rows={2}
+                  />
+                </div>
+
+                <Button
+                  onClick={handleResultsSubmit}
+                  disabled={isSubmitting || !organizerName.trim() || !leaderPotential}
+                  className="w-full"
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
                 </Button>
               </div>
-            </div>
-          </Card>
-
-          <Card className="w-full max-w-md p-6 bg-white border-gray-200 shadow-lg">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">📝 Organizer Assessment</h3>
-            {messages.length === 0 ? (
-              <p className="text-sm text-gray-500 mb-4">
-                Complete this assessment after you finish your conversation with {currentPerson.name}.
-              </p>
-            ) : !messages.some((m) => !m.isUser) ? (
-              <p className="text-sm text-gray-500 mb-4">Start your conversation, then complete this assessment when finished.</p>
-            ) : (
-              <p className="text-sm text-gray-500 mb-4">Complete this assessment based on your conversation with {currentPerson.name}.</p>
-            )}
-
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="organizer-name" className="text-sm font-medium">
-                  Organizer Name
-                </Label>
-                <Input
-                  id="organizer-name"
-                  value={organizerName}
-                  onChange={(e) => setOrganizerName(e.target.value)}
-                  placeholder="Enter organizer name"
-                  className="mt-1"
-                />
+              
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-sm text-gray-600 text-center">
+                  Conversations completed this session: <span className="font-semibold text-gray-800">{conversationsCompleted}</span>
+                </p>
               </div>
-
-              <div>
-                <Label className="text-sm font-medium mb-3 block">Leader Potential? (1-10)</Label>
-                <RadioGroup value={leaderPotential} onValueChange={setLeaderPotential} className="flex flex-wrap gap-2">
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                    <div key={num} className="flex items-center space-x-1">
-                      <RadioGroupItem value={num.toString()} id={`potential-${num}`} className="w-4 h-4" />
-                      <Label htmlFor={`potential-${num}`} className="text-sm">
-                        {num}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </div>
-
-              <div>
-                <Label htmlFor="comment" className="text-sm font-medium">
-                  Comment (optional)
-                </Label>
-                <Textarea
-                  id="comment"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Add your assessment comments..."
-                  className="mt-1"
-                  rows={2}
-                />
-              </div>
-
-              <Button onClick={handleResultsSubmit} disabled={isSubmitting || !organizerName.trim() || !leaderPotential} className="w-full">
-                {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
-              </Button>
-            </div>
-          </Card>
-        </div>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
