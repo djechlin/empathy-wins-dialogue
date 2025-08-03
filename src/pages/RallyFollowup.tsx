@@ -501,9 +501,15 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
         </div>
       </Card>
 
-      {messages.length > 0 && messages.some((m) => !m.isUser) && (
-        <Card className="mt-4 p-6 bg-gray-50 border-gray-200">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">📝 Organizer Assessment</h3>
+      <Card className="mt-4 p-6 bg-gray-50 border-gray-200">
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">📝 Organizer Assessment</h3>
+        {messages.length === 0 ? (
+          <p className="text-sm text-gray-500 mb-4">Complete this assessment after you finish your conversation with {currentPerson.name}.</p>
+        ) : !messages.some((m) => !m.isUser) ? (
+          <p className="text-sm text-gray-500 mb-4">Start your conversation, then complete this assessment when finished.</p>
+        ) : (
+          <p className="text-sm text-gray-500 mb-4">Complete this assessment based on your conversation with {currentPerson.name}.</p>
+        )}
 
           <div className="space-y-4">
             <div>
@@ -552,7 +558,6 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
             </Button>
           </div>
         </Card>
-      )}
     </div>
   );
 };
