@@ -399,7 +399,7 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
     <div className="min-h-screen bg-purple-50 p-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Rally Text Training</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Rally Followup: Create training examples</h1>
           <p className="text-gray-600">Text AI personas to generate organizer training data</p>
         </div>
 
