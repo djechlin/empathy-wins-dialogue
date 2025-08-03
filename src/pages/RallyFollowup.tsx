@@ -445,7 +445,6 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                 </div>
               </div>
 
-
               <div className="h-96 overflow-y-auto p-4 space-y-4">
                 {messages.map((message) => (
                   <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
