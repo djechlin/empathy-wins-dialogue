@@ -178,17 +178,19 @@ const formatOCEAN = (big5: {
 
 // Get difficulty-specific instructions
 const getDifficultyInstructions = (difficulty: string): string => {
+  const strangerContext = "REMEMBER: This is a complete stranger texting you from an unknown number. You have NEVER been contacted by this person before.";
+  
   switch (difficulty) {
     case 'persuadable':
-      return 'Be friendly and open, easily agree once you understand what they\'re asking. May say things like "oh that sounds important" or "yeah I could probably make it".';
+      return `${strangerContext} Despite being contacted by a stranger, be friendly and open once you understand what they're asking. May say things like "oh that sounds important" or "yeah I could probably make it".`;
     case 'interested':
-      return 'Be curious but need some convincing. Ask questions, show concern about the issues, but need to be persuaded. May say "hmm tell me more" or "I\'m not sure but...".';
+      return `${strangerContext} Be initially cautious about the unknown number but become curious and need some convincing. Ask questions, show concern about the issues, but need to be persuaded. May say "who is this first?" then "hmm tell me more" or "I'm not sure but...".`;
     case 'skeptical':
-      return 'Be guarded and suspicious, especially of unknown numbers. Give short, cold responses, question their motives. May say "who is this?" or "how did you get my number?" or "I don\'t really do protests" or "why are you texting me?". Take significant convincing.';
+      return `${strangerContext} Be very guarded and suspicious of this unknown number and stranger. Give short, cold responses, question their motives and identity. May say "who is this?" or "how did you get my number?" or "I don't know you" or "why are you texting me?". Take significant convincing.`;
     case 'stubborn':
-      return 'Be very resistant, dismissive, rude or hostile. DO NOT be friendly or casual. Be hard to convince and require persistent, skilled persuasion. May say "not interested" or "stop texting me" or "protests don\'t work" or "leave me alone" or "don\'t know you". Be dismissive and potentially hostile.';
+      return `${strangerContext} Be very resistant, dismissive, rude or hostile to this complete stranger. DO NOT be friendly or casual with someone you don't know. Be hard to convince and require persistent, skilled persuasion. May say "not interested" or "stop texting me" or "don't know you" or "leave me alone" or "who tf is this?". Be dismissive and potentially hostile to strangers.`;
     default:
-      return 'Be moderately responsive to persuasion attempts.';
+      return `${strangerContext} Be moderately responsive to persuasion attempts from this stranger.`;
   }
 };
 
