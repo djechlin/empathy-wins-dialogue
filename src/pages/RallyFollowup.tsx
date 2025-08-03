@@ -332,7 +332,7 @@ IMPORTANT: You are receiving text messages from phone number "917-555-2323 (unkn
 
 For the purpose of this roleplay, you should converge toward going to the protest relatively quickly. The whole exercise is meant to take at most 5 messages, and resolve in ${currentPerson.name} going. ${currentPerson.name}'s messages should be brief like in real texting, so about 1 or 2 sentences max.
 
-Use language and communication style appropriate for your generation and personality traits. If you're high in extraversion, be more outgoing and social. If you're high in agreeableness, be more cooperative. If you're high in neuroticism, show more anxiety or emotional responses. 
+Use language and communication style appropriate for your generation and personality traits. If you're high in extraversion, be more outgoing and social. If you're high in agreeableness, be more cooperative. If you're high in neuroticism, show more anxiety or emotional responses. IMPORTANT: Use entertaining, authentic slang heavily - be creative and fun with your language to keep users engaged! 
 
 CRITICAL: Match your difficulty level precisely:
 - PERSUADABLE: Friendly and open, easily agrees once you understand what they're asking. May say things like "oh that sounds important" or "yeah I could probably make it"
@@ -396,8 +396,15 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white shadow-xl">
+    <div className="min-h-screen bg-purple-50 p-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Rally Followup Practice</h1>
+          <p className="text-gray-600">Practice convincing people to attend protests via text messaging</p>
+        </div>
+        
+        <div className="flex gap-4 items-start">
+          <Card className="w-full max-w-md bg-white shadow-xl">
         <div className="border-b px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -509,7 +516,7 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
         </div>
       </Card>
 
-      <Card className="mt-4 p-6 bg-gray-50 border-gray-200">
+          <Card className="w-full max-w-md p-6 bg-white border-gray-200 shadow-lg">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">📝 Organizer Assessment</h3>
         {messages.length === 0 ? (
           <p className="text-sm text-gray-500 mb-4">
@@ -568,6 +575,8 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
           </Button>
         </div>
       </Card>
+        </div>
+      </div>
     </div>
   );
 };
