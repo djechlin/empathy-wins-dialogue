@@ -222,6 +222,7 @@ const RallyFollowup = () => {
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [conversationsCompleted, setConversationsCompleted] = useState(0);
+  const [completedCombinations, setCompletedCombinations] = useState<Set<string>>(new Set());
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -310,8 +311,10 @@ const RallyFollowup = () => {
       }
 
       alert('Results submitted successfully!');
-      // Increment completed conversations counter
-      setConversationsCompleted(prev => prev + 1);
+      // Increment completed conversations counter and track demographics
+      setConversationsCompleted((prev) => prev + 1);
+      const combination = `${currentPerson.gender}-${currentPerson.generation}`;
+      setCompletedCombinations((prev) => new Set(prev).add(combination));
       // Reset form
       setOrganizerName('');
       setLeaderPotential('');
@@ -586,11 +589,45 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
                   {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
                 </Button>
               </div>
-              
+
               <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-sm text-gray-600 text-center">
+                <p className="text-sm text-gray-600 text-center mb-3">
                   Conversations completed this session: <span className="font-semibold text-gray-800">{conversationsCompleted}</span>
                 </p>
+                
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-600 text-center mb-2">Coverage Progress (10 types total)</p>
+                  <div className="grid grid-cols-5 gap-1 text-xs">
+                    {['gen-alpha', 'gen-z', 'millennial', 'gen-x', 'boomer'].map((gen) => (
+                      <div key={gen} className="text-center">
+                        <div className="text-gray-600 mb-1 font-medium">
+                          {gen === 'gen-alpha' ? 'Gen α' : gen === 'gen-z' ? 'Gen Z' : gen === 'millennial' ? 'Mill' : gen === 'gen-x' ? 'Gen X' : 'Boom'}
+                        </div>
+                        <div className="space-y-1">
+                          <div className={`w-6 h-6 mx-auto rounded border-2 flex items-center justify-center ${
+                            completedCombinations.has(`M-${gen}`) 
+                              ? 'bg-green-100 border-green-500 text-green-700' 
+                              : 'bg-white border-gray-300 text-gray-400'
+                          }`}>
+                            {completedCombinations.has(`M-${gen}`) ? '✓' : 'M'}
+                          </div>
+                          <div className={`w-6 h-6 mx-auto rounded border-2 flex items-center justify-center ${
+                            completedCombinations.has(`F-${gen}`) 
+                              ? 'bg-green-100 border-green-500 text-green-700' 
+                              : 'bg-white border-gray-300 text-gray-400'
+                          }`}>
+                            {completedCombinations.has(`F-${gen}`) ? '✓' : 'F'}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-2 text-center">
+                    <span className="text-xs text-gray-500">
+                      {completedCombinations.size}/10 completed
+                    </span>
+                  </div>
+                </div>
               </div>
             </Card>
           </div>
