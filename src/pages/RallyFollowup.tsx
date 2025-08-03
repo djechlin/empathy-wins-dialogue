@@ -162,9 +162,15 @@ const generateDifficulty = (): string => {
 };
 
 // Format Big5 traits as OCEAN string
-const formatOCEAN = (big5: { openness: string; conscientiousness: string; extraversion: string; agreeableness: string; neuroticism: string }): string => {
+const formatOCEAN = (big5: {
+  openness: string;
+  conscientiousness: string;
+  extraversion: string;
+  agreeableness: string;
+  neuroticism: string;
+}): string => {
   const getSymbol = (trait: string) => (trait === 'high' ? '+' : '-');
-  return `O${getSymbol(big5.openness)}C${getSymbol(big5.conscientiousness)}E${getSymbol(big5.extraversion)}A${getSymbol(big5.agreeableness)}N${getSymbol(big5.neuroticism)}`;
+  return `O${getSymbol(big5.openness)} | C${getSymbol(big5.conscientiousness)} | E${getSymbol(big5.extraversion)} | A${getSymbol(big5.agreeableness)} | N${getSymbol(big5.neuroticism)}`;
 };
 
 // Generate a complete person
@@ -234,7 +240,7 @@ const RallyFollowup = () => {
     setIsComplete(false);
     setCurrentSuggestion('');
     setInputValue('');
-    setShowPersona(false);
+    // Keep showPersona state - don't reset it
   };
 
   const sendMessage = async () => {
