@@ -210,7 +210,6 @@ const RallyFollowup = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [currentSuggestion, setCurrentSuggestion] = useState<string>('');
   const [isComplete, setIsComplete] = useState(false);
   const [showFullPrompt, setShowFullPrompt] = useState(false);
   const [showPersona, setShowPersona] = useState(false);
@@ -238,7 +237,6 @@ const RallyFollowup = () => {
     // Reset conversation
     setMessages([]);
     setIsComplete(false);
-    setCurrentSuggestion('');
     setInputValue('');
     // Keep showPersona state - don't reset it
   };
@@ -268,31 +266,6 @@ const RallyFollowup = () => {
     }
   };
 
-  const handleSuggestionClick = () => {
-    if (currentSuggestion && !isLoading && !isComplete) {
-      const suggestionToSend = currentSuggestion;
-      setInputValue(suggestionToSend);
-      setCurrentSuggestion('');
-
-      // Auto-send the suggestion with the captured value
-      setTimeout(() => {
-        // Create and send the message directly with the suggestion text
-        const userMessage: Message = {
-          id: Date.now().toString(),
-          text: suggestionToSend,
-          isUser: true,
-          timestamp: new Date(),
-        };
-
-        setMessages((prev) => [...prev, userMessage]);
-        setInputValue('');
-        setIsLoading(true);
-
-        // Continue with the AI response logic
-        handleAIResponse(suggestionToSend);
-      }, 100);
-    }
-  };
 
   const handleAIResponse = async (messageText: string) => {
     try {
@@ -311,10 +284,7 @@ User: ${messageText}
 
 You must respond with EXACTLY this format:
 ${currentPerson.name.toUpperCase()}: [${currentPerson.name}'s response here]
-SUGGESTION: [A suggestion for the user - a brief text that will nudge ${currentPerson.name} to go to the protest]
 COMPLETE: [true/false - true only if ${currentPerson.name} has definitively agreed to attend the protest]
-
-The suggestion should be a complete, ready-to-send message that would work well given ${currentPerson.name}'s current state of mind. Write it as if the user is typing it - make it conversational and natural. Try to match the user's communication style and voice based on their previous messages.
 
 COMPLETE should be true only when ${currentPerson.name} has clearly and definitively agreed to attend whatever protest the user is trying to convince them about. Don't mark it complete for maybe/considering - only for clear agreement.`;
 
@@ -330,12 +300,10 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
 
       const fullResponse = data?.response || data?.content || data || 'Sorry, I had trouble responding. Can you try again?';
 
-      const personMatch = fullResponse.match(new RegExp(`${currentPerson.name.toUpperCase()}:\\s*(.*?)(?=\\nSUGGESTION:|$)`, 's'));
-      const suggestionMatch = fullResponse.match(/SUGGESTION:\s*(.*?)(?=\nCOMPLETE:|$)/s);
+      const personMatch = fullResponse.match(new RegExp(`${currentPerson.name.toUpperCase()}:\\s*(.*?)(?=\\nCOMPLETE:|$)`, 's'));
       const completeMatch = fullResponse.match(/COMPLETE:\s*(.*?)$/s);
 
       const personMessage = personMatch ? personMatch[1].trim() : fullResponse;
-      const suggestion = suggestionMatch ? suggestionMatch[1].trim() : '';
       const complete = completeMatch ? completeMatch[1].trim().toLowerCase() === 'true' : false;
 
       const aiResponse: Message = {
@@ -346,11 +314,9 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
       };
 
       setMessages((prev) => [...prev, aiResponse]);
-      setCurrentSuggestion(suggestion);
 
       if (complete) {
         setIsComplete(true);
-        setCurrentSuggestion(''); // Clear suggestion when complete
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -477,19 +443,6 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
               <Send size={16} />
             </Button>
           </div>
-          {currentSuggestion && (
-            <div className="mt-2 p-3 bg-purple-50 border border-purple-200 rounded text-sm text-purple-700">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex-1">
-                  <span className="font-medium">💬 Suggestion: </span>
-                  {currentSuggestion}
-                </div>
-                <Button onClick={handleSuggestionClick} size="sm" className="px-3 py-1 text-xs" disabled={isLoading || isComplete}>
-                  <Send size={12} />
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       </Card>
 
