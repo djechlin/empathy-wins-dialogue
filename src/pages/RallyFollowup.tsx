@@ -143,8 +143,7 @@ const generateAge = (): number => {
 
 // Get generation based on age (as of 2024)
 const getGeneration = (age: number): string => {
-  if (age >= 10 && age <= 14) return 'gen-alpha'; // Born 2010-2014
-  if (age >= 15 && age <= 27) return 'gen-z'; // Born 1997-2009
+  if (age >= 16 && age <= 27) return 'gen-z'; // Born 1997-2008
   if (age >= 28 && age <= 43) return 'millennial'; // Born 1981-1996
   if (age >= 44 && age <= 59) return 'gen-x'; // Born 1965-1980
   return 'boomer'; // Born 1946-1964 (60+)
@@ -575,19 +574,17 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <div className="bg-gray-50 p-3 rounded-lg">
                   <p className="text-sm text-gray-600 text-center mb-2">Coverage this session</p>
-                  <div className="grid grid-cols-5 gap-1 text-xs">
-                    {['gen-alpha', 'gen-z', 'millennial', 'gen-x', 'boomer'].map((gen) => (
+                  <div className="grid grid-cols-4 gap-1 text-xs">
+                    {['gen-z', 'millennial', 'gen-x', 'boomer'].map((gen) => (
                       <div key={gen} className="text-center">
                         <div className="text-gray-600 mb-1 font-medium">
-                          {gen === 'gen-alpha'
-                            ? 'Gen α'
-                            : gen === 'gen-z'
-                              ? 'Gen Z'
-                              : gen === 'millennial'
-                                ? 'Mill'
-                                : gen === 'gen-x'
-                                  ? 'Gen X'
-                                  : 'Boom'}
+                          {gen === 'gen-z'
+                            ? 'Gen Z'
+                            : gen === 'millennial'
+                              ? 'Mill'
+                              : gen === 'gen-x'
+                                ? 'Gen X'
+                                : 'Boom'}
                         </div>
                         <div className="space-y-1">
                           <div
@@ -613,7 +610,7 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                     ))}
                   </div>
                   <div className="mt-2 text-center">
-                    <span className="text-xs text-gray-500">{completedCombinations.size}/10 completed</span>
+                    <span className="text-xs text-gray-500">{completedCombinations.size}/8 completed</span>
                   </div>
                 </div>
               </div>
