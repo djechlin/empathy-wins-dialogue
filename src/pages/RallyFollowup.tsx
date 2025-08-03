@@ -16,6 +16,33 @@ interface Message {
   timestamp: Date;
 }
 
+const RALLY_EVENTS = [
+  { date: 'February 21, 2025', location: 'Omaha, Nebraska', venue: 'Omaha Marriott Downtown at the Capitol District' },
+  { date: 'February 22, 2025', location: 'Iowa City, Iowa', venue: 'The Englert Theatre' },
+  { date: 'March 7, 2025', location: 'Kenosha, Wisconsin', venue: 'University of Wisconsin–Parkside' },
+  { date: 'March 8, 2025 (Afternoon)', location: 'Altoona, Wisconsin', venue: 'Altoona High School' },
+  { date: 'March 8, 2025 (Evening)', location: 'Warren, Michigan', venue: 'Lincoln High School' },
+  { date: 'March 20, 2025', location: 'North Las Vegas, Nevada', venue: 'Craig Ranch Regional Park' },
+  { date: 'March 20, 2025', location: 'Tempe, Arizona', venue: 'Mullett Arena' },
+  { date: 'March 21, 2025', location: 'Greeley, Colorado', venue: 'University of Northern Colorado' },
+  { date: 'March 21, 2025', location: 'Denver, Colorado', venue: 'Civic Center Park' },
+  { date: 'March 22, 2025', location: 'Tucson, Arizona', venue: 'Catalina High School' },
+  { date: 'April 12, 2025', location: 'Los Angeles, California', venue: 'Grand Park (coinciding with an appearance at Coachella introducing Clairo)' },
+  { date: 'April 13, 2025', location: 'Salt Lake City, Utah', venue: 'Jon M. Huntsman Center' },
+  { date: 'April 14, 2025', location: 'Nampa, Idaho', venue: 'Ford Idaho Center' },
+  { date: 'April 15, 2025 (Event 1)', location: 'Folsom, California', venue: 'Folsom Lake College' },
+  { date: 'April 15, 2025 (Event 2)', location: 'Bakersfield, California', venue: 'Dignity Health Arena' },
+  { date: 'April 16, 2025', location: 'Missoula, Montana', venue: 'Adams Center' },
+  { date: 'May 1, 2025', location: 'Philadelphia, Pennsylvania', venue: 'Philadelphia City Hall' },
+  { date: 'May 2, 2025', location: 'Harrisburg, Pennsylvania', venue: 'Pennsylvania Farm Show Complex & Expo Center' },
+  { date: 'May 3, 2025', location: 'Bethlehem, Pennsylvania', venue: 'Lehigh University' },
+  { date: 'June 20, 2025', location: 'McAllen, Texas', venue: 'McAllen Performing Arts Center' },
+  { date: 'June 21, 2025 (Event 1)', location: 'Shreveport, Louisiana', venue: 'Shreveport Municipal Auditorium' },
+  { date: 'June 21, 2025 (Event 2)', location: 'Tulsa, Oklahoma', venue: 'Arvest Convention Center' },
+  { date: 'June 22, 2025 (Event 1)', location: 'Amarillo, Texas', venue: 'Globe-News Center for the Performing Arts' },
+  { date: 'June 22, 2025 (Event 2)', location: 'Fort Worth, Texas', venue: 'Dickies Arena' },
+];
+
 const AMERICAN_NAMES = [
   // European-origin names (80 total - 40M, 40F)
   { name: 'Michael', gender: 'M' },
@@ -202,6 +229,7 @@ const generatePerson = () => {
   const generation = getGeneration(age);
   const big5 = generateBig5();
   const difficulty = generateDifficulty();
+  const rallyEvent = RALLY_EVENTS[Math.floor(Math.random() * RALLY_EVENTS.length)];
 
   const personalityString = `<personality>
 Name: ${person.name}
@@ -214,6 +242,7 @@ Extraversion: ${big5.extraversion}
 Agreeableness: ${big5.agreeableness}
 Neuroticism: ${big5.neuroticism}
 Difficulty: ${difficulty}
+Rally Event: ${rallyEvent.date} in ${rallyEvent.location} at ${rallyEvent.venue}
 </personality>`;
 
   return {
@@ -223,6 +252,7 @@ Difficulty: ${difficulty}
     generation,
     big5,
     difficulty,
+    rallyEvent,
     personalityString,
   };
 };
@@ -313,6 +343,7 @@ const RallyFollowup = () => {
           generation: currentPerson.generation,
           big5: currentPerson.big5,
           difficulty: currentPerson.difficulty,
+          rallyEvent: currentPerson.rallyEvent,
           personalityString: currentPerson.personalityString,
         },
         messages: messages,
@@ -356,7 +387,9 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
 
 IMPORTANT: You are receiving text messages from phone number "917-555-2323 (unknown sender)" - you don't immediately recognize this number, so you should be slightly cautious/confused at first about who is texting you, but warm up once you realize it's someone trying to get you involved in activism.
 
-For the purpose of this roleplay, you should converge toward going to the protest relatively quickly. The whole exercise is meant to take at most 5 messages, and resolve in ${currentPerson.name} going. ${currentPerson.name}'s messages should be brief like in real texting, so about 1 or 2 sentences max.
+RALLY EVENT CONTEXT: The organizer is trying to convince you to attend a rally on ${currentPerson.rallyEvent.date} in ${currentPerson.rallyEvent.location} at ${currentPerson.rallyEvent.venue}. This is the specific event they want you to attend.
+
+For the purpose of this roleplay, you should converge toward going to the rally relatively quickly. The whole exercise is meant to take at most 5 messages, and resolve in ${currentPerson.name} agreeing to go to the ${currentPerson.rallyEvent.location} rally. ${currentPerson.name}'s messages should be brief like in real texting, so about 1 or 2 sentences max.
 
 Use language and communication style appropriate for your generation and personality traits. If you're high in extraversion, be more outgoing and social. If you're high in agreeableness, be more cooperative. If you're high in neuroticism, show more anxiety or emotional responses. IMPORTANT: Use entertaining, authentic slang heavily - be creative and fun with your language to keep users engaged! 
 
@@ -371,7 +404,7 @@ You must respond with EXACTLY this format:
 ${currentPerson.name.toUpperCase()}: [${currentPerson.name}'s response here]
 COMPLETE: [true/false - true only if ${currentPerson.name} has definitively agreed to attend the protest]
 
-COMPLETE should be true only when ${currentPerson.name} has clearly and definitively agreed to attend whatever protest the user is trying to convince them about. Don't mark it complete for maybe/considering - only for clear agreement.`;
+COMPLETE should be true only when ${currentPerson.name} has clearly and definitively agreed to attend the ${currentPerson.rallyEvent.location} rally on ${currentPerson.rallyEvent.date}. Don't mark it complete for maybe/considering - only for clear agreement to attend this specific rally.`;
 
       const { data, error } = await supabase.functions.invoke('rally-followup', {
         body: {
@@ -425,6 +458,13 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Rally Followup: Create training examples</h1>
             <p className="text-gray-600">Text AI personas to generate organizer training data</p>
+            <div className="mt-4 p-3 bg-purple-100 rounded-lg">
+              <p className="text-sm font-medium text-purple-900">Rally Event:</p>
+              <p className="text-sm text-purple-800">
+                {currentPerson.rallyEvent.date} • {currentPerson.rallyEvent.location}
+              </p>
+              <p className="text-xs text-purple-700">{currentPerson.rallyEvent.venue}</p>
+            </div>
           </div>
 
           <div className="flex gap-4 items-start">
@@ -453,7 +493,8 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                     {showPersona && (
                       <div className="text-xs text-gray-600 mt-2 text-right">
                         <div>
-                          {currentPerson.age}{currentPerson.gender}
+                          {currentPerson.age}
+                          {currentPerson.gender}
                         </div>
                         <div>{currentPerson.difficulty}</div>
                         <div className="font-mono">{formatOCEAN(currentPerson.big5)}</div>
