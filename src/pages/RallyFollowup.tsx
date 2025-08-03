@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
 import { Textarea } from '@/ui/textarea';
 import { Dice6, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import Navbar from '@/components/layout/Navbar';
 
 interface Message {
   id: string;
@@ -396,12 +397,14 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
   };
 
   return (
-    <div className="min-h-screen bg-purple-50 p-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Rally Followup: Create training examples</h1>
-          <p className="text-gray-600">Text AI personas to generate organizer training data</p>
-        </div>
+    <div className="min-h-screen bg-purple-50">
+      <Navbar />
+      <div className="p-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Rally Followup: Create training examples</h1>
+            <p className="text-gray-600">Text AI personas to generate organizer training data</p>
+          </div>
 
         <div className="flex gap-4 items-start">
           <Card className="w-full max-w-md bg-white shadow-xl">
@@ -577,6 +580,7 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
               </Button>
             </div>
           </Card>
+        </div>
         </div>
       </div>
     </div>
