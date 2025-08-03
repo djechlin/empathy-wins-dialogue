@@ -448,7 +448,36 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                 </div>
               </div>
 
-              <div className="h-96 overflow-y-auto p-4 space-y-4">
+              <div className={`h-96 overflow-y-auto p-4 space-y-4 relative ${messages.length === 0 ? 'bg-gray-25' : ''}`}>
+                {messages.length === 0 && (
+                  <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+                    <div className="text-center text-gray-400">
+                      <svg width="200" height="160" viewBox="0 0 200 160" className="mx-auto mb-4">
+                        {/* Capitol building silhouette */}
+                        <path d="M20 140h160v20H20z" fill="currentColor" />
+                        <rect x="60" y="100" width="80" height="40" fill="currentColor" />
+                        <rect x="80" y="80" width="40" height="20" fill="currentColor" />
+                        <circle cx="100" cy="70" r="15" fill="currentColor" />
+                        <rect x="95" y="55" width="10" height="15" fill="currentColor" />
+                        {/* Steps */}
+                        <rect x="40" y="135" width="120" height="3" fill="currentColor" />
+                        <rect x="45" y="132" width="110" height="3" fill="currentColor" />
+                        <rect x="50" y="129" width="100" height="3" fill="currentColor" />
+                        {/* People silhouettes */}
+                        <g opacity="0.7">
+                          <circle cx="30" cy="125" r="3" fill="currentColor" />
+                          <rect x="28" y="128" width="4" height="8" fill="currentColor" />
+                          <circle cx="170" cy="125" r="3" fill="currentColor" />
+                          <rect x="168" y="128" width="4" height="8" fill="currentColor" />
+                          <circle cx="100" cy="120" r="3" fill="currentColor" />
+                          <rect x="98" y="123" width="4" height="8" fill="currentColor" />
+                        </g>
+                      </svg>
+                      <p className="text-xs text-gray-300 font-medium">Democracy in Action</p>
+                      <p className="text-xs text-gray-300">Start your conversation to generate training data</p>
+                    </div>
+                  </div>
+                )}
                 {messages.map((message) => (
                   <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
                     <Card className={`max-w-xs p-3 ${message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'}`}>
