@@ -178,8 +178,9 @@ const formatOCEAN = (big5: {
 
 // Get difficulty-specific instructions
 const getDifficultyInstructions = (difficulty: string): string => {
-  const strangerContext = "REMEMBER: This is a complete stranger texting you from an unknown number. You have NEVER been contacted by this person before.";
-  
+  const strangerContext =
+    'REMEMBER: This is a complete stranger texting you from an unknown number. You have NEVER been contacted by this person before.';
+
   switch (difficulty) {
     case 'persuadable':
       return `${strangerContext} Despite being contacted by a stranger, be friendly and open once you understand what they're asking. May say things like "oh that sounds important" or "yeah I could probably make it".`;
@@ -452,7 +453,7 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                     {showPersona && (
                       <div className="text-xs text-gray-600 mt-2 text-right">
                         <div>
-                          {currentPerson.age}y {currentPerson.generation} {currentPerson.gender}
+                          {currentPerson.age}{currentPerson.gender}
                         </div>
                         <div>{currentPerson.difficulty}</div>
                         <div className="font-mono">{formatOCEAN(currentPerson.big5)}</div>
