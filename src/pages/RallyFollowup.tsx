@@ -316,6 +316,11 @@ const RallyFollowup = () => {
       setOrganizerName('');
       setLeaderPotential('');
       setComment('');
+      // Generate new persona and reset conversation
+      setCurrentPerson(generatePerson());
+      setMessages([]);
+      setIsComplete(false);
+      setInputValue('');
     } catch (error) {
       console.error('Error submitting results:', error);
       alert('Failed to submit results. Please try again.');
