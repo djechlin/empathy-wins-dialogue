@@ -282,6 +282,11 @@ const RallyFollowup = () => {
     setIsSubmitting(true);
     try {
       const conversationData = {
+        organizerName: organizerName.trim(),
+        leaderPotential: parseInt(leaderPotential),
+        comment: comment.trim(),
+        conversationComplete: isComplete,
+        messageCount: messages.length,
         person: {
           name: currentPerson.name,
           gender: currentPerson.gender,
@@ -292,13 +297,6 @@ const RallyFollowup = () => {
           personalityString: currentPerson.personalityString,
         },
         messages: messages,
-        results: {
-          organizerName: organizerName.trim(),
-          leaderPotential: parseInt(leaderPotential),
-          comment: comment.trim(),
-          conversationComplete: isComplete,
-          messageCount: messages.length,
-        },
       };
 
       const { error } = await supabase.functions.invoke('rally-followup-results', {
@@ -504,60 +502,62 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
       <Card className="mt-4 p-6 bg-gray-50 border-gray-200">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">📝 Organizer Assessment</h3>
         {messages.length === 0 ? (
-          <p className="text-sm text-gray-500 mb-4">Complete this assessment after you finish your conversation with {currentPerson.name}.</p>
+          <p className="text-sm text-gray-500 mb-4">
+            Complete this assessment after you finish your conversation with {currentPerson.name}.
+          </p>
         ) : !messages.some((m) => !m.isUser) ? (
           <p className="text-sm text-gray-500 mb-4">Start your conversation, then complete this assessment when finished.</p>
         ) : (
           <p className="text-sm text-gray-500 mb-4">Complete this assessment based on your conversation with {currentPerson.name}.</p>
         )}
 
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="organizer-name" className="text-sm font-medium">
-                Organizer Name
-              </Label>
-              <Input
-                id="organizer-name"
-                value={organizerName}
-                onChange={(e) => setOrganizerName(e.target.value)}
-                placeholder="Enter organizer name"
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium mb-3 block">Leader Potential? (1-10)</Label>
-              <RadioGroup value={leaderPotential} onValueChange={setLeaderPotential} className="flex flex-wrap gap-2">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                  <div key={num} className="flex items-center space-x-1">
-                    <RadioGroupItem value={num.toString()} id={`potential-${num}`} className="w-4 h-4" />
-                    <Label htmlFor={`potential-${num}`} className="text-sm">
-                      {num}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-
-            <div>
-              <Label htmlFor="comment" className="text-sm font-medium">
-                Comment (optional)
-              </Label>
-              <Textarea
-                id="comment"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Add your assessment comments..."
-                className="mt-1"
-                rows={2}
-              />
-            </div>
-
-            <Button onClick={handleResultsSubmit} disabled={isSubmitting || !organizerName.trim() || !leaderPotential} className="w-full">
-              {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
-            </Button>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="organizer-name" className="text-sm font-medium">
+              Organizer Name
+            </Label>
+            <Input
+              id="organizer-name"
+              value={organizerName}
+              onChange={(e) => setOrganizerName(e.target.value)}
+              placeholder="Enter organizer name"
+              className="mt-1"
+            />
           </div>
-        </Card>
+
+          <div>
+            <Label className="text-sm font-medium mb-3 block">Leader Potential? (1-10)</Label>
+            <RadioGroup value={leaderPotential} onValueChange={setLeaderPotential} className="flex flex-wrap gap-2">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                <div key={num} className="flex items-center space-x-1">
+                  <RadioGroupItem value={num.toString()} id={`potential-${num}`} className="w-4 h-4" />
+                  <Label htmlFor={`potential-${num}`} className="text-sm">
+                    {num}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
+
+          <div>
+            <Label htmlFor="comment" className="text-sm font-medium">
+              Comment (optional)
+            </Label>
+            <Textarea
+              id="comment"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Add your assessment comments..."
+              className="mt-1"
+              rows={2}
+            />
+          </div>
+
+          <Button onClick={handleResultsSubmit} disabled={isSubmitting || !organizerName.trim() || !leaderPotential} className="w-full">
+            {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
+          </Button>
+        </div>
+      </Card>
     </div>
   );
 };
