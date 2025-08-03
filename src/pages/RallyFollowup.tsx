@@ -120,9 +120,10 @@ const AMERICAN_NAMES = [
 
 // Utility function to generate normal distributed random number using Box-Muller transform
 const generateNormalRandom = (mean: number, stdDev: number): number => {
-  let u = 0, v = 0;
-  while(u === 0) u = Math.random(); // Converting [0,1) to (0,1)
-  while(v === 0) v = Math.random();
+  let u = 0,
+    v = 0;
+  while (u === 0) u = Math.random(); // Converting [0,1) to (0,1)
+  while (v === 0) v = Math.random();
   const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
   return z * stdDev + mean;
 };
@@ -140,7 +141,7 @@ const generateAge = (): number => {
 const getGeneration = (age: number): string => {
   if (age >= 10 && age <= 14) return 'gen-alpha'; // Born 2010-2014
   if (age >= 15 && age <= 27) return 'gen-z'; // Born 1997-2009
-  if (age >= 28 && age <= 43) return 'millennial'; // Born 1981-1996  
+  if (age >= 28 && age <= 43) return 'millennial'; // Born 1981-1996
   if (age >= 44 && age <= 59) return 'gen-x'; // Born 1965-1980
   return 'boomer'; // Born 1946-1964 (60+)
 };
@@ -148,16 +149,22 @@ const getGeneration = (age: number): string => {
 // Generate Big Five personality traits (OCEAN)
 const generateBig5 = () => ({
   openness: Math.random() > 0.5 ? 'high' : 'low',
-  conscientiousness: Math.random() > 0.5 ? 'high' : 'low', 
+  conscientiousness: Math.random() > 0.5 ? 'high' : 'low',
   extraversion: Math.random() > 0.5 ? 'high' : 'low',
   agreeableness: Math.random() > 0.5 ? 'high' : 'low',
-  neuroticism: Math.random() > 0.5 ? 'high' : 'low'
+  neuroticism: Math.random() > 0.5 ? 'high' : 'low',
 });
 
 // Generate difficulty level
 const generateDifficulty = (): string => {
   const difficulties = ['persuadable', 'interested', 'skeptical', 'stubborn'];
   return difficulties[Math.floor(Math.random() * difficulties.length)];
+};
+
+// Format Big5 traits as OCEAN string
+const formatOCEAN = (big5: { openness: string; conscientiousness: string; extraversion: string; agreeableness: string; neuroticism: string }): string => {
+  const getSymbol = (trait: string) => (trait === 'high' ? '+' : '-');
+  return `O${getSymbol(big5.openness)}C${getSymbol(big5.conscientiousness)}E${getSymbol(big5.extraversion)}A${getSymbol(big5.agreeableness)}N${getSymbol(big5.neuroticism)}`;
 };
 
 // Generate a complete person
@@ -167,7 +174,7 @@ const generatePerson = () => {
   const generation = getGeneration(age);
   const big5 = generateBig5();
   const difficulty = generateDifficulty();
-  
+
   const personalityString = `<personality>
 Name: ${person.name}
 Gender: ${person.gender}
@@ -188,7 +195,7 @@ Difficulty: ${difficulty}
     generation,
     big5,
     difficulty,
-    personalityString
+    personalityString,
   };
 };
 
@@ -200,6 +207,7 @@ const RallyFollowup = () => {
   const [currentSuggestion, setCurrentSuggestion] = useState<string>('');
   const [isComplete, setIsComplete] = useState(false);
   const [showFullPrompt, setShowFullPrompt] = useState(false);
+  const [showPersona, setShowPersona] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -226,6 +234,7 @@ const RallyFollowup = () => {
     setIsComplete(false);
     setCurrentSuggestion('');
     setInputValue('');
+    setShowPersona(false);
   };
 
   const sendMessage = async () => {
@@ -366,14 +375,24 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
               </div>
             </div>
             <div className="text-right">
-              <Button onClick={regeneratePerson} size="sm" variant="outline" className="mb-2">
-                <Dice6 size={16} className="mr-1" />
-                New Person
-              </Button>
-              <div className="text-xs text-gray-600">
-                <div>{currentPerson.age}y {currentPerson.generation} {currentPerson.gender}</div>
-                <div>{currentPerson.difficulty}</div>
+              <div className="flex flex-col gap-1">
+                <Button onClick={regeneratePerson} size="sm" variant="outline">
+                  <Dice6 size={16} className="mr-1" />
+                  New Person
+                </Button>
+                <Button onClick={() => setShowPersona(!showPersona)} size="sm" variant="ghost" className="text-xs">
+                  {showPersona ? 'Hide' : 'Show'} Persona
+                </Button>
               </div>
+              {showPersona && (
+                <div className="text-xs text-gray-600 mt-2 text-right">
+                  <div>
+                    {currentPerson.age}y {currentPerson.generation} {currentPerson.gender}
+                  </div>
+                  <div>{currentPerson.difficulty}</div>
+                  <div className="font-mono">{formatOCEAN(currentPerson.big5)}</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -382,13 +401,15 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
           <Card className="mx-4 mt-2 mb-2 p-3 bg-gray-50 border-gray-200">
             <div className="flex justify-between items-start mb-2">
               <h3 className="text-sm font-medium text-gray-700">AI Prompt Preview</h3>
-              <Button onClick={() => setShowFullPrompt(false)} size="sm" variant="ghost">✕</Button>
+              <Button onClick={() => setShowFullPrompt(false)} size="sm" variant="ghost">
+                ✕
+              </Button>
             </div>
             <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-white p-2 rounded border overflow-x-auto">
-              {messages.length > 0 ? 
-                `${currentPerson.personalityString}
+              {messages.length > 0
+                ? `${currentPerson.personalityString}
 
-You are ${currentPerson.name}, a friend who voted against Trump but is not very politically engaged...` 
+You are ${currentPerson.name}, a friend who voted against Trump but is not very politically engaged...`
                 : 'Send a message to see the full prompt'}
             </pre>
           </Card>
@@ -428,9 +449,7 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
             <Button onClick={() => setShowFullPrompt(!showFullPrompt)} size="sm" variant="ghost" className="text-xs">
               {showFullPrompt ? 'Hide' : 'Show'} AI Prompt
             </Button>
-            <div className="text-xs text-gray-500">
-              {messages.length === 0 ? 'Start the conversation!' : `${messages.length} messages`}
-            </div>
+            <div className="text-xs text-gray-500">{messages.length === 0 ? 'Start the conversation!' : `${messages.length} messages`}</div>
           </div>
           <div className="flex space-x-2">
             <Textarea
@@ -439,10 +458,10 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder={
-                isComplete 
-                  ? `${currentPerson.name} agreed to go! 🎉` 
-                  : messages.length === 0 
-                    ? `Say hi to ${currentPerson.name}...` 
+                isComplete
+                  ? `${currentPerson.name} agreed to go! 🎉`
+                  : messages.length === 0
+                    ? `Say hi to ${currentPerson.name}...`
                     : 'Type a message...'
               }
               className="flex-1 min-h-[40px] max-h-[120px] resize-none"
