@@ -311,8 +311,7 @@ const RallyFollowup = () => {
       // Track demographic combination
       const combination = `${currentPerson.gender}-${currentPerson.generation}`;
       setCompletedCombinations((prev) => new Set(prev).add(combination));
-      // Reset form
-      setOrganizerName('');
+      // Reset form (keep organizer name, clear assessment fields)
       setLeaderPotential('');
       setComment('');
       // Generate new persona and reset conversation
@@ -578,13 +577,7 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                     {['gen-z', 'millennial', 'gen-x', 'boomer'].map((gen) => (
                       <div key={gen} className="text-center">
                         <div className="text-gray-600 mb-1 font-medium">
-                          {gen === 'gen-z'
-                            ? 'Gen Z'
-                            : gen === 'millennial'
-                              ? 'Mill'
-                              : gen === 'gen-x'
-                                ? 'Gen X'
-                                : 'Boom'}
+                          {gen === 'gen-z' ? 'Gen Z' : gen === 'millennial' ? 'Mill' : gen === 'gen-x' ? 'Gen X' : 'Boom'}
                         </div>
                         <div className="space-y-1">
                           <div
