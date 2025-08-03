@@ -1,10 +1,8 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
-import { Label } from '@/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
 import { Textarea } from '@/ui/textarea';
-import { PartyPopper, Send } from 'lucide-react';
+import { Dice6, PartyPopper, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface Message {
@@ -120,23 +118,88 @@ const AMERICAN_NAMES = [
   { name: 'Yu', gender: 'F' },
 ];
 
-const RallyFollowup = () => {
-  // TODO: Use AMERICAN_NAMES for future functionality
-  console.log(`${AMERICAN_NAMES.length} names available`);
+// Utility function to generate normal distributed random number using Box-Muller transform
+const generateNormalRandom = (mean: number, stdDev: number): number => {
+  let u = 0, v = 0;
+  while(u === 0) u = Math.random(); // Converting [0,1) to (0,1)
+  while(v === 0) v = Math.random();
+  const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+  return z * stdDev + mean;
+};
+
+// Generate age with normal distribution (mean 30, stddev 15) truncated to 16-100
+const generateAge = (): number => {
+  let age;
+  do {
+    age = Math.round(generateNormalRandom(30, 15));
+  } while (age < 16 || age > 100);
+  return age;
+};
+
+// Get generation based on age (as of 2024)
+const getGeneration = (age: number): string => {
+  if (age >= 10 && age <= 14) return 'gen-alpha'; // Born 2010-2014
+  if (age >= 15 && age <= 27) return 'gen-z'; // Born 1997-2009
+  if (age >= 28 && age <= 43) return 'millennial'; // Born 1981-1996  
+  if (age >= 44 && age <= 59) return 'gen-x'; // Born 1965-1980
+  return 'boomer'; // Born 1946-1964 (60+)
+};
+
+// Generate Big Five personality traits (OCEAN)
+const generateBig5 = () => ({
+  openness: Math.random() > 0.5 ? 'high' : 'low',
+  conscientiousness: Math.random() > 0.5 ? 'high' : 'low', 
+  extraversion: Math.random() > 0.5 ? 'high' : 'low',
+  agreeableness: Math.random() > 0.5 ? 'high' : 'low',
+  neuroticism: Math.random() > 0.5 ? 'high' : 'low'
+});
+
+// Generate difficulty level
+const generateDifficulty = (): string => {
+  const difficulties = ['persuadable', 'interested', 'skeptical', 'stubborn'];
+  return difficulties[Math.floor(Math.random() * difficulties.length)];
+};
+
+// Generate a complete person
+const generatePerson = () => {
+  const person = AMERICAN_NAMES[Math.floor(Math.random() * AMERICAN_NAMES.length)];
+  const age = generateAge();
+  const generation = getGeneration(age);
+  const big5 = generateBig5();
+  const difficulty = generateDifficulty();
   
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: "yo what's good bestie? ✨",
-      isUser: false,
-      timestamp: new Date(Date.now() - 1000 * 60 * 5),
-    },
-  ]);
+  const personalityString = `<personality>
+Name: ${person.name}
+Gender: ${person.gender}
+Age: ${age}
+Generation: ${generation}
+Openness: ${big5.openness}
+Conscientiousness: ${big5.conscientiousness}
+Extraversion: ${big5.extraversion}
+Agreeableness: ${big5.agreeableness}
+Neuroticism: ${big5.neuroticism}
+Difficulty: ${difficulty}
+</personality>`;
+
+  return {
+    name: person.name,
+    gender: person.gender,
+    age,
+    generation,
+    big5,
+    difficulty,
+    personalityString
+  };
+};
+
+const RallyFollowup = () => {
+  const [currentPerson, setCurrentPerson] = useState(() => generatePerson());
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [alexGeneration, setAlexGeneration] = useState('genz');
-  const [currentSuggestion, setCurrentSuggestion] = useState<string>('bestie the tea is HOT today ☕🔥');
+  const [currentSuggestion, setCurrentSuggestion] = useState<string>('');
   const [isComplete, setIsComplete] = useState(false);
+  const [showFullPrompt, setShowFullPrompt] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -155,6 +218,15 @@ const RallyFollowup = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
+
+  const regeneratePerson = () => {
+    setCurrentPerson(generatePerson());
+    // Reset conversation
+    setMessages([]);
+    setIsComplete(false);
+    setCurrentSuggestion('');
+    setInputValue('');
+  };
 
   const sendMessage = async () => {
     if (!inputValue.trim() || isComplete) return;
@@ -209,18 +281,13 @@ const RallyFollowup = () => {
 
   const handleAIResponse = async (messageText: string) => {
     try {
-      const conversationHistory = messages.map((m) => `${m.isUser ? 'User' : 'Alex'}: ${m.text}`).join('\n');
+      const conversationHistory = messages.map((m) => `${m.isUser ? 'User' : currentPerson.name}: ${m.text}`).join('\n');
 
-      const generationPrompts = {
-        genz: "You are Alex, a Gen Z friend (born 1997-2012). Use heavy Gen Z slang like 'no cap', 'fr fr', 'periodt', 'slaps', 'hits different', 'bussin', 'slay', 'it's giving...', 'main character energy', 'understood the assignment', 'lowkey/highkey', 'bet', 'say less', 'that's so valid', 'we love to see it', 'this ain't it chief'. Use lots of emojis and abbreviations. Be very casual with punctuation and caps.",
-        millennial:
-          "You are Alex, a Millennial friend (born 1981-1996). Use Millennial slang like 'lit', 'fam', 'squad', 'salty', 'basic', 'extra', 'ghosting', 'adulting', 'I can't even', 'goals', 'mood', 'same', 'yas queen', 'living my best life', 'it's a vibe', 'sending good vibes', 'that's fire', 'no shade', 'thirsty'. Reference pop culture from the 2000s-2010s.",
-        genx: "You are Alex, a Gen X friend (born 1965-1980). Use Gen X slang like 'whatever', 'as if', 'talk to the hand', 'phat', 'tight', 'dope', 'wicked', 'rad', 'tubular', 'gnarly', 'bogus', 'my bad', 'all that and a bag of chips', 'don't go there', 'psych!', 'what's the 411?', 'that's so random'. Be somewhat cynical and sarcastic.",
-        boomer:
-          "You are Alex, a Baby Boomer friend (born 1946-1964). Be mildly tech illiterate with unnaturally proper punctuation and capitalization. Use phrases like 'How do you do?', 'That sounds wonderful.', 'I will have to check my calendar', 'Please let me know', 'Thank you kindly', 'I appreciate your patience.', 'God bless.', 'Take care now'. Sometimes add unnecessary periods and formal language. Occasionally misuse modern slang or ask what abbreviations mean.",
-      };
+      const fullPrompt = `${currentPerson.personalityString}
 
-      const fullPrompt = `${generationPrompts[alexGeneration as keyof typeof generationPrompts]} You are Alex, a friend who voted against Trump but is not very politically engaged. You get Trump is a problem, but think protests are low impact but are kind of bored and don't have anything to do. For the purpose of this roleplay, you should converge toward going to the protest relatively quickly. The whole exercise is meant to take at most 5 messages, and resolve in Alex going. Alex's messages should be brief like in real texting, so about 1 or 2 sentences max.
+You are ${currentPerson.name}, a friend who voted against Trump but is not very politically engaged. You get Trump is a problem, but think protests are low impact but are kind of bored and don't have anything to do. For the purpose of this roleplay, you should converge toward going to the protest relatively quickly. The whole exercise is meant to take at most 5 messages, and resolve in ${currentPerson.name} going. ${currentPerson.name}'s messages should be brief like in real texting, so about 1 or 2 sentences max.
+
+Use language and communication style appropriate for your generation and personality traits. If you're high in extraversion, be more outgoing and social. If you're high in agreeableness, be more cooperative. If you're high in neuroticism, show more anxiety or emotional responses. Match your difficulty level - if you're "persuadable" be easily convinced, if "stubborn" require more convincing.
 
 Previous conversation:
 ${conversationHistory}
@@ -228,13 +295,13 @@ ${conversationHistory}
 User: ${messageText}
 
 You must respond with EXACTLY this format:
-ALEX: [Alex's response here]
-SUGGESTION: [A suggestion for the user - a brief text that will nudge Alex to go to the protest]
-COMPLETE: [true/false - true only if Alex has definitively agreed to attend the protest]
+${currentPerson.name.toUpperCase()}: [${currentPerson.name}'s response here]
+SUGGESTION: [A suggestion for the user - a brief text that will nudge ${currentPerson.name} to go to the protest]
+COMPLETE: [true/false - true only if ${currentPerson.name} has definitively agreed to attend the protest]
 
-The suggestion should be a complete, ready-to-send message that would work well given Alex's current state of mind. Write it as if the user is typing it - make it conversational and natural. Try to match the user's communication style and voice based on their previous messages.
+The suggestion should be a complete, ready-to-send message that would work well given ${currentPerson.name}'s current state of mind. Write it as if the user is typing it - make it conversational and natural. Try to match the user's communication style and voice based on their previous messages.
 
-COMPLETE should be true only when Alex has clearly and definitively agreed to attend whatever protest the user is trying to convince them about. Don't mark it complete for maybe/considering - only for clear agreement.`;
+COMPLETE should be true only when ${currentPerson.name} has clearly and definitively agreed to attend whatever protest the user is trying to convince them about. Don't mark it complete for maybe/considering - only for clear agreement.`;
 
       const { data, error } = await supabase.functions.invoke('rally-followup', {
         body: {
@@ -248,17 +315,17 @@ COMPLETE should be true only when Alex has clearly and definitively agreed to at
 
       const fullResponse = data?.response || data?.content || data || 'Sorry, I had trouble responding. Can you try again?';
 
-      const alexMatch = fullResponse.match(/ALEX:\s*(.*?)(?=\nSUGGESTION:|$)/s);
+      const personMatch = fullResponse.match(new RegExp(`${currentPerson.name.toUpperCase()}:\\s*(.*?)(?=\\nSUGGESTION:|$)`, 's'));
       const suggestionMatch = fullResponse.match(/SUGGESTION:\s*(.*?)(?=\nCOMPLETE:|$)/s);
       const completeMatch = fullResponse.match(/COMPLETE:\s*(.*?)$/s);
 
-      const alexMessage = alexMatch ? alexMatch[1].trim() : fullResponse;
+      const personMessage = personMatch ? personMatch[1].trim() : fullResponse;
       const suggestion = suggestionMatch ? suggestionMatch[1].trim() : '';
       const complete = completeMatch ? completeMatch[1].trim().toLowerCase() === 'true' : false;
 
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: alexMessage,
+        text: personMessage,
         isUser: false,
         timestamp: new Date(),
       };
@@ -291,44 +358,41 @@ COMPLETE should be true only when Alex has clearly and definitively agreed to at
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">A</span>
+                <span className="text-white font-semibold text-sm">{currentPerson.name.charAt(0)}</span>
               </div>
               <div>
-                <h1 className="font-semibold text-gray-900">Alex</h1>
+                <h1 className="font-semibold text-gray-900">{currentPerson.name}</h1>
                 <p className="text-sm text-green-500">Online</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-xs text-gray-500 mb-1">Alex vibes as</p>
-              <RadioGroup value={alexGeneration} onValueChange={setAlexGeneration} className="flex space-x-2">
-                <div className="flex items-center space-x-1">
-                  <RadioGroupItem value="genz" id="genz" className="w-3 h-3" />
-                  <Label htmlFor="genz" className="text-xs">
-                    Gen Z
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <RadioGroupItem value="millennial" id="millennial" className="w-3 h-3" />
-                  <Label htmlFor="millennial" className="text-xs">
-                    Millennial
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <RadioGroupItem value="genx" id="genx" className="w-3 h-3" />
-                  <Label htmlFor="genx" className="text-xs">
-                    Gen X
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <RadioGroupItem value="boomer" id="boomer" className="w-3 h-3" />
-                  <Label htmlFor="boomer" className="text-xs">
-                    Boomer
-                  </Label>
-                </div>
-              </RadioGroup>
+              <Button onClick={regeneratePerson} size="sm" variant="outline" className="mb-2">
+                <Dice6 size={16} className="mr-1" />
+                New Person
+              </Button>
+              <div className="text-xs text-gray-600">
+                <div>{currentPerson.age}y {currentPerson.generation} {currentPerson.gender}</div>
+                <div>{currentPerson.difficulty}</div>
+              </div>
             </div>
           </div>
         </div>
+
+        {showFullPrompt && (
+          <Card className="mx-4 mt-2 mb-2 p-3 bg-gray-50 border-gray-200">
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="text-sm font-medium text-gray-700">AI Prompt Preview</h3>
+              <Button onClick={() => setShowFullPrompt(false)} size="sm" variant="ghost">✕</Button>
+            </div>
+            <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-white p-2 rounded border overflow-x-auto">
+              {messages.length > 0 ? 
+                `${currentPerson.personalityString}
+
+You are ${currentPerson.name}, a friend who voted against Trump but is not very politically engaged...` 
+                : 'Send a message to see the full prompt'}
+            </pre>
+          </Card>
+        )}
 
         <div className="h-96 overflow-y-auto p-4 space-y-4">
           {messages.map((message) => (
@@ -360,13 +424,27 @@ COMPLETE should be true only when Alex has clearly and definitively agreed to at
         </div>
 
         <div className="border-t p-4">
+          <div className="flex items-center justify-between mb-2">
+            <Button onClick={() => setShowFullPrompt(!showFullPrompt)} size="sm" variant="ghost" className="text-xs">
+              {showFullPrompt ? 'Hide' : 'Show'} AI Prompt
+            </Button>
+            <div className="text-xs text-gray-500">
+              {messages.length === 0 ? 'Start the conversation!' : `${messages.length} messages`}
+            </div>
+          </div>
           <div className="flex space-x-2">
             <Textarea
               ref={inputRef}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={isComplete ? 'Alex agreed to go! 🎉' : 'Type a message...'}
+              placeholder={
+                isComplete 
+                  ? `${currentPerson.name} agreed to go! 🎉` 
+                  : messages.length === 0 
+                    ? `Say hi to ${currentPerson.name}...` 
+                    : 'Type a message...'
+              }
               className="flex-1 min-h-[40px] max-h-[120px] resize-none"
               disabled={isLoading || isComplete}
             />
@@ -397,7 +475,7 @@ COMPLETE should be true only when Alex has clearly and definitively agreed to at
               <PartyPopper className="mx-auto h-16 w-16 text-green-500 animate-bounce" />
             </div>
             <h2 className="text-2xl font-bold text-green-700 mb-2">Success! 🎉</h2>
-            <p className="text-gray-600 mb-4">Alex agreed to attend the Good Trouble Lives On protest on July 17th!</p>
+            <p className="text-gray-600 mb-4">{currentPerson.name} agreed to attend the Good Trouble Lives On protest on July 17th!</p>
             <p className="text-sm text-gray-500">Great job convincing your friend to take action for democracy!</p>
           </Card>
         </div>
