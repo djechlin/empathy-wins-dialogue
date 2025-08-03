@@ -448,7 +448,7 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                 </div>
               </div>
 
-              <div className={`h-96 overflow-y-auto p-4 space-y-4 ${messages.length === 0 ? 'bg-blue-50' : ''}`}>
+              <div className={`h-96 overflow-y-auto p-4 space-y-4 ${messages.length === 0 ? 'bg-blue-100' : ''}`}>
                 {messages.map((message) => (
                   <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
                     <Card className={`max-w-xs p-3 ${message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'}`}>
