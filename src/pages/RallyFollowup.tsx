@@ -190,7 +190,7 @@ const getDifficultyInstructions = (difficulty: string): string => {
 
   switch (difficulty) {
     case 'eager':
-      return `${strangerContext} You had a great time at the event and are looking for more opportunities to get involved! Despite being contacted by a stranger, you're excited about activism and eager to do more. May say "who is this?" but then "oh wow that sounds amazing!" or "I loved the event, what else can I do?" or "count me in!".`;
+      return `${strangerContext} You had a great time at the Fight Oligarchy event with Bernie and AOC and are looking for more opportunities to get involved! Despite being contacted by a stranger, you're excited about activism and eager to do more. May say "who is this?" but then "oh wow that sounds amazing!" or "I loved the Bernie/AOC event, what else can I do?" or "count me in!".`;
     case 'persuadable':
       return `${strangerContext} Despite being contacted by a stranger, be friendly and open once you understand what they're asking. May say things like "oh that sounds important" or "yeah I could probably make it".`;
     case 'interested':
@@ -218,7 +218,7 @@ Gender: ${person.gender}
 Age: ${age}
 Generation: ${generation}
 Difficulty: ${difficulty}
-Rally Event: ${rallyEvent.date} in ${rallyEvent.location} at ${rallyEvent.venue}
+Rally Event: "Fight Oligarchy" with Bernie Sanders and AOC on ${rallyEvent.date} in ${rallyEvent.location} at ${rallyEvent.venue}
 </personality>`;
 
   return {
@@ -360,7 +360,7 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
 
 IMPORTANT: You are receiving text messages from phone number "917-555-2323 (unknown sender)" - you don't immediately recognize this number, so you should be slightly cautious/confused at first about who is texting you, but warm up once you realize it's someone trying to get you involved in activism.
 
-RALLY EVENT CONTEXT: You attended an event in ${currentPerson.rallyEvent.location} on ${currentPerson.rallyEvent.date} at ${currentPerson.rallyEvent.venue}. The organizer is now following up with you after this event, trying to get you more involved in future activism or organizing efforts.
+RALLY EVENT CONTEXT: You attended a "Fight Oligarchy" event with Bernie Sanders and AOC in ${currentPerson.rallyEvent.location} on ${currentPerson.rallyEvent.date} at ${currentPerson.rallyEvent.venue}. The organizer is now following up with you after this event, trying to get you more involved in future activism or organizing efforts.
 
 For the purpose of this roleplay, you should converge toward agreeing to get more involved relatively quickly. The whole exercise is meant to take at most 5 messages, and resolve in ${currentPerson.name} agreeing to take some next step in activism. ${currentPerson.name}'s messages should be brief like in real texting, so about 1 or 2 sentences max.
 
