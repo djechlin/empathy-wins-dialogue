@@ -179,7 +179,7 @@ const getGeneration = (age: number): string => {
 
 // Generate difficulty level
 const generateDifficulty = (): string => {
-  const difficulties = ['persuadable', 'interested', 'skeptical', 'stubborn'];
+  const difficulties = ['eager', 'persuadable', 'interested', 'skeptical', 'stubborn'];
   return difficulties[Math.floor(Math.random() * difficulties.length)];
 };
 
@@ -189,6 +189,8 @@ const getDifficultyInstructions = (difficulty: string): string => {
     'REMEMBER: This is a complete stranger texting you from an unknown number. You have NEVER been contacted by this person before.';
 
   switch (difficulty) {
+    case 'eager':
+      return `${strangerContext} You had a great time at the event and are looking for more opportunities to get involved! Despite being contacted by a stranger, you're excited about activism and eager to do more. May say "who is this?" but then "oh wow that sounds amazing!" or "I loved the event, what else can I do?" or "count me in!".`;
     case 'persuadable':
       return `${strangerContext} Despite being contacted by a stranger, be friendly and open once you understand what they're asking. May say things like "oh that sounds important" or "yeah I could probably make it".`;
     case 'interested':
