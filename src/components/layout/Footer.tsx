@@ -11,7 +11,6 @@ const Footer = () => {
             <MessageCircle className="h-6 w-6 text-dialogue-purple" />
             <span className="font-heading font-bold text-xl text-dialogue-darkblue">type2dialogue</span>
           </div>
-          <p className="text-muted-foreground text-sm">Building bridges through empathetic political conversations that win elections.</p>
         </div>
 
         <div className="flex flex-wrap justify-center items-center gap-6 mb-6 text-sm">

@@ -1,5 +1,7 @@
 import { Button } from '@/ui/button';
+import { Card, CardContent } from '@/ui/card';
 import { useNavigate } from 'react-router-dom';
+import { MessageSquare, FileText, BookOpen, MessagesSquare, Info } from 'lucide-react';
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -11,35 +13,45 @@ const Hero = () => {
   return (
     <section className="py-24 md:py-32 bg-background">
       <div className="container-custom">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-4xl mx-auto text-center">
           <div className="animate-fade-in">
-            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-dialogue-darkblue mb-8 font-light">Empathy wins elections.</h1>
-            <p className="text-lg md:text-xl font-serif text-foreground mb-8 max-w-lg leading-relaxed">
-              Master empathetic dialogue through AI-powered roleplay with real voter personas. Perfect your canvassing skills in a risk-free
-              environment.
+            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-dialogue-darkblue mb-8 font-light">Civic tech for dialogue.</h1>
+            <p className="text-lg md:text-xl font-serif text-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
+              Type2Dialogue provides AI-enabled tools for organizers doing the hardest kind of work—changing minds, building commitment, and mobilizing action.
             </p>
-            <div className="bg-dialogue-blue/10 border border-dialogue-blue/20 rounded-lg p-6 mb-8">
-              <p className="text-dialogue-darkblue font-medium mb-2">✓ Practice with realistic voter scenarios</p>
-              <p className="text-dialogue-darkblue font-medium mb-2">✓ Get real-time coaching feedback</p>
-              <p className="text-dialogue-darkblue font-medium">✓ Build skills that increase voter persuasion</p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                size="lg"
-                className="bg-dialogue-purple hover:bg-dialogue-darkblue text-white text-lg px-8 py-4"
-                onClick={handleStartChallenge}
-              >
-                Start Your First Roleplay
-              </Button>
-            </div>
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+              <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={handleStartChallenge}>
+                <CardContent className="p-6 text-center">
+                  <MessagesSquare className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Voice roleplay: voter persuasion</h3>
+                  <p className="text-sm text-foreground/70">Practice deep canvassing conversations with AI-powered realistic voter scenarios</p>
+                </CardContent>
+              </Card>
 
-          <div className="rounded-lg overflow-hidden shadow-xl animate-fade-in">
-            <img
-              src="/lovable-uploads/01c3e643-e913-481c-85db-4d3ca81a0318.png"
-              alt="Two people having a conversation overlooking city at dusk"
-              className="w-full h-full object-cover rounded-lg"
-            />
+              <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/text')}>
+                <CardContent className="p-6 text-center">
+                  <MessageSquare className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Chat roleplay: mobilize a friend</h3>
+                  <p className="text-sm text-foreground/70">Practice a relational conversation, motivating a friend to vote</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={() => window.open('https://type2dialogue.substack.com', '_blank')}>
+                <CardContent className="p-6 text-center">
+                  <BookOpen className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Misinformation or disagreement?</h3>
+                  <p className="text-sm text-foreground/70">type2dialogue's substack, focusing on persuasion and information</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/about')}>
+                <CardContent className="p-6 text-center">
+                  <Info className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">About</h3>
+                  <p className="text-sm text-foreground/70">Learn more about type2dialogue and its founder, Daniel</p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>

@@ -1,15 +1,11 @@
-import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import { Button } from '@/ui/button';
-import { LogIn, ArrowRight } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { User } from '@supabase/supabase-js';
 import { blogPosts } from '@/data/blogPosts';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState<User | null>(null);
 
   const isInChallenge = location.pathname.startsWith('/challenge');
 
@@ -26,28 +22,6 @@ const Navbar = () => {
     { number: 3, label: 'Learn how you did', path: '/challenge/competencies' },
   ];
 
-  useEffect(() => {
-    // Set up auth state listener
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleAuthClick = () => {
-    if (user) {
-      supabase.auth.signOut();
-    } else {
-      navigate('/auth');
-    }
-  };
 
   return (
     <nav className="py-4 border-b border-border bg-white sticky top-0 z-50">
@@ -80,44 +54,18 @@ const Navbar = () => {
               ))}
             </div>
           ) : (
-            <>
-              <Link to="/learn" className="text-foreground hover:text-dialogue-purple transition-colors">
-                Learn
-              </Link>
-              <Link to="/challenge" className="text-foreground hover:text-dialogue-purple transition-colors">
-                Challenge
-              </Link>
-              <div className="relative group">
-                <Link to="/blog" className="text-foreground hover:text-dialogue-purple transition-colors">
-                  Blog
-                </Link>
-                <div className="absolute top-full left-0 bg-white border border-gray-200 shadow-lg rounded-md py-2 min-w-[320px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  {blogPosts.map((post) => (
-                    <Link key={post.id} to={`/blog/${post.id}`} className="block px-4 py-3 hover:bg-gray-50 transition-colors">
-                      <div className="font-medium text-gray-900 text-sm mb-1 leading-tight">{post.title}</div>
-                      <div className="text-xs text-gray-500">
-                        <span>{post.readTime}</span>
-                      </div>
-                    </Link>
-                  ))}
-                  <div className="border-t border-gray-100 mt-2 pt-2">
-                    <Link to="/blog" className="block px-4 py-2 text-sm text-dialogue-purple hover:text-dialogue-darkblue font-medium">
-                      View all posts →
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </>
+            <></>
           )}
         </div>
 
-        <div className="flex items-center gap-4">
-          <Button variant="outline" className="hidden sm:flex" onClick={handleAuthClick}>
-            {user ? 'Log Out' : 'Log In'}
-          </Button>
-          <Button className="bg-dialogue-purple hover:bg-dialogue-darkblue" onClick={() => navigate('/auth')}>
-            <LogIn className="mr-2 h-4 w-4" />
-            {user ? 'Dashboard' : 'Sign Up'}
+        <div className="flex items-center">
+          <Button 
+            asChild
+            className="bg-dialogue-purple hover:bg-dialogue-purple/90 text-white"
+          >
+            <a href="mailto:about@type2dialogue.com">
+              Get in touch
+            </a>
           </Button>
         </div>
       </div>
