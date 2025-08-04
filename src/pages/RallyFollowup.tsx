@@ -27,7 +27,11 @@ const RALLY_EVENTS = [
   { date: 'March 21, 2025', location: 'Greeley, Colorado', venue: 'University of Northern Colorado' },
   { date: 'March 21, 2025', location: 'Denver, Colorado', venue: 'Civic Center Park' },
   { date: 'March 22, 2025', location: 'Tucson, Arizona', venue: 'Catalina High School' },
-  { date: 'April 12, 2025', location: 'Los Angeles, California', venue: 'Grand Park (coinciding with an appearance at Coachella introducing Clairo)' },
+  {
+    date: 'April 12, 2025',
+    location: 'Los Angeles, California',
+    venue: 'Grand Park (coinciding with an appearance at Coachella introducing Clairo)',
+  },
   { date: 'April 13, 2025', location: 'Salt Lake City, Utah', venue: 'Jon M. Huntsman Center' },
   { date: 'April 14, 2025', location: 'Nampa, Idaho', venue: 'Ford Idaho Center' },
   { date: 'April 15, 2025 (Event 1)', location: 'Folsom, California', venue: 'Folsom Lake College' },
@@ -477,7 +481,7 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                     </div>
                     <div>
                       <h1 className="font-semibold text-gray-900">{currentPerson.name}</h1>
-                      <p className="text-sm text-green-500">Online</p>
+                      <p className="text-sm text-gray-500">{currentPerson.rallyEvent.location}</p>
                     </div>
                   </div>
                   <div className="text-right">
