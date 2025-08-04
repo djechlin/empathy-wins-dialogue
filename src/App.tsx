@@ -25,7 +25,6 @@ import Text from './pages/Text';
 import RallyFollowup from './pages/RallyFollowup';
 import Relational from './pages/Relational';
 
-
 const queryClient = new QueryClient();
 
 const App = () => (

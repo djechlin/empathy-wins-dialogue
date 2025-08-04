@@ -6,7 +6,6 @@ import { Button } from '@/ui/button';
 import { ExternalLink } from 'lucide-react';
 
 const About = () => {
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-dialogue-blue/5">
       <Navbar />
