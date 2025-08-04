@@ -331,7 +331,6 @@ const RallyFollowup = () => {
         throw error;
       }
 
-      alert('Results submitted successfully!');
       // Track generation
       setCompletedCombinations((prev) => new Set(prev).add(currentPerson.generation));
       // Reset form (keep organizer name, clear assessment fields)
