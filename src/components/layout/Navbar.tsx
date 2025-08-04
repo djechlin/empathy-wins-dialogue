@@ -1,10 +1,8 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/ui/button';
-import { blogPosts } from '@/data/blogPosts';
 
 const Navbar = () => {
-  const navigate = useNavigate();
   const location = useLocation();
 
   const isInChallenge = location.pathname.startsWith('/challenge');
@@ -21,7 +19,6 @@ const Navbar = () => {
     { number: 2, label: 'Roleplay', path: '/challenge/roleplay' },
     { number: 3, label: 'Learn how you did', path: '/challenge/competencies' },
   ];
-
 
   return (
     <nav className="py-4 border-b border-border bg-white sticky top-0 z-50">
@@ -59,13 +56,8 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center">
-          <Button 
-            asChild
-            className="bg-dialogue-purple hover:bg-dialogue-purple/90 text-white"
-          >
-            <a href="mailto:about@type2dialogue.com">
-              Get in touch
-            </a>
+          <Button asChild className="bg-dialogue-purple hover:bg-dialogue-purple/90 text-white">
+            <a href="mailto:about@type2dialogue.com">Get in touch</a>
           </Button>
         </div>
       </div>

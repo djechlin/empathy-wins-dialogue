@@ -1,7 +1,6 @@
-import { Button } from '@/ui/button';
 import { Card, CardContent } from '@/ui/card';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, FileText, BookOpen, MessagesSquare, Info } from 'lucide-react';
+import { MessageSquare, BookOpen, MessagesSquare, Info } from 'lucide-react';
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -17,14 +16,17 @@ const Hero = () => {
           <div className="animate-fade-in">
             <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-dialogue-darkblue mb-8 font-light">Civic tech for dialogue.</h1>
             <p className="text-lg md:text-xl font-serif text-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-              Type2Dialogue provides AI-enabled tools for organizers doing the hardest kind of work—changing minds, building commitment, and mobilizing action.
+              Type2Dialogue provides AI-enabled tools for organizers doing the hardest kind of work—changing minds, building commitment, and
+              mobilizing action.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
               <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={handleStartChallenge}>
                 <CardContent className="p-6 text-center">
                   <MessagesSquare className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
                   <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Voice roleplay: voter persuasion</h3>
-                  <p className="text-sm text-foreground/70">Practice deep canvassing conversations with AI-powered realistic voter scenarios</p>
+                  <p className="text-sm text-foreground/70">
+                    Practice deep canvassing conversations with AI-powered realistic voter scenarios
+                  </p>
                 </CardContent>
               </Card>
 
@@ -36,7 +38,10 @@ const Hero = () => {
                 </CardContent>
               </Card>
 
-              <Card className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer" onClick={() => window.open('https://type2dialogue.substack.com', '_blank')}>
+              <Card
+                className="border-dialogue-blue/20 hover:shadow-lg transition-all cursor-pointer"
+                onClick={() => window.open('https://type2dialogue.substack.com', '_blank')}
+              >
                 <CardContent className="p-6 text-center">
                   <BookOpen className="w-12 h-12 text-dialogue-purple mx-auto mb-4" />
                   <h3 className="font-semibold text-lg mb-2 text-dialogue-darkblue">Misinformation or disagreement?</h3>

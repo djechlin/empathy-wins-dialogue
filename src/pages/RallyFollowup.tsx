@@ -305,10 +305,11 @@ const RallyFollowup = () => {
 
     setIsSubmitting(true);
     try {
-      const conversationData = {
-        organizerName: organizerName.trim(),
-        leaderPotential: parseInt(leaderPotential),
-        comment: comment.trim(),
+      // Convert messages to conversation transcript format
+      const conversationTranscript = messages.map((m) => `${m.isUser ? 'Organizer' : currentPerson.name}: ${m.text}`).join('\n');
+
+      // Create conversation results object
+      const conversationResults = {
         conversationComplete: isComplete,
         messageCount: messages.length,
         person: {
@@ -318,9 +319,15 @@ const RallyFollowup = () => {
           generation: currentPerson.generation,
           difficulty: currentPerson.difficulty,
           rallyEvent: currentPerson.rallyEvent,
-          personalityString: currentPerson.personalityString,
         },
-        messages: messages,
+      };
+
+      const conversationData = {
+        organizerName: organizerName.trim(),
+        leaderPotential: parseInt(leaderPotential),
+        comment: comment.trim(),
+        conversationTranscript,
+        conversationResults,
       };
 
       const { error } = await supabase.functions.invoke('rally-followup-results', {
