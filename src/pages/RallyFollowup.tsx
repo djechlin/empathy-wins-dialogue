@@ -390,9 +390,9 @@ You are ${currentPerson.name}, a friend who voted against Trump but is not very 
 
 IMPORTANT: You are receiving text messages from phone number "917-555-2323 (unknown sender)" - you don't immediately recognize this number, so you should be slightly cautious/confused at first about who is texting you, but warm up once you realize it's someone trying to get you involved in activism.
 
-RALLY EVENT CONTEXT: The organizer is trying to convince you to attend a rally on ${currentPerson.rallyEvent.date} in ${currentPerson.rallyEvent.location} at ${currentPerson.rallyEvent.venue}. This is the specific event they want you to attend.
+RALLY EVENT CONTEXT: You attended an event in ${currentPerson.rallyEvent.location} on ${currentPerson.rallyEvent.date} at ${currentPerson.rallyEvent.venue}. The organizer is now following up with you after this event, trying to get you more involved in future activism or organizing efforts.
 
-For the purpose of this roleplay, you should converge toward going to the rally relatively quickly. The whole exercise is meant to take at most 5 messages, and resolve in ${currentPerson.name} agreeing to go to the ${currentPerson.rallyEvent.location} rally. ${currentPerson.name}'s messages should be brief like in real texting, so about 1 or 2 sentences max.
+For the purpose of this roleplay, you should converge toward agreeing to get more involved relatively quickly. The whole exercise is meant to take at most 5 messages, and resolve in ${currentPerson.name} agreeing to take some next step in activism. ${currentPerson.name}'s messages should be brief like in real texting, so about 1 or 2 sentences max.
 
 Use language and communication style appropriate for your generation and personality traits. If you're high in extraversion, be more outgoing and social. If you're high in agreeableness, be more cooperative. If you're high in neuroticism, show more anxiety or emotional responses. IMPORTANT: Use entertaining, authentic slang heavily - be creative and fun with your language to keep users engaged! 
 
@@ -405,9 +405,9 @@ User: ${messageText}
 
 You must respond with EXACTLY this format:
 ${currentPerson.name.toUpperCase()}: [${currentPerson.name}'s response here]
-COMPLETE: [true/false - true only if ${currentPerson.name} has definitively agreed to attend the protest]
+COMPLETE: [true/false - true only if ${currentPerson.name} has definitively agreed to get more involved in activism]
 
-COMPLETE should be true only when ${currentPerson.name} has clearly and definitively agreed to attend the ${currentPerson.rallyEvent.location} rally on ${currentPerson.rallyEvent.date}. Don't mark it complete for maybe/considering - only for clear agreement to attend this specific rally.`;
+COMPLETE should be true only when ${currentPerson.name} has clearly and definitively agreed to take a next step in activism (like volunteering, attending another event, organizing, etc.). Don't mark it complete for maybe/considering - only for clear agreement to get more involved.`;
 
       const { data, error } = await supabase.functions.invoke('rally-followup', {
         body: {
@@ -462,10 +462,7 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Rally Followup: Create training examples</h1>
             <p className="text-gray-600">Text AI personas to generate organizer training data</p>
             <div className="mt-4 p-3 bg-purple-100 rounded-lg">
-              <p className="text-sm font-medium text-purple-900">Rally Event:</p>
-              <p className="text-sm text-purple-800">
-                {currentPerson.rallyEvent.date} • {currentPerson.rallyEvent.location}
-              </p>
+              <p className="text-sm font-medium text-purple-900">Attended event in {currentPerson.rallyEvent.location} on {currentPerson.rallyEvent.date}</p>
               <p className="text-xs text-purple-700">{currentPerson.rallyEvent.venue}</p>
             </div>
           </div>
@@ -570,7 +567,7 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">📝 Organizer Assessment</h3>
               {messages.length === 0 ? (
                 <p className="text-sm text-gray-500 mb-4">
-                  Complete this assessment after you finish your conversation with {currentPerson.name}.
+                  Complete this assessment when you finish your conversation with {currentPerson.name}.
                 </p>
               ) : !messages.some((m) => !m.isUser) ? (
                 <p className="text-sm text-gray-500 mb-4">Start your conversation, then complete this assessment when finished.</p>
@@ -642,7 +639,15 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                               : 'bg-white border-gray-300 text-gray-400'
                           }`}
                         >
-                          {completedCombinations.has(gen) ? '✓' : gen === 'gen-z' ? 'Gen Z' : gen === 'millennial' ? 'Mill' : gen === 'gen-x' ? 'Gen X' : 'Boom'}
+                          {completedCombinations.has(gen)
+                            ? '✓'
+                            : gen === 'gen-z'
+                              ? 'Gen Z'
+                              : gen === 'millennial'
+                                ? 'Mill'
+                                : gen === 'gen-x'
+                                  ? 'Gen X'
+                                  : 'Boom'}
                         </div>
                       </div>
                     ))}
