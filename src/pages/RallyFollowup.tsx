@@ -362,9 +362,8 @@ const RallyFollowup = () => {
       }
 
       alert('Results submitted successfully!');
-      // Track demographic combination
-      const combination = `${currentPerson.gender}-${currentPerson.generation}`;
-      setCompletedCombinations((prev) => new Set(prev).add(combination));
+      // Track generation
+      setCompletedCombinations((prev) => new Set(prev).add(currentPerson.generation));
       // Reset form (keep organizer name, clear assessment fields)
       setLeaderPotential('');
       setComment('');
@@ -633,37 +632,23 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <div className="bg-gray-50 p-3 rounded-lg">
                   <p className="text-sm text-gray-600 text-center mb-2">Coverage this session</p>
-                  <div className="grid grid-cols-4 gap-1 text-xs">
+                  <div className="grid grid-cols-4 gap-2 text-xs">
                     {['gen-z', 'millennial', 'gen-x', 'boomer'].map((gen) => (
                       <div key={gen} className="text-center">
-                        <div className="text-gray-600 mb-1 font-medium">
-                          {gen === 'gen-z' ? 'Gen Z' : gen === 'millennial' ? 'Mill' : gen === 'gen-x' ? 'Gen X' : 'Boom'}
-                        </div>
-                        <div className="space-y-1">
-                          <div
-                            className={`w-6 h-6 mx-auto rounded border-2 flex items-center justify-center ${
-                              completedCombinations.has(`M-${gen}`)
-                                ? 'bg-green-100 border-green-500 text-green-700'
-                                : 'bg-white border-gray-300 text-gray-400'
-                            }`}
-                          >
-                            {completedCombinations.has(`M-${gen}`) ? '✓' : 'M'}
-                          </div>
-                          <div
-                            className={`w-6 h-6 mx-auto rounded border-2 flex items-center justify-center ${
-                              completedCombinations.has(`F-${gen}`)
-                                ? 'bg-green-100 border-green-500 text-green-700'
-                                : 'bg-white border-gray-300 text-gray-400'
-                            }`}
-                          >
-                            {completedCombinations.has(`F-${gen}`) ? '✓' : 'F'}
-                          </div>
+                        <div
+                          className={`w-12 h-8 mx-auto rounded border-2 flex items-center justify-center ${
+                            completedCombinations.has(gen)
+                              ? 'bg-green-100 border-green-500 text-green-700'
+                              : 'bg-white border-gray-300 text-gray-400'
+                          }`}
+                        >
+                          {completedCombinations.has(gen) ? '✓' : gen === 'gen-z' ? 'Gen Z' : gen === 'millennial' ? 'Mill' : gen === 'gen-x' ? 'Gen X' : 'Boom'}
                         </div>
                       </div>
                     ))}
                   </div>
                   <div className="mt-2 text-center">
-                    <span className="text-xs text-gray-500">{completedCombinations.size}/8 completed</span>
+                    <span className="text-xs text-gray-500">{completedCombinations.size}/4 completed</span>
                   </div>
                 </div>
               </div>
