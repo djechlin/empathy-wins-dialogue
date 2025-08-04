@@ -180,13 +180,11 @@ const getGeneration = (age: number): string => {
   return 'boomer'; // Born 1946-1964 (60+)
 };
 
-
 // Generate difficulty level
 const generateDifficulty = (): string => {
   const difficulties = ['persuadable', 'interested', 'skeptical', 'stubborn'];
   return difficulties[Math.floor(Math.random() * difficulties.length)];
 };
-
 
 // Get difficulty-specific instructions
 const getDifficultyInstructions = (difficulty: string): string => {
@@ -446,7 +444,9 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                     </div>
                     <div>
                       <h1 className="font-semibold text-gray-900">{currentPerson.name}</h1>
-                      <p className="text-sm text-gray-500">Attended event in {currentPerson.rallyEvent.location} on {currentPerson.rallyEvent.date}</p>
+                      <p className="text-sm text-gray-500">
+                        Event: {currentPerson.rallyEvent.location} on {currentPerson.rallyEvent.date}
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
