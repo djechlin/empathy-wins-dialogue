@@ -180,14 +180,6 @@ const getGeneration = (age: number): string => {
   return 'boomer'; // Born 1946-1964 (60+)
 };
 
-// Generate Big Five personality traits (OCEAN)
-const generateBig5 = () => ({
-  openness: Math.random() > 0.5 ? 'high' : 'low',
-  conscientiousness: Math.random() > 0.5 ? 'high' : 'low',
-  extraversion: Math.random() > 0.5 ? 'high' : 'low',
-  agreeableness: Math.random() > 0.5 ? 'high' : 'low',
-  neuroticism: Math.random() > 0.5 ? 'high' : 'low',
-});
 
 // Generate difficulty level
 const generateDifficulty = (): string => {
@@ -195,17 +187,6 @@ const generateDifficulty = (): string => {
   return difficulties[Math.floor(Math.random() * difficulties.length)];
 };
 
-// Format Big5 traits as OCEAN string
-const formatOCEAN = (big5: {
-  openness: string;
-  conscientiousness: string;
-  extraversion: string;
-  agreeableness: string;
-  neuroticism: string;
-}): string => {
-  const getSymbol = (trait: string) => (trait === 'high' ? '+' : '-');
-  return `O${getSymbol(big5.openness)} | C${getSymbol(big5.conscientiousness)} | E${getSymbol(big5.extraversion)} | A${getSymbol(big5.agreeableness)} | N${getSymbol(big5.neuroticism)}`;
-};
 
 // Get difficulty-specific instructions
 const getDifficultyInstructions = (difficulty: string): string => {
@@ -231,7 +212,6 @@ const generatePerson = () => {
   const person = AMERICAN_NAMES[Math.floor(Math.random() * AMERICAN_NAMES.length)];
   const age = generateAge();
   const generation = getGeneration(age);
-  const big5 = generateBig5();
   const difficulty = generateDifficulty();
   const rallyEvent = RALLY_EVENTS[Math.floor(Math.random() * RALLY_EVENTS.length)];
 
@@ -240,11 +220,6 @@ Name: ${person.name}
 Gender: ${person.gender}
 Age: ${age}
 Generation: ${generation}
-Openness: ${big5.openness}
-Conscientiousness: ${big5.conscientiousness}
-Extraversion: ${big5.extraversion}
-Agreeableness: ${big5.agreeableness}
-Neuroticism: ${big5.neuroticism}
 Difficulty: ${difficulty}
 Rally Event: ${rallyEvent.date} in ${rallyEvent.location} at ${rallyEvent.venue}
 </personality>`;
@@ -254,7 +229,6 @@ Rally Event: ${rallyEvent.date} in ${rallyEvent.location} at ${rallyEvent.venue}
     gender: person.gender,
     age,
     generation,
-    big5,
     difficulty,
     rallyEvent,
     personalityString,
@@ -345,7 +319,6 @@ const RallyFollowup = () => {
           gender: currentPerson.gender,
           age: currentPerson.age,
           generation: currentPerson.generation,
-          big5: currentPerson.big5,
           difficulty: currentPerson.difficulty,
           rallyEvent: currentPerson.rallyEvent,
           personalityString: currentPerson.personalityString,
@@ -394,7 +367,7 @@ RALLY EVENT CONTEXT: You attended an event in ${currentPerson.rallyEvent.locatio
 
 For the purpose of this roleplay, you should converge toward agreeing to get more involved relatively quickly. The whole exercise is meant to take at most 5 messages, and resolve in ${currentPerson.name} agreeing to take some next step in activism. ${currentPerson.name}'s messages should be brief like in real texting, so about 1 or 2 sentences max.
 
-Use language and communication style appropriate for your generation and personality traits. If you're high in extraversion, be more outgoing and social. If you're high in agreeableness, be more cooperative. If you're high in neuroticism, show more anxiety or emotional responses. IMPORTANT: Use entertaining, authentic slang heavily - be creative and fun with your language to keep users engaged! 
+Use language and communication style appropriate for your generation. IMPORTANT: Use entertaining, authentic slang heavily - be creative and fun with your language to keep users engaged! 
 
 CRITICAL: You are ${currentPerson.difficulty.toUpperCase()} difficulty level. ${getDifficultyInstructions(currentPerson.difficulty)}
 
@@ -461,10 +434,6 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Rally Followup: Create training examples</h1>
             <p className="text-gray-600">Text AI personas to generate organizer training data</p>
-            <div className="mt-4 p-3 bg-purple-100 rounded-lg">
-              <p className="text-sm font-medium text-purple-900">Attended event in {currentPerson.rallyEvent.location} on {currentPerson.rallyEvent.date}</p>
-              <p className="text-xs text-purple-700">{currentPerson.rallyEvent.venue}</p>
-            </div>
           </div>
 
           <div className="flex gap-4 items-start">
@@ -477,7 +446,7 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                     </div>
                     <div>
                       <h1 className="font-semibold text-gray-900">{currentPerson.name}</h1>
-                      <p className="text-sm text-gray-500">{currentPerson.rallyEvent.location}</p>
+                      <p className="text-sm text-gray-500">Attended event in {currentPerson.rallyEvent.location} on {currentPerson.rallyEvent.date}</p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -497,7 +466,6 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                           {currentPerson.gender}
                         </div>
                         <div>{currentPerson.difficulty}</div>
-                        <div className="font-mono">{formatOCEAN(currentPerson.big5)}</div>
                       </div>
                     )}
                   </div>
