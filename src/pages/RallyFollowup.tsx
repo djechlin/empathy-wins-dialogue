@@ -599,21 +599,16 @@ COMPLETE should be true only when ${currentPerson.name} has clearly and definiti
                     {['gen-z', 'millennial', 'gen-x', 'boomer'].map((gen) => (
                       <div key={gen} className="text-center">
                         <div
-                          className={`w-12 h-8 mx-auto rounded border-2 flex items-center justify-center ${
+                          className={`w-14 h-8 mx-auto rounded border-2 flex items-center justify-center gap-1 ${
                             completedCombinations.has(gen)
                               ? 'bg-green-100 border-green-500 text-green-700'
                               : 'bg-white border-gray-300 text-gray-400'
                           }`}
                         >
-                          {completedCombinations.has(gen)
-                            ? '✓'
-                            : gen === 'gen-z'
-                              ? 'Gen Z'
-                              : gen === 'millennial'
-                                ? 'Mill'
-                                : gen === 'gen-x'
-                                  ? 'Gen X'
-                                  : 'Boom'}
+                          <span className="text-xs">
+                            {gen === 'gen-z' ? 'Gen Z' : gen === 'millennial' ? 'Mill' : gen === 'gen-x' ? 'Gen X' : 'Boom'}
+                          </span>
+                          {completedCombinations.has(gen) && <span className="text-green-600">✓</span>}
                         </div>
                       </div>
                     ))}
