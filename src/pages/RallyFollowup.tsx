@@ -20,8 +20,8 @@ const RALLY_EVENTS = [
   { date: 'Feb 21', location: 'Omaha, NE', venue: 'Omaha Marriott Downtown at the Capitol District' },
   { date: 'Feb 22', location: 'Iowa City, IA', venue: 'The Englert Theatre' },
   { date: 'Mar 7', location: 'Kenosha, WI', venue: 'University of Wisconsin–Parkside' },
-  { date: 'Mar 8 (Afternoon)', location: 'Altoona, WI', venue: 'Altoona High School' },
-  { date: 'Mar 8 (Evening)', location: 'Warren, MI', venue: 'Lincoln High School' },
+  { date: 'Mar 8', location: 'Altoona, WI', venue: 'Altoona High School' },
+  { date: 'Mar 8', location: 'Warren, MI', venue: 'Lincoln High School' },
   { date: 'Mar 20', location: 'North Las Vegas, NV', venue: 'Craig Ranch Regional Park' },
   { date: 'Mar 20', location: 'Tempe, AZ', venue: 'Mullett Arena' },
   { date: 'Mar 21', location: 'Greeley, CO', venue: 'University of Northern Colorado' },
@@ -47,8 +47,7 @@ const RALLY_EVENTS = [
   { date: 'Jun 22', location: 'Fort Worth, TX', venue: 'Dickies Arena' },
 ];
 
-const AMERICAN_NAMES = [
-  // European-origin names (80 total - 40M, 40F)
+const NAMES = [
   { name: 'Michael', gender: 'M' },
   { name: 'David', gender: 'M' },
   { name: 'John', gender: 'M' },
@@ -89,6 +88,16 @@ const AMERICAN_NAMES = [
   { name: 'Justin', gender: 'M' },
   { name: 'Scott', gender: 'M' },
   { name: 'Brandon', gender: 'M' },
+  { name: 'Carlos', gender: 'M' },
+  { name: 'Jose', gender: 'M' },
+  { name: 'Miguel', gender: 'M' },
+  { name: 'Diego', gender: 'M' },
+  { name: 'Luis', gender: 'M' },
+  { name: 'Wei', gender: 'M' },
+  { name: 'Chen', gender: 'M' },
+  { name: 'Li', gender: 'M' },
+  { name: 'Wang', gender: 'M' },
+  { name: 'Zhang', gender: 'M' },
   { name: 'Mary', gender: 'F' },
   { name: 'Patricia', gender: 'F' },
   { name: 'Jennifer', gender: 'F' },
@@ -129,23 +138,11 @@ const AMERICAN_NAMES = [
   { name: 'Samantha', gender: 'F' },
   { name: 'Debra', gender: 'F' },
   { name: 'Rachel', gender: 'F' },
-  // Spanish names (10 total - 5M, 5F)
-  { name: 'Carlos', gender: 'M' },
-  { name: 'Jose', gender: 'M' },
-  { name: 'Miguel', gender: 'M' },
-  { name: 'Diego', gender: 'M' },
-  { name: 'Luis', gender: 'M' },
   { name: 'Maria', gender: 'F' },
   { name: 'Ana', gender: 'F' },
   { name: 'Sofia', gender: 'F' },
   { name: 'Isabella', gender: 'F' },
   { name: 'Carmen', gender: 'F' },
-  // Chinese names (Pinyin) (10 total - 5M, 5F)
-  { name: 'Wei', gender: 'M' },
-  { name: 'Chen', gender: 'M' },
-  { name: 'Li', gender: 'M' },
-  { name: 'Wang', gender: 'M' },
-  { name: 'Zhang', gender: 'M' },
   { name: 'Mei', gender: 'F' },
   { name: 'Lin', gender: 'F' },
   { name: 'Yan', gender: 'F' },
@@ -207,7 +204,7 @@ const getDifficultyInstructions = (difficulty: string): string => {
 
 // Generate a complete person
 const generatePerson = () => {
-  const person = AMERICAN_NAMES[Math.floor(Math.random() * AMERICAN_NAMES.length)];
+  const person = NAMES[Math.floor(Math.random() * NAMES.length)];
   const age = generateAge();
   const generation = getGeneration(age);
   const difficulty = generateDifficulty();
