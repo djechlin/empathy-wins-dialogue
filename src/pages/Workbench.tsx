@@ -324,7 +324,6 @@ Respond as the organizer would, keeping responses brief and focused on getting t
       <Navbar pageTitle="Workbench" pageSummary="Develop AI organizer prompts" />
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[700px]">
             {/* Organizer Column */}
             <div className="bg-purple-200 rounded-lg p-1">
@@ -368,8 +367,16 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                 <div className="border-b px-4 py-3 bg-gray-50">
                   <div className="flex items-center justify-between">
                     <h2 className="font-semibold">Conversation</h2>
-                    <div className="text-sm text-gray-500">
-                      Organizer: {config.organizerHumanMode ? 'Human' : 'AI'} | Attendee: {config.attendeeHumanMode ? 'Human' : 'AI'}
+                    <div className="flex items-center gap-4">
+                      {!config.organizerHumanMode && !config.attendeeHumanMode && (
+                        <Button onClick={startAutoConversation} size="sm" className="px-4">
+                          <Play size={16} className="mr-2" />
+                          Start Auto Conversation
+                        </Button>
+                      )}
+                      <div className="text-sm text-gray-500">
+                        Organizer: {config.organizerHumanMode ? 'Human' : 'AI'} | Attendee: {config.attendeeHumanMode ? 'Human' : 'AI'}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -467,16 +474,6 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                   </div>
                 )}
               </Card>
-
-              {/* Auto Conversation Button */}
-              {!config.organizerHumanMode && !config.attendeeHumanMode && (
-                <div className="flex justify-center">
-                  <Button onClick={startAutoConversation} size="lg" className="px-8">
-                    <Play size={20} className="mr-2" />
-                    Start Auto Conversation
-                  </Button>
-                </div>
-              )}
             </div>
           </div>
         </div>
