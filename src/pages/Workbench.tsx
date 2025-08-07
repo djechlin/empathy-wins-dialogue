@@ -62,19 +62,34 @@ const generateVariableTags = (variables: Record<string, string>): string => {
     .join('\n\n');
 };
 
+// Generate participant name with timestamp
+const generateParticipantName = (type: string): string => {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const date = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  return `${type}-${month}${date}${hours}${minutes}${seconds}`;
+};
+
 // Header component for participant with toggles always visible
 const ParticipantHeader: React.FC<{
   type: 'organizer' | 'attendee';
   isHumanMode: boolean;
   onModeChange: (isHuman: boolean) => void;
-}> = ({ type, isHumanMode, onModeChange }) => {
+  participantName: string;
+}> = ({ type, isHumanMode, onModeChange, participantName }) => {
   const IconComponent = isHumanMode ? User : Bot;
 
   return (
     <div className="flex items-center justify-between w-full">
       <div className="flex items-center gap-2">
         <IconComponent size={16} />
-        <span className="font-medium">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+        <div className="flex flex-col">
+          <span className="font-medium">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+          <span className="text-xs text-gray-500 font-mono">{participantName}</span>
+        </div>
       </div>
       <div className="flex items-center">
         <Button
@@ -250,6 +265,12 @@ const Workbench = () => {
     organizerHumanMode: true,
     attendeeHumanMode: false,
   });
+
+  // Generate participant names once on component mount
+  const [participantNames] = useState(() => ({
+    organizer: generateParticipantName('organizer'),
+    attendee: generateParticipantName('attendee')
+  }));
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -448,6 +469,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         type="organizer"
                         isHumanMode={config.organizerHumanMode}
                         onModeChange={(isHuman) => setConfig((prev) => ({ ...prev, organizerHumanMode: isHuman }))}
+                        participantName={participantNames.organizer}
                       />
                     </AccordionTrigger>
                     <AccordionContent className="pb-0">
@@ -483,6 +505,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         type="attendee"
                         isHumanMode={config.attendeeHumanMode}
                         onModeChange={(isHuman) => setConfig((prev) => ({ ...prev, attendeeHumanMode: isHuman }))}
+                        participantName={participantNames.attendee}
                       />
                     </AccordionTrigger>
                     <AccordionContent className="pb-0">
