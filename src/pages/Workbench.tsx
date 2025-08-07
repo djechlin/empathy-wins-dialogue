@@ -6,6 +6,7 @@ import { Textarea } from '@/ui/textarea';
 import { ChevronDown, ChevronUp, Play, Send, User, Bot } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordion';
 import Navbar from '@/components/layout/Navbar';
 
 interface Message {
@@ -29,17 +30,6 @@ interface ParticipantVariable {
   onChange: (value: string) => void;
 }
 
-interface ParticipantProps {
-  type: 'organizer' | 'attendee';
-  prompt: string;
-  onPromptChange: (value: string) => void;
-  isHumanMode: boolean;
-  onModeChange: (isHuman: boolean) => void;
-  variables: ParticipantVariable[];
-  showFullPrompt: boolean;
-  onToggleFullPrompt: () => void;
-  getFullPrompt: () => string;
-}
 
 // Default prompts
 const DEFAULT_ORGANIZER_PROMPT = `You are an experienced political organizer reaching out to someone who attended a recent Bernie Sanders/AOC "Fight Oligarchy" event. Your goal is to follow up and try to get them more involved in future activism.
@@ -54,97 +44,103 @@ const DEFAULT_SURVEY_QUESTIONS = `1. How likely are you to attend another politi
 2. What issues are you most passionate about?
 3. Would you be interested in volunteering for upcoming campaigns?`;
 
-const Participant: React.FC<ParticipantProps> = ({
-  type,
-  prompt,
-  onPromptChange,
-  isHumanMode,
-  onModeChange,
-  variables,
-  showFullPrompt,
-  onToggleFullPrompt,
-  getFullPrompt,
-}) => {
-  // Dynamic icon based on mode
+// Header component for participant with toggles always visible
+const ParticipantHeader: React.FC<{
+  type: 'organizer' | 'attendee';
+  isHumanMode: boolean;
+  onModeChange: (isHuman: boolean) => void;
+}> = ({ type, isHumanMode, onModeChange }) => {
   const IconComponent = isHumanMode ? User : Bot;
 
   return (
-    <div className="p-4 h-full flex flex-col space-y-4">
-      <div className="flex items-center justify-between mb-4">
-        <Label className="font-medium flex items-center gap-2">
-          <IconComponent size={16} />
-          {type.charAt(0).toUpperCase() + type.slice(1)}
-        </Label>
-        <div className="flex items-center">
-          <Button
-            variant={isHumanMode ? 'default' : 'outline'}
-            size="sm"
-            className="rounded-r-none px-3 h-8 text-xs"
-            onClick={() => onModeChange(true)}
-          >
-            Human
-          </Button>
-          <Button
-            variant={!isHumanMode ? 'default' : 'outline'}
-            size="sm"
-            className="rounded-l-none px-3 h-8 text-xs border-l-0"
-            onClick={() => onModeChange(false)}
-          >
-            AI
-          </Button>
-        </div>
+    <div className="flex items-center justify-between w-full">
+      <div className="flex items-center gap-2">
+        <IconComponent size={16} />
+        <span className="font-medium">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+      </div>
+      <div className="flex items-center">
+        <Button
+          variant={isHumanMode ? 'default' : 'outline'}
+          size="sm"
+          className="rounded-r-none px-3 h-8 text-xs"
+          onClick={() => onModeChange(true)}
+        >
+          Human
+        </Button>
+        <Button
+          variant={!isHumanMode ? 'default' : 'outline'}
+          size="sm"
+          className="rounded-l-none px-3 h-8 text-xs border-l-0"
+          onClick={() => onModeChange(false)}
+        >
+          AI
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// Content component for participant details
+const ParticipantContent: React.FC<{
+  prompt: string;
+  onPromptChange: (value: string) => void;
+  isHumanMode: boolean;
+  type: 'organizer' | 'attendee';
+  variables: ParticipantVariable[];
+  showFullPrompt: boolean;
+  onToggleFullPrompt: () => void;
+  getFullPrompt: () => string;
+}> = ({ prompt, onPromptChange, isHumanMode, type, variables, showFullPrompt, onToggleFullPrompt, getFullPrompt }) => {
+  return (
+    <div className="space-y-4 pt-4">
+      <div>
+        <Label className={`text-sm mb-2 block ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>System Prompt</Label>
+        <Textarea
+          value={prompt}
+          onChange={(e) => onPromptChange(e.target.value)}
+          placeholder={`Enter ${type} system prompt...`}
+          className={`min-h-[200px] text-sm flex-1 ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+          disabled={isHumanMode}
+        />
       </div>
 
-      <div className="flex-1 space-y-4">
-        <div>
-          <Label className={`text-sm mb-2 block ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>System Prompt</Label>
+      {variables.map((variable) => (
+        <div key={variable.name}>
+          <Label className={`text-sm mb-2 block ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>{variable.name}</Label>
           <Textarea
-            value={prompt}
-            onChange={(e) => onPromptChange(e.target.value)}
-            placeholder={`Enter ${type} system prompt...`}
-            className={`min-h-[200px] text-sm flex-1 ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+            value={variable.value}
+            onChange={(e) => variable.onChange(e.target.value)}
+            placeholder={`Enter ${variable.name.toLowerCase()}...`}
+            className={`min-h-[100px] text-sm ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
             disabled={isHumanMode}
           />
         </div>
+      ))}
 
-        {variables.map((variable) => (
-          <div key={variable.name}>
-            <Label className={`text-sm mb-2 block ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>{variable.name}</Label>
-            <Textarea
-              value={variable.value}
-              onChange={(e) => variable.onChange(e.target.value)}
-              placeholder={`Enter ${variable.name.toLowerCase()}...`}
-              className={`min-h-[100px] text-sm ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
-              disabled={isHumanMode}
-            />
-          </div>
-        ))}
+      {variables.length > 0 && (
+        <div className="space-y-2 pt-2">
+          <Button onClick={onToggleFullPrompt} variant="outline" size="sm" className="w-full flex items-center justify-between">
+            <span className="flex items-center">Full Prompt</span>
+            {showFullPrompt ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </Button>
 
-        {variables.length > 0 && (
-          <div className="space-y-2 pt-2">
-            <Button onClick={onToggleFullPrompt} variant="outline" size="sm" className="w-full flex items-center justify-between">
-              <span className="flex items-center">Full Prompt</span>
-              {showFullPrompt ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            </Button>
-
-            <AnimatePresence>
-              {showFullPrompt && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
-                >
-                  <Card className="p-3 bg-gray-50 max-h-[150px] overflow-y-auto">
-                    <pre className="text-xs whitespace-pre-wrap text-gray-700">{getFullPrompt()}</pre>
-                  </Card>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
-      </div>
+          <AnimatePresence>
+            {showFullPrompt && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <Card className="p-3 bg-gray-50 max-h-[150px] overflow-y-auto">
+                  <pre className="text-xs whitespace-pre-wrap text-gray-700">{getFullPrompt()}</pre>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 };
@@ -330,41 +326,66 @@ Respond as the organizer would, keeping responses brief and focused on getting t
       <Navbar pageTitle="Workbench" pageSummary="Develop AI organizer prompts" />
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[700px]">
-            {/* Organizer Column */}
-            <div className="bg-purple-200 rounded-lg p-1">
-              <Participant
-                type="organizer"
-                prompt={config.organizerPrompt}
-                onPromptChange={(value) => setConfig((prev) => ({ ...prev, organizerPrompt: value }))}
-                isHumanMode={config.organizerHumanMode}
-                onModeChange={(isHuman) => setConfig((prev) => ({ ...prev, organizerHumanMode: isHuman }))}
-                variables={[
-                  {
-                    name: 'Survey Questions',
-                    value: config.surveyQuestions,
-                    onChange: (value) => setConfig((prev) => ({ ...prev, surveyQuestions: value })),
-                  },
-                ]}
-                showFullPrompt={showFullPrompt}
-                onToggleFullPrompt={() => setShowFullPrompt(!showFullPrompt)}
-                getFullPrompt={getFullPrompt}
-              />
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[700px]">
+            {/* Participants Column */}
+            <div className="space-y-4">
+              <Accordion type="multiple" defaultValue={['organizer', 'attendee']} className="w-full space-y-4">
+                {/* Organizer Accordion */}
+                <AccordionItem value="organizer" className="border-0">
+                  <div className="bg-purple-200 rounded-lg p-4">
+                    <AccordionTrigger className="hover:no-underline p-0">
+                      <ParticipantHeader
+                        type="organizer"
+                        isHumanMode={config.organizerHumanMode}
+                        onModeChange={(isHuman) => setConfig((prev) => ({ ...prev, organizerHumanMode: isHuman }))}
+                      />
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-0">
+                      <ParticipantContent
+                        prompt={config.organizerPrompt}
+                        onPromptChange={(value) => setConfig((prev) => ({ ...prev, organizerPrompt: value }))}
+                        isHumanMode={config.organizerHumanMode}
+                        type="organizer"
+                        variables={[
+                          {
+                            name: 'Survey Questions',
+                            value: config.surveyQuestions,
+                            onChange: (value) => setConfig((prev) => ({ ...prev, surveyQuestions: value })),
+                          },
+                        ]}
+                        showFullPrompt={showFullPrompt}
+                        onToggleFullPrompt={() => setShowFullPrompt(!showFullPrompt)}
+                        getFullPrompt={getFullPrompt}
+                      />
+                    </AccordionContent>
+                  </div>
+                </AccordionItem>
 
-            {/* Attendee Column */}
-            <div className="bg-orange-200 rounded-lg p-1">
-              <Participant
-                type="attendee"
-                prompt={config.attendeePrompt}
-                onPromptChange={(value) => setConfig((prev) => ({ ...prev, attendeePrompt: value }))}
-                isHumanMode={config.attendeeHumanMode}
-                onModeChange={(isHuman) => setConfig((prev) => ({ ...prev, attendeeHumanMode: isHuman }))}
-                variables={[]}
-                showFullPrompt={showFullPrompt}
-                onToggleFullPrompt={() => setShowFullPrompt(!showFullPrompt)}
-                getFullPrompt={getFullPrompt}
-              />
+                {/* Attendee Accordion */}
+                <AccordionItem value="attendee" className="border-0">
+                  <div className="bg-orange-200 rounded-lg p-4">
+                    <AccordionTrigger className="hover:no-underline p-0">
+                      <ParticipantHeader
+                        type="attendee"
+                        isHumanMode={config.attendeeHumanMode}
+                        onModeChange={(isHuman) => setConfig((prev) => ({ ...prev, attendeeHumanMode: isHuman }))}
+                      />
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-0">
+                      <ParticipantContent
+                        prompt={config.attendeePrompt}
+                        onPromptChange={(value) => setConfig((prev) => ({ ...prev, attendeePrompt: value }))}
+                        isHumanMode={config.attendeeHumanMode}
+                        type="attendee"
+                        variables={[]}
+                        showFullPrompt={showFullPrompt}
+                        onToggleFullPrompt={() => setShowFullPrompt(!showFullPrompt)}
+                        getFullPrompt={getFullPrompt}
+                      />
+                    </AccordionContent>
+                  </div>
+                </AccordionItem>
+              </Accordion>
             </div>
 
             {/* Conversation Column */}
@@ -481,9 +502,9 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         className="flex-1 min-h-[40px] max-h-[120px] resize-none"
                         disabled={isLoading}
                       />
-                      <Button 
-                        onClick={sendMessage} 
-                        disabled={!inputValue.trim() || isLoading} 
+                      <Button
+                        onClick={sendMessage}
+                        disabled={!inputValue.trim() || isLoading}
                         className={`px-4 ${
                           messages.length === 0 || messages[messages.length - 1].isOrganizer
                             ? config.attendeeHumanMode
