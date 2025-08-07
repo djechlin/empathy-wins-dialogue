@@ -321,13 +321,9 @@ Respond as the organizer would, keeping responses brief and focused on getting t
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      <Navbar pageTitle="Workbench" pageSummary="Develop AI organizer prompts" />
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Workbench</h1>
-            <p className="text-gray-600">Anthropic-style dev console for dialogue testing</p>
-          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[700px]">
             {/* Organizer Column */}

@@ -2,7 +2,12 @@ import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/ui/button';
 
-const Navbar = () => {
+interface NavbarProps {
+  pageTitle?: string;
+  pageSummary?: string;
+}
+
+const Navbar = ({ pageTitle, pageSummary }: NavbarProps) => {
   const location = useLocation();
 
   const isInChallenge = location.pathname.startsWith('/challenge');
@@ -27,6 +32,13 @@ const Navbar = () => {
           <Link to="/" className="font-sans text-[18px] font-semibold text-gray-800 tracking-tight">
             type2dialogue
           </Link>
+
+          {pageTitle && (
+            <div className="flex flex-col">
+              <h1 className="text-lg font-semibold text-gray-900">{pageTitle}</h1>
+              {pageSummary && <p className="text-sm text-gray-600">{pageSummary}</p>}
+            </div>
+          )}
 
           {isInChallenge ? (
             <div className="flex items-center space-x-6">
