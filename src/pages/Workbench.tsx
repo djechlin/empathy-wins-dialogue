@@ -44,12 +44,15 @@ const DEFAULT_VARIABLES = {
 2. What issues are you most passionate about?
 3. Would you be interested in volunteering for upcoming campaigns?`,
   'Event Context': 'Bernie Sanders/AOC "Fight Oligarchy" rally',
-  'Target Outcome': 'Get attendee to volunteer for next campaign or attend another event'
+  'Target Outcome': 'Get attendee to volunteer for next campaign or attend another event',
 };
 
 // Utility function to convert variable name to XML tag
 const nameToXmlTag = (name: string): string => {
-  return name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, '_')
+    .replace(/[^a-z0-9_]/g, '');
 };
 
 // Generate XML tags for variables
@@ -107,7 +110,18 @@ const ParticipantContent: React.FC<{
   getFullPrompt: () => string;
   onAddVariable?: (name: string) => void;
   onRemoveVariable?: (name: string) => void;
-}> = ({ prompt, onPromptChange, isHumanMode, type, variables, showFullPrompt, onToggleFullPrompt, getFullPrompt, onAddVariable, onRemoveVariable }) => {
+}> = ({
+  prompt,
+  onPromptChange,
+  isHumanMode,
+  type,
+  variables,
+  showFullPrompt,
+  onToggleFullPrompt,
+  getFullPrompt,
+  onAddVariable,
+  onRemoveVariable,
+}) => {
   const [newVariableName, setNewVariableName] = useState('');
   return (
     <div className="space-y-4 pt-4">
@@ -159,7 +173,7 @@ const ParticipantContent: React.FC<{
             </div>
           )}
         </div>
-        
+
         {variables.map((variable) => (
           <div key={variable.name} className="mb-3">
             <div className="flex items-center justify-between mb-1">
@@ -173,7 +187,7 @@ const ParticipantContent: React.FC<{
                   variant="outline"
                   onClick={() => onRemoveVariable(variable.name)}
                   disabled={isHumanMode}
-                  className="text-xs px-2 py-1 h-auto text-red-600 hover:text-red-700"
+                  className="text-xs px-2 py-1 h-auto"
                 >
                   Remove
                 </Button>
@@ -245,14 +259,14 @@ const Workbench = () => {
 
   const addVariable = (name: string) => {
     if (!name.trim() || config.variables[name]) return;
-    setConfig(prev => ({
+    setConfig((prev) => ({
       ...prev,
-      variables: { ...prev.variables, [name]: '' }
+      variables: { ...prev.variables, [name]: '' },
     }));
   };
 
   const removeVariable = (name: string) => {
-    setConfig(prev => {
+    setConfig((prev) => {
       const newVariables = { ...prev.variables };
       delete newVariables[name];
       return { ...prev, variables: newVariables };
@@ -439,10 +453,10 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         variables={Object.entries(config.variables).map(([name, value]) => ({
                           name,
                           value,
-                          onChange: (newValue) => 
+                          onChange: (newValue) =>
                             setConfig((prev) => ({
                               ...prev,
-                              variables: { ...prev.variables, [name]: newValue }
+                              variables: { ...prev.variables, [name]: newValue },
                             })),
                         }))}
                         showFullPrompt={showFullPrompt}
