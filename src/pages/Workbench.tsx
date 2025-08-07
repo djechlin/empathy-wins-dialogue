@@ -177,10 +177,10 @@ const Workbench = () => {
     if (!inputValue.trim()) return;
 
     const messageText = inputValue;
-    
+
     // Determine who is sending based on whose turn it is
     const isOrganizerTurn = messages.length === 0 || !messages[messages.length - 1].isOrganizer;
-    
+
     const userMessage: Message = {
       id: Date.now().toString(),
       text: messageText,
@@ -472,16 +472,28 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         placeholder={
                           messages.length === 0 || messages[messages.length - 1].isOrganizer
                             ? config.attendeeHumanMode
-                              ? "Type your message as the attendee..."
-                              : "Type your message as the organizer..."
+                              ? 'Type your message as the attendee...'
+                              : 'Type your message as the organizer...'
                             : config.organizerHumanMode
-                              ? "Type your message as the organizer..."
-                              : "Type your message as the attendee..."
+                              ? 'Type your message as the organizer...'
+                              : 'Type your message as the attendee...'
                         }
                         className="flex-1 min-h-[40px] max-h-[120px] resize-none"
                         disabled={isLoading}
                       />
-                      <Button onClick={sendMessage} disabled={!inputValue.trim() || isLoading} className="px-4">
+                      <Button 
+                        onClick={sendMessage} 
+                        disabled={!inputValue.trim() || isLoading} 
+                        className={`px-4 ${
+                          messages.length === 0 || messages[messages.length - 1].isOrganizer
+                            ? config.attendeeHumanMode
+                              ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                              : 'bg-purple-600 hover:bg-purple-700 text-white'
+                            : config.organizerHumanMode
+                              ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                              : 'bg-orange-600 hover:bg-orange-700 text-white'
+                        }`}
+                      >
                         <Send size={16} />
                       </Button>
                     </div>
