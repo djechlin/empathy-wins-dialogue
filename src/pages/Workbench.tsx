@@ -367,18 +367,18 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                 <div className="border-b px-4 py-3 bg-gray-50">
                   <div className="flex items-center justify-between">
                     <h2 className="font-semibold">Conversation</h2>
-                    <div className="flex items-center gap-4">
-                      {!config.organizerHumanMode && !config.attendeeHumanMode && (
-                        <Button onClick={startAutoConversation} size="sm" className="px-4">
-                          <Play size={16} className="mr-2" />
-                          Start Auto Conversation
-                        </Button>
-                      )}
-                      <div className="text-sm text-gray-500">
-                        Organizer: {config.organizerHumanMode ? 'Human' : 'AI'} | Attendee: {config.attendeeHumanMode ? 'Human' : 'AI'}
-                      </div>
+                    <div className="text-sm text-gray-500">
+                      Organizer: {config.organizerHumanMode ? 'Human' : 'AI'} | Attendee: {config.attendeeHumanMode ? 'Human' : 'AI'}
                     </div>
                   </div>
+                  {!config.organizerHumanMode && !config.attendeeHumanMode && (
+                    <div className="mt-2">
+                      <Button onClick={startAutoConversation} size="sm" className="px-4">
+                        <Play size={16} className="mr-2" />
+                        Start
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
