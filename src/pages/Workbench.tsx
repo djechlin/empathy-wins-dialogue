@@ -157,7 +157,7 @@ const ParticipantContent: React.FC<{
 
       <div>
         <div className="flex items-center justify-between mb-2">
-          <Label className={`text-sm ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>Variables</Label>
+          <Label className={`text-sm ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}></Label>
           {onAddVariable && (
             <div className="flex items-center gap-2">
               <input
