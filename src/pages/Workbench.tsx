@@ -386,7 +386,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                     <div key={message.id} className={`flex ${message.isOrganizer ? 'justify-end' : 'justify-start'}`}>
                       <div
                         className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                          message.isOrganizer ? 'bg-purple-600 text-white' : 'bg-orange-600 text-white'
+                          message.isOrganizer ? 'bg-purple-200 text-gray-900' : 'bg-orange-200 text-gray-900'
                         }`}
                       >
                         <div className="flex items-center gap-2 mb-1">
@@ -394,7 +394,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                           <span className="text-xs opacity-75">{message.isOrganizer ? 'Organizer' : 'Attendee'}</span>
                         </div>
                         <p className="text-sm">{message.text}</p>
-                        <p className={`text-xs mt-1 opacity-75`}>
+                        <p className="text-xs mt-1 text-gray-600">
                           {message.timestamp.toLocaleTimeString([], {
                             hour: '2-digit',
                             minute: '2-digit',
