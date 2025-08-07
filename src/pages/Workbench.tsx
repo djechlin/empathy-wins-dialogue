@@ -3,7 +3,7 @@ import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
-import { Play, Send, User, Bot } from 'lucide-react';
+import { Play, Send, User, Bot, GripVertical } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordion';
 import Navbar from '@/components/layout/Navbar';
@@ -125,8 +125,10 @@ const ParticipantContent: React.FC<{
   variables: ParticipantVariable[];
   onAddVariable?: (name: string) => void;
   onRemoveVariable?: (name: string) => void;
-}> = ({ prompt, onPromptChange, isHumanMode, type, variables, onAddVariable, onRemoveVariable }) => {
+  onReorderVariables?: (fromIndex: number, toIndex: number) => void;
+}> = ({ prompt, onPromptChange, isHumanMode, type, variables, onAddVariable, onRemoveVariable, onReorderVariables }) => {
   const [newVariableName, setNewVariableName] = useState('');
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   return (
     <div className="space-y-4 pt-4">
       <div>
@@ -141,12 +143,41 @@ const ParticipantContent: React.FC<{
       </div>
 
       <div>
-        {variables.map((variable) => (
-          <div key={variable.name} className="mb-3">
+        {variables.map((variable, index) => (
+          <div 
+            key={variable.name} 
+            className="mb-3"
+            draggable={!!onReorderVariables && !isHumanMode}
+            onDragStart={(e) => {
+              if (onReorderVariables && !isHumanMode) {
+                setDraggedIndex(index);
+                e.dataTransfer.effectAllowed = 'move';
+              }
+            }}
+            onDragOver={(e) => {
+              if (draggedIndex !== null && draggedIndex !== index) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+              }
+            }}
+            onDrop={(e) => {
+              if (onReorderVariables && draggedIndex !== null && draggedIndex !== index) {
+                e.preventDefault();
+                onReorderVariables(draggedIndex, index);
+                setDraggedIndex(null);
+              }
+            }}
+            onDragEnd={() => setDraggedIndex(null)}
+          >
             <div className="flex items-center justify-between mb-1">
-              <Label className={`text-sm ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                {variable.name} <code className="text-xs text-gray-500">{'<' + nameToXmlTag(variable.name) + '>'}</code>
-              </Label>
+              <div className="flex items-center gap-2">
+                {onReorderVariables && !isHumanMode && (
+                  <GripVertical size={16} className="text-gray-400 cursor-grab hover:text-gray-600" />
+                )}
+                <Label className={`text-sm ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {variable.name} <code className="text-xs text-gray-500">{'<' + nameToXmlTag(variable.name) + '>'}</code>
+                </Label>
+              </div>
               {onRemoveVariable && (
                 <Button
                   type="button"
@@ -253,6 +284,16 @@ const Workbench = () => {
     setConfig((prev) => {
       const newVariables = { ...prev.variables };
       delete newVariables[name];
+      return { ...prev, variables: newVariables };
+    });
+  };
+
+  const reorderVariables = (fromIndex: number, toIndex: number) => {
+    setConfig((prev) => {
+      const entries = Object.entries(prev.variables);
+      const [removed] = entries.splice(fromIndex, 1);
+      entries.splice(toIndex, 0, removed);
+      const newVariables = Object.fromEntries(entries);
       return { ...prev, variables: newVariables };
     });
   };
@@ -446,6 +487,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         }))}
                         onAddVariable={addVariable}
                         onRemoveVariable={removeVariable}
+                        onReorderVariables={reorderVariables}
                       />
                     </AccordionContent>
                   </div>
@@ -471,6 +513,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         variables={[]}
                         onAddVariable={addVariable}
                         onRemoveVariable={removeVariable}
+                        onReorderVariables={reorderVariables}
                       />
                     </AccordionContent>
                   </div>
