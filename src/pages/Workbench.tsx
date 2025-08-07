@@ -177,10 +177,14 @@ const Workbench = () => {
     if (!inputValue.trim()) return;
 
     const messageText = inputValue;
+    
+    // Determine who is sending based on whose turn it is
+    const isOrganizerTurn = messages.length === 0 || !messages[messages.length - 1].isOrganizer;
+    
     const userMessage: Message = {
       id: Date.now().toString(),
       text: messageText,
-      isOrganizer: true,
+      isOrganizer: isOrganizerTurn,
       timestamp: new Date(),
     };
 
@@ -188,9 +192,11 @@ const Workbench = () => {
     setInputValue('');
     setIsLoading(true);
 
-    // If attendee is in auto mode, get AI response
-    if (!config.attendeeHumanMode) {
+    // Get AI response from the other participant if they're in auto mode
+    if (isOrganizerTurn && !config.attendeeHumanMode) {
       await handleAIResponse(messageText);
+    } else if (!isOrganizerTurn && !config.organizerHumanMode) {
+      await handleOrganizerAIResponse(messageText);
     } else {
       setIsLoading(false);
     }
@@ -455,7 +461,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                   <div ref={messagesEndRef} />
                 </div>
 
-                {config.organizerHumanMode && (
+                {(config.organizerHumanMode || config.attendeeHumanMode) && (
                   <div className="border-t p-4">
                     <div className="flex space-x-2">
                       <Textarea
@@ -463,7 +469,15 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        placeholder="Type your message as the organizer..."
+                        placeholder={
+                          messages.length === 0 || messages[messages.length - 1].isOrganizer
+                            ? config.attendeeHumanMode
+                              ? "Type your message as the attendee..."
+                              : "Type your message as the organizer..."
+                            : config.organizerHumanMode
+                              ? "Type your message as the organizer..."
+                              : "Type your message as the attendee..."
+                        }
                         className="flex-1 min-h-[40px] max-h-[120px] resize-none"
                         disabled={isLoading}
                       />
