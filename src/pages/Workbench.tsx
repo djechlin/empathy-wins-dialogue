@@ -67,97 +67,84 @@ const Participant: React.FC<ParticipantProps> = ({
 }) => {
   // Dynamic icon based on mode
   const IconComponent = isHumanMode ? User : Bot;
-  
+
   return (
-    <div className="space-y-4">
-      <Card className="p-4 h-full flex flex-col">
-        <div className="flex items-center justify-between mb-4">
-          <Label className="font-medium flex items-center gap-2">
-            <IconComponent size={16} />
-            {type.charAt(0).toUpperCase() + type.slice(1)}
-          </Label>
-          <div className="flex items-center">
-            <Button
-              variant={isHumanMode ? 'default' : 'outline'}
-              size="sm"
-              className="rounded-r-none px-3 h-8 text-xs"
-              onClick={() => onModeChange(true)}
-            >
-              Human
-            </Button>
-            <Button
-              variant={!isHumanMode ? 'default' : 'outline'}
-              size="sm"
-              className="rounded-l-none px-3 h-8 text-xs border-l-0"
-              onClick={() => onModeChange(false)}
-            >
-              AI
-            </Button>
-          </div>
+    <div className="p-4 h-full flex flex-col space-y-4">
+      <div className="flex items-center justify-between mb-4">
+        <Label className="font-medium flex items-center gap-2">
+          <IconComponent size={16} />
+          {type.charAt(0).toUpperCase() + type.slice(1)}
+        </Label>
+        <div className="flex items-center">
+          <Button
+            variant={isHumanMode ? 'default' : 'outline'}
+            size="sm"
+            className="rounded-r-none px-3 h-8 text-xs"
+            onClick={() => onModeChange(true)}
+          >
+            Human
+          </Button>
+          <Button
+            variant={!isHumanMode ? 'default' : 'outline'}
+            size="sm"
+            className="rounded-l-none px-3 h-8 text-xs border-l-0"
+            onClick={() => onModeChange(false)}
+          >
+            AI
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex-1 space-y-4">
+        <div>
+          <Label className={`text-sm mb-2 block ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>System Prompt</Label>
+          <Textarea
+            value={prompt}
+            onChange={(e) => onPromptChange(e.target.value)}
+            placeholder={`Enter ${type} system prompt...`}
+            className={`min-h-[200px] text-sm flex-1 ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+            disabled={isHumanMode}
+          />
         </div>
 
-        <div className="flex-1 space-y-4">
-          <div>
-            <Label className={`text-sm mb-2 block ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              System Prompt
-            </Label>
+        {variables.map((variable) => (
+          <div key={variable.name}>
+            <Label className={`text-sm mb-2 block ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>{variable.name}</Label>
             <Textarea
-              value={prompt}
-              onChange={(e) => onPromptChange(e.target.value)}
-              placeholder={`Enter ${type} system prompt...`}
-              className={`min-h-[200px] text-sm flex-1 ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+              value={variable.value}
+              onChange={(e) => variable.onChange(e.target.value)}
+              placeholder={`Enter ${variable.name.toLowerCase()}...`}
+              className={`min-h-[100px] text-sm ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
               disabled={isHumanMode}
             />
           </div>
+        ))}
 
-          {variables.map((variable) => (
-            <div key={variable.name}>
-              <Label className={`text-sm mb-2 block ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                {variable.name}
-              </Label>
-              <Textarea
-                value={variable.value}
-                onChange={(e) => variable.onChange(e.target.value)}
-                placeholder={`Enter ${variable.name.toLowerCase()}...`}
-                className={`min-h-[100px] text-sm ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
-                disabled={isHumanMode}
-              />
-            </div>
-          ))}
+        {variables.length > 0 && (
+          <div className="space-y-2 pt-2">
+            <Button onClick={onToggleFullPrompt} variant="outline" size="sm" className="w-full flex items-center justify-between">
+              <span className="flex items-center">Full Prompt</span>
+              {showFullPrompt ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </Button>
 
-          {variables.length > 0 && (
-            <div className="space-y-2 pt-2">
-              <Button
-                onClick={onToggleFullPrompt}
-                variant="outline"
-                size="sm"
-                className="w-full flex items-center justify-between"
-              >
-                <span className="flex items-center">
-                  Full Prompt
-                </span>
-                {showFullPrompt ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-              </Button>
-
-              <AnimatePresence>
-                {showFullPrompt && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <Card className="p-3 bg-gray-50 max-h-[150px] overflow-y-auto">
-                      <pre className="text-xs whitespace-pre-wrap text-gray-700">{getFullPrompt()}</pre>
-                    </Card>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
-        </div>
-      </Card>
+            <AnimatePresence>
+              {showFullPrompt && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <Card className="p-3 bg-gray-50 max-h-[150px] overflow-y-auto">
+                    <pre className="text-xs whitespace-pre-wrap text-gray-700">{getFullPrompt()}</pre>
+                  </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -415,12 +402,13 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                   ))}
 
                   {/* Show waiting indicator for next expected response */}
-                  {messages.length > 0 && !isLoading && (
+                  {messages.length > 0 &&
+                    !isLoading &&
                     (() => {
                       const lastMessage = messages[messages.length - 1];
                       const waitingForOrganizer = !lastMessage.isOrganizer;
                       const waitingForAttendee = lastMessage.isOrganizer;
-                      
+
                       // Show waiting indicator if someone needs to respond
                       if ((waitingForOrganizer && config.organizerHumanMode) || (waitingForAttendee && config.attendeeHumanMode)) {
                         return (
@@ -431,7 +419,11 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                               }`}
                             >
                               <div className="flex items-center gap-2 mb-1">
-                                {waitingForOrganizer ? <User size={12} className="text-purple-400" /> : <Bot size={12} className="text-orange-400" />}
+                                {waitingForOrganizer ? (
+                                  <User size={12} className="text-purple-400" />
+                                ) : (
+                                  <Bot size={12} className="text-orange-400" />
+                                )}
                                 <span className="text-xs text-gray-500">{waitingForOrganizer ? 'Organizer' : 'Attendee'}</span>
                               </div>
                               <p className="text-sm italic text-gray-500">Waiting for human...</p>
@@ -440,8 +432,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         );
                       }
                       return null;
-                    })()
-                  )}
+                    })()}
 
                   {isLoading && (
                     <div className="flex justify-start">
