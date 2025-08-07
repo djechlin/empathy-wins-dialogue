@@ -70,7 +70,7 @@ const generateParticipantName = (type: string): string => {
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
   const seconds = String(now.getSeconds()).padStart(2, '0');
-  return `${type}-${month}${date}${hours}${minutes}${seconds}`;
+  return `${type}-${month}/${date}-${hours}:${minutes}:${seconds}`;
 };
 
 // Header component for participant with toggles always visible
@@ -269,7 +269,7 @@ const Workbench = () => {
   // Generate participant names once on component mount
   const [participantNames] = useState(() => ({
     organizer: generateParticipantName('organizer'),
-    attendee: generateParticipantName('attendee')
+    attendee: generateParticipantName('attendee'),
   }));
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
