@@ -86,10 +86,8 @@ const ParticipantHeader: React.FC<{
     <div className="flex items-center justify-between w-full">
       <div className="flex items-center gap-2">
         <IconComponent size={16} />
-        <div className="flex flex-col">
-          <span className="font-medium">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
-          <span className="text-xs text-gray-500 font-mono">{participantName}</span>
-        </div>
+        <span className="font-medium">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+        <span className="text-xs text-gray-500 font-mono">{participantName}</span>
       </div>
       <div className="flex items-center">
         <Button
