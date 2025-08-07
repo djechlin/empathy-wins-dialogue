@@ -3,8 +3,9 @@ import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
-import { Eye, Play, Send, User, Bot } from 'lucide-react';
+import { ChevronDown, ChevronUp, Play, Send, User, Bot } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/layout/Navbar';
 
 interface Message {
@@ -22,6 +23,24 @@ interface PromptConfig {
   attendeeHumanMode: boolean;
 }
 
+interface ParticipantVariable {
+  name: string;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+interface ParticipantProps {
+  type: 'organizer' | 'attendee';
+  prompt: string;
+  onPromptChange: (value: string) => void;
+  isHumanMode: boolean;
+  onModeChange: (isHuman: boolean) => void;
+  variables: ParticipantVariable[];
+  showFullPrompt: boolean;
+  onToggleFullPrompt: () => void;
+  getFullPrompt: () => string;
+}
+
 // Default prompts
 const DEFAULT_ORGANIZER_PROMPT = `You are an experienced political organizer reaching out to someone who attended a recent Bernie Sanders/AOC "Fight Oligarchy" event. Your goal is to follow up and try to get them more involved in future activism.
 
@@ -34,6 +53,114 @@ You get that Trump is a problem but think protests are low impact. You're kind o
 const DEFAULT_SURVEY_QUESTIONS = `1. How likely are you to attend another political event in the next month?
 2. What issues are you most passionate about?
 3. Would you be interested in volunteering for upcoming campaigns?`;
+
+const Participant: React.FC<ParticipantProps> = ({
+  type,
+  prompt,
+  onPromptChange,
+  isHumanMode,
+  onModeChange,
+  variables,
+  showFullPrompt,
+  onToggleFullPrompt,
+  getFullPrompt,
+}) => {
+  // Dynamic icon based on mode
+  const IconComponent = isHumanMode ? User : Bot;
+  
+  return (
+    <div className="space-y-4">
+      <Card className="p-4 h-full flex flex-col">
+        <div className="flex items-center justify-between mb-4">
+          <Label className="font-medium flex items-center gap-2">
+            <IconComponent size={16} />
+            {type.charAt(0).toUpperCase() + type.slice(1)}
+          </Label>
+          <div className="flex items-center">
+            <Button
+              variant={isHumanMode ? 'default' : 'outline'}
+              size="sm"
+              className="rounded-r-none px-3 h-8 text-xs"
+              onClick={() => onModeChange(true)}
+            >
+              Human
+            </Button>
+            <Button
+              variant={!isHumanMode ? 'default' : 'outline'}
+              size="sm"
+              className="rounded-l-none px-3 h-8 text-xs border-l-0"
+              onClick={() => onModeChange(false)}
+            >
+              AI
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex-1 space-y-4">
+          <div>
+            <Label className={`text-sm mb-2 block ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>
+              System Prompt
+            </Label>
+            <Textarea
+              value={prompt}
+              onChange={(e) => onPromptChange(e.target.value)}
+              placeholder={`Enter ${type} system prompt...`}
+              className={`min-h-[200px] text-sm flex-1 ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+              disabled={isHumanMode}
+            />
+          </div>
+
+          {variables.map((variable) => (
+            <div key={variable.name}>
+              <Label className={`text-sm mb-2 block ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                {variable.name}
+              </Label>
+              <Textarea
+                value={variable.value}
+                onChange={(e) => variable.onChange(e.target.value)}
+                placeholder={`Enter ${variable.name.toLowerCase()}...`}
+                className={`min-h-[100px] text-sm ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+                disabled={isHumanMode}
+              />
+            </div>
+          ))}
+
+          {variables.length > 0 && (
+            <div className="space-y-2 pt-2">
+              <Button
+                onClick={onToggleFullPrompt}
+                variant="outline"
+                size="sm"
+                className="w-full flex items-center justify-between"
+              >
+                <span className="flex items-center">
+                  Full Prompt
+                </span>
+                {showFullPrompt ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </Button>
+
+              <AnimatePresence>
+                {showFullPrompt && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <Card className="p-3 bg-gray-50 max-h-[150px] overflow-y-auto">
+                      <pre className="text-xs whitespace-pre-wrap text-gray-700">{getFullPrompt()}</pre>
+                    </Card>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
+      </Card>
+    </div>
+  );
+};
 
 const Workbench = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -217,118 +344,39 @@ Respond as the organizer would, keeping responses brief and focused on getting t
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[700px]">
             {/* Organizer Column */}
-            <div className="space-y-4">
-              <Card className="p-4 h-full flex flex-col">
-                <div className="flex items-center justify-between mb-4">
-                  <Label className="font-medium flex items-center gap-2">
-                    <User size={16} />
-                    Organizer
-                  </Label>
-                  <div className="flex items-center">
-                    <Button
-                      variant={config.organizerHumanMode ? "default" : "outline"}
-                      size="sm"
-                      className="rounded-r-none px-3 h-8 text-xs"
-                      onClick={() => setConfig((prev) => ({ ...prev, organizerHumanMode: true }))}
-                    >
-                      Human
-                    </Button>
-                    <Button
-                      variant={!config.organizerHumanMode ? "default" : "outline"}
-                      size="sm"
-                      className="rounded-l-none px-3 h-8 text-xs border-l-0"
-                      onClick={() => setConfig((prev) => ({ ...prev, organizerHumanMode: false }))}
-                    >
-                      AI
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex-1 space-y-4">
-                  <div>
-                    <Label className={`text-sm mb-2 block ${config.organizerHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>System Prompt</Label>
-                    <Textarea
-                      value={config.organizerPrompt}
-                      onChange={(e) => setConfig((prev) => ({ ...prev, organizerPrompt: e.target.value }))}
-                      placeholder="Enter organizer system prompt..."
-                      className={`min-h-[200px] text-sm flex-1 ${config.organizerHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
-                      disabled={config.organizerHumanMode}
-                    />
-                  </div>
-
-                  <div>
-                    <Label className={`text-sm mb-2 block ${config.organizerHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>Survey Questions</Label>
-                    <Textarea
-                      value={config.surveyQuestions}
-                      onChange={(e) => setConfig((prev) => ({ ...prev, surveyQuestions: e.target.value }))}
-                      placeholder="Enter survey questions..."
-                      className={`min-h-[100px] text-sm ${config.organizerHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
-                      disabled={config.organizerHumanMode}
-                    />
-                  </div>
-
-                  <div className="space-y-2 pt-2">
-                    <Button onClick={() => setShowFullPrompt(!showFullPrompt)} variant="outline" size="sm" className="w-full">
-                      <Eye size={16} className="mr-2" />
-                      {showFullPrompt ? 'Hide' : 'Show'} Full Prompt
-                    </Button>
-
-                    {!config.organizerHumanMode && !config.attendeeHumanMode && (
-                      <Button onClick={startAutoConversation} size="sm" className="w-full">
-                        <Play size={16} className="mr-2" />
-                        Start Auto Conversation
-                      </Button>
-                    )}
-                  </div>
-
-                  {showFullPrompt && (
-                    <Card className="p-3 bg-gray-50 max-h-[150px] overflow-y-auto">
-                      <pre className="text-xs whitespace-pre-wrap text-gray-700">{getFullPrompt()}</pre>
-                    </Card>
-                  )}
-                </div>
-              </Card>
+            <div className="bg-purple-200 rounded-lg p-1">
+              <Participant
+                type="organizer"
+                prompt={config.organizerPrompt}
+                onPromptChange={(value) => setConfig((prev) => ({ ...prev, organizerPrompt: value }))}
+                isHumanMode={config.organizerHumanMode}
+                onModeChange={(isHuman) => setConfig((prev) => ({ ...prev, organizerHumanMode: isHuman }))}
+                variables={[
+                  {
+                    name: 'Survey Questions',
+                    value: config.surveyQuestions,
+                    onChange: (value) => setConfig((prev) => ({ ...prev, surveyQuestions: value })),
+                  },
+                ]}
+                showFullPrompt={showFullPrompt}
+                onToggleFullPrompt={() => setShowFullPrompt(!showFullPrompt)}
+                getFullPrompt={getFullPrompt}
+              />
             </div>
 
             {/* Attendee Column */}
-            <div className="space-y-4">
-              <Card className="p-4 h-full flex flex-col">
-                <div className="flex items-center justify-between mb-4">
-                  <Label className="font-medium flex items-center gap-2">
-                    <Bot size={16} />
-                    Attendee
-                  </Label>
-                  <div className="flex items-center">
-                    <Button
-                      variant={config.attendeeHumanMode ? "default" : "outline"}
-                      size="sm"
-                      className="rounded-r-none px-3 h-8 text-xs"
-                      onClick={() => setConfig((prev) => ({ ...prev, attendeeHumanMode: true }))}
-                    >
-                      Human
-                    </Button>
-                    <Button
-                      variant={!config.attendeeHumanMode ? "default" : "outline"}
-                      size="sm"
-                      className="rounded-l-none px-3 h-8 text-xs border-l-0"
-                      onClick={() => setConfig((prev) => ({ ...prev, attendeeHumanMode: false }))}
-                    >
-                      AI
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex-1">
-                  <Label className={`text-sm mb-2 block ${config.attendeeHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>System Prompt</Label>
-                  <Textarea
-                    value={config.attendeePrompt}
-                    onChange={(e) => setConfig((prev) => ({ ...prev, attendeePrompt: e.target.value }))}
-                    placeholder="Enter attendee system prompt..."
-                    className={`h-full text-sm resize-none ${config.attendeeHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
-                    disabled={config.attendeeHumanMode}
-                  />
-                </div>
-              </Card>
+            <div className="bg-orange-200 rounded-lg p-1">
+              <Participant
+                type="attendee"
+                prompt={config.attendeePrompt}
+                onPromptChange={(value) => setConfig((prev) => ({ ...prev, attendeePrompt: value }))}
+                isHumanMode={config.attendeeHumanMode}
+                onModeChange={(isHuman) => setConfig((prev) => ({ ...prev, attendeeHumanMode: isHuman }))}
+                variables={[]}
+                showFullPrompt={showFullPrompt}
+                onToggleFullPrompt={() => setShowFullPrompt(!showFullPrompt)}
+                getFullPrompt={getFullPrompt}
+              />
             </div>
 
             {/* Conversation Column */}
@@ -348,7 +396,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                     <div key={message.id} className={`flex ${message.isOrganizer ? 'justify-end' : 'justify-start'}`}>
                       <div
                         className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                          message.isOrganizer ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-900'
+                          message.isOrganizer ? 'bg-purple-600 text-white' : 'bg-orange-600 text-white'
                         }`}
                       >
                         <div className="flex items-center gap-2 mb-1">
@@ -366,17 +414,46 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                     </div>
                   ))}
 
+                  {/* Show waiting indicator for next expected response */}
+                  {messages.length > 0 && !isLoading && (
+                    (() => {
+                      const lastMessage = messages[messages.length - 1];
+                      const waitingForOrganizer = !lastMessage.isOrganizer;
+                      const waitingForAttendee = lastMessage.isOrganizer;
+                      
+                      // Show waiting indicator if someone needs to respond
+                      if ((waitingForOrganizer && config.organizerHumanMode) || (waitingForAttendee && config.attendeeHumanMode)) {
+                        return (
+                          <div className={`flex ${waitingForOrganizer ? 'justify-end' : 'justify-start'}`}>
+                            <div
+                              className={`max-w-xs px-4 py-2 rounded-lg border-2 border-dashed ${
+                                waitingForOrganizer ? 'border-purple-300 bg-purple-50' : 'border-orange-300 bg-orange-50'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 mb-1">
+                                {waitingForOrganizer ? <User size={12} className="text-purple-400" /> : <Bot size={12} className="text-orange-400" />}
+                                <span className="text-xs text-gray-500">{waitingForOrganizer ? 'Organizer' : 'Attendee'}</span>
+                              </div>
+                              <p className="text-sm italic text-gray-500">Waiting for human...</p>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()
+                  )}
+
                   {isLoading && (
                     <div className="flex justify-start">
-                      <div className="max-w-xs px-4 py-2 rounded-lg bg-gray-200">
+                      <div className="max-w-xs px-4 py-2 rounded-lg bg-orange-100 border border-orange-200">
                         <div className="flex items-center gap-2 mb-1">
-                          <Bot size={12} />
+                          <Bot size={12} className="text-orange-400" />
                           <span className="text-xs text-gray-600">Attendee</span>
                         </div>
                         <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                         </div>
                       </div>
                     </div>
@@ -403,6 +480,16 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                   </div>
                 )}
               </Card>
+
+              {/* Auto Conversation Button */}
+              {!config.organizerHumanMode && !config.attendeeHumanMode && (
+                <div className="flex justify-center">
+                  <Button onClick={startAutoConversation} size="lg" className="px-8">
+                    <Play size={20} className="mr-2" />
+                    Start Auto Conversation
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
