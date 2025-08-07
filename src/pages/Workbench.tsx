@@ -81,7 +81,10 @@ const ParticipantHeader: React.FC<{
           variant={isHumanMode ? 'default' : 'outline'}
           size="sm"
           className="rounded-r-none px-3 h-8 text-xs"
-          onClick={() => onModeChange(true)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onModeChange(true);
+          }}
         >
           Human
         </Button>
@@ -89,7 +92,10 @@ const ParticipantHeader: React.FC<{
           variant={!isHumanMode ? 'default' : 'outline'}
           size="sm"
           className="rounded-l-none px-3 h-8 text-xs border-l-0"
-          onClick={() => onModeChange(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onModeChange(false);
+          }}
         >
           AI
         </Button>
