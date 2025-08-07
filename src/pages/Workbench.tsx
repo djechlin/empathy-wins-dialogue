@@ -19,7 +19,7 @@ interface Message {
 interface PromptConfig {
   organizerPrompt: string;
   attendeePrompt: string;
-  surveyQuestions: string;
+  variables: Record<string, string>;
   organizerHumanMode: boolean;
   attendeeHumanMode: boolean;
 }
@@ -39,9 +39,25 @@ const DEFAULT_ATTENDEE_PROMPT = `You are someone who attended a Bernie Sanders/A
 
 You get that Trump is a problem but think protests are low impact. You're kind of bored and don't have much to do. You should be somewhat skeptical at first but can be convinced to get more involved with the right approach.`;
 
-const DEFAULT_SURVEY_QUESTIONS = `1. How likely are you to attend another political event in the next month?
+const DEFAULT_VARIABLES = {
+  'Survey Questions': `1. How likely are you to attend another political event in the next month?
 2. What issues are you most passionate about?
-3. Would you be interested in volunteering for upcoming campaigns?`;
+3. Would you be interested in volunteering for upcoming campaigns?`,
+  'Event Context': 'Bernie Sanders/AOC "Fight Oligarchy" rally',
+  'Target Outcome': 'Get attendee to volunteer for next campaign or attend another event'
+};
+
+// Utility function to convert variable name to XML tag
+const nameToXmlTag = (name: string): string => {
+  return name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+};
+
+// Generate XML tags for variables
+const generateVariableTags = (variables: Record<string, string>): string => {
+  return Object.entries(variables)
+    .map(([name, value]) => `<${nameToXmlTag(name)}>${value}</${nameToXmlTag(name)}>`)
+    .join('\n\n');
+};
 
 // Header component for participant with toggles always visible
 const ParticipantHeader: React.FC<{
@@ -89,7 +105,10 @@ const ParticipantContent: React.FC<{
   showFullPrompt: boolean;
   onToggleFullPrompt: () => void;
   getFullPrompt: () => string;
-}> = ({ prompt, onPromptChange, isHumanMode, type, variables, showFullPrompt, onToggleFullPrompt, getFullPrompt }) => {
+  onAddVariable?: (name: string) => void;
+  onRemoveVariable?: (name: string) => void;
+}> = ({ prompt, onPromptChange, isHumanMode, type, variables, showFullPrompt, onToggleFullPrompt, getFullPrompt, onAddVariable, onRemoveVariable }) => {
+  const [newVariableName, setNewVariableName] = useState('');
   return (
     <div className="space-y-4 pt-4">
       <div>
@@ -103,18 +122,73 @@ const ParticipantContent: React.FC<{
         />
       </div>
 
-      {variables.map((variable) => (
-        <div key={variable.name}>
-          <Label className={`text-sm mb-2 block ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>{variable.name}</Label>
-          <Textarea
-            value={variable.value}
-            onChange={(e) => variable.onChange(e.target.value)}
-            placeholder={`Enter ${variable.name.toLowerCase()}...`}
-            className={`min-h-[100px] text-sm ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
-            disabled={isHumanMode}
-          />
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <Label className={`text-sm ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>Variables</Label>
+          {onAddVariable && (
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={newVariableName}
+                onChange={(e) => setNewVariableName(e.target.value)}
+                placeholder="Variable name"
+                className="px-2 py-1 text-xs border rounded"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && newVariableName.trim()) {
+                    onAddVariable(newVariableName.trim());
+                    setNewVariableName('');
+                  }
+                }}
+                disabled={isHumanMode}
+              />
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  if (newVariableName.trim()) {
+                    onAddVariable(newVariableName.trim());
+                    setNewVariableName('');
+                  }
+                }}
+                disabled={isHumanMode || !newVariableName.trim()}
+                className="text-xs px-2 py-1 h-auto"
+              >
+                Add
+              </Button>
+            </div>
+          )}
         </div>
-      ))}
+        
+        {variables.map((variable) => (
+          <div key={variable.name} className="mb-3">
+            <div className="flex items-center justify-between mb-1">
+              <Label className={`text-sm ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                {variable.name} <code className="text-xs text-gray-500">{'<' + nameToXmlTag(variable.name) + '>'}</code>
+              </Label>
+              {onRemoveVariable && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onRemoveVariable(variable.name)}
+                  disabled={isHumanMode}
+                  className="text-xs px-2 py-1 h-auto text-red-600 hover:text-red-700"
+                >
+                  Remove
+                </Button>
+              )}
+            </div>
+            <Textarea
+              value={variable.value}
+              onChange={(e) => variable.onChange(e.target.value)}
+              placeholder={`Enter ${variable.name.toLowerCase()}...`}
+              className={`min-h-[100px] text-sm ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+              disabled={isHumanMode}
+            />
+          </div>
+        ))}
+      </div>
 
       {variables.length > 0 && (
         <div className="space-y-2 pt-2">
@@ -144,7 +218,6 @@ const ParticipantContent: React.FC<{
   );
 };
 
-
 const Workbench = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -153,7 +226,7 @@ const Workbench = () => {
   const [config, setConfig] = useState<PromptConfig>({
     organizerPrompt: DEFAULT_ORGANIZER_PROMPT,
     attendeePrompt: DEFAULT_ATTENDEE_PROMPT,
-    surveyQuestions: DEFAULT_SURVEY_QUESTIONS,
+    variables: DEFAULT_VARIABLES,
     organizerHumanMode: true,
     attendeeHumanMode: false,
   });
@@ -166,7 +239,24 @@ const Workbench = () => {
   }, [messages, isLoading]);
 
   const getFullPrompt = () => {
-    return `${config.organizerPrompt}\n\n<survey_questions>${config.surveyQuestions}</survey_questions>`;
+    const variableTags = generateVariableTags(config.variables);
+    return `${config.organizerPrompt}\n\n${variableTags}`;
+  };
+
+  const addVariable = (name: string) => {
+    if (!name.trim() || config.variables[name]) return;
+    setConfig(prev => ({
+      ...prev,
+      variables: { ...prev.variables, [name]: '' }
+    }));
+  };
+
+  const removeVariable = (name: string) => {
+    setConfig(prev => {
+      const newVariables = { ...prev.variables };
+      delete newVariables[name];
+      return { ...prev, variables: newVariables };
+    });
   };
 
   const sendMessage = async () => {
@@ -346,16 +436,20 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         onPromptChange={(value) => setConfig((prev) => ({ ...prev, organizerPrompt: value }))}
                         isHumanMode={config.organizerHumanMode}
                         type="organizer"
-                        variables={[
-                          {
-                            name: 'Survey Questions',
-                            value: config.surveyQuestions,
-                            onChange: (value) => setConfig((prev) => ({ ...prev, surveyQuestions: value })),
-                          },
-                        ]}
+                        variables={Object.entries(config.variables).map(([name, value]) => ({
+                          name,
+                          value,
+                          onChange: (newValue) => 
+                            setConfig((prev) => ({
+                              ...prev,
+                              variables: { ...prev.variables, [name]: newValue }
+                            })),
+                        }))}
                         showFullPrompt={showFullPrompt}
                         onToggleFullPrompt={() => setShowFullPrompt(!showFullPrompt)}
                         getFullPrompt={getFullPrompt}
+                        onAddVariable={addVariable}
+                        onRemoveVariable={removeVariable}
                       />
                     </AccordionContent>
                   </div>
@@ -381,6 +475,8 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         showFullPrompt={showFullPrompt}
                         onToggleFullPrompt={() => setShowFullPrompt(!showFullPrompt)}
                         getFullPrompt={getFullPrompt}
+                        onAddVariable={addVariable}
+                        onRemoveVariable={removeVariable}
                       />
                     </AccordionContent>
                   </div>
