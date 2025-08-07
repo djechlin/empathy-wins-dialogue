@@ -192,8 +192,9 @@ Respond as the organizer would, keeping responses brief and focused on getting t
     if (config.organizerHumanMode || config.attendeeHumanMode) return;
 
     // Start with organizer message
-    const initialMessage = "Hi! I saw you at the Bernie/AOC event last week. Thanks for coming out! I wanted to follow up about some upcoming opportunities to stay involved.";
-    
+    const initialMessage =
+      'Hi! I saw you at the Bernie/AOC event last week. Thanks for coming out! I wanted to follow up about some upcoming opportunities to stay involved.';
+
     const userMessage: Message = {
       id: Date.now().toString(),
       text: initialMessage,
@@ -215,72 +216,49 @@ Respond as the organizer would, keeping responses brief and focused on getting t
             <p className="text-gray-600">Anthropic-style dev console for dialogue testing</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Prompt Configuration Panel */}
-            <div className="lg:col-span-1 space-y-4">
-              <Card className="p-4">
-                <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[700px]">
+            {/* Organizer Column */}
+            <div className="space-y-4">
+              <Card className="p-4 h-full flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <Label className="font-medium flex items-center gap-2">
+                    <User size={16} />
+                    Organizer
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="organizer-human" className="text-sm">
+                      Human
+                    </Label>
+                    <Switch
+                      id="organizer-human"
+                      checked={config.organizerHumanMode}
+                      onCheckedChange={(checked) => setConfig((prev) => ({ ...prev, organizerHumanMode: checked }))}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex-1 space-y-4">
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <Label className="font-medium flex items-center gap-2">
-                        <User size={16} />
-                        Organizer Prompt
-                      </Label>
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor="organizer-human" className="text-sm">Human</Label>
-                        <Switch
-                          id="organizer-human"
-                          checked={config.organizerHumanMode}
-                          onCheckedChange={(checked) => 
-                            setConfig(prev => ({ ...prev, organizerHumanMode: checked }))
-                          }
-                        />
-                      </div>
-                    </div>
+                    <Label className="text-sm text-gray-600 mb-2 block">System Prompt</Label>
                     <Textarea
                       value={config.organizerPrompt}
-                      onChange={(e) => setConfig(prev => ({ ...prev, organizerPrompt: e.target.value }))}
+                      onChange={(e) => setConfig((prev) => ({ ...prev, organizerPrompt: e.target.value }))}
                       placeholder="Enter organizer system prompt..."
-                      className="min-h-[120px] text-sm"
+                      className="min-h-[200px] text-sm flex-1"
                     />
                   </div>
 
                   <div>
-                    <Label className="font-medium mb-2 block">Survey Questions</Label>
+                    <Label className="text-sm text-gray-600 mb-2 block">Survey Questions</Label>
                     <Textarea
                       value={config.surveyQuestions}
-                      onChange={(e) => setConfig(prev => ({ ...prev, surveyQuestions: e.target.value }))}
+                      onChange={(e) => setConfig((prev) => ({ ...prev, surveyQuestions: e.target.value }))}
                       placeholder="Enter survey questions..."
-                      className="min-h-[80px] text-sm"
+                      className="min-h-[100px] text-sm"
                     />
                   </div>
 
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <Label className="font-medium flex items-center gap-2">
-                        <Bot size={16} />
-                        Attendee Prompt
-                      </Label>
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor="attendee-human" className="text-sm">Human</Label>
-                        <Switch
-                          id="attendee-human"
-                          checked={config.attendeeHumanMode}
-                          onCheckedChange={(checked) => 
-                            setConfig(prev => ({ ...prev, attendeeHumanMode: checked }))
-                          }
-                        />
-                      </div>
-                    </div>
-                    <Textarea
-                      value={config.attendeePrompt}
-                      onChange={(e) => setConfig(prev => ({ ...prev, attendeePrompt: e.target.value }))}
-                      placeholder="Enter attendee system prompt..."
-                      className="min-h-[120px] text-sm"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
+                  <div className="space-y-2 pt-2">
                     <Button
                       onClick={() => setShowFullPrompt(!showFullPrompt)}
                       variant="outline"
@@ -290,13 +268,9 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                       <Eye size={16} className="mr-2" />
                       {showFullPrompt ? 'Hide' : 'Show'} Full Prompt
                     </Button>
-                    
+
                     {!config.organizerHumanMode && !config.attendeeHumanMode && (
-                      <Button
-                        onClick={startAutoConversation}
-                        size="sm"
-                        className="w-full"
-                      >
+                      <Button onClick={startAutoConversation} size="sm" className="w-full">
                         <Play size={16} className="mr-2" />
                         Start Auto Conversation
                       </Button>
@@ -304,25 +278,54 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                   </div>
 
                   {showFullPrompt && (
-                    <Card className="p-3 bg-gray-50">
-                      <pre className="text-xs whitespace-pre-wrap text-gray-700">
-                        {getFullPrompt()}
-                      </pre>
+                    <Card className="p-3 bg-gray-50 max-h-[150px] overflow-y-auto">
+                      <pre className="text-xs whitespace-pre-wrap text-gray-700">{getFullPrompt()}</pre>
                     </Card>
                   )}
                 </div>
               </Card>
             </div>
 
-            {/* Chat Interface */}
-            <div className="lg:col-span-2">
-              <Card className="h-[600px] flex flex-col">
+            {/* Attendee Column */}
+            <div className="space-y-4">
+              <Card className="p-4 h-full flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <Label className="font-medium flex items-center gap-2">
+                    <Bot size={16} />
+                    Attendee
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="attendee-human" className="text-sm">
+                      Human
+                    </Label>
+                    <Switch
+                      id="attendee-human"
+                      checked={config.attendeeHumanMode}
+                      onCheckedChange={(checked) => setConfig((prev) => ({ ...prev, attendeeHumanMode: checked }))}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex-1">
+                  <Label className="text-sm text-gray-600 mb-2 block">System Prompt</Label>
+                  <Textarea
+                    value={config.attendeePrompt}
+                    onChange={(e) => setConfig((prev) => ({ ...prev, attendeePrompt: e.target.value }))}
+                    placeholder="Enter attendee system prompt..."
+                    className="h-full text-sm resize-none"
+                  />
+                </div>
+              </Card>
+            </div>
+
+            {/* Conversation Column */}
+            <div className="space-y-4">
+              <Card className="h-full flex flex-col">
                 <div className="border-b px-4 py-3 bg-gray-50">
                   <div className="flex items-center justify-between">
                     <h2 className="font-semibold">Conversation</h2>
                     <div className="text-sm text-gray-500">
-                      Organizer: {config.organizerHumanMode ? 'Human' : 'AI'} | 
-                      Attendee: {config.attendeeHumanMode ? 'Human' : 'AI'}
+                      Organizer: {config.organizerHumanMode ? 'Human' : 'AI'} | Attendee: {config.attendeeHumanMode ? 'Human' : 'AI'}
                     </div>
                   </div>
                 </div>
@@ -330,16 +333,14 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   {messages.map((message) => (
                     <div key={message.id} className={`flex ${message.isOrganizer ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        message.isOrganizer 
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-gray-200 text-gray-900'
-                      }`}>
+                      <div
+                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                          message.isOrganizer ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-900'
+                        }`}
+                      >
                         <div className="flex items-center gap-2 mb-1">
                           {message.isOrganizer ? <User size={12} /> : <Bot size={12} />}
-                          <span className="text-xs opacity-75">
-                            {message.isOrganizer ? 'Organizer' : 'Attendee'}
-                          </span>
+                          <span className="text-xs opacity-75">{message.isOrganizer ? 'Organizer' : 'Attendee'}</span>
                         </div>
                         <p className="text-sm">{message.text}</p>
                         <p className={`text-xs mt-1 opacity-75`}>
@@ -382,11 +383,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         className="flex-1 min-h-[40px] max-h-[120px] resize-none"
                         disabled={isLoading}
                       />
-                      <Button 
-                        onClick={sendMessage} 
-                        disabled={!inputValue.trim() || isLoading} 
-                        className="px-4"
-                      >
+                      <Button onClick={sendMessage} disabled={!inputValue.trim() || isLoading} className="px-4">
                         <Send size={16} />
                       </Button>
                     </div>
