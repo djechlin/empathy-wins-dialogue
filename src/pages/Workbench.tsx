@@ -3,9 +3,8 @@ import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
-import { ChevronDown, ChevronUp, Play, Send, User, Bot } from 'lucide-react';
+import { Play, Send, User, Bot } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordion';
 import Navbar from '@/components/layout/Navbar';
 
@@ -124,23 +123,9 @@ const ParticipantContent: React.FC<{
   isHumanMode: boolean;
   type: 'organizer' | 'attendee';
   variables: ParticipantVariable[];
-  showFullPrompt: boolean;
-  onToggleFullPrompt: () => void;
-  getFullPrompt: () => string;
   onAddVariable?: (name: string) => void;
   onRemoveVariable?: (name: string) => void;
-}> = ({
-  prompt,
-  onPromptChange,
-  isHumanMode,
-  type,
-  variables,
-  showFullPrompt,
-  onToggleFullPrompt,
-  getFullPrompt,
-  onAddVariable,
-  onRemoveVariable,
-}) => {
+}> = ({ prompt, onPromptChange, isHumanMode, type, variables, onAddVariable, onRemoveVariable }) => {
   const [newVariableName, setNewVariableName] = useState('');
   return (
     <div className="space-y-4 pt-4">
@@ -156,43 +141,6 @@ const ParticipantContent: React.FC<{
       </div>
 
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <Label className={`text-sm ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}></Label>
-          {onAddVariable && (
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={newVariableName}
-                onChange={(e) => setNewVariableName(e.target.value)}
-                placeholder="Variable name"
-                className="px-2 py-1 text-xs border rounded"
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && newVariableName.trim()) {
-                    onAddVariable(newVariableName.trim());
-                    setNewVariableName('');
-                  }
-                }}
-                disabled={isHumanMode}
-              />
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  if (newVariableName.trim()) {
-                    onAddVariable(newVariableName.trim());
-                    setNewVariableName('');
-                  }
-                }}
-                disabled={isHumanMode || !newVariableName.trim()}
-                className="text-xs px-2 py-1 h-auto"
-              >
-                Add
-              </Button>
-            </div>
-          )}
-        </div>
-
         {variables.map((variable) => (
           <div key={variable.name} className="mb-3">
             <div className="flex items-center justify-between mb-1">
@@ -219,34 +167,46 @@ const ParticipantContent: React.FC<{
               className={`min-h-[100px] text-sm ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
               disabled={isHumanMode}
             />
+            <div className="text-xs text-gray-400 mt-1">
+              <code>{'</' + nameToXmlTag(variable.name) + '>'}</code>
+            </div>
           </div>
         ))}
+
+        {onAddVariable && (
+          <div className="flex items-center gap-2 mt-3">
+            <input
+              type="text"
+              value={newVariableName}
+              onChange={(e) => setNewVariableName(e.target.value)}
+              placeholder="Variable name"
+              className="px-2 py-1 text-xs border rounded flex-1"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && newVariableName.trim()) {
+                  onAddVariable(newVariableName.trim());
+                  setNewVariableName('');
+                }
+              }}
+              disabled={isHumanMode}
+            />
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                if (newVariableName.trim()) {
+                  onAddVariable(newVariableName.trim());
+                  setNewVariableName('');
+                }
+              }}
+              disabled={isHumanMode || !newVariableName.trim()}
+              className="text-xs px-2 py-1 h-auto"
+            >
+              Add
+            </Button>
+          </div>
+        )}
       </div>
-
-      {variables.length > 0 && (
-        <div className="space-y-2 pt-2">
-          <Button onClick={onToggleFullPrompt} variant="outline" size="sm" className="w-full flex items-center justify-between">
-            <span className="flex items-center">Full Prompt</span>
-            {showFullPrompt ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </Button>
-
-          <AnimatePresence>
-            {showFullPrompt && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden"
-              >
-                <Card className="p-3 bg-gray-50 max-h-[150px] overflow-y-auto">
-                  <pre className="text-xs whitespace-pre-wrap text-gray-700">{getFullPrompt()}</pre>
-                </Card>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
     </div>
   );
 };
@@ -255,7 +215,6 @@ const Workbench = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showFullPrompt, setShowFullPrompt] = useState(false);
   const [config, setConfig] = useState<PromptConfig>({
     organizerPrompt: DEFAULT_ORGANIZER_PROMPT,
     attendeePrompt: DEFAULT_ATTENDEE_PROMPT,
@@ -485,9 +444,6 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                               variables: { ...prev.variables, [name]: newValue },
                             })),
                         }))}
-                        showFullPrompt={showFullPrompt}
-                        onToggleFullPrompt={() => setShowFullPrompt(!showFullPrompt)}
-                        getFullPrompt={getFullPrompt}
                         onAddVariable={addVariable}
                         onRemoveVariable={removeVariable}
                       />
@@ -513,9 +469,6 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         isHumanMode={config.attendeeHumanMode}
                         type="attendee"
                         variables={[]}
-                        showFullPrompt={showFullPrompt}
-                        onToggleFullPrompt={() => setShowFullPrompt(!showFullPrompt)}
-                        getFullPrompt={getFullPrompt}
                         onAddVariable={addVariable}
                         onRemoveVariable={removeVariable}
                       />
