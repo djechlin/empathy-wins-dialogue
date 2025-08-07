@@ -39,7 +39,7 @@ const DEFAULT_ATTENDEE_PROMPT = `You are someone who attended a Bernie Sanders/A
 You get that Trump is a problem but think protests are low impact. You're kind of bored and don't have much to do. You should be somewhat skeptical at first but can be convinced to get more involved with the right approach.`;
 
 const DEFAULT_VARIABLES = {
-  'survey_questions': `1. How likely are you to attend another political event in the next month?
+  survey_questions: `1. How likely are you to attend another political event in the next month?
 2. What issues are you most passionate about?
 3. Would you be interested in volunteering for upcoming campaigns?`,
   'Event Context': 'Bernie Sanders/AOC "Fight Oligarchy" rally',
@@ -72,7 +72,7 @@ const generateParticipantName = (type: string): string => {
   return `${type}-${month}/${date}-${hours}:${minutes}:${seconds}`;
 };
 
-// Header component for participant  
+// Header component for participant
 const ParticipantHeader: React.FC<{
   type: 'organizer' | 'attendee';
   participantName: string;
@@ -89,25 +89,23 @@ const ParticipantHeader: React.FC<{
 const ParticipantContent: React.FC<{
   prompt: string;
   onPromptChange: (value: string) => void;
-  isHumanMode: boolean;
   type: 'organizer' | 'attendee';
   variables: ParticipantVariable[];
   onAddVariable?: (name: string) => void;
   onRemoveVariable?: (name: string) => void;
   onReorderVariables?: (fromIndex: number, toIndex: number) => void;
-}> = ({ prompt, onPromptChange, isHumanMode, type, variables, onAddVariable, onRemoveVariable, onReorderVariables }) => {
+}> = ({ prompt, onPromptChange, type, variables, onAddVariable, onRemoveVariable, onReorderVariables }) => {
   const [newVariableName, setNewVariableName] = useState('');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   return (
     <div className="space-y-4 pt-4">
       <div>
-        <Label className={`text-sm mb-2 block ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>System Prompt</Label>
+        <Label className="text-sm mb-2 block text-gray-600">System Prompt</Label>
         <Textarea
           value={prompt}
           onChange={(e) => onPromptChange(e.target.value)}
           placeholder={`Enter ${type} system prompt...`}
-          className={`min-h-[200px] text-sm flex-1 ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
-          disabled={isHumanMode}
+          className="min-h-[200px] text-sm flex-1"
         />
       </div>
 
@@ -116,9 +114,9 @@ const ParticipantContent: React.FC<{
           <div
             key={variable.name}
             className="mb-3"
-            draggable={!!onReorderVariables && !isHumanMode}
+            draggable={!!onReorderVariables}
             onDragStart={(e) => {
-              if (onReorderVariables && !isHumanMode) {
+              if (onReorderVariables) {
                 setDraggedIndex(index);
                 e.dataTransfer.effectAllowed = 'move';
               }
@@ -140,7 +138,7 @@ const ParticipantContent: React.FC<{
           >
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
-                {onReorderVariables && !isHumanMode && (
+                {onReorderVariables && (
                   <div className="cursor-grab hover:cursor-grabbing text-gray-400 hover:text-gray-600 p-1">
                     <div className="grid grid-cols-2 gap-0.5 w-3 h-3">
                       <div className="w-1 h-1 bg-current rounded-full"></div>
@@ -152,7 +150,7 @@ const ParticipantContent: React.FC<{
                     </div>
                   </div>
                 )}
-                <Label className={`text-sm ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <Label className="text-sm text-gray-600">
                   {variable.name} <code className="text-xs text-gray-500">{'<' + nameToXmlTag(variable.name) + '>'}</code>
                 </Label>
               </div>
@@ -162,7 +160,6 @@ const ParticipantContent: React.FC<{
                   size="sm"
                   variant="outline"
                   onClick={() => onRemoveVariable(variable.name)}
-                  disabled={isHumanMode}
                   className="text-xs px-2 py-1 h-auto"
                 >
                   Remove
@@ -173,8 +170,7 @@ const ParticipantContent: React.FC<{
               value={variable.value}
               onChange={(e) => variable.onChange(e.target.value)}
               placeholder={`Enter ${variable.name.toLowerCase()}...`}
-              className={`min-h-[100px] text-sm ${isHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
-              disabled={isHumanMode}
+              className="min-h-[100px] text-sm"
             />
             <div className="text-xs text-gray-400 mt-1">
               <code>{'</' + nameToXmlTag(variable.name) + '>'}</code>
@@ -196,7 +192,6 @@ const ParticipantContent: React.FC<{
                   setNewVariableName('');
                 }
               }}
-              disabled={isHumanMode}
             />
             <Button
               type="button"
@@ -208,7 +203,7 @@ const ParticipantContent: React.FC<{
                   setNewVariableName('');
                 }
               }}
-              disabled={isHumanMode || !newVariableName.trim()}
+              disabled={!newVariableName.trim()}
               className="text-xs px-2 py-1 h-auto"
             >
               Add
@@ -441,16 +436,12 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                 <AccordionItem value="organizer" className="border-0">
                   <div className="bg-purple-200 rounded-lg p-4">
                     <AccordionTrigger className="hover:no-underline p-0">
-                      <ParticipantHeader
-                        type="organizer"
-                        participantName={participantNames.organizer}
-                      />
+                      <ParticipantHeader type="organizer" participantName={participantNames.organizer} />
                     </AccordionTrigger>
                     <AccordionContent className="pb-0">
                       <ParticipantContent
                         prompt={config.organizerPrompt}
                         onPromptChange={(value) => setConfig((prev) => ({ ...prev, organizerPrompt: value }))}
-                        isHumanMode={config.organizerHumanMode}
                         type="organizer"
                         variables={Object.entries(config.variables).map(([name, value]) => ({
                           name,
@@ -473,16 +464,12 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                 <AccordionItem value="attendee" className="border-0">
                   <div className="bg-orange-200 rounded-lg p-4">
                     <AccordionTrigger className="hover:no-underline p-0">
-                      <ParticipantHeader
-                        type="attendee"
-                        participantName={participantNames.attendee}
-                      />
+                      <ParticipantHeader type="attendee" participantName={participantNames.attendee} />
                     </AccordionTrigger>
                     <AccordionContent className="pb-0">
                       <ParticipantContent
                         prompt={config.attendeePrompt}
                         onPromptChange={(value) => setConfig((prev) => ({ ...prev, attendeePrompt: value }))}
-                        isHumanMode={config.attendeeHumanMode}
                         type="attendee"
                         variables={[]}
                         onAddVariable={addVariable}
