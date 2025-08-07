@@ -30,7 +30,6 @@ interface ParticipantVariable {
   onChange: (value: string) => void;
 }
 
-
 // Default prompts
 const DEFAULT_ORGANIZER_PROMPT = `You are an experienced political organizer reaching out to someone who attended a recent Bernie Sanders/AOC "Fight Oligarchy" event. Your goal is to follow up and try to get them more involved in future activism.
 
@@ -144,6 +143,7 @@ const ParticipantContent: React.FC<{
     </div>
   );
 };
+
 
 const Workbench = () => {
   const [messages, setMessages] = useState<Message[]>([]);
