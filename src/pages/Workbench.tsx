@@ -486,12 +486,80 @@ Respond as the organizer would, keeping responses brief and focused on getting t
             <div className="space-y-4">
               <Card className="h-full flex flex-col">
                 <div className="border-b px-4 py-3 bg-gray-50">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-3">
                     <h2 className="font-semibold">Conversation</h2>
-                    <div className="text-sm text-gray-500">
-                      Organizer: {config.organizerHumanMode ? 'Human' : 'AI'} | Attendee: {config.attendeeHumanMode ? 'Human' : 'AI'}
+                  </div>
+                  
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-700">Organizer:</span>
+                      <div className="flex bg-gray-200 rounded-lg p-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfig((prev) => ({ ...prev, organizerHumanMode: true }));
+                          }}
+                          className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
+                            config.organizerHumanMode
+                              ? 'bg-white text-gray-900 shadow-sm'
+                              : 'text-gray-600 hover:text-gray-900'
+                          }`}
+                        >
+                          <User size={12} />
+                          Human
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfig((prev) => ({ ...prev, organizerHumanMode: false }));
+                          }}
+                          className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
+                            !config.organizerHumanMode
+                              ? 'bg-white text-gray-900 shadow-sm'
+                              : 'text-gray-600 hover:text-gray-900'
+                          }`}
+                        >
+                          <Bot size={12} />
+                          AI
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-700">Attendee:</span>
+                      <div className="flex bg-gray-200 rounded-lg p-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfig((prev) => ({ ...prev, attendeeHumanMode: true }));
+                          }}
+                          className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
+                            config.attendeeHumanMode
+                              ? 'bg-white text-gray-900 shadow-sm'
+                              : 'text-gray-600 hover:text-gray-900'
+                          }`}
+                        >
+                          <User size={12} />
+                          Human
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfig((prev) => ({ ...prev, attendeeHumanMode: false }));
+                          }}
+                          className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
+                            !config.attendeeHumanMode
+                              ? 'bg-white text-gray-900 shadow-sm'
+                              : 'text-gray-600 hover:text-gray-900'
+                          }`}
+                        >
+                          <Bot size={12} />
+                          AI
+                        </button>
+                      </div>
                     </div>
                   </div>
+                  
                   {!config.organizerHumanMode && !config.attendeeHumanMode && (
                     <div className="mt-2">
                       <Button onClick={startAutoConversation} size="sm" className="px-4">
