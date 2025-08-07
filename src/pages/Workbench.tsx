@@ -2,7 +2,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Label } from '@/ui/label';
-import { Switch } from '@/ui/switch';
 import { Textarea } from '@/ui/textarea';
 import { Eye, Play, Send, User, Bot } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -225,46 +224,51 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                     <User size={16} />
                     Organizer
                   </Label>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="organizer-human" className="text-sm">
+                  <div className="flex items-center">
+                    <Button
+                      variant={config.organizerHumanMode ? "default" : "outline"}
+                      size="sm"
+                      className="rounded-r-none px-3 h-8 text-xs"
+                      onClick={() => setConfig((prev) => ({ ...prev, organizerHumanMode: true }))}
+                    >
                       Human
-                    </Label>
-                    <Switch
-                      id="organizer-human"
-                      checked={config.organizerHumanMode}
-                      onCheckedChange={(checked) => setConfig((prev) => ({ ...prev, organizerHumanMode: checked }))}
-                    />
+                    </Button>
+                    <Button
+                      variant={!config.organizerHumanMode ? "default" : "outline"}
+                      size="sm"
+                      className="rounded-l-none px-3 h-8 text-xs border-l-0"
+                      onClick={() => setConfig((prev) => ({ ...prev, organizerHumanMode: false }))}
+                    >
+                      AI
+                    </Button>
                   </div>
                 </div>
-                
+
                 <div className="flex-1 space-y-4">
                   <div>
-                    <Label className="text-sm text-gray-600 mb-2 block">System Prompt</Label>
+                    <Label className={`text-sm mb-2 block ${config.organizerHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>System Prompt</Label>
                     <Textarea
                       value={config.organizerPrompt}
                       onChange={(e) => setConfig((prev) => ({ ...prev, organizerPrompt: e.target.value }))}
                       placeholder="Enter organizer system prompt..."
-                      className="min-h-[200px] text-sm flex-1"
+                      className={`min-h-[200px] text-sm flex-1 ${config.organizerHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+                      disabled={config.organizerHumanMode}
                     />
                   </div>
 
                   <div>
-                    <Label className="text-sm text-gray-600 mb-2 block">Survey Questions</Label>
+                    <Label className={`text-sm mb-2 block ${config.organizerHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>Survey Questions</Label>
                     <Textarea
                       value={config.surveyQuestions}
                       onChange={(e) => setConfig((prev) => ({ ...prev, surveyQuestions: e.target.value }))}
                       placeholder="Enter survey questions..."
-                      className="min-h-[100px] text-sm"
+                      className={`min-h-[100px] text-sm ${config.organizerHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+                      disabled={config.organizerHumanMode}
                     />
                   </div>
 
                   <div className="space-y-2 pt-2">
-                    <Button
-                      onClick={() => setShowFullPrompt(!showFullPrompt)}
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                    >
+                    <Button onClick={() => setShowFullPrompt(!showFullPrompt)} variant="outline" size="sm" className="w-full">
                       <Eye size={16} className="mr-2" />
                       {showFullPrompt ? 'Hide' : 'Show'} Full Prompt
                     </Button>
@@ -294,25 +298,34 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                     <Bot size={16} />
                     Attendee
                   </Label>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="attendee-human" className="text-sm">
+                  <div className="flex items-center">
+                    <Button
+                      variant={config.attendeeHumanMode ? "default" : "outline"}
+                      size="sm"
+                      className="rounded-r-none px-3 h-8 text-xs"
+                      onClick={() => setConfig((prev) => ({ ...prev, attendeeHumanMode: true }))}
+                    >
                       Human
-                    </Label>
-                    <Switch
-                      id="attendee-human"
-                      checked={config.attendeeHumanMode}
-                      onCheckedChange={(checked) => setConfig((prev) => ({ ...prev, attendeeHumanMode: checked }))}
-                    />
+                    </Button>
+                    <Button
+                      variant={!config.attendeeHumanMode ? "default" : "outline"}
+                      size="sm"
+                      className="rounded-l-none px-3 h-8 text-xs border-l-0"
+                      onClick={() => setConfig((prev) => ({ ...prev, attendeeHumanMode: false }))}
+                    >
+                      AI
+                    </Button>
                   </div>
                 </div>
-                
+
                 <div className="flex-1">
-                  <Label className="text-sm text-gray-600 mb-2 block">System Prompt</Label>
+                  <Label className={`text-sm mb-2 block ${config.attendeeHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>System Prompt</Label>
                   <Textarea
                     value={config.attendeePrompt}
                     onChange={(e) => setConfig((prev) => ({ ...prev, attendeePrompt: e.target.value }))}
                     placeholder="Enter attendee system prompt..."
-                    className="h-full text-sm resize-none"
+                    className={`h-full text-sm resize-none ${config.attendeeHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+                    disabled={config.attendeeHumanMode}
                   />
                 </div>
               </Card>
