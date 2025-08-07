@@ -3,7 +3,7 @@ import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
-import { Play, Send, User, Bot, GripVertical } from 'lucide-react';
+import { Play, Send, User, Bot } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordion';
 import Navbar from '@/components/layout/Navbar';
@@ -39,7 +39,7 @@ const DEFAULT_ATTENDEE_PROMPT = `You are someone who attended a Bernie Sanders/A
 You get that Trump is a problem but think protests are low impact. You're kind of bored and don't have much to do. You should be somewhat skeptical at first but can be convinced to get more involved with the right approach.`;
 
 const DEFAULT_VARIABLES = {
-  'Survey Questions': `1. How likely are you to attend another political event in the next month?
+  'survey_questions': `1. How likely are you to attend another political event in the next month?
 2. What issues are you most passionate about?
 3. Would you be interested in volunteering for upcoming campaigns?`,
   'Event Context': 'Bernie Sanders/AOC "Fight Oligarchy" rally',
@@ -72,46 +72,15 @@ const generateParticipantName = (type: string): string => {
   return `${type}-${month}/${date}-${hours}:${minutes}:${seconds}`;
 };
 
-// Header component for participant with toggles always visible
+// Header component for participant  
 const ParticipantHeader: React.FC<{
   type: 'organizer' | 'attendee';
-  isHumanMode: boolean;
-  onModeChange: (isHuman: boolean) => void;
   participantName: string;
-}> = ({ type, isHumanMode, onModeChange, participantName }) => {
-  const IconComponent = isHumanMode ? User : Bot;
-
+}> = ({ type, participantName }) => {
   return (
-    <div className="flex items-center justify-between w-full">
-      <div className="flex items-center gap-2">
-        <IconComponent size={16} />
-        <span className="font-medium">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
-        <span className="text-xs text-gray-500 font-mono">{participantName}</span>
-      </div>
-      <div className="flex items-center">
-        <Button
-          variant={isHumanMode ? 'default' : 'outline'}
-          size="sm"
-          className="rounded-r-none px-3 h-8 text-xs"
-          onClick={(e) => {
-            e.stopPropagation();
-            onModeChange(true);
-          }}
-        >
-          Human
-        </Button>
-        <Button
-          variant={!isHumanMode ? 'default' : 'outline'}
-          size="sm"
-          className="rounded-l-none px-3 h-8 text-xs border-l-0"
-          onClick={(e) => {
-            e.stopPropagation();
-            onModeChange(false);
-          }}
-        >
-          AI
-        </Button>
-      </div>
+    <div className="flex items-center gap-2">
+      <span className="font-medium">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+      <span className="text-xs text-gray-500 font-mono">{participantName}</span>
     </div>
   );
 };
@@ -144,8 +113,8 @@ const ParticipantContent: React.FC<{
 
       <div>
         {variables.map((variable, index) => (
-          <div 
-            key={variable.name} 
+          <div
+            key={variable.name}
             className="mb-3"
             draggable={!!onReorderVariables && !isHumanMode}
             onDragStart={(e) => {
@@ -172,7 +141,16 @@ const ParticipantContent: React.FC<{
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
                 {onReorderVariables && !isHumanMode && (
-                  <GripVertical size={16} className="text-gray-400 cursor-grab hover:text-gray-600" />
+                  <div className="cursor-grab hover:cursor-grabbing text-gray-400 hover:text-gray-600 p-1">
+                    <div className="grid grid-cols-2 gap-0.5 w-3 h-3">
+                      <div className="w-1 h-1 bg-current rounded-full"></div>
+                      <div className="w-1 h-1 bg-current rounded-full"></div>
+                      <div className="w-1 h-1 bg-current rounded-full"></div>
+                      <div className="w-1 h-1 bg-current rounded-full"></div>
+                      <div className="w-1 h-1 bg-current rounded-full"></div>
+                      <div className="w-1 h-1 bg-current rounded-full"></div>
+                    </div>
+                  </div>
                 )}
                 <Label className={`text-sm ${isHumanMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   {variable.name} <code className="text-xs text-gray-500">{'<' + nameToXmlTag(variable.name) + '>'}</code>
@@ -465,8 +443,6 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                     <AccordionTrigger className="hover:no-underline p-0">
                       <ParticipantHeader
                         type="organizer"
-                        isHumanMode={config.organizerHumanMode}
-                        onModeChange={(isHuman) => setConfig((prev) => ({ ...prev, organizerHumanMode: isHuman }))}
                         participantName={participantNames.organizer}
                       />
                     </AccordionTrigger>
@@ -499,8 +475,6 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                     <AccordionTrigger className="hover:no-underline p-0">
                       <ParticipantHeader
                         type="attendee"
-                        isHumanMode={config.attendeeHumanMode}
-                        onModeChange={(isHuman) => setConfig((prev) => ({ ...prev, attendeeHumanMode: isHuman }))}
                         participantName={participantNames.attendee}
                       />
                     </AccordionTrigger>
