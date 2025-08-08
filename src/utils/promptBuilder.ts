@@ -27,13 +27,20 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<boolea
       variables_and_content: JSON.stringify(data.variables),
     };
 
-    const { error } = await supabase.from('prompt_builders').insert(promptBuilderRecord);
+    console.log('Attempting to insert prompt builder record:', promptBuilderRecord);
+    console.log('Current user:', user);
+    console.log('User roles:', user.role);
+    console.log('User app_metadata:', user.app_metadata);
+
+    const { error, data: insertedData } = await supabase.from('prompt_builders').insert(promptBuilderRecord).select();
 
     if (error) {
       console.error('Error saving prompt builder:', error);
+      console.error('Full error details:', JSON.stringify(error, null, 2));
       throw new Error(error.message || 'Database error occurred');
     }
 
+    console.log('Successfully inserted prompt builder:', insertedData);
     return true;
   } catch (error) {
     console.error('Error in savePromptBuilder:', error);
