@@ -366,44 +366,50 @@ const Workbench = () => {
                   <div ref={messagesEndRef} />
                 </div>
 
-                {(config.organizerHumanMode || config.attendeeHumanMode) && (
-                  <div className="border-t p-4">
-                    <div className="flex space-x-2">
-                      <Textarea
-                        ref={inputRef}
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        placeholder={
-                          messages.length === 0 || messages[messages.length - 1].speaker === 'organizer'
+                <div className="border-t p-4">
+                  <div className="flex space-x-2">
+                    <Textarea
+                      ref={inputRef}
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder={
+                        !config.organizerHumanMode && !config.attendeeHumanMode
+                          ? 'Both participants are in AI mode - conversation runs automatically'
+                          : messages.length === 0 || messages[messages.length - 1].speaker === 'organizer'
                             ? config.attendeeHumanMode
                               ? 'Type your message as the attendee...'
                               : 'Type your message as the organizer...'
                             : config.organizerHumanMode
                               ? 'Type your message as the organizer...'
                               : 'Type your message as the attendee...'
-                        }
-                        className="flex-1 min-h-[40px] max-h-[120px] resize-none"
-                        disabled={isLoading}
-                      />
-                      <Button
-                        onClick={sendMessage}
-                        disabled={!inputValue.trim() || isLoading}
-                        className={`px-4 ${
-                          messages.length === 0 || messages[messages.length - 1].speaker === 'organizer'
+                      }
+                      className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
+                        !config.organizerHumanMode && !config.attendeeHumanMode
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : ''
+                      }`}
+                      disabled={isLoading || (!config.organizerHumanMode && !config.attendeeHumanMode)}
+                    />
+                    <Button
+                      onClick={sendMessage}
+                      disabled={!inputValue.trim() || isLoading || (!config.organizerHumanMode && !config.attendeeHumanMode)}
+                      className={`px-4 ${
+                        !config.organizerHumanMode && !config.attendeeHumanMode
+                          ? 'bg-gray-400 cursor-not-allowed'
+                          : messages.length === 0 || messages[messages.length - 1].speaker === 'organizer'
                             ? config.attendeeHumanMode
                               ? 'bg-orange-600 hover:bg-orange-700 text-white'
                               : 'bg-purple-600 hover:bg-purple-700 text-white'
                             : config.organizerHumanMode
                               ? 'bg-purple-600 hover:bg-purple-700 text-white'
                               : 'bg-orange-600 hover:bg-orange-700 text-white'
-                        }`}
-                      >
-                        <Send size={16} />
-                      </Button>
-                    </div>
+                      }`}
+                    >
+                      <Send size={16} />
+                    </Button>
                   </div>
-                )}
+                </div>
               </Card>
             </div>
           </div>
