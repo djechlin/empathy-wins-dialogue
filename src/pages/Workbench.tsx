@@ -18,6 +18,7 @@ interface Message {
 interface PromptConfig {
   organizerPrompt: string;
   attendeePrompt: string;
+  organizerFirstMessage: string;
   variables: Record<string, string>;
   organizerHumanMode: boolean;
   attendeeHumanMode: boolean;
@@ -94,11 +95,24 @@ const ParticipantContent: React.FC<{
   onAddVariable?: (name: string) => void;
   onRemoveVariable?: (name: string) => void;
   onReorderVariables?: (fromIndex: number, toIndex: number) => void;
-}> = ({ prompt, onPromptChange, type, variables, onAddVariable, onRemoveVariable, onReorderVariables }) => {
+  firstMessage?: string;
+  onFirstMessageChange?: (value: string) => void;
+}> = ({ prompt, onPromptChange, type, variables, onAddVariable, onRemoveVariable, onReorderVariables, firstMessage, onFirstMessageChange }) => {
   const [newVariableName, setNewVariableName] = useState('');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   return (
     <div className="space-y-4 pt-4">
+      {firstMessage !== undefined && onFirstMessageChange && (
+        <div>
+          <Label className="text-sm mb-2 block text-gray-600">First message (not part of prompt)</Label>
+          <Textarea
+            value={firstMessage}
+            onChange={(e) => onFirstMessageChange(e.target.value)}
+            placeholder="Enter first message..."
+            className="min-h-[100px] text-sm flex-1"
+          />
+        </div>
+      )}
       <div>
         <Label className="text-sm mb-2 block text-gray-600">System Prompt</Label>
         <Textarea
@@ -222,6 +236,7 @@ const Workbench = () => {
   const [config, setConfig] = useState<PromptConfig>({
     organizerPrompt: DEFAULT_ORGANIZER_PROMPT,
     attendeePrompt: DEFAULT_ATTENDEE_PROMPT,
+    organizerFirstMessage: 'Hi! I saw you at the Bernie/AOC event last week. Thanks for coming out! I wanted to follow up about some upcoming opportunities to stay involved.',
     variables: DEFAULT_VARIABLES,
     organizerHumanMode: true,
     attendeeHumanMode: false,
@@ -406,11 +421,8 @@ Respond as the organizer would, keeping responses brief and focused on getting t
   };
 
   const startAutoConversation = async () => {
-    if (config.organizerHumanMode || config.attendeeHumanMode) return;
-
-    // Start with organizer message
-    const initialMessage =
-      'Hi! I saw you at the Bernie/AOC event last week. Thanks for coming out! I wanted to follow up about some upcoming opportunities to stay involved.';
+    // Always start with organizer's first message regardless of human/AI mode
+    const initialMessage = config.organizerFirstMessage;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -420,7 +432,11 @@ Respond as the organizer would, keeping responses brief and focused on getting t
     };
 
     setMessages([userMessage]);
-    await handleAIResponse(initialMessage);
+    
+    // Only auto-respond if attendee is in AI mode
+    if (!config.attendeeHumanMode) {
+      await handleAIResponse(initialMessage);
+    }
   };
 
   return (
@@ -455,6 +471,8 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         onAddVariable={addVariable}
                         onRemoveVariable={removeVariable}
                         onReorderVariables={reorderVariables}
+                        firstMessage={config.organizerFirstMessage}
+                        onFirstMessageChange={(value) => setConfig((prev) => ({ ...prev, organizerFirstMessage: value }))}
                       />
                     </AccordionContent>
                   </div>
@@ -489,7 +507,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                   <div className="flex items-center justify-between mb-3">
                     <h2 className="font-semibold">Conversation</h2>
                   </div>
-                  
+
                   <div className="flex items-center gap-4 mb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-gray-700">Organizer:</span>
@@ -500,9 +518,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                             setConfig((prev) => ({ ...prev, organizerHumanMode: true }));
                           }}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            config.organizerHumanMode
-                              ? 'bg-white text-gray-900 shadow-sm'
-                              : 'text-gray-600 hover:text-gray-900'
+                            config.organizerHumanMode ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                           }`}
                         >
                           <User size={12} />
@@ -514,9 +530,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                             setConfig((prev) => ({ ...prev, organizerHumanMode: false }));
                           }}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            !config.organizerHumanMode
-                              ? 'bg-white text-gray-900 shadow-sm'
-                              : 'text-gray-600 hover:text-gray-900'
+                            !config.organizerHumanMode ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                           }`}
                         >
                           <Bot size={12} />
@@ -524,7 +538,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                         </button>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-gray-700">Attendee:</span>
                       <div className="flex bg-gray-200 rounded-lg p-1">
@@ -534,9 +548,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                             setConfig((prev) => ({ ...prev, attendeeHumanMode: true }));
                           }}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            config.attendeeHumanMode
-                              ? 'bg-white text-gray-900 shadow-sm'
-                              : 'text-gray-600 hover:text-gray-900'
+                            config.attendeeHumanMode ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                           }`}
                         >
                           <User size={12} />
@@ -548,9 +560,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                             setConfig((prev) => ({ ...prev, attendeeHumanMode: false }));
                           }}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            !config.attendeeHumanMode
-                              ? 'bg-white text-gray-900 shadow-sm'
-                              : 'text-gray-600 hover:text-gray-900'
+                            !config.attendeeHumanMode ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                           }`}
                         >
                           <Bot size={12} />
@@ -559,8 +569,8 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                       </div>
                     </div>
                   </div>
-                  
-                  {!config.organizerHumanMode && !config.attendeeHumanMode && (
+
+                  {messages.length === 0 && (
                     <div className="mt-2">
                       <Button onClick={startAutoConversation} size="sm" className="px-4">
                         <Play size={16} className="mr-2" />
