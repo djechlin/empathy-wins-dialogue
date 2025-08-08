@@ -97,7 +97,17 @@ const ParticipantContent: React.FC<{
   onReorderVariables?: (fromIndex: number, toIndex: number) => void;
   firstMessage?: string;
   onFirstMessageChange?: (value: string) => void;
-}> = ({ prompt, onPromptChange, type, variables, onAddVariable, onRemoveVariable, onReorderVariables, firstMessage, onFirstMessageChange }) => {
+}> = ({
+  prompt,
+  onPromptChange,
+  type,
+  variables,
+  onAddVariable,
+  onRemoveVariable,
+  onReorderVariables,
+  firstMessage,
+  onFirstMessageChange,
+}) => {
   const [newVariableName, setNewVariableName] = useState('');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   return (
@@ -165,7 +175,7 @@ const ParticipantContent: React.FC<{
                   </div>
                 )}
                 <Label className="text-sm text-gray-600">
-                  {variable.name} <code className="text-xs text-gray-500">{'<' + nameToXmlTag(variable.name) + '>'}</code>
+                  <code className="text-xs text-gray-500">{'<' + nameToXmlTag(variable.name) + '>'}</code>
                 </Label>
               </div>
               {onRemoveVariable && (
@@ -236,7 +246,8 @@ const Workbench = () => {
   const [config, setConfig] = useState<PromptConfig>({
     organizerPrompt: DEFAULT_ORGANIZER_PROMPT,
     attendeePrompt: DEFAULT_ATTENDEE_PROMPT,
-    organizerFirstMessage: 'Hi! I saw you at the Bernie/AOC event last week. Thanks for coming out! I wanted to follow up about some upcoming opportunities to stay involved.',
+    organizerFirstMessage:
+      'Hi! I saw you at the Bernie/AOC event last week. Thanks for coming out! I wanted to follow up about some upcoming opportunities to stay involved.',
     variables: DEFAULT_VARIABLES,
     organizerHumanMode: true,
     attendeeHumanMode: false,
@@ -432,7 +443,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
     };
 
     setMessages([userMessage]);
-    
+
     // Only auto-respond if attendee is in AI mode
     if (!config.attendeeHumanMode) {
       await handleAIResponse(initialMessage);
