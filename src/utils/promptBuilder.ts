@@ -16,7 +16,7 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<boolea
 
     if (!user) {
       console.error('No authenticated user');
-      return false;
+      throw new Error('No authenticated user');
     }
 
     const promptBuilderRecord = {
@@ -33,13 +33,13 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<boolea
 
     if (error) {
       console.error('Error saving prompt builder:', error);
-      return false;
+      throw new Error(error.message || 'Database error occurred');
     }
 
     return true;
   } catch (error) {
     console.error('Error in savePromptBuilder:', error);
-    return false;
+    throw error;
   }
 };
 
