@@ -6,7 +6,7 @@ import { Play, Send, User, Bot } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Accordion } from '@/ui/accordion';
 import Navbar from '@/components/layout/Navbar';
-import PromptBuilder from '@/components/PromptBuilder';
+import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
 
 interface Message {
   id: string;
@@ -71,6 +71,8 @@ const Workbench = () => {
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const organizerRef = useRef<PromptBuilderRef>(null);
+  const attendeeRef = useRef<PromptBuilderRef>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -242,6 +244,19 @@ Respond as the organizer would, keeping responses brief and focused on getting t
   };
 
   const startAutoConversation = async () => {
+    // Save both prompt builders before starting conversation
+    try {
+      const organizerSaveResult = await organizerRef.current?.save();
+      const attendeeSaveResult = await attendeeRef.current?.save();
+      
+      if (organizerSaveResult === false || attendeeSaveResult === false) {
+        console.error('Failed to save one or more prompt builders');
+        // Continue anyway, but log the error
+      }
+    } catch (error) {
+      console.error('Error saving prompt builders:', error);
+    }
+
     // Always start with organizer's first message regardless of human/AI mode
     const initialMessage = config.organizerFirstMessage;
 
@@ -270,6 +285,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
             <div className="space-y-4 h-full overflow-y-auto">
               <Accordion type="multiple" defaultValue={['organizer', 'attendee']} className="w-full space-y-4">
                 <PromptBuilder
+                  ref={organizerRef}
                   name="organizer"
                   color="bg-purple-200"
                   prompt={config.organizerPrompt}
@@ -289,9 +305,15 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                   firstMessage={config.organizerFirstMessage}
                   onFirstMessageChange={(value) => setConfig((prev) => ({ ...prev, organizerFirstMessage: value }))}
                   showFirstMessage={true}
+                  onSave={async () => {
+                    console.log('Saving organizer prompt builder...');
+                    // Placeholder save logic - return success for now
+                    return true;
+                  }}
                 />
 
                 <PromptBuilder
+                  ref={attendeeRef}
                   name="attendee"
                   color="bg-orange-200"
                   prompt={config.attendeePrompt}
@@ -300,6 +322,11 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                   onAddVariable={addVariable}
                   onRemoveVariable={removeVariable}
                   onReorderVariables={reorderVariables}
+                  onSave={async () => {
+                    console.log('Saving attendee prompt builder...');
+                    // Placeholder save logic - return success for now
+                    return true;
+                  }}
                 />
               </Accordion>
             </div>

@@ -1,7 +1,7 @@
 import { Button } from '@/ui/button';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
-import { useState } from 'react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordion';
 
 interface PromptVariable {
@@ -22,6 +22,11 @@ interface PromptBuilderProps {
   firstMessage?: string;
   onFirstMessageChange?: (value: string) => void;
   showFirstMessage?: boolean;
+  onSave?: () => Promise<boolean> | boolean;
+}
+
+export interface PromptBuilderRef {
+  save: () => Promise<boolean>;
 }
 
 // Utility function to convert variable name to XML tag
@@ -43,7 +48,7 @@ const generateParticipantName = (type: string): string => {
   return `${type}-${month}/${date}-${hours}:${minutes}:${seconds}`;
 };
 
-const PromptBuilder: React.FC<PromptBuilderProps> = ({
+const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(({
   name,
   color,
   prompt,
@@ -55,15 +60,50 @@ const PromptBuilder: React.FC<PromptBuilderProps> = ({
   firstMessage,
   onFirstMessageChange,
   showFirstMessage = false,
-}) => {
+  onSave,
+}, ref) => {
   const [newVariableName, setNewVariableName] = useState('');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [participantName] = useState(() => generateParticipantName(name.toLowerCase()));
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!onSave) return;
+    
+    setIsSaving(true);
+    try {
+      const result = await onSave();
+      return result;
+    } catch (error) {
+      console.error('Save failed:', error);
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Expose save function for programmatic calls
+  useImperativeHandle(ref, () => ({
+    save: handleSave,
+  }));
 
   const Header = () => (
-    <div className="flex items-center gap-2">
-      <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>
-      <span className="text-xs text-gray-500 font-mono">{participantName}</span>
+    <div className="flex items-center justify-between w-full">
+      <div className="flex items-center gap-2">
+        <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>
+        <span className="text-xs text-gray-500 font-mono">{participantName}</span>
+      </div>
+      {onSave && (
+        <Button
+          onClick={handleSave}
+          disabled={isSaving}
+          size="sm"
+          variant="outline"
+          className="text-xs px-2 py-1 h-auto"
+        >
+          {isSaving ? 'Saving...' : 'Save'}
+        </Button>
+      )}
     </div>
   );
 
@@ -207,6 +247,6 @@ const PromptBuilder: React.FC<PromptBuilderProps> = ({
       </div>
     </AccordionItem>
   );
-};
+});
 
 export default PromptBuilder;
