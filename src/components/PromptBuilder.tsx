@@ -37,8 +37,8 @@ const nameToXmlTag = (name: string): string => {
     .replace(/[^a-z0-9_]/g, '');
 };
 
-// Generate participant name with timestamp
-const generateParticipantName = (type: string): string => {
+// Generate timestamped name for prompt builder instance
+const generateTimestampedName = (type: string): string => {
   const now = new Date();
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const date = String(now.getDate()).padStart(2, '0');
@@ -69,11 +69,11 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     const [newVariableName, setNewVariableName] = useState('');
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [isSaving, setIsSaving] = useState(false);
-    
-    // Generate participant name once using useRef to avoid re-renders
-    const participantNameRef = useRef<string>();
-    if (!participantNameRef.current) {
-      participantNameRef.current = generateParticipantName(name.toLowerCase());
+
+    // Generate timestamped name once using useRef to avoid re-renders
+    const timestampedNameRef = useRef<string>();
+    if (!timestampedNameRef.current) {
+      timestampedNameRef.current = generateTimestampedName(name.toLowerCase());
     }
 
     const handleSave = async () => {
@@ -100,7 +100,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-2">
           <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>
-          <span className="text-xs text-gray-500 font-mono">{participantNameRef.current}</span>
+          <span className="text-xs text-gray-500 font-mono">{timestampedNameRef.current}</span>
         </div>
         {onSave && (
           <Button
