@@ -8,6 +8,7 @@ import { Accordion } from '@/ui/accordion';
 import Navbar from '@/components/layout/Navbar';
 import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
 import { savePromptBuilder, fetchMostRecentPromptBuilders } from '@/utils/promptBuilder';
+import { type WorkbenchRequest, type WorkbenchResponse } from '@/integrations/supabase/types';
 
 interface Message {
   id: string;
@@ -162,26 +163,30 @@ const Workbench = () => {
     try {
       const conversationHistory = messages.map((m) => `${m.isOrganizer ? 'Organizer' : 'Attendee'}: ${m.text}`).join('\n');
 
-      const fullPrompt = `${config.attendeePrompt}
-
-Previous conversation:
+      const requestBody: WorkbenchRequest = {
+        messages: [
+          {
+            role: 'user',
+            content: `Previous conversation:
 ${conversationHistory}
 
 Organizer: ${messageText}
 
-Respond as the attendee would, keeping responses brief and realistic for texting.`;
+Respond as the attendee would, keeping responses brief and realistic for texting.`
+          }
+        ],
+        systemPrompt: config.attendeePrompt
+      };
 
-      const { data, error } = await supabase.functions.invoke('workbench', {
-        body: {
-          prompt: fullPrompt,
-        },
+      const { data, error } = await supabase.functions.invoke<WorkbenchResponse>('workbench', {
+        body: requestBody,
       });
 
       if (error) {
         throw error;
       }
 
-      const response = data?.response || data?.content || data || 'Sorry, I had trouble responding. Can you try again?';
+      const response = data?.message || 'Sorry, I had trouble responding. Can you try again?';
 
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -215,26 +220,30 @@ Respond as the attendee would, keeping responses brief and realistic for texting
     try {
       const conversationHistory = messages.map((m) => `${m.isOrganizer ? 'Organizer' : 'Attendee'}: ${m.text}`).join('\n');
 
-      const fullPrompt = `${getFullPrompt()}
-
-Previous conversation:
+      const requestBody: WorkbenchRequest = {
+        messages: [
+          {
+            role: 'user',
+            content: `Previous conversation:
 ${conversationHistory}
 
 Attendee: ${attendeeMessage}
 
-Respond as the organizer would, keeping responses brief and focused on getting the attendee more involved.`;
+Respond as the organizer would, keeping responses brief and focused on getting the attendee more involved.`
+          }
+        ],
+        systemPrompt: getFullPrompt()
+      };
 
-      const { data, error } = await supabase.functions.invoke('workbench', {
-        body: {
-          prompt: fullPrompt,
-        },
+      const { data, error } = await supabase.functions.invoke<WorkbenchResponse>('workbench', {
+        body: requestBody,
       });
 
       if (error) {
         throw error;
       }
 
-      const response = data?.response || data?.content || data || 'Sorry, I had trouble responding. Can you try again?';
+      const response = data?.message || 'Sorry, I had trouble responding. Can you try again?';
 
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),

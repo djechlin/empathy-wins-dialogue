@@ -63,12 +63,12 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "prompt_builders_user_id_fkey";
-            columns: ["user_id"];
+            foreignKeyName: 'prompt_builders_user_id_fkey';
+            columns: ['user_id'];
             isOneToOne: false;
-            referencedRelation: "users";
-            referencedColumns: ["id"];
-          }
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
         ];
       };
       report: {
@@ -244,3 +244,52 @@ export const Constants = {
     Enums: {},
   },
 } as const;
+
+// Edge Function Types
+export interface WorkbenchRequest {
+  messages: Array<{
+    role: 'user' | 'assistant';
+    content: string;
+  }>;
+  systemPrompt: string;
+}
+
+export interface WorkbenchResponse {
+  message?: string;
+  user_id?: string;
+  error?: string;
+}
+
+export interface ClaudeReportRequest {
+  userMessage: string;
+}
+
+export interface ClaudeReportResponse {
+  result: string;
+  error?: string;
+}
+
+export interface RallyFollowupRequest {
+  userMessage: string;
+  userName?: string;
+}
+
+export interface RallyFollowupResponse {
+  result: string;
+  error?: string;
+}
+
+export interface TextFriendRequest {
+  message: string;
+  phoneNumber?: string;
+}
+
+export interface TextFriendResponse {
+  success: boolean;
+  error?: string;
+}
+
+export interface EdgeFunctionError {
+  error: string;
+  status?: number;
+}
