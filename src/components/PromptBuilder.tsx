@@ -1,7 +1,7 @@
 import { Button } from '@/ui/button';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useRef } from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordion';
 
 interface PromptVariable {
@@ -68,8 +68,13 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
   ) => {
     const [newVariableName, setNewVariableName] = useState('');
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-    const [participantName] = useState(() => generateParticipantName(name.toLowerCase()));
     const [isSaving, setIsSaving] = useState(false);
+    
+    // Generate participant name once using useRef to avoid re-renders
+    const participantNameRef = useRef<string>();
+    if (!participantNameRef.current) {
+      participantNameRef.current = generateParticipantName(name.toLowerCase());
+    }
 
     const handleSave = async () => {
       if (!onSave) return;
@@ -95,17 +100,17 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-2">
           <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>
-          <span className="text-xs text-gray-500 font-mono">{participantName}</span>
+          <span className="text-xs text-gray-500 font-mono">{participantNameRef.current}</span>
         </div>
         {onSave && (
-          <Button 
+          <Button
             onClick={(e) => {
               e.stopPropagation();
               handleSave();
-            }} 
-            disabled={isSaving} 
-            size="sm" 
-            variant="outline" 
+            }}
+            disabled={isSaving}
+            size="sm"
+            variant="outline"
             className="text-xs px-2 py-1 h-auto"
           >
             {isSaving ? 'Saving...' : 'Save'}
