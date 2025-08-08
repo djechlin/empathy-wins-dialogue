@@ -98,7 +98,16 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
           <span className="text-xs text-gray-500 font-mono">{participantName}</span>
         </div>
         {onSave && (
-          <Button onClick={handleSave} disabled={isSaving} size="sm" variant="outline" className="text-xs px-2 py-1 h-auto">
+          <Button 
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSave();
+            }} 
+            disabled={isSaving} 
+            size="sm" 
+            variant="outline" 
+            className="text-xs px-2 py-1 h-auto"
+          >
             {isSaving ? 'Saving...' : 'Save'}
           </Button>
         )}

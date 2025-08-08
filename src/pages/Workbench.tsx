@@ -172,10 +172,10 @@ ${conversationHistory}
 
 Organizer: ${messageText}
 
-Respond as the attendee would, keeping responses brief and realistic for texting.`
-          }
+Respond as the attendee would, keeping responses brief and realistic for texting.`,
+          },
         ],
-        systemPrompt: config.attendeePrompt
+        systemPrompt: config.attendeePrompt,
       };
 
       const { data, error } = await supabase.functions.invoke<WorkbenchResponse>('workbench', {
@@ -229,10 +229,10 @@ ${conversationHistory}
 
 Attendee: ${attendeeMessage}
 
-Respond as the organizer would, keeping responses brief and focused on getting the attendee more involved.`
-          }
+Respond as the organizer would, keeping responses brief and focused on getting the attendee more involved.`,
+          },
         ],
-        systemPrompt: getFullPrompt()
+        systemPrompt: getFullPrompt(),
       };
 
       const { data, error } = await supabase.functions.invoke<WorkbenchResponse>('workbench', {
