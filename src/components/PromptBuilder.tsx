@@ -2,7 +2,7 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordio
 import { Button } from '@/ui/button';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
-import { savePromptBuilder } from '@/utils/promptBuilder';
+import { savePromptBuilder, fetchMostRecentPromptForPersona } from '@/utils/promptBuilder';
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 
 interface PromptBuilderProps {
@@ -51,6 +51,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     const [isSaved, setIsSaved] = useState(true);
     const [saveError, setSaveError] = useState<string | null>(null);
     const [displayName, setDisplayName] = useState(name);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     const handleSave = async () => {
       // Generate timestamped name before saving
@@ -67,7 +68,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
           firstMessage: firstMessage,
           variables: variables,
         });
-        
+
         if (result) {
           setIsSaved(true);
         } else {
@@ -88,6 +89,30 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       setIsSaved(false);
       setSaveError(null);
     }, [systemPrompt, variables, firstMessage]);
+
+    // Auto-load most recent prompt for this persona on mount
+    useEffect(() => {
+      const loadMostRecentPrompt = async () => {
+        if (isLoaded) return; // Avoid loading multiple times
+        
+        try {
+          const recentPrompt = await fetchMostRecentPromptForPersona(name.toLowerCase());
+          if (recentPrompt) {
+            setSystemPrompt(recentPrompt.system_prompt);
+            setVariables(recentPrompt.variables);
+            setFirstMessage(recentPrompt.firstMessage || '');
+            setDisplayName(recentPrompt.name);
+            setIsSaved(true); // Mark as saved since we just loaded it
+          }
+        } catch (error) {
+          console.error('Error loading most recent prompt:', error);
+        } finally {
+          setIsLoaded(true);
+        }
+      };
+
+      loadMostRecentPrompt();
+    }, [name, isLoaded]);
 
     // Memoized full prompt computation
     const fullPrompt = useMemo(() => {

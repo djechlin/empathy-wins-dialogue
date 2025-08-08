@@ -192,12 +192,7 @@ const Workbench = () => {
                   showFirstMessage={true}
                 />
 
-                <PromptBuilder
-                  ref={attendeeRef}
-                  name="attendee"
-                  color="bg-orange-200"
-                  initialPrompt={DEFAULT_ATTENDEE_PROMPT}
-                />
+                <PromptBuilder ref={attendeeRef} name="attendee" color="bg-orange-200" initialPrompt={DEFAULT_ATTENDEE_PROMPT} />
               </Accordion>
             </div>
 

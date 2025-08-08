@@ -31,7 +31,7 @@ export const savePromptBuilder = async (data: PromptBuilderData, persona?: strin
     console.log('Attempting to insert prompt builder record:', promptBuilderRecord);
     console.log('Current user:', user);
     console.log('User roles:', user.role);
-    
+
     const { error, data: insertedData } = await supabase.from('prompt_builders').insert(promptBuilderRecord).select();
 
     if (error) {
@@ -43,6 +43,49 @@ export const savePromptBuilder = async (data: PromptBuilderData, persona?: strin
   } catch (error) {
     console.error('Error in savePromptBuilder:', error);
     throw error;
+  }
+};
+
+export const fetchMostRecentPromptForPersona = async (persona: string): Promise<PromptBuilderData | null> => {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      console.error('No authenticated user');
+      return null;
+    }
+
+    const { data: promptBuilders, error } = await supabase
+      .from('prompt_builders')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('persona', persona)
+      .order('updated_at', { ascending: false })
+      .limit(1);
+
+    if (error) {
+      console.error('Error fetching prompt builders:', error);
+      return null;
+    }
+
+    if (!promptBuilders || promptBuilders.length === 0) {
+      return null;
+    }
+
+    const pb = promptBuilders[0];
+    return {
+      id: pb.id,
+      name: pb.name,
+      system_prompt: pb.system_prompt,
+      persona: pb.persona || '',
+      firstMessage: pb.first_message || undefined,
+      variables: JSON.parse(pb.variables_and_content || '{}'),
+    };
+  } catch (error) {
+    console.error('Error in fetchMostRecentPromptForPersona:', error);
+    return null;
   }
 };
 
