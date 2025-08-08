@@ -2,6 +2,7 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordio
 import { Button } from '@/ui/button';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
+import { savePromptBuilder } from '@/utils/promptBuilder';
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 
 interface PromptBuilderProps {
@@ -10,11 +11,9 @@ interface PromptBuilderProps {
   initialPrompt?: string;
   initialVariables?: Record<string, string>;
   showFirstMessage?: boolean;
-  onSave?: () => Promise<boolean> | boolean;
 }
 
 export interface PromptBuilderRef {
-  save: () => Promise<boolean>;
   getSystemPrompt: () => string;
   getFirstMessage: () => string;
   getVariables: () => Record<string, string>;
@@ -41,9 +40,9 @@ const generateTimestampedName = (type: string): string => {
 };
 
 const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
-  ({ name, color, initialPrompt = '', initialVariables = {}, showFirstMessage = false, onSave }, ref) => {
+  ({ name, color, initialPrompt = '', initialVariables = {}, showFirstMessage = false }, ref) => {
     // Internal state management
-    const [prompt, setPrompt] = useState(initialPrompt);
+    const [systemPrompt, setSystemPrompt] = useState(initialPrompt);
     const [variables, setVariables] = useState<Record<string, string>>(initialVariables);
     const [firstMessage, setFirstMessage] = useState('');
     const [newVariableName, setNewVariableName] = useState('');
@@ -54,8 +53,6 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     const [displayName, setDisplayName] = useState(name);
 
     const handleSave = async () => {
-      if (!onSave) return;
-
       // Generate timestamped name before saving
       const timestampedName = generateTimestampedName(name.toLowerCase());
       setDisplayName(timestampedName);
@@ -63,7 +60,14 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       setIsSaving(true);
       setSaveError(null);
       try {
-        const result = await onSave();
+        const result = await savePromptBuilder({
+          name: timestampedName,
+          system_prompt: systemPrompt,
+          persona: name.toLowerCase(),
+          firstMessage: firstMessage,
+          variables: variables,
+        });
+        
         if (result) {
           setIsSaved(true);
         } else {
@@ -73,7 +77,6 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         setSaveError(errorMessage);
-        console.error('Save failed:', error);
         return false;
       } finally {
         setIsSaving(false);
@@ -84,15 +87,15 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     useEffect(() => {
       setIsSaved(false);
       setSaveError(null);
-    }, [prompt, variables, firstMessage]);
+    }, [systemPrompt, variables, firstMessage]);
 
     // Memoized full prompt computation
     const fullPrompt = useMemo(() => {
       const variableTags = Object.entries(variables)
         .map(([name, value]) => `<${nameToXmlTag(name)}>${value}</${nameToXmlTag(name)}>`)
         .join('\n\n');
-      return `${prompt}\n\n${variableTags}`;
-    }, [prompt, variables]);
+      return `${systemPrompt}\n\n${variableTags}`;
+    }, [systemPrompt, variables]);
 
     // Internal variable management functions
     const addVariable = (name: string) => {
@@ -119,8 +122,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
 
     // Expose getter methods for programmatic access
     useImperativeHandle(ref, () => ({
-      save: handleSave,
-      getSystemPrompt: () => prompt,
+      getSystemPrompt: () => systemPrompt,
       getFirstMessage: () => firstMessage || '',
       getVariables: () => variables,
       getFullPrompt: () => fullPrompt,
@@ -136,20 +138,18 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                 <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>
                 <span className="text-xs text-gray-500 font-mono">{displayName.toLowerCase()}</span>
               </div>
-              {onSave && (
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSave();
-                  }}
-                  disabled={isSaving}
-                  size="sm"
-                  variant="outline"
-                  className="text-xs px-2 py-1 h-auto"
-                >
-                  {isSaving ? 'Saving...' : isSaved ? 'Saved' : 'Save'}
-                </Button>
-              )}
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSave();
+                }}
+                disabled={isSaving}
+                size="sm"
+                variant="outline"
+                className="text-xs px-2 py-1 h-auto"
+              >
+                {isSaving ? 'Saving...' : isSaved ? 'Saved' : 'Save'}
+              </Button>
             </div>
           </AccordionTrigger>
           <AccordionContent className="pb-0">
@@ -174,8 +174,8 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
               <div>
                 <Label className="text-sm mb-2 block text-gray-600">System Prompt</Label>
                 <Textarea
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
+                  value={systemPrompt}
+                  onChange={(e) => setSystemPrompt(e.target.value)}
                   placeholder={`Enter ${name.toLowerCase()} system prompt...`}
                   className="min-h-[200px] text-sm flex-1"
                 />

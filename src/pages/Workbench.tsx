@@ -6,7 +6,6 @@ import { Accordion } from '@/ui/accordion';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
-import { savePromptBuilder } from '@/utils/promptBuilder';
 import { Bot, Play, Send, User } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -38,8 +37,6 @@ const DEFAULT_VARIABLES = {
   'Event Context': 'Bernie Sanders/AOC "Fight Oligarchy" rally',
   'Target Outcome': 'Get attendee to volunteer for next campaign or attend another event',
 };
-
-
 
 const Workbench = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -88,10 +85,10 @@ const Workbench = () => {
 
   const getAIResponse = async (messageText: string, speaker: 'attendee' | 'organizer') => {
     try {
-        const conversationMessages = messages.map((m) => ({
-          role: m.speaker === speaker ? 'assistant' as const : 'user' as const,
-          content: m.text,
-        }));
+      const conversationMessages = messages.map((m) => ({
+        role: m.speaker === speaker ? ('assistant' as const) : ('user' as const),
+        content: m.text,
+      }));
 
       const allMessages = [
         ...conversationMessages,
@@ -102,9 +99,7 @@ const Workbench = () => {
       ];
 
       // Get the appropriate prompt based on which AI we're asking
-      const systemPrompt = speaker === 'attendee' 
-        ? attendeeRef.current?.getFullPrompt()
-        : organizerRef.current?.getFullPrompt();
+      const systemPrompt = speaker === 'attendee' ? attendeeRef.current?.getFullPrompt() : organizerRef.current?.getFullPrompt();
 
       if (!systemPrompt) {
         throw new Error(`Could not get ${speaker} prompt`);
@@ -152,8 +147,6 @@ const Workbench = () => {
     }
   };
 
-
-
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -162,21 +155,9 @@ const Workbench = () => {
   };
 
   const startAutoConversation = async () => {
-    // Save both prompt builders before starting conversation
-    try {
-      const organizerSaveResult = await organizerRef.current?.save();
-      const attendeeSaveResult = await attendeeRef.current?.save();
-
-      if (organizerSaveResult === false || attendeeSaveResult === false) {
-        console.error('Failed to save one or more prompt builders');
-        // Continue anyway, but log the error
-      }
-    } catch (error) {
-      console.error('Error saving prompt builders:', error);
-    }
-
-    // Read the first message directly from the PromptBuilder ref
-    const initialMessage = organizerRef.current?.getFirstMessage() || 'Hi! I saw you at the Bernie/AOC event last week. Thanks for coming out! I wanted to follow up about some upcoming opportunities to stay involved.';
+    const initialMessage =
+      organizerRef.current?.getFirstMessage() ||
+      'Hi! I saw you at the Bernie/AOC event last week. Thanks for coming out! I wanted to follow up about some upcoming opportunities to stay involved.';
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -209,14 +190,6 @@ const Workbench = () => {
                   initialPrompt={DEFAULT_ORGANIZER_PROMPT}
                   initialVariables={DEFAULT_VARIABLES}
                   showFirstMessage={true}
-                  onSave={async () => {
-                    return await savePromptBuilder({
-                      name: 'organizer',
-                      prompt: organizerRef.current?.getSystemPrompt() || DEFAULT_ORGANIZER_PROMPT,
-                      firstMessage: organizerRef.current?.getFirstMessage(),
-                      variables: organizerRef.current?.getVariables() || DEFAULT_VARIABLES,
-                    });
-                  }}
                 />
 
                 <PromptBuilder
@@ -224,13 +197,6 @@ const Workbench = () => {
                   name="attendee"
                   color="bg-orange-200"
                   initialPrompt={DEFAULT_ATTENDEE_PROMPT}
-                  onSave={async () => {
-                    return await savePromptBuilder({
-                      name: 'attendee',
-                      prompt: attendeeRef.current?.getSystemPrompt() || DEFAULT_ATTENDEE_PROMPT,
-                      variables: attendeeRef.current?.getVariables() || {},
-                    });
-                  }}
                 />
               </Accordion>
             </div>

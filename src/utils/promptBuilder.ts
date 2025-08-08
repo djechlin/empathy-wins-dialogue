@@ -3,26 +3,27 @@ import { supabase } from '@/integrations/supabase/client';
 export interface PromptBuilderData {
   id?: string;
   name: string;
-  prompt: string;
+  system_prompt: string;
+  persona: string;
   firstMessage?: string;
   variables: Record<string, string>;
 }
 
-export const savePromptBuilder = async (data: PromptBuilderData): Promise<boolean> => {
+export const savePromptBuilder = async (data: PromptBuilderData, persona?: string): Promise<boolean> => {
   try {
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
-      console.error('No authenticated user');
       throw new Error('No authenticated user');
     }
 
     const promptBuilderRecord = {
       user_id: user.id,
       name: data.name,
-      prompt: data.prompt,
+      system_prompt: data.system_prompt,
+      persona: persona || data.persona,
       first_message: data.firstMessage || null,
       variables_and_content: JSON.stringify(data.variables),
     };
@@ -30,13 +31,10 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<boolea
     console.log('Attempting to insert prompt builder record:', promptBuilderRecord);
     console.log('Current user:', user);
     console.log('User roles:', user.role);
-    console.log('User app_metadata:', user.app_metadata);
-
+    
     const { error, data: insertedData } = await supabase.from('prompt_builders').insert(promptBuilderRecord).select();
 
     if (error) {
-      console.error('Error saving prompt builder:', error);
-      console.error('Full error details:', JSON.stringify(error, null, 2));
       throw new Error(error.message || 'Database error occurred');
     }
 
@@ -81,7 +79,8 @@ export const fetchMostRecentPromptBuilders = async (): Promise<Record<string, Pr
       result[pb.name] = {
         id: pb.id,
         name: pb.name,
-        prompt: pb.prompt,
+        system_prompt: pb.system_prompt,
+        persona: pb.persona || '',
         firstMessage: pb.first_message || undefined,
         variables: JSON.parse(pb.variables_and_content || '{}'),
       };
