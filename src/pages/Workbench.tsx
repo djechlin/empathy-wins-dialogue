@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Accordion } from '@/ui/accordion';
 import Navbar from '@/components/layout/Navbar';
 import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
+import { savePromptBuilder, fetchMostRecentPromptBuilders } from '@/utils/promptBuilder';
 
 interface Message {
   id: string;
@@ -77,6 +78,25 @@ const Workbench = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
+
+  // Load saved prompt builders on page load
+  useEffect(() => {
+    const loadSavedPromptBuilders = async () => {
+      const savedPromptBuilders = await fetchMostRecentPromptBuilders();
+
+      if (savedPromptBuilders) {
+        setConfig((prev) => ({
+          ...prev,
+          organizerPrompt: savedPromptBuilders.organizer?.prompt || prev.organizerPrompt,
+          attendeePrompt: savedPromptBuilders.attendee?.prompt || prev.attendeePrompt,
+          organizerFirstMessage: savedPromptBuilders.organizer?.firstMessage || prev.organizerFirstMessage,
+          variables: savedPromptBuilders.organizer?.variables || prev.variables,
+        }));
+      }
+    };
+
+    loadSavedPromptBuilders();
+  }, []);
 
   const getFullPrompt = () => {
     const variableTags = generateVariableTags(config.variables);
@@ -248,7 +268,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
     try {
       const organizerSaveResult = await organizerRef.current?.save();
       const attendeeSaveResult = await attendeeRef.current?.save();
-      
+
       if (organizerSaveResult === false || attendeeSaveResult === false) {
         console.error('Failed to save one or more prompt builders');
         // Continue anyway, but log the error
@@ -306,9 +326,12 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                   onFirstMessageChange={(value) => setConfig((prev) => ({ ...prev, organizerFirstMessage: value }))}
                   showFirstMessage={true}
                   onSave={async () => {
-                    console.log('Saving organizer prompt builder...');
-                    // Placeholder save logic - return success for now
-                    return true;
+                    return await savePromptBuilder({
+                      name: 'organizer',
+                      prompt: config.organizerPrompt,
+                      firstMessage: config.organizerFirstMessage,
+                      variables: config.variables,
+                    });
                   }}
                 />
 
@@ -323,9 +346,11 @@ Respond as the organizer would, keeping responses brief and focused on getting t
                   onRemoveVariable={removeVariable}
                   onReorderVariables={reorderVariables}
                   onSave={async () => {
-                    console.log('Saving attendee prompt builder...');
-                    // Placeholder save logic - return success for now
-                    return true;
+                    return await savePromptBuilder({
+                      name: 'attendee',
+                      prompt: config.attendeePrompt,
+                      variables: {},
+                    });
                   }}
                 />
               </Accordion>

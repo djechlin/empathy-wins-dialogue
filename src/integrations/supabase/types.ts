@@ -30,6 +30,47 @@ export type Database = {
         };
         Relationships: [];
       };
+      prompt_builders: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          prompt: string;
+          first_message: string | null;
+          variables_and_content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name: string;
+          prompt: string;
+          first_message?: string | null;
+          variables_and_content: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          name?: string;
+          prompt?: string;
+          first_message?: string | null;
+          variables_and_content?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "prompt_builders_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       report: {
         Row: {
           created_at: string;
