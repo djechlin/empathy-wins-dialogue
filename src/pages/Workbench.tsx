@@ -455,9 +455,9 @@ Respond as the organizer would, keeping responses brief and focused on getting t
       <Navbar pageTitle="Workbench" pageSummary="Develop AI organizer prompts" />
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[700px]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ height: 'calc(100vh - 120px)' }}>
             {/* Participants Column */}
-            <div className="space-y-4">
+            <div className="space-y-4 h-full overflow-y-auto">
               <Accordion type="multiple" defaultValue={['organizer', 'attendee']} className="w-full space-y-4">
                 {/* Organizer Accordion */}
                 <AccordionItem value="organizer" className="border-0">
@@ -512,7 +512,7 @@ Respond as the organizer would, keeping responses brief and focused on getting t
             </div>
 
             {/* Conversation Column */}
-            <div className="space-y-4">
+            <div className="space-y-4 h-full">
               <Card className="h-full flex flex-col">
                 <div className="border-b px-4 py-3 bg-gray-50">
                   <div className="flex items-center justify-between mb-3">
