@@ -43,7 +43,7 @@ const Workbench = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [config, setConfig] = useState<PromptConfig>({
-    organizerHumanMode: true,
+    organizerHumanMode: false,
     attendeeHumanMode: false,
   });
 
@@ -385,9 +385,7 @@ const Workbench = () => {
                               : 'Type your message as the attendee...'
                       }
                       className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
-                        !config.organizerHumanMode && !config.attendeeHumanMode
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          : ''
+                        !config.organizerHumanMode && !config.attendeeHumanMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''
                       }`}
                       disabled={isLoading || (!config.organizerHumanMode && !config.attendeeHumanMode)}
                     />
