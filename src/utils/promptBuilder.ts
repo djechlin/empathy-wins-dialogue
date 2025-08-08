@@ -27,9 +27,7 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<boolea
       variables_and_content: JSON.stringify(data.variables),
     };
 
-    const { error } = await supabase.from('prompt_builders').upsert(promptBuilderRecord, {
-      onConflict: 'user_id,name',
-    });
+    const { error } = await supabase.from('prompt_builders').insert(promptBuilderRecord);
 
     if (error) {
       console.error('Error saving prompt builder:', error);
