@@ -1,32 +1,24 @@
+import { AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordion';
 import { Button } from '@/ui/button';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
-import React, { useState, forwardRef, useImperativeHandle, useRef } from 'react';
-import { AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordion';
-
-interface PromptVariable {
-  name: string;
-  value: string;
-  onChange: (value: string) => void;
-}
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 
 interface PromptBuilderProps {
   name: string;
   color: string; // Tailwind background color class (e.g., 'bg-purple-200')
-  prompt: string;
-  onPromptChange: (value: string) => void;
-  variables: PromptVariable[];
-  onAddVariable?: (name: string) => void;
-  onRemoveVariable?: (name: string) => void;
-  onReorderVariables?: (fromIndex: number, toIndex: number) => void;
-  firstMessage?: string;
-  onFirstMessageChange?: (value: string) => void;
+  initialPrompt?: string;
+  initialVariables?: Record<string, string>;
   showFirstMessage?: boolean;
   onSave?: () => Promise<boolean> | boolean;
 }
 
 export interface PromptBuilderRef {
   save: () => Promise<boolean>;
+  getSystemPrompt: () => string;
+  getFirstMessage: () => string;
+  getVariables: () => Record<string, string>;
+  getFullPrompt: () => string;
 }
 
 // Utility function to convert variable name to XML tag
@@ -49,41 +41,38 @@ const generateTimestampedName = (type: string): string => {
 };
 
 const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
-  (
-    {
-      name,
-      color,
-      prompt,
-      onPromptChange,
-      variables,
-      onAddVariable,
-      onRemoveVariable,
-      onReorderVariables,
-      firstMessage,
-      onFirstMessageChange,
-      showFirstMessage = false,
-      onSave,
-    },
-    ref,
-  ) => {
+  ({ name, color, initialPrompt = '', initialVariables = {}, showFirstMessage = false, onSave }, ref) => {
+    // Internal state management
+    const [prompt, setPrompt] = useState(initialPrompt);
+    const [variables, setVariables] = useState<Record<string, string>>(initialVariables);
+    const [firstMessage, setFirstMessage] = useState('');
     const [newVariableName, setNewVariableName] = useState('');
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [isSaving, setIsSaving] = useState(false);
-
-    // Generate timestamped name once using useRef to avoid re-renders
-    const timestampedNameRef = useRef<string>();
-    if (!timestampedNameRef.current) {
-      timestampedNameRef.current = generateTimestampedName(name.toLowerCase());
-    }
+    const [isSaved, setIsSaved] = useState(true);
+    const [saveError, setSaveError] = useState<string | null>(null);
+    const [displayName, setDisplayName] = useState(name);
 
     const handleSave = async () => {
       if (!onSave) return;
 
+      // Generate timestamped name before saving
+      const timestampedName = generateTimestampedName(name.toLowerCase());
+      setDisplayName(timestampedName);
+
       setIsSaving(true);
+      setSaveError(null);
       try {
         const result = await onSave();
+        if (result) {
+          setIsSaved(true);
+        } else {
+          setSaveError('Save failed - operation returned false');
+        }
         return result;
       } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        setSaveError(errorMessage);
         console.error('Save failed:', error);
         return false;
       } finally {
@@ -91,175 +80,209 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       }
     };
 
-    // Expose save function for programmatic calls
+    // Track changes to determine if dirty
+    useEffect(() => {
+      setIsSaved(false);
+      setSaveError(null);
+    }, [prompt, variables, firstMessage]);
+
+    // Memoized full prompt computation
+    const fullPrompt = useMemo(() => {
+      const variableTags = Object.entries(variables)
+        .map(([name, value]) => `<${nameToXmlTag(name)}>${value}</${nameToXmlTag(name)}>`)
+        .join('\n\n');
+      return `${prompt}\n\n${variableTags}`;
+    }, [prompt, variables]);
+
+    // Internal variable management functions
+    const addVariable = (name: string) => {
+      if (!name.trim() || variables[name]) return;
+      setVariables((prev) => ({ ...prev, [name]: '' }));
+    };
+
+    const removeVariable = (name: string) => {
+      setVariables((prev) => {
+        const newVariables = { ...prev };
+        delete newVariables[name];
+        return newVariables;
+      });
+    };
+
+    const reorderVariables = (fromIndex: number, toIndex: number) => {
+      setVariables((prev) => {
+        const entries = Object.entries(prev);
+        const [removed] = entries.splice(fromIndex, 1);
+        entries.splice(toIndex, 0, removed);
+        return Object.fromEntries(entries);
+      });
+    };
+
+    // Expose getter methods for programmatic access
     useImperativeHandle(ref, () => ({
       save: handleSave,
+      getSystemPrompt: () => prompt,
+      getFirstMessage: () => firstMessage || '',
+      getVariables: () => variables,
+      getFullPrompt: () => fullPrompt,
     }));
 
-    const Header = () => (
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-2">
-          <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>
-          <span className="text-xs text-gray-500 font-mono">{timestampedNameRef.current}</span>
-        </div>
-        {onSave && (
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSave();
-            }}
-            disabled={isSaving}
-            size="sm"
-            variant="outline"
-            className="text-xs px-2 py-1 h-auto"
-          >
-            {isSaving ? 'Saving...' : 'Save'}
-          </Button>
-        )}
-      </div>
-    );
-
-    const Content = () => (
-      <div className="space-y-4 pt-4">
-        {showFirstMessage && firstMessage !== undefined && onFirstMessageChange && (
-          <div>
-            <Label className="text-sm mb-2 block text-gray-600">First message (not part of prompt)</Label>
-            <Textarea
-              value={firstMessage}
-              onChange={(e) => onFirstMessageChange(e.target.value)}
-              placeholder="Enter first message..."
-              className="min-h-[100px] text-sm flex-1"
-            />
-          </div>
-        )}
-        <div>
-          <Label className="text-sm mb-2 block text-gray-600">System Prompt</Label>
-          <Textarea
-            value={prompt}
-            onChange={(e) => onPromptChange(e.target.value)}
-            placeholder={`Enter ${name.toLowerCase()} system prompt...`}
-            className="min-h-[200px] text-sm flex-1"
-          />
-        </div>
-
-        <div>
-          {variables.map((variable, index) => (
-            <div
-              key={variable.name}
-              className="mb-3"
-              draggable={!!onReorderVariables}
-              onDragStart={(e) => {
-                if (onReorderVariables) {
-                  setDraggedIndex(index);
-                  e.dataTransfer.effectAllowed = 'move';
-                }
-              }}
-              onDragOver={(e) => {
-                if (draggedIndex !== null && draggedIndex !== index) {
-                  e.preventDefault();
-                  e.dataTransfer.dropEffect = 'move';
-                }
-              }}
-              onDrop={(e) => {
-                if (onReorderVariables && draggedIndex !== null && draggedIndex !== index) {
-                  e.preventDefault();
-                  onReorderVariables(draggedIndex, index);
-                  setDraggedIndex(null);
-                }
-              }}
-              onDragEnd={() => setDraggedIndex(null)}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-2">
-                  {onReorderVariables && (
-                    <div className="cursor-grab hover:cursor-grabbing text-gray-400 hover:text-gray-600 p-1">
-                      <div className="grid grid-cols-2 gap-0.5 w-3 h-3">
-                        <div className="w-1 h-1 bg-current rounded-full"></div>
-                        <div className="w-1 h-1 bg-current rounded-full"></div>
-                        <div className="w-1 h-1 bg-current rounded-full"></div>
-                        <div className="w-1 h-1 bg-current rounded-full"></div>
-                        <div className="w-1 h-1 bg-current rounded-full"></div>
-                        <div className="w-1 h-1 bg-current rounded-full"></div>
-                      </div>
-                    </div>
-                  )}
-                  <Label className="text-sm text-gray-600">
-                    <code className="text-xs text-gray-500">{'<' + nameToXmlTag(variable.name) + '>'}</code>
-                  </Label>
-                </div>
-                {onRemoveVariable && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onRemoveVariable(variable.name)}
-                    className="text-xs px-2 py-1 h-auto"
-                  >
-                    Remove
-                  </Button>
-                )}
-              </div>
-              <Textarea
-                value={variable.value}
-                onChange={(e) => variable.onChange(e.target.value)}
-                placeholder={`Enter ${variable.name.toLowerCase()}...`}
-                className="min-h-[100px] text-sm"
-              />
-              <div className="text-xs text-gray-400 mt-1">
-                <code>{'</' + nameToXmlTag(variable.name) + '>'}</code>
-              </div>
-            </div>
-          ))}
-
-          {onAddVariable && (
-            <div className="flex items-center gap-2 mt-3">
-              <input
-                type="text"
-                value={newVariableName}
-                onChange={(e) => setNewVariableName(e.target.value)}
-                placeholder="Variable name"
-                className="px-2 py-1 text-xs border rounded flex-1"
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && newVariableName.trim()) {
-                    onAddVariable(newVariableName.trim());
-                    setNewVariableName('');
-                  }
-                }}
-              />
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  if (newVariableName.trim()) {
-                    onAddVariable(newVariableName.trim());
-                    setNewVariableName('');
-                  }
-                }}
-                disabled={!newVariableName.trim()}
-                className="text-xs px-2 py-1 h-auto"
-              >
-                Add
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-
+    // Render the component directly without nested component definitions
     return (
       <AccordionItem value={name.toLowerCase()} className="border-0">
         <div className={`${color} rounded-lg p-4`}>
           <AccordionTrigger className="hover:no-underline p-0">
-            <Header />
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>
+                <span className="text-xs text-gray-500 font-mono">{displayName.toLowerCase()}</span>
+              </div>
+              {onSave && (
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSave();
+                  }}
+                  disabled={isSaving}
+                  size="sm"
+                  variant="outline"
+                  className="text-xs px-2 py-1 h-auto"
+                >
+                  {isSaving ? 'Saving...' : isSaved ? 'Saved' : 'Save'}
+                </Button>
+              )}
+            </div>
           </AccordionTrigger>
           <AccordionContent className="pb-0">
-            <Content />
+            <div className="space-y-4 pt-4">
+              {saveError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm">
+                  <div className="font-medium">Save Error:</div>
+                  <div className="mt-1">{saveError}</div>
+                </div>
+              )}
+              {showFirstMessage && firstMessage !== undefined && setFirstMessage && (
+                <div>
+                  <Label className="text-sm mb-2 block text-gray-600">First message (not part of prompt)</Label>
+                  <Textarea
+                    value={firstMessage}
+                    onChange={(e) => setFirstMessage(e.target.value)}
+                    placeholder="Enter first message..."
+                    className="min-h-[100px] text-sm flex-1"
+                  />
+                </div>
+              )}
+              <div>
+                <Label className="text-sm mb-2 block text-gray-600">System Prompt</Label>
+                <Textarea
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder={`Enter ${name.toLowerCase()} system prompt...`}
+                  className="min-h-[200px] text-sm flex-1"
+                />
+              </div>
+
+              <div>
+                {Object.entries(variables).map(([varName, value], index) => (
+                  <div
+                    key={varName}
+                    className="mb-3"
+                    draggable={true}
+                    onDragStart={(e) => {
+                      setDraggedIndex(index);
+                      e.dataTransfer.effectAllowed = 'move';
+                    }}
+                    onDragOver={(e) => {
+                      if (draggedIndex !== null && draggedIndex !== index) {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                      }
+                    }}
+                    onDrop={(e) => {
+                      if (draggedIndex !== null && draggedIndex !== index) {
+                        e.preventDefault();
+                        reorderVariables(draggedIndex, index);
+                        setDraggedIndex(null);
+                      }
+                    }}
+                    onDragEnd={() => setDraggedIndex(null)}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        <div className="cursor-grab hover:cursor-grabbing text-gray-400 hover:text-gray-600 p-1">
+                          <div className="grid grid-cols-2 gap-0.5 w-3 h-3">
+                            <div className="w-1 h-1 bg-current rounded-full"></div>
+                            <div className="w-1 h-1 bg-current rounded-full"></div>
+                            <div className="w-1 h-1 bg-current rounded-full"></div>
+                            <div className="w-1 h-1 bg-current rounded-full"></div>
+                            <div className="w-1 h-1 bg-current rounded-full"></div>
+                            <div className="w-1 h-1 bg-current rounded-full"></div>
+                          </div>
+                        </div>
+                        <Label className="text-sm text-gray-600">
+                          <code className="text-xs text-gray-500">{'<' + nameToXmlTag(varName) + '>'}</code>
+                        </Label>
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => removeVariable(varName)}
+                        className="text-xs px-2 py-1 h-auto"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                    <Textarea
+                      value={value}
+                      onChange={(e) => setVariables((prev) => ({ ...prev, [varName]: e.target.value }))}
+                      placeholder={`Enter ${varName.toLowerCase()}...`}
+                      className="min-h-[100px] text-sm"
+                    />
+                    <div className="text-xs text-gray-400 mt-1">
+                      <code>{'</' + nameToXmlTag(varName) + '>'}</code>
+                    </div>
+                  </div>
+                ))}
+
+                <div className="flex items-center gap-2 mt-3">
+                  <input
+                    type="text"
+                    value={newVariableName}
+                    onChange={(e) => setNewVariableName(e.target.value)}
+                    placeholder="Variable name"
+                    className="px-2 py-1 text-xs border rounded flex-1"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && newVariableName.trim()) {
+                        addVariable(newVariableName.trim());
+                        setNewVariableName('');
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      if (newVariableName.trim()) {
+                        addVariable(newVariableName.trim());
+                        setNewVariableName('');
+                      }
+                    }}
+                    disabled={!newVariableName.trim()}
+                    className="text-xs px-2 py-1 h-auto"
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
+            </div>
           </AccordionContent>
         </div>
       </AccordionItem>
     );
   },
 );
+
+PromptBuilder.displayName = 'PromptBuilder';
 
 export default PromptBuilder;
