@@ -1,12 +1,12 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
-import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
 import { Play, Send, User, Bot } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordion';
+import { Accordion } from '@/ui/accordion';
 import Navbar from '@/components/layout/Navbar';
+import PromptBuilder from '@/components/PromptBuilder';
 
 interface Message {
   id: string;
@@ -22,12 +22,6 @@ interface PromptConfig {
   variables: Record<string, string>;
   organizerHumanMode: boolean;
   attendeeHumanMode: boolean;
-}
-
-interface ParticipantVariable {
-  name: string;
-  value: string;
-  onChange: (value: string) => void;
 }
 
 // Default prompts
@@ -47,196 +41,18 @@ const DEFAULT_VARIABLES = {
   'Target Outcome': 'Get attendee to volunteer for next campaign or attend another event',
 };
 
-// Utility function to convert variable name to XML tag
-const nameToXmlTag = (name: string): string => {
-  return name
-    .toLowerCase()
-    .replace(/\s+/g, '_')
-    .replace(/[^a-z0-9_]/g, '');
-};
-
 // Generate XML tags for variables
 const generateVariableTags = (variables: Record<string, string>): string => {
+  const nameToXmlTag = (name: string): string => {
+    return name
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_]/g, '');
+  };
+
   return Object.entries(variables)
     .map(([name, value]) => `<${nameToXmlTag(name)}>${value}</${nameToXmlTag(name)}>`)
     .join('\n\n');
-};
-
-// Generate participant name with timestamp
-const generateParticipantName = (type: string): string => {
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const date = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
-  return `${type}-${month}/${date}-${hours}:${minutes}:${seconds}`;
-};
-
-// Header component for participant
-const ParticipantHeader: React.FC<{
-  type: 'organizer' | 'attendee';
-  participantName: string;
-}> = ({ type, participantName }) => {
-  return (
-    <div className="flex items-center gap-2">
-      <span className="font-medium">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
-      <span className="text-xs text-gray-500 font-mono">{participantName}</span>
-    </div>
-  );
-};
-
-// Content component for participant details
-const ParticipantContent: React.FC<{
-  prompt: string;
-  onPromptChange: (value: string) => void;
-  type: 'organizer' | 'attendee';
-  variables: ParticipantVariable[];
-  onAddVariable?: (name: string) => void;
-  onRemoveVariable?: (name: string) => void;
-  onReorderVariables?: (fromIndex: number, toIndex: number) => void;
-  firstMessage?: string;
-  onFirstMessageChange?: (value: string) => void;
-}> = ({
-  prompt,
-  onPromptChange,
-  type,
-  variables,
-  onAddVariable,
-  onRemoveVariable,
-  onReorderVariables,
-  firstMessage,
-  onFirstMessageChange,
-}) => {
-  const [newVariableName, setNewVariableName] = useState('');
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  return (
-    <div className="space-y-4 pt-4">
-      {firstMessage !== undefined && onFirstMessageChange && (
-        <div>
-          <Label className="text-sm mb-2 block text-gray-600">First message (not part of prompt)</Label>
-          <Textarea
-            value={firstMessage}
-            onChange={(e) => onFirstMessageChange(e.target.value)}
-            placeholder="Enter first message..."
-            className="min-h-[100px] text-sm flex-1"
-          />
-        </div>
-      )}
-      <div>
-        <Label className="text-sm mb-2 block text-gray-600">System Prompt</Label>
-        <Textarea
-          value={prompt}
-          onChange={(e) => onPromptChange(e.target.value)}
-          placeholder={`Enter ${type} system prompt...`}
-          className="min-h-[200px] text-sm flex-1"
-        />
-      </div>
-
-      <div>
-        {variables.map((variable, index) => (
-          <div
-            key={variable.name}
-            className="mb-3"
-            draggable={!!onReorderVariables}
-            onDragStart={(e) => {
-              if (onReorderVariables) {
-                setDraggedIndex(index);
-                e.dataTransfer.effectAllowed = 'move';
-              }
-            }}
-            onDragOver={(e) => {
-              if (draggedIndex !== null && draggedIndex !== index) {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-              }
-            }}
-            onDrop={(e) => {
-              if (onReorderVariables && draggedIndex !== null && draggedIndex !== index) {
-                e.preventDefault();
-                onReorderVariables(draggedIndex, index);
-                setDraggedIndex(null);
-              }
-            }}
-            onDragEnd={() => setDraggedIndex(null)}
-          >
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-2">
-                {onReorderVariables && (
-                  <div className="cursor-grab hover:cursor-grabbing text-gray-400 hover:text-gray-600 p-1">
-                    <div className="grid grid-cols-2 gap-0.5 w-3 h-3">
-                      <div className="w-1 h-1 bg-current rounded-full"></div>
-                      <div className="w-1 h-1 bg-current rounded-full"></div>
-                      <div className="w-1 h-1 bg-current rounded-full"></div>
-                      <div className="w-1 h-1 bg-current rounded-full"></div>
-                      <div className="w-1 h-1 bg-current rounded-full"></div>
-                      <div className="w-1 h-1 bg-current rounded-full"></div>
-                    </div>
-                  </div>
-                )}
-                <Label className="text-sm text-gray-600">
-                  <code className="text-xs text-gray-500">{'<' + nameToXmlTag(variable.name) + '>'}</code>
-                </Label>
-              </div>
-              {onRemoveVariable && (
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => onRemoveVariable(variable.name)}
-                  className="text-xs px-2 py-1 h-auto"
-                >
-                  Remove
-                </Button>
-              )}
-            </div>
-            <Textarea
-              value={variable.value}
-              onChange={(e) => variable.onChange(e.target.value)}
-              placeholder={`Enter ${variable.name.toLowerCase()}...`}
-              className="min-h-[100px] text-sm"
-            />
-            <div className="text-xs text-gray-400 mt-1">
-              <code>{'</' + nameToXmlTag(variable.name) + '>'}</code>
-            </div>
-          </div>
-        ))}
-
-        {onAddVariable && (
-          <div className="flex items-center gap-2 mt-3">
-            <input
-              type="text"
-              value={newVariableName}
-              onChange={(e) => setNewVariableName(e.target.value)}
-              placeholder="Variable name"
-              className="px-2 py-1 text-xs border rounded flex-1"
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' && newVariableName.trim()) {
-                  onAddVariable(newVariableName.trim());
-                  setNewVariableName('');
-                }
-              }}
-            />
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                if (newVariableName.trim()) {
-                  onAddVariable(newVariableName.trim());
-                  setNewVariableName('');
-                }
-              }}
-              disabled={!newVariableName.trim()}
-              className="text-xs px-2 py-1 h-auto"
-            >
-              Add
-            </Button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
 };
 
 const Workbench = () => {
@@ -252,12 +68,6 @@ const Workbench = () => {
     organizerHumanMode: true,
     attendeeHumanMode: false,
   });
-
-  // Generate participant names once on component mount
-  const [participantNames] = useState(() => ({
-    organizer: generateParticipantName('organizer'),
-    attendee: generateParticipantName('attendee'),
-  }));
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -459,55 +269,38 @@ Respond as the organizer would, keeping responses brief and focused on getting t
             {/* Participants Column */}
             <div className="space-y-4 h-full overflow-y-auto">
               <Accordion type="multiple" defaultValue={['organizer', 'attendee']} className="w-full space-y-4">
-                {/* Organizer Accordion */}
-                <AccordionItem value="organizer" className="border-0">
-                  <div className="bg-purple-200 rounded-lg p-4">
-                    <AccordionTrigger className="hover:no-underline p-0">
-                      <ParticipantHeader type="organizer" participantName={participantNames.organizer} />
-                    </AccordionTrigger>
-                    <AccordionContent className="pb-0">
-                      <ParticipantContent
-                        prompt={config.organizerPrompt}
-                        onPromptChange={(value) => setConfig((prev) => ({ ...prev, organizerPrompt: value }))}
-                        type="organizer"
-                        variables={Object.entries(config.variables).map(([name, value]) => ({
-                          name,
-                          value,
-                          onChange: (newValue) =>
-                            setConfig((prev) => ({
-                              ...prev,
-                              variables: { ...prev.variables, [name]: newValue },
-                            })),
-                        }))}
-                        onAddVariable={addVariable}
-                        onRemoveVariable={removeVariable}
-                        onReorderVariables={reorderVariables}
-                        firstMessage={config.organizerFirstMessage}
-                        onFirstMessageChange={(value) => setConfig((prev) => ({ ...prev, organizerFirstMessage: value }))}
-                      />
-                    </AccordionContent>
-                  </div>
-                </AccordionItem>
+                <PromptBuilder
+                  name="organizer"
+                  color="bg-purple-200"
+                  prompt={config.organizerPrompt}
+                  onPromptChange={(value) => setConfig((prev) => ({ ...prev, organizerPrompt: value }))}
+                  variables={Object.entries(config.variables).map(([name, value]) => ({
+                    name,
+                    value,
+                    onChange: (newValue) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        variables: { ...prev.variables, [name]: newValue },
+                      })),
+                  }))}
+                  onAddVariable={addVariable}
+                  onRemoveVariable={removeVariable}
+                  onReorderVariables={reorderVariables}
+                  firstMessage={config.organizerFirstMessage}
+                  onFirstMessageChange={(value) => setConfig((prev) => ({ ...prev, organizerFirstMessage: value }))}
+                  showFirstMessage={true}
+                />
 
-                {/* Attendee Accordion */}
-                <AccordionItem value="attendee" className="border-0">
-                  <div className="bg-orange-200 rounded-lg p-4">
-                    <AccordionTrigger className="hover:no-underline p-0">
-                      <ParticipantHeader type="attendee" participantName={participantNames.attendee} />
-                    </AccordionTrigger>
-                    <AccordionContent className="pb-0">
-                      <ParticipantContent
-                        prompt={config.attendeePrompt}
-                        onPromptChange={(value) => setConfig((prev) => ({ ...prev, attendeePrompt: value }))}
-                        type="attendee"
-                        variables={[]}
-                        onAddVariable={addVariable}
-                        onRemoveVariable={removeVariable}
-                        onReorderVariables={reorderVariables}
-                      />
-                    </AccordionContent>
-                  </div>
-                </AccordionItem>
+                <PromptBuilder
+                  name="attendee"
+                  color="bg-orange-200"
+                  prompt={config.attendeePrompt}
+                  onPromptChange={(value) => setConfig((prev) => ({ ...prev, attendeePrompt: value }))}
+                  variables={[]}
+                  onAddVariable={addVariable}
+                  onRemoveVariable={removeVariable}
+                  onReorderVariables={reorderVariables}
+                />
               </Accordion>
             </div>
 
