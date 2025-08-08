@@ -94,7 +94,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     useEffect(() => {
       const loadMostRecentPrompt = async () => {
         if (isLoaded) return; // Avoid loading multiple times
-        
+
         try {
           const recentPrompt = await fetchMostRecentPromptForPersona(name.toLowerCase());
           if (recentPrompt) {

@@ -114,16 +114,32 @@ const Workbench = () => {
         body: requestBody,
       });
 
+      console.log('Edge function response:', { data, error });
+
       if (error) {
+        console.error('Edge function error:', error);
         throw error;
       }
 
-      const response = data?.message || 'Sorry, I had trouble responding. Can you try again?';
+      // Handle different possible response formats
+      let response: string;
+      if (data?.message) {
+        response = data.message;
+      } else if (typeof data === 'string') {
+        // Sometimes the response might be a direct string
+        response = data;
+      } else if (data && typeof data === 'object' && 'result' in data) {
+        // Handle result field like other edge functions
+        response = (data as { result: string }).result;
+      } else {
+        console.warn('Unexpected response format:', data);
+        response = 'Sorry, I had trouble responding. Can you try again?';
+      }
 
       const aiResponse: Message = {
         id: Date.now().toString(),
         text: response,
-        speaker: 'attendee',
+        speaker: speaker,
         timestamp: new Date(),
       };
 
@@ -138,7 +154,7 @@ const Workbench = () => {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: 'Sorry, something went wrong. Try again?',
-        speaker: 'attendee',
+        speaker: speaker,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
