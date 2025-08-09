@@ -213,7 +213,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                 disabled={isSaving}
                 size="sm"
                 variant="outline"
-                className="text-xs px-2 py-1 h-auto"
+                className="text-xs px-2 py-1 h-auto font-sans"
               >
                 {isSaving ? 'Saving...' : isSaved ? 'Saved' : 'Save'}
               </Button>
@@ -281,7 +281,9 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                   >
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
-                        <div className={`p-1 ${editingVariableName === null ? 'cursor-grab hover:cursor-grabbing text-gray-400 hover:text-gray-600' : 'text-gray-300 cursor-not-allowed'}`}>
+                        <div
+                          className={`p-1 ${editingVariableName === null ? 'cursor-grab hover:cursor-grabbing text-gray-400 hover:text-gray-600' : 'text-gray-300 cursor-not-allowed'}`}
+                        >
                           <div className="grid grid-cols-2 gap-0.5 w-3 h-3">
                             <div className="w-1 h-1 bg-current rounded-full"></div>
                             <div className="w-1 h-1 bg-current rounded-full"></div>
