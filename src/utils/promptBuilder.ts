@@ -85,8 +85,7 @@ export const fetchMostRecentPromptForPersona = async (persona: string): Promise<
       persona: pb.persona || '',
       firstMessage: pb.first_message || undefined,
       variables: JSON.parse(pb.variables_and_content || '{}'),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      archived: (pb as any).archived || false, // TODO: Remove 'as any' when archived field is added to DB
+      archived: pb.archived || false,
       created_at: pb.created_at,
       updated_at: pb.updated_at,
     };
@@ -189,11 +188,9 @@ export const fetchAllPromptBuildersForPersona = async (persona: string): Promise
 
 export const archivePromptBuilder = async (id: string, archived: boolean): Promise<boolean> => {
   try {
-    // TODO: Update this once archived column is added to prompt_builders table
     const { error } = await supabase
       .from('prompt_builders')
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .update({ archived } as any)
+      .update({ archived })
       .eq('id', id);
 
     if (error) {

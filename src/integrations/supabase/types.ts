@@ -146,6 +146,7 @@ export type Database = {
       };
       prompt_builders: {
         Row: {
+          archived: boolean | null;
           created_at: string;
           first_message: string | null;
           id: string;
@@ -157,6 +158,7 @@ export type Database = {
           variables_and_content: string;
         };
         Insert: {
+          archived?: boolean | null;
           created_at?: string;
           first_message?: string | null;
           id?: string;
@@ -168,6 +170,7 @@ export type Database = {
           variables_and_content: string;
         };
         Update: {
+          archived?: boolean | null;
           created_at?: string;
           first_message?: string | null;
           id?: string;
@@ -430,38 +433,4 @@ export interface WorkbenchResponse {
   message?: string;
   user_id?: string;
   error?: string;
-}
-
-export interface ClaudeReportRequest {
-  userMessage: string;
-}
-
-export interface ClaudeReportResponse {
-  result: string;
-  error?: string;
-}
-
-export interface RallyFollowupRequest {
-  userMessage: string;
-  userName?: string;
-}
-
-export interface RallyFollowupResponse {
-  result: string;
-  error?: string;
-}
-
-export interface TextFriendRequest {
-  message: string;
-  phoneNumber?: string;
-}
-
-export interface TextFriendResponse {
-  success: boolean;
-  error?: string;
-}
-
-export interface EdgeFunctionError {
-  error: string;
-  status?: number;
 }
