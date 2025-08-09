@@ -6,7 +6,7 @@ import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
 import { Bot, Play, Send, User } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
 import { useAiParticipant } from '@/hooks/useAiParticipant';
 
@@ -45,7 +45,6 @@ const Workbench = () => {
   const [organizerMode, setOrganizerMode] = useState<ParticipantMode>('ai');
   const [attendeeMode, setAttendeeMode] = useState<ParticipantMode>('ai');
   const [currentSpeaker, setCurrentSpeaker] = useState<ParticipantId>('organizer');
-  const [isAwaitingAiResponse, setIsAwaitingAiResponse] = useState(false);
   const [combinedMessages, setCombinedMessages] = useState<Message[]>([]);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -56,6 +55,16 @@ const Workbench = () => {
   // Initialize participant hooks
   const organizerAi = useAiParticipant();
   const attendeeAi = useAiParticipant();
+
+  // Computed state
+  const hasStarted = () => combinedMessages.length > 0;
+  const getParticipantMode = (participantId: ParticipantId) => {
+    return participantId === 'organizer' ? organizerMode : attendeeMode;
+  };
+  const isAwaitingAiResponse = useMemo(
+    () => getParticipantMode(currentSpeaker) === 'ai' && hasStarted(),
+    [currentSpeaker, organizerMode, attendeeMode, combinedMessages.length],
+  );
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -89,7 +98,6 @@ const Workbench = () => {
     const otherMode = otherSpeaker === 'organizer' ? organizerMode : attendeeMode;
 
     if (otherMode === 'ai') {
-      setIsAwaitingAiResponse(true);
       try {
         const participant = otherSpeaker === 'organizer' ? organizerAi : attendeeAi;
         const promptBuilder = otherSpeaker === 'organizer' ? organizerRef.current : attendeeRef.current;
@@ -97,8 +105,6 @@ const Workbench = () => {
         addMessage(otherSpeaker, response);
       } catch (error) {
         console.error('Error getting AI response:', error);
-      } finally {
-        setIsAwaitingAiResponse(false);
       }
     }
 
@@ -159,23 +165,18 @@ const Workbench = () => {
 
         // If attendee is also AI, continue the conversation
         if (attendeeMode === 'ai') {
-          setIsAwaitingAiResponse(true);
           const attendeeResponse = await attendeeAi.chat(startMessage, attendeeRef.current);
           addMessage('attendee', attendeeResponse);
           setCurrentSpeaker('organizer');
-          setIsAwaitingAiResponse(false);
-          
+
           // Continue AI/AI conversation with organizer's response
-          setIsAwaitingAiResponse(true);
           const organizerResponse = await organizerAi.chat(attendeeResponse, organizerRef.current);
           addMessage('organizer', organizerResponse);
           setCurrentSpeaker('attendee');
-          setIsAwaitingAiResponse(false);
         }
       }
     } catch (error) {
       console.error('Error starting conversation:', error);
-      setIsAwaitingAiResponse(false);
     }
   };
 
@@ -183,6 +184,10 @@ const Workbench = () => {
   const getParticipantMode = (participantId: ParticipantId) => {
     return participantId === 'organizer' ? organizerMode : attendeeMode;
   };
+  const isAwaitingAiResponse = useMemo(
+    () => getParticipantMode(currentSpeaker) === 'ai' && hasStarted(),
+    [currentSpeaker, organizerMode, attendeeMode, combinedMessages.length],
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
