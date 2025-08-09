@@ -79,7 +79,7 @@ const PromptBuilderSet = ({ persona, color, onSelectPrompt, onCreateNew }: Promp
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h4 className="text-sm font-medium">{prompt.name}</h4>
+            <h4 className="text-sm font-medium font-mono">{prompt.name}</h4>
             <span className="text-xs text-gray-500">{new Date(prompt.updated_at || '').toLocaleDateString()}</span>
           </div>
           <p className="text-xs text-gray-600 mt-1 line-clamp-2">{prompt.system_prompt.substring(0, 100)}...</p>

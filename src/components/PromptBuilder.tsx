@@ -161,7 +161,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-2">
                 <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>
-                <span className="text-xs text-gray-500 font-mono">{displayName.toLowerCase()}</span>
+                <span className="text-xs text-gray-500 font-mono">{displayName}</span>
               </div>
               <Button
                 onClick={(e) => {
