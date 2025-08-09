@@ -52,6 +52,8 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     const [saveError, setSaveError] = useState<string | null>(null);
     const [displayName, setDisplayName] = useState(name);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [editingVariableName, setEditingVariableName] = useState<string | null>(null);
+    const [tempVariableName, setTempVariableName] = useState('');
 
     const handleSave = async () => {
       // Generate timestamped name before saving
@@ -143,6 +145,46 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
         entries.splice(toIndex, 0, removed);
         return Object.fromEntries(entries);
       });
+    };
+
+    const startEditingVariable = (varName: string) => {
+      setEditingVariableName(varName);
+      setTempVariableName(varName);
+    };
+
+    const finishEditingVariable = (oldName: string) => {
+      const newName = tempVariableName.trim();
+      
+      // Don't change if the name is the same or empty
+      if (!newName || newName === oldName) {
+        setEditingVariableName(null);
+        setTempVariableName('');
+        return;
+      }
+
+      // Don't allow duplicate names
+      if (variables[newName] && newName !== oldName) {
+        setEditingVariableName(null);
+        setTempVariableName('');
+        return;
+      }
+
+      // Rename the variable
+      setVariables((prev) => {
+        const newVariables = { ...prev };
+        const value = newVariables[oldName];
+        delete newVariables[oldName];
+        newVariables[newName] = value;
+        return newVariables;
+      });
+
+      setEditingVariableName(null);
+      setTempVariableName('');
+    };
+
+    const cancelEditingVariable = () => {
+      setEditingVariableName(null);
+      setTempVariableName('');
     };
 
     // Expose getter methods for programmatic access
@@ -243,9 +285,32 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                             <div className="w-1 h-1 bg-current rounded-full"></div>
                           </div>
                         </div>
-                        <Label className="text-sm text-gray-600">
-                          <code className="text-xs text-gray-500">{'<' + nameToXmlTag(varName) + '>'}</code>
-                        </Label>
+                        {editingVariableName === varName ? (
+                          <input
+                            type="text"
+                            value={tempVariableName}
+                            onChange={(e) => setTempVariableName(e.target.value)}
+                            onBlur={() => finishEditingVariable(varName)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                finishEditingVariable(varName);
+                              } else if (e.key === 'Escape') {
+                                e.preventDefault();
+                                cancelEditingVariable();
+                              }
+                            }}
+                            className="text-sm font-medium px-1 py-0.5 border rounded text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            autoFocus
+                          />
+                        ) : (
+                          <div
+                            onClick={() => startEditingVariable(varName)}
+                            className="cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
+                          >
+                            <code className="text-xs text-gray-500">{'<' + nameToXmlTag(varName) + '>'}</code>
+                          </div>
+                        )}
                       </div>
                       <Button
                         type="button"
