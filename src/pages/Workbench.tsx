@@ -54,8 +54,8 @@ const Workbench = () => {
   const attendeeRef = useRef<PromptBuilderRef>(null);
 
   // Initialize participant hooks
-  const organizerAi = useAiParticipant(organizerRef.current);
-  const attendeeAi = useAiParticipant(attendeeRef.current);
+  const organizerAi = useAiParticipant();
+  const attendeeAi = useAiParticipant();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -92,7 +92,8 @@ const Workbench = () => {
       setIsAwaitingAiResponse(true);
       try {
         const participant = otherSpeaker === 'organizer' ? organizerAi : attendeeAi;
-        const response = await participant.chat(messageToSend);
+        const promptBuilder = otherSpeaker === 'organizer' ? organizerRef.current : attendeeRef.current;
+        const response = await participant.chat(messageToSend, promptBuilder);
         addMessage(otherSpeaker, response);
       } catch (error) {
         console.error('Error getting AI response:', error);
@@ -149,18 +150,17 @@ const Workbench = () => {
     try {
       // Start with organizer if they're AI
       if (organizerMode === 'ai' && organizerRef.current) {
-        setIsAwaitingAiResponse(true);
         const firstMessage = organizerRef.current.getFirstMessage();
         const startMessage = firstMessage || "Let's start this conversation.";
-        const response = await organizerAi.chat(startMessage);
-        addMessage('organizer', response);
+
+        // Display the first message directly
+        addMessage('organizer', startMessage);
         setCurrentSpeaker('attendee');
-        setIsAwaitingAiResponse(false);
 
         // If attendee is also AI, continue the conversation
         if (attendeeMode === 'ai') {
           setIsAwaitingAiResponse(true);
-          const attendeeResponse = await attendeeAi.chat(response);
+          const attendeeResponse = await attendeeAi.chat(startMessage, attendeeRef.current);
           addMessage('attendee', attendeeResponse);
           setCurrentSpeaker('organizer');
           setIsAwaitingAiResponse(false);

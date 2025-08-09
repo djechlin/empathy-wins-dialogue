@@ -8,12 +8,12 @@ interface ChatMessage {
   content: string;
 }
 
-export const useAiParticipant = (promptBuilder: PromptBuilderRef) => {
+export const useAiParticipant = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isBusy, setIsBusy] = useState(false);
 
   const chat = useCallback(
-    async (msg: string): Promise<string> => {
+    async (msg: string, promptBuilder: PromptBuilderRef): Promise<string> => {
       if (isBusy || !promptBuilder) {
         throw new Error('AI participant is busy or prompt builder not available');
       }
@@ -65,7 +65,7 @@ export const useAiParticipant = (promptBuilder: PromptBuilderRef) => {
         setIsBusy(false);
       }
     },
-    [promptBuilder, messages, isBusy],
+    [messages, isBusy],
   );
 
   return {
