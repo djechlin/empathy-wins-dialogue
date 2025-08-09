@@ -7,6 +7,9 @@ export interface PromptBuilderData {
   persona: string;
   firstMessage?: string;
   variables: Record<string, string>;
+  archived?: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export const savePromptBuilder = async (data: PromptBuilderData, persona?: string): Promise<boolean> => {
@@ -82,6 +85,10 @@ export const fetchMostRecentPromptForPersona = async (persona: string): Promise<
       persona: pb.persona || '',
       firstMessage: pb.first_message || undefined,
       variables: JSON.parse(pb.variables_and_content || '{}'),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      archived: (pb as any).archived || false, // TODO: Remove 'as any' when archived field is added to DB
+      created_at: pb.created_at,
+      updated_at: pb.updated_at,
     };
   } catch (error) {
     console.error('Error in fetchMostRecentPromptForPersona:', error);
@@ -133,5 +140,70 @@ export const fetchMostRecentPromptBuilders = async (): Promise<Record<string, Pr
   } catch (error) {
     console.error('Error in fetchMostRecentPromptBuilders:', error);
     return null;
+  }
+};
+
+export const fetchAllPromptBuildersForPersona = async (persona: string): Promise<PromptBuilderData[]> => {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      console.error('No authenticated user');
+      return [];
+    }
+
+    const { data: promptBuilders, error } = await supabase
+      .from('prompt_builders')
+      .select('*')
+      .eq('persona', persona)
+      .order('updated_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching prompt builders:', error);
+      return [];
+    }
+
+    if (!promptBuilders || promptBuilders.length === 0) {
+      return [];
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return promptBuilders.map((pb: any) => ({
+      id: pb.id,
+      name: pb.name,
+      system_prompt: pb.system_prompt,
+      persona: pb.persona || '',
+      firstMessage: pb.first_message || undefined,
+      variables: JSON.parse(pb.variables_and_content || '{}'),
+      archived: pb.archived || false, // Will work once archived field is added to DB
+      created_at: pb.created_at,
+      updated_at: pb.updated_at,
+    }));
+  } catch (error) {
+    console.error('Error in fetchAllPromptBuildersForPersona:', error);
+    return [];
+  }
+};
+
+export const archivePromptBuilder = async (id: string, archived: boolean): Promise<boolean> => {
+  try {
+    // TODO: Update this once archived column is added to prompt_builders table
+    const { error } = await supabase
+      .from('prompt_builders')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .update({ archived } as any)
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating prompt builder archive status:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error in archivePromptBuilder:', error);
+    return false;
   }
 };

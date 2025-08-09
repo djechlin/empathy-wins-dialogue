@@ -1,5 +1,6 @@
 import Navbar from '@/components/layout/Navbar';
 import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
+import PromptBuilderSet from '@/components/PromptBuilderSet';
 import { supabase } from '@/integrations/supabase/client';
 import { type WorkbenchRequest, type WorkbenchResponse } from '@/integrations/supabase/types';
 import { Accordion } from '@/ui/accordion';
@@ -8,6 +9,7 @@ import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
 import { Bot, Play, Send, User } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+import { type PromptBuilderData } from '@/utils/promptBuilder';
 
 interface Message {
   id: string;
@@ -46,6 +48,9 @@ const Workbench = () => {
     organizerHumanMode: false,
     attendeeHumanMode: false,
   });
+  const [showPromptSets, setShowPromptSets] = useState(false);
+  const [currentOrganizerPrompt, setCurrentOrganizerPrompt] = useState<PromptBuilderData | null>(null);
+  const [currentAttendeePrompt, setCurrentAttendeePrompt] = useState<PromptBuilderData | null>(null);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -170,6 +175,26 @@ const Workbench = () => {
     }
   };
 
+  const handleSelectOrganizerPrompt = (prompt: PromptBuilderData) => {
+    setCurrentOrganizerPrompt(prompt);
+    setShowPromptSets(false);
+  };
+
+  const handleSelectAttendeePrompt = (prompt: PromptBuilderData) => {
+    setCurrentAttendeePrompt(prompt);
+    setShowPromptSets(false);
+  };
+
+  const handleCreateNewOrganizer = () => {
+    setCurrentOrganizerPrompt(null);
+    setShowPromptSets(false);
+  };
+
+  const handleCreateNewAttendee = () => {
+    setCurrentAttendeePrompt(null);
+    setShowPromptSets(false);
+  };
+
   const startAutoConversation = async () => {
     const initialMessage =
       organizerRef.current?.getFirstMessage() ||
@@ -198,18 +223,48 @@ const Workbench = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ height: 'calc(100vh - 120px)' }}>
             {/* Participants Column */}
             <div className="space-y-4 h-full overflow-y-auto">
-              <Accordion type="multiple" defaultValue={['organizer', 'attendee']} className="w-full space-y-4">
-                <PromptBuilder
-                  ref={organizerRef}
-                  name="organizer"
-                  color="bg-purple-200"
-                  initialPrompt={DEFAULT_ORGANIZER_PROMPT}
-                  initialVariables={DEFAULT_VARIABLES}
-                  showFirstMessage={true}
-                />
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-semibold">Participants</h2>
+                <Button onClick={() => setShowPromptSets(!showPromptSets)} size="sm" variant="outline" className="text-xs">
+                  {showPromptSets ? 'Edit Current' : 'Browse All'}
+                </Button>
+              </div>
 
-                <PromptBuilder ref={attendeeRef} name="attendee" color="bg-orange-200" initialPrompt={DEFAULT_ATTENDEE_PROMPT} />
-              </Accordion>
+              {showPromptSets ? (
+                <div className="space-y-4">
+                  <PromptBuilderSet
+                    persona="organizer"
+                    color="bg-purple-200"
+                    onSelectPrompt={handleSelectOrganizerPrompt}
+                    onCreateNew={handleCreateNewOrganizer}
+                  />
+                  <PromptBuilderSet
+                    persona="attendee"
+                    color="bg-orange-200"
+                    onSelectPrompt={handleSelectAttendeePrompt}
+                    onCreateNew={handleCreateNewAttendee}
+                  />
+                </div>
+              ) : (
+                <Accordion type="multiple" defaultValue={['organizer', 'attendee']} className="w-full space-y-4">
+                  <PromptBuilder
+                    ref={organizerRef}
+                    name="organizer"
+                    color="bg-purple-200"
+                    initialPrompt={currentOrganizerPrompt?.system_prompt || DEFAULT_ORGANIZER_PROMPT}
+                    initialVariables={currentOrganizerPrompt?.variables || DEFAULT_VARIABLES}
+                    showFirstMessage={true}
+                  />
+
+                  <PromptBuilder
+                    ref={attendeeRef}
+                    name="attendee"
+                    color="bg-orange-200"
+                    initialPrompt={currentAttendeePrompt?.system_prompt || DEFAULT_ATTENDEE_PROMPT}
+                    initialVariables={currentAttendeePrompt?.variables || {}}
+                  />
+                </Accordion>
+              )}
             </div>
 
             {/* Conversation Column */}
