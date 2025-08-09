@@ -285,7 +285,7 @@ const Workbench = () => {
                             setConfig((prev) => ({ ...prev, organizerHumanMode: true }));
                           }}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            config.organizerHumanMode ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                            config.organizerHumanMode ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500' : 'text-gray-600 hover:text-gray-900'
                           }`}
                         >
                           <User size={12} />
@@ -297,7 +297,7 @@ const Workbench = () => {
                             setConfig((prev) => ({ ...prev, organizerHumanMode: false }));
                           }}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            !config.organizerHumanMode ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                            !config.organizerHumanMode ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500' : 'text-gray-600 hover:text-gray-900'
                           }`}
                         >
                           <Bot size={12} />
@@ -315,7 +315,7 @@ const Workbench = () => {
                             setConfig((prev) => ({ ...prev, attendeeHumanMode: true }));
                           }}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            config.attendeeHumanMode ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                            config.attendeeHumanMode ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500' : 'text-gray-600 hover:text-gray-900'
                           }`}
                         >
                           <User size={12} />
@@ -327,7 +327,7 @@ const Workbench = () => {
                             setConfig((prev) => ({ ...prev, attendeeHumanMode: false }));
                           }}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            !config.attendeeHumanMode ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                            !config.attendeeHumanMode ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500' : 'text-gray-600 hover:text-gray-900'
                           }`}
                         >
                           <Bot size={12} />
