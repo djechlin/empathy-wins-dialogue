@@ -164,6 +164,13 @@ const Workbench = () => {
           addMessage('attendee', attendeeResponse);
           setCurrentSpeaker('organizer');
           setIsAwaitingAiResponse(false);
+          
+          // Continue AI/AI conversation with organizer's response
+          setIsAwaitingAiResponse(true);
+          const organizerResponse = await organizerAi.chat(attendeeResponse, organizerRef.current);
+          addMessage('organizer', organizerResponse);
+          setCurrentSpeaker('attendee');
+          setIsAwaitingAiResponse(false);
         }
       }
     } catch (error) {
