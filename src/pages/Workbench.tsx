@@ -153,7 +153,7 @@ const Workbench = () => {
       // Continue the conversation with the other participant if they're in AI mode
       const nextSpeaker = speaker === 'organizer' ? 'attendee' : 'organizer';
       const nextSpeakerInAIMode = nextSpeaker === 'organizer' ? !config.organizerHumanMode : !config.attendeeHumanMode;
-      
+
       if (nextSpeakerInAIMode) {
         setTimeout(() => getAIResponse(response, nextSpeaker), 1000);
       }
@@ -285,12 +285,17 @@ const Workbench = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            setConfig((prev) => ({ ...prev, organizerHumanMode: true }));
+                            if (messages.length === 0) {
+                              setConfig((prev) => ({ ...prev, organizerHumanMode: true }));
+                            }
                           }}
+                          disabled={messages.length > 0}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            config.organizerHumanMode
-                              ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
-                              : 'text-gray-600 hover:text-gray-900'
+                            messages.length > 0 
+                              ? 'text-gray-400 cursor-not-allowed bg-gray-100' 
+                              : config.organizerHumanMode
+                                ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
+                                : 'text-gray-600 hover:text-gray-900'
                           }`}
                         >
                           <User size={12} />
@@ -299,12 +304,17 @@ const Workbench = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            setConfig((prev) => ({ ...prev, organizerHumanMode: false }));
+                            if (messages.length === 0) {
+                              setConfig((prev) => ({ ...prev, organizerHumanMode: false }));
+                            }
                           }}
+                          disabled={messages.length > 0}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            !config.organizerHumanMode
-                              ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
-                              : 'text-gray-600 hover:text-gray-900'
+                            messages.length > 0 
+                              ? 'text-gray-400 cursor-not-allowed bg-gray-100' 
+                              : !config.organizerHumanMode
+                                ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
+                                : 'text-gray-600 hover:text-gray-900'
                           }`}
                         >
                           <Bot size={12} />
@@ -319,12 +329,17 @@ const Workbench = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            setConfig((prev) => ({ ...prev, attendeeHumanMode: true }));
+                            if (messages.length === 0) {
+                              setConfig((prev) => ({ ...prev, attendeeHumanMode: true }));
+                            }
                           }}
+                          disabled={messages.length > 0}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            config.attendeeHumanMode
-                              ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
-                              : 'text-gray-600 hover:text-gray-900'
+                            messages.length > 0 
+                              ? 'text-gray-400 cursor-not-allowed bg-gray-100' 
+                              : config.attendeeHumanMode
+                                ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
+                                : 'text-gray-600 hover:text-gray-900'
                           }`}
                         >
                           <User size={12} />
@@ -333,12 +348,17 @@ const Workbench = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            setConfig((prev) => ({ ...prev, attendeeHumanMode: false }));
+                            if (messages.length === 0) {
+                              setConfig((prev) => ({ ...prev, attendeeHumanMode: false }));
+                            }
                           }}
+                          disabled={messages.length > 0}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            !config.attendeeHumanMode
-                              ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
-                              : 'text-gray-600 hover:text-gray-900'
+                            messages.length > 0 
+                              ? 'text-gray-400 cursor-not-allowed bg-gray-100' 
+                              : !config.attendeeHumanMode
+                                ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
+                                : 'text-gray-600 hover:text-gray-900'
                           }`}
                         >
                           <Bot size={12} />
