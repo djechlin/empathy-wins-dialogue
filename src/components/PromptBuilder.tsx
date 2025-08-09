@@ -154,7 +154,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
 
     const finishEditingVariable = (oldName: string) => {
       const newName = tempVariableName.trim();
-      
+
       // Don't change if the name is the same or empty
       if (!newName || newName === oldName) {
         setEditingVariableName(null);
@@ -253,18 +253,24 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                   <div
                     key={varName}
                     className="mb-3"
-                    draggable={true}
+                    draggable={editingVariableName === null}
                     onDragStart={(e) => {
+                      if (editingVariableName !== null) {
+                        e.preventDefault();
+                        return;
+                      }
                       setDraggedIndex(index);
                       e.dataTransfer.effectAllowed = 'move';
                     }}
                     onDragOver={(e) => {
+                      if (editingVariableName !== null) return;
                       if (draggedIndex !== null && draggedIndex !== index) {
                         e.preventDefault();
                         e.dataTransfer.dropEffect = 'move';
                       }
                     }}
                     onDrop={(e) => {
+                      if (editingVariableName !== null) return;
                       if (draggedIndex !== null && draggedIndex !== index) {
                         e.preventDefault();
                         reorderVariables(draggedIndex, index);
@@ -275,7 +281,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                   >
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
-                        <div className="cursor-grab hover:cursor-grabbing text-gray-400 hover:text-gray-600 p-1">
+                        <div className={`p-1 ${editingVariableName === null ? 'cursor-grab hover:cursor-grabbing text-gray-400 hover:text-gray-600' : 'text-gray-300 cursor-not-allowed'}`}>
                           <div className="grid grid-cols-2 gap-0.5 w-3 h-3">
                             <div className="w-1 h-1 bg-current rounded-full"></div>
                             <div className="w-1 h-1 bg-current rounded-full"></div>
