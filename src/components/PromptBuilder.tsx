@@ -121,7 +121,21 @@ const generateTimestampedName = (type: string): string => {
 };
 
 const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
-  ({ persona, color, initialPrompt = '', initialFirstMessage = '', initialDisplayName, defaultOpen = true, archived = false, promptBuilderId, onDataChange, onArchiveToggle }, ref) => {
+  (
+    {
+      persona,
+      color,
+      initialPrompt = '',
+      initialFirstMessage = '',
+      initialDisplayName,
+      defaultOpen = true,
+      archived = false,
+      promptBuilderId,
+      onDataChange,
+      onArchiveToggle,
+    },
+    ref,
+  ) => {
     const initialState: PromptBuilderState = {
       systemPrompt: initialPrompt,
       firstMessage: initialFirstMessage,
@@ -273,21 +287,8 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
 
     return (
       <div className={`${color} rounded-lg p-4`}>
-        {persona === 'attendee' && promptBuilderId && onArchiveToggle && (
-          <div className="flex justify-end mb-2">
-            <Button
-              onClick={() => handleArchiveToggle(archived)}
-              size="sm"
-              variant="ghost"
-              className="h-6 w-6 p-0 text-gray-400 hover:text-blue-500"
-              title={archived ? 'Unarchive' : 'Archive'}
-            >
-              {archived ? <ArchiveRestore className="h-3 w-3" /> : <Archive className="h-3 w-3" />}
-            </Button>
-          </div>
-        )}
-        <div className="flex items-center justify-between w-full mb-2">
-          <button className="flex items-center gap-2 flex-1" onClick={() => dispatch({ type: 'SET_IS_OPEN', payload: !state.isOpen })}>
+        <div className="flex items-center w-full mb-2">
+          <button className="flex items-center gap-2" onClick={() => dispatch({ type: 'SET_IS_OPEN', payload: !state.isOpen })}>
             <span className="font-medium capitalize">{persona}</span>
             {state.isEditingName ? (
               <Input
@@ -312,19 +313,32 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                 {state.displayName}
               </span>
             )}
+          </button>
+          <div className="flex items-center gap-2 ml-auto">
+            {persona === 'attendee' && promptBuilderId && onArchiveToggle && (
+              <Button
+                onClick={() => handleArchiveToggle(archived)}
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0 text-gray-400 hover:text-blue-500"
+                title={archived ? 'Unarchive' : 'Archive'}
+              >
+                {archived ? <ArchiveRestore className="h-3 w-3" /> : <Archive className="h-3 w-3" />}
+              </Button>
+            )}
+            <Button
+              onClick={handleSave}
+              disabled={state.saveStatus === SaveStatus.SAVING || state.saveStatus === SaveStatus.SAVED}
+              size="sm"
+              variant="outline"
+              className="text-xs px-2 py-1 h-auto font-sans"
+            >
+              {state.saveStatus === SaveStatus.SAVING ? 'Saving...' : state.saveStatus === SaveStatus.SAVED ? 'Saved' : 'Save'}
+            </Button>
             <motion.div animate={{ rotate: state.isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
               <ChevronDown className="h-4 w-4 shrink-0" />
             </motion.div>
-          </button>
-          <Button
-            onClick={handleSave}
-            disabled={state.saveStatus === SaveStatus.SAVING || state.saveStatus === SaveStatus.SAVED}
-            size="sm"
-            variant="outline"
-            className="text-xs px-2 py-1 h-auto font-sans ml-2"
-          >
-            {state.saveStatus === SaveStatus.SAVING ? 'Saving...' : state.saveStatus === SaveStatus.SAVED ? 'Saved' : 'Save'}
-          </Button>
+          </div>
         </div>
         <AnimatePresence initial={false}>
           {state.isOpen && (

@@ -69,7 +69,6 @@ const Workbench = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ height: 'calc(100vh - 120px)' }}>
             {/* Participants Column */}
             <div className="space-y-4 h-full overflow-y-auto">
-              <h2 className="font-semibold mb-4">Participants</h2>
               <div className="w-full space-y-4">
                 <PromptBuilder
                   ref={organizerRef}
