@@ -26,7 +26,7 @@ enum SaveStatus {
   SAVED = 'saved',
   DIRTY = 'dirty',
   SAVING = 'saving',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 interface PromptBuilderState {
@@ -52,7 +52,12 @@ type PromptBuilderAction =
   | { type: 'SET_EDIT_NAME_VALUE'; payload: string }
   | { type: 'SET_IS_OPEN'; payload: boolean }
   | { type: 'LOAD_PROMPT_DATA'; payload: { systemPrompt: string; firstMessage: string; displayName: string } }
-  | { type: 'MARK_DIRTY' };
+  | { type: 'MARK_DIRTY' }
+  | { type: 'START_SAVING' }
+  | { type: 'SAVE_SUCCESS' }
+  | { type: 'SAVE_FAILED'; payload: string }
+  | { type: 'COMPLETE_NAME_EDIT'; payload: string }
+  | { type: 'CANCEL_NAME_EDIT' };
 
 const promptBuilderReducer = (state: PromptBuilderState, action: PromptBuilderAction): PromptBuilderState => {
   switch (action.type) {
@@ -85,6 +90,16 @@ const promptBuilderReducer = (state: PromptBuilderState, action: PromptBuilderAc
       };
     case 'MARK_DIRTY':
       return { ...state, saveStatus: SaveStatus.DIRTY, saveError: null };
+    case 'START_SAVING':
+      return { ...state, saveStatus: SaveStatus.SAVING, saveError: null };
+    case 'SAVE_SUCCESS':
+      return { ...state, saveStatus: SaveStatus.SAVED };
+    case 'SAVE_FAILED':
+      return { ...state, saveStatus: SaveStatus.ERROR, saveError: action.payload };
+    case 'COMPLETE_NAME_EDIT':
+      return { ...state, displayName: action.payload, isEditingName: false };
+    case 'CANCEL_NAME_EDIT':
+      return { ...state, editNameValue: state.displayName, isEditingName: false };
     default:
       return state;
   }
@@ -127,8 +142,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
         dispatch({ type: 'SET_DISPLAY_NAME', payload: generateTimestampedName(persona) });
       }
 
-      dispatch({ type: 'SET_SAVE_STATUS', payload: SaveStatus.SAVING });
-      dispatch({ type: 'SET_SAVE_ERROR', payload: null });
+      dispatch({ type: 'START_SAVING' });
       try {
         const result = await savePromptBuilder({
           name: state.displayName,
@@ -138,28 +152,24 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
         });
 
         if (result) {
-          dispatch({ type: 'SET_SAVE_STATUS', payload: SaveStatus.SAVED });
+          dispatch({ type: 'SAVE_SUCCESS' });
         } else {
-          dispatch({ type: 'SET_SAVE_STATUS', payload: SaveStatus.ERROR });
-          dispatch({ type: 'SET_SAVE_ERROR', payload: 'Save failed - operation returned false' });
+          dispatch({ type: 'SAVE_FAILED', payload: 'Save failed - operation returned false' });
         }
         return result;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        dispatch({ type: 'SET_SAVE_STATUS', payload: SaveStatus.ERROR });
-        dispatch({ type: 'SET_SAVE_ERROR', payload: errorMessage });
+        dispatch({ type: 'SAVE_FAILED', payload: errorMessage });
         return false;
       }
     };
 
     const handleSaveNameEdit = () => {
-      dispatch({ type: 'SET_DISPLAY_NAME', payload: state.editNameValue.trim() || persona });
-      dispatch({ type: 'SET_IS_EDITING_NAME', payload: false });
+      dispatch({ type: 'COMPLETE_NAME_EDIT', payload: state.editNameValue.trim() || persona });
     };
 
     const handleCancelNameEdit = () => {
-      dispatch({ type: 'SET_EDIT_NAME_VALUE', payload: state.displayName });
-      dispatch({ type: 'SET_IS_EDITING_NAME', payload: false });
+      dispatch({ type: 'CANCEL_NAME_EDIT' });
     };
 
     const handleNameKeyDown = (e: React.KeyboardEvent) => {
