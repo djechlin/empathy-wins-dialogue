@@ -169,6 +169,25 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
         title: 'Success',
         description: 'New attendee created successfully',
       });
+      
+      // Refetch attendees to show the new one
+      try {
+        dispatch({ type: 'SET_LOADING', payload: 'loading' });
+        const data = await fetchAllPromptBuildersForPersona('attendee');
+        const attendeeData: AttendeeData[] = data.map((pb) => ({
+          id: pb.id || '',
+          displayName: pb.name,
+          systemPrompt: pb.system_prompt,
+          firstMessage: pb.firstMessage || '',
+          archived: pb.archived,
+          created_at: pb.created_at,
+          updated_at: pb.updated_at,
+        }));
+        dispatch({ type: 'LOAD_ATTENDEES_SUCCESS', payload: attendeeData });
+      } catch (refetchError) {
+        console.error('Error refetching attendees after creation:', refetchError);
+        dispatch({ type: 'SET_LOADING', payload: 'loaded' });
+      }
     } catch (error) {
       console.error('Error creating attendee:', error);
       toast({
@@ -244,7 +263,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
       {/* Add Prompt Builder button */}
       <Button onClick={addAttendee} size="sm" variant="outline" className="w-full text-xs py-2">
         <Plus className="h-3 w-3 mr-1" />
-        Add Prompt Builder
+        Add attendee
       </Button>
 
       {/* Archived attendees collapsible section */}
