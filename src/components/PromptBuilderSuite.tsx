@@ -179,13 +179,10 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     }
   }, [toast]);
 
-  const handleArchiveToggle = useCallback(
-    (attendeeId: string, archived: boolean) => {
-      console.log('PromptBuilderSuite: handleArchiveToggle() called', { attendeeId, archived });
-      dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id: attendeeId, archived } });
-    },
-    [],
-  );
+  const handleArchiveToggle = useCallback((attendeeId: string, archived: boolean) => {
+    console.log('PromptBuilderSuite: handleArchiveToggle() called', { attendeeId, archived });
+    dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id: attendeeId, archived } });
+  }, []);
 
   useImperativeHandle(ref, () => ({
     getPromptBuilder: () => promptBuilderRef.current,
@@ -218,8 +215,6 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
 
   return (
     <div className="space-y-4">
-      <h3 className="font-medium">Attendees</h3>
-
       {/* Active attendees */}
       {activeAttendees.length > 0 ? (
         <div className="space-y-3">
