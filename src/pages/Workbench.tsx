@@ -1,5 +1,6 @@
 import Navbar from '@/components/layout/Navbar';
 import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
+import PromptBuilderSuite, { type PromptBuilderSuiteRef } from '@/components/PromptBuilderSuite';
 import { useParticipant } from '@/hooks/useParticipant';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
@@ -149,7 +150,7 @@ const Workbench = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const organizerRef = useRef<PromptBuilderRef>(null);
-  const attendeeRef = useRef<PromptBuilderRef>(null);
+  const attendeeRef = useRef<PromptBuilderSuiteRef>(null);
 
   // Helper for getting human text input
   const getTextInput = (): Promise<string> => {
@@ -291,7 +292,7 @@ const Workbench = () => {
                   onDataChange={handleOrganizerPromptChange}
                 />
 
-                <PromptBuilder
+                <PromptBuilderSuite
                   ref={attendeeRef}
                   name="attendee"
                   color="bg-orange-200"
