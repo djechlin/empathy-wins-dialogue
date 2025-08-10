@@ -32,10 +32,9 @@ const getAiResponse = async (updatedMessages: ChatMessage[], systemPrompt: strin
   return responseText;
 };
 
-// only need firstMessage for organizers
 export const useParticipant = (
   humanOrAi: 'human' | 'ai',
-  firstMessage: string | null,
+  organizerFirstMessage: string | null,
   systemPrompt: string,
   getTextInput?: () => Promise<string>,
 ) => {
@@ -44,8 +43,8 @@ export const useParticipant = (
 
   const chat = useCallback(
     async (msg: string | null): Promise<string> => {
-      if (messages.length === 0 && firstMessage) {
-        return firstMessage;
+      if (messages.length === 0 && organizerFirstMessage) {
+        return organizerFirstMessage;
       }
       if (msg === null) {
         throw new Error('No message provided');
@@ -76,7 +75,7 @@ export const useParticipant = (
         setIsBusy(false);
       }
     },
-    [messages, isBusy, systemPrompt, humanOrAi, getTextInput, firstMessage],
+    [messages, isBusy, systemPrompt, humanOrAi, getTextInput, organizerFirstMessage],
   );
 
   return {
