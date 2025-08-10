@@ -335,9 +335,11 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
             >
               {state.saveStatus === SaveStatus.SAVING ? 'Saving...' : state.saveStatus === SaveStatus.SAVED ? 'Saved' : 'Save'}
             </Button>
-            <motion.div animate={{ rotate: state.isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-              <ChevronDown className="h-4 w-4 shrink-0" />
-            </motion.div>
+            <button onClick={() => dispatch({ type: 'SET_IS_OPEN', payload: !state.isOpen })}>
+              <motion.div animate={{ rotate: state.isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                <ChevronDown className="h-4 w-4 shrink-0" />
+              </motion.div>
+            </button>
           </div>
         </div>
         <AnimatePresence initial={false}>
