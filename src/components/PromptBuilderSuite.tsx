@@ -78,7 +78,8 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     // Update exposed attendees when active attendees change
     useEffect(() => {
       onAttendeesChange?.(activeAttendees);
-    }, [activeAttendees, onAttendeesChange]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeAttendees]);
 
     const handleAttendeeDataChange = (attendeeId: string, data: { systemPrompt: string; firstMessage: string; displayName: string }) => {
       const updatedAttendees = attendees.map((attendee) => (attendee.id === attendeeId ? { ...attendee, ...data } : attendee));

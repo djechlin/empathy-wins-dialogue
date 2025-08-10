@@ -168,7 +168,8 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     useEffect(() => {
       onPromptChange?.(systemPrompt);
       onDataChange?.({ systemPrompt, firstMessage, displayName });
-    }, [systemPrompt, firstMessage, displayName, onPromptChange, onDataChange]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [systemPrompt, firstMessage, displayName]);
 
     // Expose getter methods for programmatic access
     useImperativeHandle(ref, () => ({
