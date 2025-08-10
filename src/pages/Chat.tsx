@@ -136,11 +136,6 @@ const Chat = ({
   const isAwaitingAiResponse = state.history.length > 0 && speakerMode === 'ai';
 
   useEffect(() => {
-    // Scroll to bottom when new messages are added
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [state.history]);
-
-  useEffect(() => {
     if (
       state.history.length === 0 ||
       state.history[state.history.length - 1].sender === state.speaker ||
