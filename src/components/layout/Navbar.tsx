@@ -32,18 +32,30 @@ const Navbar = ({ pageTitle, pageSummary }: NavbarProps) => {
   ];
 
   useEffect(() => {
+    console.log('Navbar: Setting up auth state listener');
+
     // Set up auth state listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Navbar: Auth state change event:', event, session?.user?.id ? `User: ${session.user.id}` : 'No user');
       setUser(session?.user ?? null);
     });
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Navbar: Error getting initial session:', error);
+      } else {
+        console.log('Navbar: Initial session check:', session?.user?.id ? `User: ${session.user.id}` : 'No session');
+        setUser(session?.user ?? null);
+      }
     });
-    return () => subscription.unsubscribe();
+
+    return () => {
+      console.log('Navbar: Cleaning up auth subscription');
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleAuthClick = () => {

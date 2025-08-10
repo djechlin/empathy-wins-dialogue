@@ -149,15 +149,29 @@ export const fetchAllPromptBuildersForPersona = async (persona: string): Promise
     const authPromise = supabase.auth.getUser();
     const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Authentication timeout')), 5000));
 
-    const authResult = await Promise.race([authPromise, timeoutPromise]);
-    console.log('fetchAllPromptBuildersForPersona: Auth result:', authResult);
-    const {
-      data: { user },
-    } = authResult as { data: { user: { id: string } | null } };
+    let user: { id: string } | null = null;
+    try {
+      const authResult = await Promise.race([authPromise, timeoutPromise]);
+      console.log('fetchAllPromptBuildersForPersona: Auth result:', authResult);
 
-    console.log('fetchAllPromptBuildersForPersona: User check:', user ? `User ID: ${user.id}` : 'No user');
-    if (!user) {
-      console.error('fetchAllPromptBuildersForPersona: No authenticated user');
+      const {
+        data: { user: authUser },
+        error: authError,
+      } = authResult as { data: { user: { id: string } | null }; error: Error | null };
+
+      if (authError) {
+        console.error('fetchAllPromptBuildersForPersona: Auth error:', authError);
+        return [];
+      }
+
+      user = authUser;
+      console.log('fetchAllPromptBuildersForPersona: User check:', user ? `User ID: ${user.id}` : 'No user');
+      if (!user) {
+        console.error('fetchAllPromptBuildersForPersona: No authenticated user');
+        return [];
+      }
+    } catch (error) {
+      console.error('fetchAllPromptBuildersForPersona: Exception during auth check:', error);
       return [];
     }
 

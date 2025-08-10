@@ -19,10 +19,16 @@ const Auth = () => {
   const [activeTab, setActiveTab] = useState('login');
 
   useEffect(() => {
+    console.log('Auth page: Checking for existing session');
     // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Auth page: Error getting session:', error);
+      } else if (session) {
+        console.log('Auth page: User already logged in, redirecting to home');
         navigate('/');
+      } else {
+        console.log('Auth page: No existing session found');
       }
     });
   }, [navigate]);
