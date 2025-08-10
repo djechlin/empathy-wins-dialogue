@@ -7,7 +7,7 @@ import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
-import { Bot, Play, Send, User } from 'lucide-react';
+import { Bot, Pause, Play, Send, User } from 'lucide-react';
 import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 
 type ParticipantMode = 'human' | 'ai';
@@ -32,6 +32,7 @@ interface WorkbenchState {
   attendeeHumanOrAi: 'human' | 'ai';
   speaker: 'organizer' | 'attendee';
   conversationHistory: Message[];
+  paused: boolean;
 }
 
 type WorkbenchAction =
@@ -46,6 +47,7 @@ type WorkbenchAction =
       type: 'UPDATE_ATTENDEE_DATA';
       payload: { fullPrompt: string; firstMessage: string; variables: Record<string, string>; displayName: string };
     }
+  | { type: 'TOGGLE_PAUSE' }
   | { type: 'TOGGLE_PROMPT_SETS' };
 
 function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
@@ -101,6 +103,9 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
         attendeeData: action.payload,
       };
 
+    case 'TOGGLE_PAUSE':
+      return { ...state, paused: !state.paused };
+
     case 'TOGGLE_PROMPT_SETS':
       return { ...state, showPromptSets: !state.showPromptSets };
 
@@ -148,6 +153,7 @@ const Workbench = () => {
     attendeeHumanOrAi: 'ai',
     speaker: 'organizer',
     conversationHistory: [],
+    paused: false,
   });
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -186,6 +192,7 @@ const Workbench = () => {
   // Conversation loop - the "while true"
   useEffect(() => {
     if (state.conversationHistory.length === 0) return; // No conversation yet
+    if (state.paused) return; // Conversation is paused
 
     setTimeout(async () => {
       try {
@@ -205,10 +212,10 @@ const Workbench = () => {
         console.error('Error in conversation loop:', error);
       }
     }, 0);
-  }, [state.conversationHistory, state.speaker, organizerParticipant, attendeeParticipant]);
+  }, [state.conversationHistory, state.speaker, state.paused, organizerParticipant, attendeeParticipant]);
 
   const sendHumanMessage = async () => {
-    if (!state.userTextInput.trim() || currentSpeakerHumanOrAi === 'ai') return;
+    if (!state.userTextInput.trim() || currentSpeakerHumanOrAi === 'ai' || state.paused) return;
 
     const userMessage = state.userTextInput;
     dispatch({ type: 'SEND_MESSAGE', payload: { sender: state.speaker, content: userMessage } });
@@ -354,6 +361,26 @@ const Workbench = () => {
                 <div className="border-b px-4 py-3 bg-gray-50">
                   <div className="flex items-center justify-between mb-3">
                     <h2 className="font-semibold">Chat with {state.attendeeData.displayName}</h2>
+                    {hasStarted() && (
+                      <Button
+                        onClick={() => dispatch({ type: 'TOGGLE_PAUSE' })}
+                        size="sm"
+                        variant={state.paused ? "default" : "outline"}
+                        className="text-xs px-3"
+                      >
+                        {state.paused ? (
+                          <>
+                            <Play size={12} className="mr-1" />
+                            Resume
+                          </>
+                        ) : (
+                          <>
+                            <Pause size={12} className="mr-1" />
+                            Pause
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-4 mb-3">
@@ -514,28 +541,31 @@ const Workbench = () => {
                       onChange={(e) => dispatch({ type: 'SET_USER_TEXT_INPUT', payload: e.target.value })}
                       onKeyPress={handleKeyPress}
                       placeholder={
-                        state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai'
+                        state.paused
+                          ? 'Conversation is paused'
+                          : state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai'
                           ? 'Both participants are in AI mode - conversation runs automatically'
                           : state.speaker === 'organizer'
                             ? 'Type your message as the organizer...'
                             : 'Type your message as the attendee...'
                       }
                       className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
-                        state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai'
+                        state.paused || (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai')
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                           : ''
                       }`}
-                      disabled={isAwaitingAiResponse || (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai')}
+                      disabled={state.paused || isAwaitingAiResponse || (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai')}
                     />
                     <Button
                       onClick={sendHumanMessage}
                       disabled={
+                        state.paused ||
                         !state.userTextInput.trim() ||
                         isAwaitingAiResponse ||
                         (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai')
                       }
                       className={`px-4 ${
-                        state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai'
+                        state.paused || (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai')
                           ? 'bg-gray-400 cursor-not-allowed'
                           : state.speaker === 'organizer'
                             ? 'bg-purple-600 hover:bg-purple-700 text-white'

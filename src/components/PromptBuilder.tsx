@@ -197,7 +197,6 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       setTempVariableName('');
     };
 
-
     // Expose getter methods for programmatic access
     useImperativeHandle(ref, () => ({
       getSystemPrompt: () => systemPrompt,
@@ -246,7 +245,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                     autoFocus
                   />
                 ) : (
-                  <span 
+                  <span
                     className="text-xs text-gray-500 font-mono cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
                     onClick={(e) => {
                       e.stopPropagation();
