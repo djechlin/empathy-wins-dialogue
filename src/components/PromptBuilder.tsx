@@ -58,15 +58,17 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     const [tempVariableName, setTempVariableName] = useState('');
 
     const handleSave = async () => {
-      // Generate timestamped name before saving
-      const timestampedName = generateTimestampedName(name.toLowerCase());
-      setDisplayName(timestampedName);
+      // Use current display name, or generate timestamped name if it's still the default
+      const nameToSave = displayName === name ? generateTimestampedName(name.toLowerCase()) : displayName;
+      if (displayName === name) {
+        setDisplayName(nameToSave);
+      }
 
       setIsSaving(true);
       setSaveError(null);
       try {
         const result = await savePromptBuilder({
-          name: timestampedName,
+          name: nameToSave,
           system_prompt: systemPrompt,
           persona: name.toLowerCase(),
           firstMessage: firstMessage,
@@ -92,7 +94,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     useEffect(() => {
       setIsSaved(false);
       setSaveError(null);
-    }, [systemPrompt, variables, firstMessage]);
+    }, [systemPrompt, variables, firstMessage, displayName]);
 
     // Auto-load most recent prompt for this persona on mount
     useEffect(() => {
@@ -195,6 +197,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       setTempVariableName('');
     };
 
+
     // Expose getter methods for programmatic access
     useImperativeHandle(ref, () => ({
       getSystemPrompt: () => systemPrompt,
@@ -211,7 +214,49 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-2">
                 <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>
-                <span className="text-xs text-gray-500 font-mono">{displayName}</span>
+                {editingVariableName === 'displayName' ? (
+                  <input
+                    type="text"
+                    value={tempVariableName}
+                    onChange={(e) => setTempVariableName(e.target.value)}
+                    onBlur={() => {
+                      const newName = tempVariableName.trim();
+                      if (newName && newName !== displayName) {
+                        setDisplayName(newName);
+                      }
+                      setEditingVariableName(null);
+                      setTempVariableName('');
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const newName = tempVariableName.trim();
+                        if (newName && newName !== displayName) {
+                          setDisplayName(newName);
+                        }
+                        setEditingVariableName(null);
+                        setTempVariableName('');
+                      } else if (e.key === 'Escape') {
+                        e.preventDefault();
+                        setEditingVariableName(null);
+                        setTempVariableName('');
+                      }
+                    }}
+                    className="text-xs text-gray-500 font-mono px-1 py-0.5 border rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    autoFocus
+                  />
+                ) : (
+                  <span 
+                    className="text-xs text-gray-500 font-mono cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingVariableName('displayName');
+                      setTempVariableName(displayName);
+                    }}
+                  >
+                    {displayName}
+                  </span>
+                )}
               </div>
               <Button
                 onClick={(e) => {

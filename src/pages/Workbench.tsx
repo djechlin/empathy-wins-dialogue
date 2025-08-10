@@ -42,7 +42,10 @@ type WorkbenchAction =
   | { type: 'SELECT_PROMPT'; payload: { participant: 'organizer' | 'attendee'; prompt: PromptBuilderData | null } }
   | { type: 'UPDATE_PROMPT'; payload: { participant: 'organizer' | 'attendee'; promptText: string } }
   | { type: 'UPDATE_ORGANIZER_DATA'; payload: { fullPrompt: string; firstMessage: string; variables: Record<string, string> } }
-  | { type: 'UPDATE_ATTENDEE_DATA'; payload: { fullPrompt: string; firstMessage: string; variables: Record<string, string>; displayName: string } }
+  | {
+      type: 'UPDATE_ATTENDEE_DATA';
+      payload: { fullPrompt: string; firstMessage: string; variables: Record<string, string>; displayName: string };
+    }
   | { type: 'TOGGLE_PROMPT_SETS' };
 
 function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
@@ -274,9 +277,12 @@ const Workbench = () => {
     dispatch({ type: 'UPDATE_PROMPT', payload: { participant: 'attendee', promptText: fullPrompt } });
   }, []);
 
-  const handleAttendeeDataChange = useCallback((data: { fullPrompt: string; firstMessage: string; variables: Record<string, string>; displayName: string }) => {
-    dispatch({ type: 'UPDATE_ATTENDEE_DATA', payload: data });
-  }, []);
+  const handleAttendeeDataChange = useCallback(
+    (data: { fullPrompt: string; firstMessage: string; variables: Record<string, string>; displayName: string }) => {
+      dispatch({ type: 'UPDATE_ATTENDEE_DATA', payload: data });
+    },
+    [],
+  );
 
   const startConversation = async () => {
     if (state.conversationHistory.length > 0) return;
