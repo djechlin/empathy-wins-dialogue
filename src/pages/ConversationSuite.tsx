@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Conversation from './Conversation';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
-import { Button } from '@/ui/button';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AttendeeData } from '@/components/PromptBuilderSuite';
@@ -79,10 +78,10 @@ const ConversationSuite = ({
       {attendees.map((attendee) => (
         <Collapsible key={attendee.id} open={openAttendees[attendee.id] || false} onOpenChange={() => toggleAttendee(attendee.id)}>
           <CollapsibleTrigger asChild>
-            <Button variant="ghost" size="sm" className="w-full justify-start text-sm font-medium p-2 h-auto">
+            <div className="w-full justify-start text-sm font-medium p-2 h-auto cursor-pointer hover:bg-gray-100 rounded-md flex items-center">
               <ChevronRight className={cn('h-4 w-4 mr-2 transition-transform', openAttendees[attendee.id] ? 'rotate-90' : '')} />
               Chat with {attendee.displayName}
-            </Button>
+            </div>
           </CollapsibleTrigger>
 
           <CollapsibleContent className="mt-2">
