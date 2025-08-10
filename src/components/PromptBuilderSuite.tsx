@@ -38,8 +38,8 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     const [archivedOpen, setArchivedOpen] = useState(false);
     const { toast } = useToast();
 
-    const activeAttendees = attendees.filter(a => !a.archived);
-    const archivedAttendees = attendees.filter(a => a.archived);
+    const activeAttendees = attendees.filter((a) => !a.archived);
+    const archivedAttendees = attendees.filter((a) => a.archived);
 
     // Fetch attendees on load
     useEffect(() => {
@@ -47,7 +47,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
         setLoading(true);
         try {
           const data = await fetchAllPromptBuildersForPersona('attendee');
-          const attendeeData: AttendeeData[] = data.map(pb => ({
+          const attendeeData: AttendeeData[] = data.map((pb) => ({
             id: pb.id || '',
             displayName: pb.name,
             systemPrompt: pb.system_prompt,
@@ -71,7 +71,8 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     // Update exposed attendees when active attendees change
     useEffect(() => {
       onAttendeesChange?.(activeAttendees);
-    }, [activeAttendees, onAttendeesChange]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeAttendees]); // onAttendeesChange excluded to prevent infinite loop
 
     const handleAttendeeDataChange = (attendeeId: string, data: { systemPrompt: string; firstMessage: string; displayName: string }) => {
       const updatedAttendees = attendees.map((attendee) => (attendee.id === attendeeId ? { ...attendee, ...data } : attendee));
@@ -92,7 +93,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
         if (success) {
           // Reload attendees to get the saved one with proper ID
           const data = await fetchAllPromptBuildersForPersona('attendee');
-          const attendeeData: AttendeeData[] = data.map(pb => ({
+          const attendeeData: AttendeeData[] = data.map((pb) => ({
             id: pb.id || '',
             displayName: pb.name,
             systemPrompt: pb.system_prompt,
@@ -121,17 +122,13 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
       const newArchivedStatus = !currentlyArchived;
 
       // Optimistic UI update
-      setAttendees(prev => prev.map(a => 
-        a.id === attendeeId ? { ...a, archived: newArchivedStatus } : a
-      ));
+      setAttendees((prev) => prev.map((a) => (a.id === attendeeId ? { ...a, archived: newArchivedStatus } : a)));
 
       try {
         const success = await archivePromptBuilder(attendeeId, newArchivedStatus);
         if (!success) {
           // Revert optimistic update on failure
-          setAttendees(prev => prev.map(a => 
-            a.id === attendeeId ? { ...a, archived: currentlyArchived } : a
-          ));
+          setAttendees((prev) => prev.map((a) => (a.id === attendeeId ? { ...a, archived: currentlyArchived } : a)));
           toast({
             title: 'Error',
             description: `Failed to ${newArchivedStatus ? 'archive' : 'unarchive'} attendee`,
@@ -146,9 +143,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
       } catch (error) {
         console.error('Archive error:', error);
         // Revert optimistic update on error
-        setAttendees(prev => prev.map(a => 
-          a.id === attendeeId ? { ...a, archived: currentlyArchived } : a
-        ));
+        setAttendees((prev) => prev.map((a) => (a.id === attendeeId ? { ...a, archived: currentlyArchived } : a)));
         toast({
           title: 'Error',
           description: `Failed to ${newArchivedStatus ? 'archive' : 'unarchive'} attendee`,
