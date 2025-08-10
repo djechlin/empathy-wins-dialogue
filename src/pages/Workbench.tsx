@@ -27,7 +27,7 @@ interface WorkbenchState {
   organizerPromptText: string;
   attendeePromptText: string;
   organizerFirstMessage: string;
-  attendeeData: { fullPrompt: string; firstMessage: string; variables: Record<string, string> };
+  attendeeData: { fullPrompt: string; firstMessage: string; variables: Record<string, string>; displayName: string };
   organizerHumanOrAi: 'human' | 'ai';
   attendeeHumanOrAi: 'human' | 'ai';
   speaker: 'organizer' | 'attendee';
@@ -42,7 +42,7 @@ type WorkbenchAction =
   | { type: 'SELECT_PROMPT'; payload: { participant: 'organizer' | 'attendee'; prompt: PromptBuilderData | null } }
   | { type: 'UPDATE_PROMPT'; payload: { participant: 'organizer' | 'attendee'; promptText: string } }
   | { type: 'UPDATE_ORGANIZER_DATA'; payload: { fullPrompt: string; firstMessage: string; variables: Record<string, string> } }
-  | { type: 'UPDATE_ATTENDEE_DATA'; payload: { fullPrompt: string; firstMessage: string; variables: Record<string, string> } }
+  | { type: 'UPDATE_ATTENDEE_DATA'; payload: { fullPrompt: string; firstMessage: string; variables: Record<string, string>; displayName: string } }
   | { type: 'TOGGLE_PROMPT_SETS' };
 
 function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
@@ -140,7 +140,7 @@ const Workbench = () => {
     organizerPromptText: '',
     attendeePromptText: '',
     organizerFirstMessage: '',
-    attendeeData: { fullPrompt: '', firstMessage: '', variables: {} },
+    attendeeData: { fullPrompt: '', firstMessage: '', variables: {}, displayName: 'attendee' },
     organizerHumanOrAi: 'ai',
     attendeeHumanOrAi: 'ai',
     speaker: 'organizer',
@@ -263,15 +263,18 @@ const Workbench = () => {
     dispatch({ type: 'SELECT_PROMPT', payload: { participant: 'attendee', prompt: null } });
   };
 
-  const handleOrganizerPromptChange = useCallback((data: { fullPrompt: string; firstMessage: string; variables: Record<string, string> }) => {
-    dispatch({ type: 'UPDATE_ORGANIZER_DATA', payload: data });
-  }, []);
+  const handleOrganizerPromptChange = useCallback(
+    (data: { fullPrompt: string; firstMessage: string; variables: Record<string, string> }) => {
+      dispatch({ type: 'UPDATE_ORGANIZER_DATA', payload: data });
+    },
+    [],
+  );
 
   const handleAttendeePromptChange = useCallback((fullPrompt: string) => {
     dispatch({ type: 'UPDATE_PROMPT', payload: { participant: 'attendee', promptText: fullPrompt } });
   }, []);
 
-  const handleAttendeeDataChange = useCallback((data: { fullPrompt: string; firstMessage: string; variables: Record<string, string> }) => {
+  const handleAttendeeDataChange = useCallback((data: { fullPrompt: string; firstMessage: string; variables: Record<string, string>; displayName: string }) => {
     dispatch({ type: 'UPDATE_ATTENDEE_DATA', payload: data });
   }, []);
 
@@ -328,7 +331,13 @@ const Workbench = () => {
                     onDataChange={handleOrganizerPromptChange}
                   />
 
-                  <PromptBuilder ref={attendeeRef} name="attendee" color="bg-orange-200" onPromptChange={handleAttendeePromptChange} onDataChange={handleAttendeeDataChange} />
+                  <PromptBuilder
+                    ref={attendeeRef}
+                    name="attendee"
+                    color="bg-orange-200"
+                    onPromptChange={handleAttendeePromptChange}
+                    onDataChange={handleAttendeeDataChange}
+                  />
                 </Accordion>
               )}
             </div>
@@ -338,12 +347,7 @@ const Workbench = () => {
               <Card className="h-full flex flex-col">
                 <div className="border-b px-4 py-3 bg-gray-50">
                   <div className="flex items-center justify-between mb-3">
-                    <h2 className="font-semibold">
-                      {(() => {
-                        const attendeeName = state.attendeeData.variables.name || state.attendeeData.variables.attendee_name || state.attendeeData.variables.Name || 'Attendee';
-                        return `Chat with ${attendeeName}`;
-                      })()}
-                    </h2>
+                    <h2 className="font-semibold">Chat with {state.attendeeData.displayName}</h2>
                   </div>
 
                   <div className="flex items-center gap-4 mb-3">

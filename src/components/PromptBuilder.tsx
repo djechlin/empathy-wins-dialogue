@@ -12,7 +12,7 @@ interface PromptBuilderProps {
   initialVariables?: Record<string, string>;
   showFirstMessage?: boolean;
   onPromptChange?: (fullPrompt: string) => void;
-  onDataChange?: (data: { fullPrompt: string; firstMessage: string; variables: Record<string, string> }) => void;
+  onDataChange?: (data: { fullPrompt: string; firstMessage: string; variables: Record<string, string>; displayName: string }) => void;
 }
 
 export interface PromptBuilderRef {
@@ -129,8 +129,8 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     // Call callbacks when full prompt or first message changes
     useEffect(() => {
       onPromptChange?.(fullPrompt);
-      onDataChange?.({ fullPrompt, firstMessage, variables });
-    }, [fullPrompt, firstMessage, variables, onPromptChange, onDataChange]);
+      onDataChange?.({ fullPrompt, firstMessage, variables, displayName });
+    }, [fullPrompt, firstMessage, variables, displayName, onPromptChange, onDataChange]);
 
     // Internal variable management functions
     const addVariable = (name: string) => {
