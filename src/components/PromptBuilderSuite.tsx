@@ -1,7 +1,7 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import PromptBuilder, { type PromptBuilderRef } from './PromptBuilder';
 import { Button } from '@/ui/button';
-import { Plus, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export interface AttendeeData {
   id: string;
@@ -49,12 +49,6 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
       onAttendeesChange?.(newAttendees);
     };
 
-    const removeAttendee = (attendeeId: string) => {
-      if (attendees.length <= 1) return; // Keep at least one attendee
-      const updatedAttendees = attendees.filter((attendee) => attendee.id !== attendeeId);
-      setAttendees(updatedAttendees);
-      onAttendeesChange?.(updatedAttendees);
-    };
 
     useImperativeHandle(ref, () => ({
       getPromptBuilder: () => promptBuilderRef.current,
@@ -66,26 +60,15 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
         <h3 className="font-medium">Attendees</h3>
 
         {attendees.map((attendee, index) => (
-          <div key={attendee.id} className="relative">
-            {attendees.length > 1 && (
-              <Button
-                onClick={() => removeAttendee(attendee.id)}
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 z-10 h-6 w-6 p-0 text-gray-400 hover:text-red-500"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            )}
-            <PromptBuilder
-              ref={index === 0 ? promptBuilderRef : undefined}
-              name={attendee.displayName}
-              color={color}
-              defaultOpen={defaultOpen}
-              onPromptChange={onPromptChange}
-              onDataChange={(data) => handleAttendeeDataChange(attendee.id, data)}
-            />
-          </div>
+          <PromptBuilder
+            key={attendee.id}
+            ref={index === 0 ? promptBuilderRef : undefined}
+            name={attendee.displayName}
+            color={color}
+            defaultOpen={defaultOpen}
+            onPromptChange={onPromptChange}
+            onDataChange={(data) => handleAttendeeDataChange(attendee.id, data)}
+          />
         ))}
 
         {/* Add Prompt Builder button at bottom */}
