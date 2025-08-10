@@ -3,7 +3,7 @@ import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder
 import PromptBuilderSuite, { type AttendeeData } from '@/components/PromptBuilderSuite';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
 import { useCallback, useReducer, useRef } from 'react';
-import ConversationSuite from './ConversationSuite';
+import ChatSuite from './ChatSuite';
 
 interface WorkbenchState {
   organizerPrompt: PromptBuilderData | null;
@@ -67,7 +67,6 @@ const Workbench = () => {
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Participants Column */}
             <div className="space-y-4">
               <div className="w-full space-y-4">
                 <PromptBuilder
@@ -84,7 +83,7 @@ const Workbench = () => {
 
             {/* Conversation Column */}
             <div className="space-y-4">
-              <ConversationSuite
+              <ChatSuite
                 attendees={state.attendees}
                 organizerPromptText={state.organizerPromptText}
                 organizerFirstMessage={state.organizerFirstMessage}

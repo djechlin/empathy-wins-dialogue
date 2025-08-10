@@ -3,15 +3,15 @@ import { cn } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { ChevronRight } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import Conversation from './Conversation';
+import Chat from './Chat';
 
-interface ConversationSuiteProps {
+interface ChatSuiteProps {
   attendees: AttendeeData[];
   organizerPromptText: string;
   organizerFirstMessage: string;
 }
 
-const ConversationSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: ConversationSuiteProps) => {
+const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: ChatSuiteProps) => {
   const [openAttendees, setOpenAttendees] = useState<Record<string, boolean>>({
     [attendees[0]?.id || '1']: true,
   });
@@ -25,7 +25,7 @@ const ConversationSuite = ({ attendees, organizerPromptText, organizerFirstMessa
 
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold">Conversations</h3>
+      <h3 className="font-semibold">Chats</h3>
 
       {attendees.filter(attendee => attendee.systemPrompt.trim() !== '').map((attendee) => (
         <Collapsible key={attendee.id} open={openAttendees[attendee.id] || false} onOpenChange={() => toggleAttendee(attendee.id)}>
@@ -37,7 +37,7 @@ const ConversationSuite = ({ attendees, organizerPromptText, organizerFirstMessa
           </CollapsibleTrigger>
 
           <CollapsibleContent className="mt-2">
-            <Conversation
+            <Chat
               attendeeDisplayName={attendee.displayName}
               organizerPromptText={organizerPromptText}
               organizerFirstMessage={organizerFirstMessage}
@@ -50,4 +50,4 @@ const ConversationSuite = ({ attendees, organizerPromptText, organizerFirstMessa
   );
 };
 
-export default ConversationSuite;
+export default ChatSuite;

@@ -13,7 +13,7 @@ interface Message {
   timestamp: Date;
 }
 
-interface ConversationState {
+interface ChatState {
   history: Message[];
   paused: boolean;
   speaker: 'organizer' | 'attendee';
@@ -22,19 +22,19 @@ interface ConversationState {
   attendeeMode: 'human' | 'ai';
 }
 
-type ConversationAction =
+type ChatAction =
   | { type: 'SET_USER_TEXT_INPUT'; payload: string }
-  | { type: 'START_CONVERSATION'; payload: { firstMessage: string } }
+  | { type: 'START_CHAT'; payload: { firstMessage: string } }
   | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string } }
   | { type: 'TOGGLE_MODE'; payload: { participant: 'organizer' | 'attendee'; mode: 'human' | 'ai' } }
   | { type: 'TOGGLE_PAUSE' };
 
-function conversationReducer(state: ConversationState, action: ConversationAction): ConversationState {
+function reducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
     case 'SET_USER_TEXT_INPUT':
       return { ...state, userTextInput: action.payload };
 
-    case 'START_CONVERSATION':
+    case 'START_CHAT':
       return {
         ...state,
         history: [...state.history, constructMessage('organizer', action.payload.firstMessage)],
@@ -72,7 +72,7 @@ function constructMessage(sender: 'organizer' | 'attendee', content: string) {
   };
 }
 
-interface ConversationProps {
+interface ChatProps {
   attendeeDisplayName: string;
   organizerPromptText: string;
   organizerFirstMessage: string;
@@ -97,8 +97,8 @@ const AiThinking = ({ participant }: { participant: 'organizer' | 'attendee' }) 
   </div>
 );
 
-const Conversation = ({ attendeeDisplayName, organizerPromptText, organizerFirstMessage, attendeeSystemPrompt }: ConversationProps) => {
-  const [state, dispatch] = useReducer(conversationReducer, {
+const Chat = ({ attendeeDisplayName, organizerPromptText, organizerFirstMessage, attendeeSystemPrompt }: ChatProps) => {
+  const [state, dispatch] = useReducer(reducer, {
     history: [],
     paused: false,
     speaker: 'organizer' as const,
@@ -137,12 +137,6 @@ const Conversation = ({ attendeeDisplayName, organizerPromptText, organizerFirst
   }, [state.history]);
 
   useEffect(() => {
-    console.log('Conversation: useEffect conversation loop triggered', {
-      historyLength: state.history.length,
-      paused: state.paused,
-      speaker: state.speaker,
-      speakerMode,
-    });
     if (
       state.history.length === 0 ||
       state.history[state.history.length - 1].sender === state.speaker ||
@@ -156,7 +150,6 @@ const Conversation = ({ attendeeDisplayName, organizerPromptText, organizerFirst
     const lastMessage = state.history[state.history.length - 1];
 
     setTimeout(async () => {
-      console.log('Conversation: async conversation loop timeout called', { speaker: state.speaker });
       try {
         const response = await participant.chat(lastMessage.content);
         dispatch({
@@ -167,17 +160,12 @@ const Conversation = ({ attendeeDisplayName, organizerPromptText, organizerFirst
           },
         });
       } catch (error) {
-        console.error('Error in conversation loop:', error);
+        console.error('Error in chat loop:', error);
       }
     }, 0);
   }, [state.history, state.speaker, state.paused, speakerMode, participant]);
 
   const sendHumanMessage = useCallback(async () => {
-    console.log('Conversation: async sendHumanMessage() called', {
-      userTextInputLength: state.userTextInput.trim().length,
-      speakerMode,
-      paused: state.paused,
-    });
     if (!state.userTextInput.trim() || speakerMode === 'ai' || state.paused) return;
 
     const userMessage = state.userTextInput;
@@ -211,16 +199,16 @@ const Conversation = ({ attendeeDisplayName, organizerPromptText, organizerFirst
     [sendHumanMessage],
   );
 
-  const startConversation = useCallback(async () => {
+  const startChat = useCallback(async () => {
     if (hasStarted) return;
 
     try {
       if (state.organizerMode === 'ai') {
         const firstMessage = await organizerParticipant.chat(null);
-        dispatch({ type: 'START_CONVERSATION', payload: { firstMessage } });
+        dispatch({ type: 'START_CHAT', payload: { firstMessage } });
       }
     } catch (error) {
-      console.error('Error starting conversation:', error);
+      console.error('Error starting chat:', error);
     }
   }, [hasStarted, organizerParticipant, state.organizerMode]);
 
@@ -343,7 +331,7 @@ const Conversation = ({ attendeeDisplayName, organizerPromptText, organizerFirst
 
         {!hasStarted && (
           <div className="mt-2">
-            <Button onClick={startConversation} size="sm" className="px-4">
+            <Button onClick={startChat} size="sm" className="px-4">
               <Play size={16} className="mr-2" />
               Start
             </Button>
@@ -410,9 +398,9 @@ const Conversation = ({ attendeeDisplayName, organizerPromptText, organizerFirst
             onKeyPress={handleKeyPress}
             placeholder={
               state.paused
-                ? 'Conversation is paused'
+                ? 'Chat is paused'
                 : state.organizerMode === 'ai' && state.attendeeMode === 'ai'
-                  ? 'Both participants are in AI mode - conversation runs automatically'
+                  ? 'Both participants are in AI mode - chat runs automatically'
                   : state.speaker === 'organizer'
                     ? 'Type your message as the organizer...'
                     : 'Type your message as the attendee...'
@@ -448,4 +436,4 @@ const Conversation = ({ attendeeDisplayName, organizerPromptText, organizerFirst
   );
 };
 
-export default Conversation;
+export default Chat;
