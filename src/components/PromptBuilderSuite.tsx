@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState, useEffect, useMemo } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import PromptBuilder, { type PromptBuilderRef } from './PromptBuilder';
 import { Button } from '@/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
@@ -78,14 +78,13 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     // Update exposed attendees when active attendees change
     useEffect(() => {
       onAttendeesChange?.(activeAttendees);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeAttendees]);
+    }, [activeAttendees, onAttendeesChange]);
 
-    const handleAttendeeDataChange = (attendeeId: string, data: { systemPrompt: string; firstMessage: string; displayName: string }) => {
+    const handleAttendeeDataChange = useCallback((attendeeId: string, data: { systemPrompt: string; firstMessage: string; displayName: string }) => {
       const updatedAttendees = attendees.map((attendee) => (attendee.id === attendeeId ? { ...attendee, ...data } : attendee));
       setAttendees(updatedAttendees);
       onAttendeesChange?.(updatedAttendees);
-    };
+    }, [attendees, onAttendeesChange]);
 
     const addAttendee = async () => {
       const newAttendee = {
@@ -125,7 +124,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
       }
     };
 
-    const handleArchiveToggle = async (attendeeId: string, currentlyArchived: boolean) => {
+    const handleArchiveToggle = useCallback(async (attendeeId: string, currentlyArchived: boolean) => {
       const newArchivedStatus = !currentlyArchived;
 
       // Optimistic UI update
@@ -157,7 +156,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
           variant: 'destructive',
         });
       }
-    };
+    }, [toast]);
 
     useImperativeHandle(ref, () => ({
       getPromptBuilder: () => promptBuilderRef.current,
