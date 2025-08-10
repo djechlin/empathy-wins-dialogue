@@ -11,6 +11,7 @@ interface PromptBuilderProps {
   initialPrompt?: string;
   initialVariables?: Record<string, string>;
   showFirstMessage?: boolean;
+  onPromptChange?: (fullPrompt: string) => void;
 }
 
 export interface PromptBuilderRef {
@@ -40,7 +41,7 @@ const generateTimestampedName = (type: string): string => {
 };
 
 const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
-  ({ name, color, initialPrompt = '', initialVariables = {}, showFirstMessage = false }, ref) => {
+  ({ name, color, initialPrompt = '', initialVariables = {}, showFirstMessage = false, onPromptChange }, ref) => {
     // Internal state management
     const [systemPrompt, setSystemPrompt] = useState(initialPrompt);
     const [variables, setVariables] = useState<Record<string, string>>(initialVariables);
@@ -123,6 +124,11 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
         .join('\n\n');
       return `${systemPrompt}\n\n${variableTags}`;
     }, [systemPrompt, variables]);
+
+    // Call callback when full prompt changes
+    useEffect(() => {
+      onPromptChange?.(fullPrompt);
+    }, [fullPrompt, onPromptChange]);
 
     // Internal variable management functions
     const addVariable = (name: string) => {

@@ -24,6 +24,8 @@ interface WorkbenchState {
   showPromptSets: boolean;
   organizerPrompt: PromptBuilderData | null;
   attendeePrompt: PromptBuilderData | null;
+  organizerPromptText: string;
+  attendeePromptText: string;
   organizerHumanOrAi: 'human' | 'ai';
   attendeeHumanOrAi: 'human' | 'ai';
   speaker: 'organizer' | 'attendee';
@@ -36,6 +38,7 @@ type WorkbenchAction =
   | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string; switchSpeaker?: boolean } }
   | { type: 'TOGGLE_MODE'; payload: { participant: 'organizer' | 'attendee'; mode: 'human' | 'ai' } }
   | { type: 'SELECT_PROMPT'; payload: { participant: 'organizer' | 'attendee'; prompt: PromptBuilderData | null } }
+  | { type: 'UPDATE_PROMPT'; payload: { participant: 'organizer' | 'attendee'; promptText: string } }
   | { type: 'TOGGLE_PROMPT_SETS' };
 
 function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
@@ -69,6 +72,12 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
         ...state,
         [action.payload.participant === 'organizer' ? 'organizerPrompt' : 'attendeePrompt']: action.payload.prompt,
         showPromptSets: false,
+      };
+
+    case 'UPDATE_PROMPT':
+      return {
+        ...state,
+        [action.payload.participant === 'organizer' ? 'organizerPromptText' : 'attendeePromptText']: action.payload.promptText,
       };
 
     case 'TOGGLE_PROMPT_SETS':
@@ -110,6 +119,8 @@ const Workbench = () => {
     showPromptSets: false,
     organizerPrompt: null,
     attendeePrompt: null,
+    organizerPromptText: '',
+    attendeePromptText: '',
     organizerHumanOrAi: 'ai',
     attendeeHumanOrAi: 'ai',
     speaker: 'organizer',
@@ -133,10 +144,10 @@ const Workbench = () => {
   const organizerParticipant = useParticipant(
     state.organizerHumanOrAi,
     organizerRef.current?.getFirstMessage() || null,
-    organizerRef.current?.getFullPrompt() || '',
+    state.organizerPromptText,
     getTextInput,
   );
-  const attendeeParticipant = useParticipant(state.attendeeHumanOrAi, null, attendeeRef.current?.getFullPrompt() || '', getTextInput);
+  const attendeeParticipant = useParticipant(state.attendeeHumanOrAi, null, state.attendeePromptText, getTextInput);
 
   const otherSpeaker = state.speaker === 'organizer' ? 'attendee' : 'organizer';
   const currentSpeakerHumanOrAi = state.speaker === 'organizer' ? state.organizerHumanOrAi : state.attendeeHumanOrAi;
@@ -208,6 +219,14 @@ const Workbench = () => {
     dispatch({ type: 'SELECT_PROMPT', payload: { participant: 'attendee', prompt: null } });
   };
 
+  const handleOrganizerPromptChange = (promptText: string) => {
+    dispatch({ type: 'UPDATE_PROMPT', payload: { participant: 'organizer', promptText } });
+  };
+
+  const handleAttendeePromptChange = (promptText: string) => {
+    dispatch({ type: 'UPDATE_PROMPT', payload: { participant: 'attendee', promptText } });
+  };
+
   const startConversation = async () => {
     if (state.conversationHistory.length > 0) return;
 
@@ -262,17 +281,19 @@ const Workbench = () => {
                 </div>
               ) : (
                 <Accordion type="multiple" defaultValue={['organizer', 'attendee']} className="w-full space-y-4">
-                  <PromptBuilder
-                    ref={organizerRef}
-                    name="organizer"
-                    color="bg-purple-200"
+                  <PromptBuilder 
+                    ref={organizerRef} 
+                    name="organizer" 
+                    color="bg-purple-200" 
                     showFirstMessage={true}
+                    onPromptChange={handleOrganizerPromptChange}
                   />
 
-                  <PromptBuilder
-                    ref={attendeeRef}
-                    name="attendee"
+                  <PromptBuilder 
+                    ref={attendeeRef} 
+                    name="attendee" 
                     color="bg-orange-200"
+                    onPromptChange={handleAttendeePromptChange}
                   />
                 </Accordion>
               )}
