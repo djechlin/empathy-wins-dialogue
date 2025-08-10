@@ -118,7 +118,10 @@ const Conversation = ({ attendeeDisplayName, organizerPromptText, organizerFirst
 
   const organizerParticipant = useParticipant(state.organizerMode, organizerFirstMessage || null, organizerPromptText, getTextInput);
   const attendeeParticipant = useParticipant(state.attendeeMode, null, attendeeSystemPrompt, getTextInput);
-  const participant = useMemo(() => (state.speaker === 'organizer' ? organizerParticipant : attendeeParticipant), [state.speaker, organizerParticipant, attendeeParticipant]);
+  const participant = useMemo(
+    () => (state.speaker === 'organizer' ? organizerParticipant : attendeeParticipant),
+    [state.speaker, organizerParticipant, attendeeParticipant],
+  );
 
   const otherSpeaker = state.speaker === 'organizer' ? 'attendee' : 'organizer';
   const speakerMode = state.speaker === 'organizer' ? state.organizerMode : state.attendeeMode;

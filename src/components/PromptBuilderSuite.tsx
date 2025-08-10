@@ -4,7 +4,7 @@ import { Button } from '@/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { archivePromptBuilder, fetchAllPromptBuildersForPersona, savePromptBuilder } from '@/utils/promptBuilder';
 import { Archive, ArchiveRestore, ChevronRight, Plus } from 'lucide-react';
-import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useReducer, useRef } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useReducer, useRef } from 'react';
 import PromptBuilder, { type PromptBuilderRef } from './PromptBuilder';
 
 export interface AttendeeData {
@@ -211,59 +211,6 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     getAttendees: () => activeAttendees,
   }));
 
-  const AttendeeItem = memo(
-    ({
-      attendee,
-      isArchived,
-      onArchiveToggle,
-      onDataChange,
-      promptBuilderRef: itemPromptBuilderRef,
-    }: {
-      attendee: AttendeeData;
-      isArchived: boolean;
-      onArchiveToggle: (id: string, archived: boolean) => void;
-      onDataChange: (id: string, data: { systemPrompt: string; firstMessage: string; displayName: string }) => void;
-      promptBuilderRef?: React.RefObject<PromptBuilderRef>;
-    }) => {
-      const handleArchiveClick = useCallback(() => {
-        onArchiveToggle(attendee.id, attendee.archived || false);
-      }, [onArchiveToggle, attendee.id, attendee.archived]);
-
-      const handleDataChange = useCallback(
-        (data: { systemPrompt: string; firstMessage: string; displayName: string }) => {
-          onDataChange(attendee.id, data);
-        },
-        [onDataChange, attendee.id],
-      );
-
-      return (
-        <div className={cn('space-y-2', isArchived ? 'opacity-60' : '')}>
-          <div className="flex justify-end">
-            <Button
-              onClick={handleArchiveClick}
-              size="sm"
-              variant="ghost"
-              className="h-6 w-6 p-0 text-gray-400 hover:text-blue-500"
-              title={isArchived ? 'Unarchive' : 'Archive'}
-            >
-              {isArchived ? <ArchiveRestore className="h-3 w-3" /> : <Archive className="h-3 w-3" />}
-            </Button>
-          </div>
-          <PromptBuilder
-            key={attendee.id}
-            ref={itemPromptBuilderRef}
-            persona="attendee"
-            initialPrompt={attendee.systemPrompt}
-            initialFirstMessage={attendee.firstMessage}
-            initialDisplayName={attendee.displayName}
-            color={color}
-            defaultOpen={defaultOpen && !isArchived}
-            onDataChange={handleDataChange}
-          />
-        </div>
-      );
-    },
-  );
 
   if (state.loading === 'loading') {
     return (
@@ -297,14 +244,30 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
       {activeAttendees.length > 0 ? (
         <div className="space-y-3">
           {activeAttendees.map((attendee, index) => (
-            <AttendeeItem
-              key={attendee.id}
-              attendee={attendee}
-              isArchived={false}
-              onArchiveToggle={handleArchiveToggle}
-              onDataChange={handleAttendeeDataChange}
-              promptBuilderRef={index === 0 ? promptBuilderRef : undefined}
-            />
+            <div key={attendee.id} className="space-y-2">
+              <div className="flex justify-end">
+                <Button
+                  onClick={() => handleArchiveToggle(attendee.id, attendee.archived || false)}
+                  size="sm"
+                  variant="ghost"
+                  className="h-6 w-6 p-0 text-gray-400 hover:text-blue-500"
+                  title="Archive"
+                >
+                  <Archive className="h-3 w-3" />
+                </Button>
+              </div>
+              <PromptBuilder
+                key={attendee.id}
+                ref={index === 0 ? promptBuilderRef : undefined}
+                persona="attendee"
+                initialPrompt={attendee.systemPrompt}
+                initialFirstMessage={attendee.firstMessage}
+                initialDisplayName={attendee.displayName}
+                color={color}
+                defaultOpen={defaultOpen}
+                onDataChange={(data) => handleAttendeeDataChange(attendee.id, data)}
+              />
+            </div>
           ))}
         </div>
       ) : (
@@ -330,13 +293,29 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-3 mt-2">
             {archivedAttendees.map((attendee) => (
-              <AttendeeItem
-                key={attendee.id}
-                attendee={attendee}
-                isArchived={true}
-                onArchiveToggle={handleArchiveToggle}
-                onDataChange={handleAttendeeDataChange}
-              />
+              <div key={attendee.id} className="space-y-2 opacity-60">
+                <div className="flex justify-end">
+                  <Button
+                    onClick={() => handleArchiveToggle(attendee.id, attendee.archived || false)}
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0 text-gray-400 hover:text-blue-500"
+                    title="Unarchive"
+                  >
+                    <ArchiveRestore className="h-3 w-3" />
+                  </Button>
+                </div>
+                <PromptBuilder
+                  key={attendee.id}
+                  persona="attendee"
+                  initialPrompt={attendee.systemPrompt}
+                  initialFirstMessage={attendee.firstMessage}
+                  initialDisplayName={attendee.displayName}
+                  color={color}
+                  defaultOpen={false}
+                  onDataChange={(data) => handleAttendeeDataChange(attendee.id, data)}
+                />
+              </div>
             ))}
           </CollapsibleContent>
         </Collapsible>
