@@ -58,6 +58,11 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     const [tempVariableName, setTempVariableName] = useState('');
 
     const handleSave = async () => {
+      // If already saved (not dirty), auto-succeed
+      if (isSaved) {
+        return true;
+      }
+
       // Use current display name, or generate timestamped name if it's still the default
       const nameToSave = displayName === name ? generateTimestampedName(name.toLowerCase()) : displayName;
       if (displayName === name) {
@@ -262,7 +267,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                   e.stopPropagation();
                   handleSave();
                 }}
-                disabled={isSaving}
+                disabled={isSaving || isSaved}
                 size="sm"
                 variant="outline"
                 className="text-xs px-2 py-1 h-auto font-sans"
