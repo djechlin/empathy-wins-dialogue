@@ -1,9 +1,10 @@
-import { AccordionContent, AccordionItem, AccordionTrigger } from '@/ui/accordion';
 import { Button } from '@/ui/button';
 import { Input } from '@/ui/input';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
 import { fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
+import { ChevronDown } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
 interface PromptBuilderProps {
@@ -12,6 +13,7 @@ interface PromptBuilderProps {
   initialPrompt?: string;
   initialVariables?: Record<string, string>;
   showFirstMessage?: boolean;
+  defaultOpen?: boolean;
   onPromptChange?: (systempPrompt: string) => void;
   onDataChange?: (data: { systemPrompt: string; firstMessage: string; displayName: string }) => void;
 }
@@ -33,7 +35,7 @@ const generateTimestampedName = (type: string): string => {
 };
 
 const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
-  ({ name, color, initialPrompt = '', showFirstMessage = false, onPromptChange, onDataChange }, ref) => {
+  ({ name, color, initialPrompt = '', showFirstMessage = false, defaultOpen = true, onPromptChange, onDataChange }, ref) => {
     const [systemPrompt, setSystemPrompt] = useState(initialPrompt);
     const [firstMessage, setFirstMessage] = useState('');
     const [isSaving, setIsSaving] = useState(false);
@@ -43,6 +45,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     const [isLoaded, setIsLoaded] = useState(false);
     const [isEditingName, setIsEditingName] = useState(false);
     const [editNameValue, setEditNameValue] = useState(displayName);
+    const [isOpen, setIsOpen] = useState(defaultOpen);
 
     const handleSave = async () => {
       // If already saved (not dirty), auto-succeed
@@ -155,81 +158,92 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     }));
 
     return (
-      <AccordionItem value={name.toLowerCase()} className="border-0">
-        <div className={`${color} rounded-lg p-4`}>
-          <AccordionTrigger className="hover:no-underline p-0">
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-2">
-                <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>(
-                {isEditingName ? (
-                  <Input
-                    value={editNameValue}
-                    onChange={(e) => setEditNameValue(e.target.value)}
-                    onKeyDown={handleNameKeyDown}
-                    onBlur={handleSaveNameEdit}
-                    className="text-xs font-mono h-6 px-1 py-0.5 min-w-0 w-auto"
-                    style={{ width: `${Math.max(editNameValue.length * 8, 80)}px` }}
-                    autoFocus
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                ) : (
-                  <span
-                    className="text-xs text-gray-500 font-mono cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleStartEditingName();
-                    }}
-                  >
-                    {displayName}
-                  </span>
-                )}
-              </div>
-              <Button
+      <div className={`${color} rounded-lg p-4`}>
+        <button className="flex items-center justify-between w-full group" onClick={() => setIsOpen(!isOpen)}>
+          <div className="flex items-center gap-2">
+            <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>(
+            {isEditingName ? (
+              <Input
+                value={editNameValue}
+                onChange={(e) => setEditNameValue(e.target.value)}
+                onKeyDown={handleNameKeyDown}
+                onBlur={handleSaveNameEdit}
+                className="text-xs font-mono h-6 px-1 py-0.5 min-w-0 w-auto"
+                style={{ width: `${Math.max(editNameValue.length * 8, 80)}px` }}
+                autoFocus
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <span
+                className="text-xs text-gray-500 font-mono cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleSave();
+                  handleStartEditingName();
                 }}
-                disabled={isSaving || isSaved}
-                size="sm"
-                variant="outline"
-                className="text-xs px-2 py-1 h-auto font-sans"
               >
-                {isSaving ? 'Saving...' : isSaved ? 'Saved' : 'Save'}
-              </Button>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="pb-0">
-            <div className="space-y-4 pt-4">
-              {saveError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm">
-                  <div className="font-medium">Save Error:</div>
-                  <div className="mt-1">{saveError}</div>
-                </div>
-              )}
-              {showFirstMessage && firstMessage !== undefined && setFirstMessage && (
+                {displayName}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSave();
+              }}
+              disabled={isSaving || isSaved}
+              size="sm"
+              variant="outline"
+              className="text-xs px-2 py-1 h-auto font-sans"
+            >
+              {isSaving ? 'Saving...' : isSaved ? 'Saved' : 'Save'}
+            </Button>
+            <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+              <ChevronDown className="h-4 w-4 shrink-0" />
+            </motion.div>
+          </div>
+        </button>
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="overflow-hidden"
+            >
+              <div className="space-y-4 pt-4">
+                {saveError && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm">
+                    <div className="font-medium">Save Error:</div>
+                    <div className="mt-1">{saveError}</div>
+                  </div>
+                )}
+                {showFirstMessage && firstMessage !== undefined && setFirstMessage && (
+                  <div>
+                    <Label className="text-sm mb-2 block text-gray-600">First message (not part of prompt)</Label>
+                    <Textarea
+                      value={firstMessage}
+                      onChange={(e) => setFirstMessage(e.target.value)}
+                      placeholder="Enter first message..."
+                      className="min-h-[100px] text-sm flex-1"
+                    />
+                  </div>
+                )}
                 <div>
-                  <Label className="text-sm mb-2 block text-gray-600">First message (not part of prompt)</Label>
+                  <Label className="text-sm mb-2 block text-gray-600">System Prompt</Label>
                   <Textarea
-                    value={firstMessage}
-                    onChange={(e) => setFirstMessage(e.target.value)}
-                    placeholder="Enter first message..."
-                    className="min-h-[100px] text-sm flex-1"
+                    value={systemPrompt}
+                    onChange={(e) => setSystemPrompt(e.target.value)}
+                    placeholder={`Enter ${name.toLowerCase()} system prompt...`}
+                    className="min-h-[200px] text-sm flex-1"
                   />
                 </div>
-              )}
-              <div>
-                <Label className="text-sm mb-2 block text-gray-600">System Prompt</Label>
-                <Textarea
-                  value={systemPrompt}
-                  onChange={(e) => setSystemPrompt(e.target.value)}
-                  placeholder={`Enter ${name.toLowerCase()} system prompt...`}
-                  className="min-h-[200px] text-sm flex-1"
-                />
               </div>
-            </div>
-          </AccordionContent>
-        </div>
-      </AccordionItem>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     );
   },
 );

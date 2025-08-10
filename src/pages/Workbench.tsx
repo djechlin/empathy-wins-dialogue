@@ -1,8 +1,6 @@
 import Navbar from '@/components/layout/Navbar';
 import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
-import PromptBuilderSet from '@/components/PromptBuilderSet';
 import { useParticipant } from '@/hooks/useParticipant';
-import { Accordion } from '@/ui/accordion';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
@@ -21,7 +19,6 @@ interface Message {
 
 interface WorkbenchState {
   userTextInput: string;
-  showPromptSets: boolean;
   organizerPrompt: PromptBuilderData | null;
   attendeePrompt: PromptBuilderData | null;
   organizerPromptText: string;
@@ -44,8 +41,7 @@ type WorkbenchAction =
   | { type: 'UPDATE_PROMPT'; payload: { participant: 'organizer' | 'attendee'; promptText: string } }
   | { type: 'UPDATE_ORGANIZER_DATA'; payload: { systemPrompt: string; firstMessage: string } }
   | { type: 'UPDATE_ATTENDEE_DATA'; payload: { systemPrompt: string; firstMessage: string; displayName: string } }
-  | { type: 'TOGGLE_PAUSE' }
-  | { type: 'TOGGLE_PROMPT_SETS' };
+  | { type: 'TOGGLE_PAUSE' };
 
 function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
   switch (action.type) {
@@ -77,7 +73,6 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
       return {
         ...state,
         [action.payload.participant === 'organizer' ? 'organizerPrompt' : 'attendeePrompt']: action.payload.prompt,
-        showPromptSets: false,
       };
 
     case 'UPDATE_PROMPT':
@@ -102,9 +97,6 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
 
     case 'TOGGLE_PAUSE':
       return { ...state, paused: !state.paused };
-
-    case 'TOGGLE_PROMPT_SETS':
-      return { ...state, showPromptSets: !state.showPromptSets };
 
     default:
       return state;
@@ -141,7 +133,6 @@ const AiThinking = ({ participant }: { participant: 'organizer' | 'attendee' }) 
 const Workbench = () => {
   const [state, dispatch] = useReducer(workbenchReducer, {
     userTextInput: '',
-    showPromptSets: false,
     organizerPrompt: null,
     attendeePrompt: null,
     organizerPromptText: '',
@@ -256,22 +247,6 @@ const Workbench = () => {
     }
   };
 
-  const handleSelectOrganizerPrompt = (prompt: PromptBuilderData) => {
-    dispatch({ type: 'SELECT_PROMPT', payload: { participant: 'organizer', prompt } });
-  };
-
-  const handleSelectAttendeePrompt = (prompt: PromptBuilderData) => {
-    dispatch({ type: 'SELECT_PROMPT', payload: { participant: 'attendee', prompt } });
-  };
-
-  const handleCreateNewOrganizer = () => {
-    dispatch({ type: 'SELECT_PROMPT', payload: { participant: 'organizer', prompt: null } });
-  };
-
-  const handleCreateNewAttendee = () => {
-    dispatch({ type: 'SELECT_PROMPT', payload: { participant: 'attendee', prompt: null } });
-  };
-
   const handleOrganizerPromptChange = useCallback((data: { systemPrompt: string; firstMessage: string }) => {
     dispatch({ type: 'UPDATE_ORGANIZER_DATA', payload: data });
   }, []);
@@ -305,47 +280,26 @@ const Workbench = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ height: 'calc(100vh - 120px)' }}>
             {/* Participants Column */}
             <div className="space-y-4 h-full overflow-y-auto">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-semibold">Participants</h2>
-                <Button onClick={() => dispatch({ type: 'TOGGLE_PROMPT_SETS' })} size="sm" variant="outline" className="text-xs">
-                  {state.showPromptSets ? 'Edit Current' : 'Browse All'}
-                </Button>
+              <h2 className="font-semibold mb-4">Participants</h2>
+              <div className="w-full space-y-4">
+                <PromptBuilder
+                  ref={organizerRef}
+                  name="organizer"
+                  color="bg-purple-200"
+                  showFirstMessage={true}
+                  defaultOpen={true}
+                  onDataChange={handleOrganizerPromptChange}
+                />
+
+                <PromptBuilder
+                  ref={attendeeRef}
+                  name="attendee"
+                  color="bg-orange-200"
+                  defaultOpen={true}
+                  onPromptChange={handleAttendeePromptChange}
+                  onDataChange={handleAttendeeDataChange}
+                />
               </div>
-
-              {state.showPromptSets ? (
-                <div className="space-y-4">
-                  <PromptBuilderSet
-                    persona="organizer"
-                    color="bg-purple-200"
-                    onSelectPrompt={handleSelectOrganizerPrompt}
-                    onCreateNew={handleCreateNewOrganizer}
-                  />
-                  <PromptBuilderSet
-                    persona="attendee"
-                    color="bg-orange-200"
-                    onSelectPrompt={handleSelectAttendeePrompt}
-                    onCreateNew={handleCreateNewAttendee}
-                  />
-                </div>
-              ) : (
-                <Accordion type="multiple" defaultValue={['organizer', 'attendee']} className="w-full space-y-4">
-                  <PromptBuilder
-                    ref={organizerRef}
-                    name="organizer"
-                    color="bg-purple-200"
-                    showFirstMessage={true}
-                    onDataChange={handleOrganizerPromptChange}
-                  />
-
-                  <PromptBuilder
-                    ref={attendeeRef}
-                    name="attendee"
-                    color="bg-orange-200"
-                    onPromptChange={handleAttendeePromptChange}
-                    onDataChange={handleAttendeeDataChange}
-                  />
-                </Accordion>
-              )}
             </div>
 
             {/* Conversation Column */}

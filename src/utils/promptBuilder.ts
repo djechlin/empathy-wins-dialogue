@@ -82,7 +82,6 @@ export const fetchMostRecentPromptForPersona = async (persona: string): Promise<
       system_prompt: pb.system_prompt,
       persona: pb.persona || '',
       firstMessage: pb.first_message || undefined,
-      variables: JSON.parse(pb.variables_and_content || '{}'),
       archived: pb.archived || false,
       created_at: pb.created_at,
       updated_at: pb.updated_at,
@@ -129,7 +128,6 @@ export const fetchMostRecentPromptBuilders = async (): Promise<Record<string, Pr
         system_prompt: pb.system_prompt,
         persona: pb.persona || '',
         firstMessage: pb.first_message || undefined,
-        variables: JSON.parse(pb.variables_and_content || '{}'),
       };
     }
 
@@ -173,7 +171,6 @@ export const fetchAllPromptBuildersForPersona = async (persona: string): Promise
       system_prompt: pb.system_prompt,
       persona: pb.persona || '',
       firstMessage: pb.first_message || undefined,
-      variables: JSON.parse(pb.variables_and_content || '{}'),
       archived: pb.archived || false, // Will work once archived field is added to DB
       created_at: pb.created_at,
       updated_at: pb.updated_at,
