@@ -17,12 +17,14 @@ interface ChatState {
   history: Message[];
   speaker: 'organizer' | 'attendee';
   userTextInput: string;
+  chatInitializationComplete: boolean;
 }
 
 type ChatAction =
   | { type: 'SET_USER_TEXT_INPUT'; payload: string }
   | { type: 'START_CHAT'; payload: { firstMessage: string } }
-  | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string } };
+  | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string } }
+  | { type: 'MARK_INITIALIZATION_COMPLETE' };
 
 function reducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
@@ -42,6 +44,12 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
         history: [...state.history, constructMessage(action.payload.sender, action.payload.content)],
         userTextInput: action.payload.sender === state.speaker ? '' : state.userTextInput,
         speaker: action.payload.sender === 'organizer' ? 'attendee' : 'organizer',
+      };
+
+    case 'MARK_INITIALIZATION_COMPLETE':
+      return {
+        ...state,
+        chatInitializationComplete: true,
       };
 
     default:
@@ -73,7 +81,6 @@ interface ChatProps {
   attendeeMode: 'human' | 'ai';
   paused: boolean;
   hasStarted: boolean;
-  onStarted: (started: boolean) => void;
   onStatusUpdate: (updates: ChatStatus) => void;
 }
 
@@ -104,13 +111,13 @@ const Chat = ({
   attendeeMode,
   paused,
   hasStarted,
-  onStarted,
   onStatusUpdate,
 }: ChatProps) => {
   const [state, dispatch] = useReducer(reducer, {
     history: [],
     speaker: 'organizer' as const,
     userTextInput: '',
+    chatInitializationComplete: false,
   });
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -130,25 +137,22 @@ const Chat = ({
     [state.speaker, organizerParticipant, attendeeParticipant],
   );
 
-  const otherSpeaker = state.speaker === 'organizer' ? 'attendee' : 'organizer';
   const speakerMode = state.speaker === 'organizer' ? organizerMode : attendeeMode;
-  const otherSpeakerMode = state.speaker === 'organizer' ? attendeeMode : organizerMode;
   const isAwaitingAiResponse = state.history.length > 0 && speakerMode === 'ai';
 
+  // If speaker is AI, request message in 1 tick
   useEffect(() => {
     if (
       state.history.length === 0 ||
       state.history[state.history.length - 1].sender === state.speaker ||
       paused ||
-      // May be wrong
       speakerMode === 'human'
     ) {
       return;
     }
 
-    const lastMessage = state.history[state.history.length - 1];
-
     setTimeout(async () => {
+      const lastMessage = state.history[state.history.length - 1];
       try {
         const response = await participant.chat(lastMessage.content);
         dispatch({
@@ -164,23 +168,36 @@ const Chat = ({
     }, 0);
   }, [state.history, state.speaker, paused, speakerMode, participant]);
 
-  const sendHumanMessage = useCallback(async () => {
-    if (!state.userTextInput.trim() || speakerMode === 'ai' || paused) return;
-
-    const userMessage = state.userTextInput;
-    dispatch({ type: 'SEND_MESSAGE', payload: { sender: state.speaker, content: userMessage } });
-
-    if (otherSpeakerMode === 'ai') {
-      try {
-        const response = await participant.chat(userMessage);
-        dispatch({ type: 'SEND_MESSAGE', payload: { sender: otherSpeaker, content: response } });
-      } catch (error) {
-        console.error('Error getting AI response:', error);
-      }
+  // Start chat when hasStarted prop changes to true
+  useEffect(() => {
+    if (hasStarted && state.history.length === 0 && organizerMode === 'ai' && !state.chatInitializationComplete) {
+      dispatch({ type: 'MARK_INITIALIZATION_COMPLETE' });
+      onStatusUpdate({ started: true, lastActivity: new Date() });
+      organizerParticipant
+        .chat(null)
+        .then((firstMessage) => {
+          dispatch({ type: 'START_CHAT', payload: { firstMessage } });
+          onStatusUpdate({ messageCount: 1, lastActivity: new Date() });
+        })
+        .catch((error) => {
+          console.error('Error starting chat:', error);
+        });
     }
-  }, [state.userTextInput, speakerMode, paused, state.speaker, otherSpeakerMode, participant, otherSpeaker]);
+  }, [hasStarted, state.history.length, organizerMode, organizerParticipant, onStatusUpdate, state.chatInitializationComplete]);
 
-  const handleKeyPress = useCallback(
+  // Update message count when history changes
+  useEffect(() => {
+    if (state.history.length > 0) {
+      onStatusUpdate({ messageCount: state.history.length, lastActivity: new Date() });
+    }
+  }, [state.history.length, onStatusUpdate]);
+
+  const sendHumanMessage = useCallback(() => {
+    if (!state.userTextInput.trim() || speakerMode === 'ai' || paused) return;
+    dispatch({ type: 'SEND_MESSAGE', payload: { sender: state.speaker, content: state.userTextInput } });
+  }, [paused, speakerMode, state.speaker, state.userTextInput]);
+
+  const sendHumanMessageOnPressEnter = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -189,30 +206,6 @@ const Chat = ({
     },
     [sendHumanMessage],
   );
-
-  // Start chat when hasStarted prop changes to true
-  useEffect(() => {
-    if (hasStarted && state.history.length === 0 && organizerMode === 'ai') {
-      onStatusUpdate({ started: true, lastActivity: new Date() });
-      organizerParticipant
-        .chat(null)
-        .then((firstMessage) => {
-          dispatch({ type: 'START_CHAT', payload: { firstMessage } });
-          onStarted(true);
-          onStatusUpdate({ messageCount: 1, lastActivity: new Date() });
-        })
-        .catch((error) => {
-          console.error('Error starting chat:', error);
-        });
-    }
-  }, [hasStarted, state.history.length, organizerMode, organizerParticipant, onStarted, onStatusUpdate]);
-
-  // Update message count when history changes
-  useEffect(() => {
-    if (state.history.length > 0) {
-      onStatusUpdate({ messageCount: state.history.length, lastActivity: new Date() });
-    }
-  }, [state.history.length, onStatusUpdate]);
 
   return (
     <Card className="h-full flex flex-col">
@@ -276,7 +269,7 @@ const Chat = ({
             ref={inputRef}
             value={state.userTextInput}
             onChange={(e) => dispatch({ type: 'SET_USER_TEXT_INPUT', payload: e.target.value })}
-            onKeyPress={handleKeyPress}
+            onKeyPress={sendHumanMessageOnPressEnter}
             placeholder={
               paused
                 ? 'Chat is paused'
