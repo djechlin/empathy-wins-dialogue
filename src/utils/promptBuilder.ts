@@ -11,7 +11,7 @@ export interface PromptBuilderData {
   updated_at?: string;
 }
 
-export const savePromptBuilder = async (data: PromptBuilderData, persona?: string): Promise<boolean> => {
+export const savePromptBuilder = async (data: PromptBuilderData): Promise<boolean> => {
   try {
     const {
       data: { user },
@@ -25,7 +25,7 @@ export const savePromptBuilder = async (data: PromptBuilderData, persona?: strin
       user_id: user.id,
       name: data.name,
       system_prompt: data.system_prompt,
-      persona: persona || data.persona,
+      persona: data.persona,
       first_message: data.firstMessage || null,
     };
 
@@ -47,7 +47,7 @@ export const savePromptBuilder = async (data: PromptBuilderData, persona?: strin
   }
 };
 
-export const fetchMostRecentPromptForPersona = async (persona: string): Promise<PromptBuilderData | null> => {
+export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'attendee'): Promise<PromptBuilderData | null> => {
   try {
     console.log(`fetchMostRecentPromptForPersona: Starting fetch for persona: ${persona}`);
     const {

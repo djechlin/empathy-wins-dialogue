@@ -1,10 +1,10 @@
 import Navbar from '@/components/layout/Navbar';
 import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
-import PromptBuilderSuite, { type PromptBuilderSuiteRef, type AttendeeData } from '@/components/PromptBuilderSuite';
-import ConversationSuite from './ConversationSuite';
+import PromptBuilderSuite, { type AttendeeData, type PromptBuilderSuiteRef } from '@/components/PromptBuilderSuite';
 import { useParticipant } from '@/hooks/useParticipant';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
 import React, { useCallback, useEffect, useReducer, useRef } from 'react';
+import ConversationSuite from './ConversationSuite';
 
 type ParticipantMode = 'human' | 'ai';
 
@@ -39,7 +39,6 @@ type WorkbenchAction =
   | { type: 'SELECT_PROMPT'; payload: { participant: 'organizer' | 'attendee'; prompt: PromptBuilderData | null } }
   | { type: 'UPDATE_PROMPT'; payload: { participant: 'organizer' | 'attendee'; promptText: string } }
   | { type: 'UPDATE_ORGANIZER_DATA'; payload: { systemPrompt: string; firstMessage: string } }
-  | { type: 'UPDATE_ATTENDEE_DATA'; payload: { systemPrompt: string; firstMessage: string; displayName: string } }
   | { type: 'UPDATE_ATTENDEES'; payload: AttendeeData[] }
   | { type: 'TOGGLE_PAUSE' };
 
@@ -86,13 +85,6 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
         ...state,
         organizerPromptText: action.payload.systemPrompt,
         organizerFirstMessage: action.payload.firstMessage,
-      };
-
-    case 'UPDATE_ATTENDEE_DATA':
-      return {
-        ...state,
-        attendeePromptText: action.payload.systemPrompt,
-        attendeeData: action.payload,
       };
 
     case 'UPDATE_ATTENDEES':
@@ -168,7 +160,6 @@ const Workbench = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [state.conversationHistory, isAwaitingAiResponse]);
 
-  // Conversation loop - the "while true"
   useEffect(() => {
     if (state.conversationHistory.length === 0) return; // No conversation yet
     if (state.paused) return; // Conversation is paused
@@ -240,10 +231,6 @@ const Workbench = () => {
     dispatch({ type: 'UPDATE_ORGANIZER_DATA', payload: data });
   }, []);
 
-  const handleAttendeePromptChange = useCallback((systemPrompt: string) => {
-    dispatch({ type: 'UPDATE_PROMPT', payload: { participant: 'attendee', promptText: systemPrompt } });
-  }, []);
-
   const handleAttendeesChange = useCallback((attendees: AttendeeData[]) => {
     dispatch({ type: 'UPDATE_ATTENDEES', payload: attendees });
   }, []);
@@ -273,9 +260,8 @@ const Workbench = () => {
               <div className="w-full space-y-4">
                 <PromptBuilder
                   ref={organizerRef}
-                  name="organizer"
+                  persona="organizer"
                   color="bg-purple-200"
-                  showFirstMessage={true}
                   defaultOpen={true}
                   onDataChange={handleOrganizerPromptChange}
                 />
@@ -285,7 +271,6 @@ const Workbench = () => {
                   name="attendee"
                   color="bg-orange-200"
                   defaultOpen={true}
-                  onPromptChange={handleAttendeePromptChange}
                   onAttendeesChange={handleAttendeesChange}
                 />
               </div>

@@ -3,20 +3,17 @@ import { Input } from '@/ui/input';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
 import { fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
-import { ChevronDown } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
 interface PromptBuilderProps {
-  name: string;
+  persona: 'organizer' | 'attendee';
   color: string; // Tailwind background color class (e.g., 'bg-purple-200')
   initialPrompt?: string;
   initialFirstMessage?: string;
   initialDisplayName?: string;
-  initialVariables?: Record<string, string>;
-  showFirstMessage?: boolean;
   defaultOpen?: boolean;
-  onPromptChange?: (systempPrompt: string) => void;
   onDataChange?: (data: { systemPrompt: string; firstMessage: string; displayName: string }) => void;
 }
 
@@ -37,27 +34,14 @@ const generateTimestampedName = (type: string): string => {
 };
 
 const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
-  (
-    {
-      name,
-      color,
-      initialPrompt = '',
-      initialFirstMessage = '',
-      initialDisplayName,
-      showFirstMessage = false,
-      defaultOpen = true,
-      onPromptChange,
-      onDataChange,
-    },
-    ref,
-  ) => {
+  ({ persona, color, initialPrompt = '', initialFirstMessage = '', initialDisplayName, defaultOpen = true, onDataChange }, ref) => {
     const [systemPrompt, setSystemPrompt] = useState(initialPrompt);
     const [firstMessage, setFirstMessage] = useState(initialFirstMessage);
     const [isSaving, setIsSaving] = useState(false);
     const [isSaved, setIsSaved] = useState(true);
     const [saveError, setSaveError] = useState<string | null>(null);
-    const [displayName, setDisplayName] = useState(initialDisplayName || name);
-    const [isLoaded, setIsLoaded] = useState(!!initialPrompt || !!initialDisplayName);
+    const [displayName, setDisplayName] = useState(initialDisplayName || persona);
+    const [loading, setLoading] = useState<'new' | 'loading' | 'loaded' | 'error'>(initialPrompt || initialFirstMessage ? 'loaded' : 'new');
     const [isEditingName, setIsEditingName] = useState(false);
     const [editNameValue, setEditNameValue] = useState(displayName);
     const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -68,20 +52,18 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
         return true;
       }
 
-      // Use current display name, or generate timestamped name if it's still the default
-      const nameToSave = displayName === name ? generateTimestampedName(name.toLowerCase()) : displayName;
-      if (displayName === name) {
-        setDisplayName(nameToSave);
+      if (displayName === persona) {
+        setDisplayName(generateTimestampedName(persona));
       }
 
       setIsSaving(true);
       setSaveError(null);
       try {
         const result = await savePromptBuilder({
-          name: nameToSave,
+          name: displayName,
           system_prompt: systemPrompt,
-          persona: name.toLowerCase(),
-          firstMessage: firstMessage,
+          persona,
+          firstMessage,
         });
 
         if (result) {
@@ -99,13 +81,8 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       }
     };
 
-    const handleStartEditingName = () => {
-      setIsEditingName(true);
-      setEditNameValue(displayName);
-    };
-
     const handleSaveNameEdit = () => {
-      setDisplayName(editNameValue.trim() || name);
+      setDisplayName(editNameValue.trim() || persona);
       setIsEditingName(false);
     };
 
@@ -131,46 +108,39 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       }
     }, [displayName, isEditingName]);
 
-    // Track changes to determine if dirty
     useEffect(() => {
       setIsSaved(false);
       setSaveError(null);
     }, [systemPrompt, firstMessage, displayName]);
 
-    // Auto-load most recent prompt for this persona on mount
     useEffect(() => {
-      const loadMostRecentPrompt = async () => {
-        console.log(`PromptBuilder ${name}: Starting to load...`);
-        if (isLoaded) return; // Avoid loading multiple times
+      const load = async () => {
+        if (loading !== 'new') {
+          return;
+        }
 
         try {
-          console.log(`PromptBuilder ${name}: Fetching for persona: ${name.toLowerCase()}`);
-          const recentPrompt = await fetchMostRecentPromptForPersona(name.toLowerCase());
-          console.log(`PromptBuilder ${name}: Received data:`, recentPrompt);
+          const recentPrompt = await fetchMostRecentPromptForPersona(persona);
           if (recentPrompt) {
             setSystemPrompt(recentPrompt.system_prompt);
             setFirstMessage(recentPrompt.firstMessage || '');
             setDisplayName(recentPrompt.name);
-            setIsSaved(true); // Mark as saved since we just loaded it
+            setIsSaved(true);
           }
+          setLoading('loaded');
         } catch (error) {
           console.error(`PromptBuilder ${name}: Error loading most recent prompt:`, error);
-        } finally {
-          setIsLoaded(true);
-          console.log(`PromptBuilder ${name}: Loading complete`);
+          setLoading('error');
         }
       };
 
-      loadMostRecentPrompt();
-    }, [name, isLoaded]);
+      load();
+    }, [persona, loading]);
 
-    // Call callbacks when full sprompt or first message changes
     useEffect(() => {
-      onPromptChange?.(systemPrompt);
       onDataChange?.({ systemPrompt, firstMessage, displayName });
-    }, [systemPrompt, firstMessage, displayName, onPromptChange, onDataChange]);
+    }, [systemPrompt, firstMessage, displayName, onDataChange]);
 
-    // Expose getter methods for programmatic access
     useImperativeHandle(ref, () => ({
       getSystemPrompt: () => systemPrompt,
       getFirstMessage: () => firstMessage || '',
@@ -180,7 +150,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       <div className={`${color} rounded-lg p-4`}>
         <div className="flex items-center justify-between w-full mb-2">
           <button className="flex items-center gap-2 flex-1" onClick={() => setIsOpen(!isOpen)}>
-            <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>
+            <span className="font-medium capitalize">{persona}</span>
             {isEditingName ? (
               <Input
                 value={editNameValue}
@@ -197,7 +167,8 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                 className="text-xs text-gray-500 font-mono cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded ml-2"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleStartEditingName();
+                  setIsEditingName(true);
+                  setEditNameValue(displayName);
                 }}
               >
                 {displayName}
@@ -233,7 +204,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                     <div className="mt-1">{saveError}</div>
                   </div>
                 )}
-                {showFirstMessage && firstMessage !== undefined && setFirstMessage && (
+                {persona === 'organizer' && setFirstMessage && (
                   <div>
                     <Label className="text-sm mb-2 block text-gray-600">First message (not part of prompt)</Label>
                     <Textarea
