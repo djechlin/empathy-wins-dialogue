@@ -41,6 +41,8 @@ type PromptBuilderSuiteAction =
   | { type: 'SET_LOADING'; payload: 'new' | 'loading' | 'loaded' }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'LOAD_ATTENDEES'; payload: AttendeeData[] }
+  | { type: 'LOAD_ATTENDEES_SUCCESS'; payload: AttendeeData[] }
+  | { type: 'LOAD_ATTENDEES_ERROR'; payload: { error: string; fallbackAttendees: AttendeeData[] } }
   | { type: 'ADD_ATTENDEE'; payload: AttendeeData }
   | { type: 'UPDATE_ATTENDEE'; payload: { id: string; data: Partial<AttendeeData> } }
   | { type: 'TOGGLE_ARCHIVE'; payload: { id: string; archived: boolean } }
@@ -56,6 +58,17 @@ function promptBuilderSuiteReducer(state: PromptBuilderSuiteState, action: Promp
 
     case 'LOAD_ATTENDEES':
       return { ...state, attendees: action.payload };
+
+    case 'LOAD_ATTENDEES_SUCCESS':
+      return { ...state, attendees: action.payload, loading: 'loaded', error: null };
+
+    case 'LOAD_ATTENDEES_ERROR':
+      return { 
+        ...state, 
+        attendees: action.payload.fallbackAttendees, 
+        error: action.payload.error,
+        loading: 'loaded'
+      };
 
     case 'ADD_ATTENDEE':
       return { ...state, attendees: [...state.attendees, action.payload] };
@@ -113,12 +126,16 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
           created_at: pb.created_at,
           updated_at: pb.updated_at,
         }));
-        dispatch({ type: 'LOAD_ATTENDEES', payload: attendeeData });
-        dispatch({ type: 'SET_LOADING', payload: 'loaded' });
+        dispatch({ type: 'LOAD_ATTENDEES_SUCCESS', payload: attendeeData });
       } catch (error) {
         console.error('PromptBuilderSuite: Error loading attendees:', error);
-        dispatch({ type: 'SET_ERROR', payload: 'Authentication required. Please sign in to load your attendees.' });
-        dispatch({ type: 'LOAD_ATTENDEES', payload: [{ id: '1', displayName: 'attendee', systemPrompt: '', firstMessage: '' }] });
+        dispatch({ 
+          type: 'LOAD_ATTENDEES_ERROR', 
+          payload: { 
+            error: 'Authentication required. Please sign in to load your attendees.',
+            fallbackAttendees: [{ id: '1', displayName: 'attendee', systemPrompt: '', firstMessage: '' }]
+          }
+        });
       }
     };
     loadAttendees();
@@ -147,7 +164,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
 
     try {
       await savePromptBuilder(newAttendee);
-      // If we get here, save was successful
+      // Reload attendees to get the new one
       const data = await fetchAllPromptBuildersForPersona('attendee');
       const attendeeData: AttendeeData[] = data.map((pb) => ({
         id: pb.id || '',
@@ -158,7 +175,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
         created_at: pb.created_at,
         updated_at: pb.updated_at,
       }));
-      dispatch({ type: 'LOAD_ATTENDEES', payload: attendeeData });
+      dispatch({ type: 'LOAD_ATTENDEES_SUCCESS', payload: attendeeData });
       toast({
         title: 'Success',
         description: 'New attendee created successfully',
