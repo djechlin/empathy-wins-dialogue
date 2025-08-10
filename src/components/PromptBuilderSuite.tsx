@@ -63,11 +63,11 @@ function promptBuilderSuiteReducer(state: PromptBuilderSuiteState, action: Promp
       return { ...state, attendees: action.payload, loading: 'loaded', error: null };
 
     case 'LOAD_ATTENDEES_ERROR':
-      return { 
-        ...state, 
-        attendees: action.payload.fallbackAttendees, 
+      return {
+        ...state,
+        attendees: action.payload.fallbackAttendees,
         error: action.payload.error,
-        loading: 'loaded'
+        loading: 'loaded',
       };
 
     case 'ADD_ATTENDEE':
@@ -129,12 +129,12 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
         dispatch({ type: 'LOAD_ATTENDEES_SUCCESS', payload: attendeeData });
       } catch (error) {
         console.error('PromptBuilderSuite: Error loading attendees:', error);
-        dispatch({ 
-          type: 'LOAD_ATTENDEES_ERROR', 
-          payload: { 
+        dispatch({
+          type: 'LOAD_ATTENDEES_ERROR',
+          payload: {
             error: 'Authentication required. Please sign in to load your attendees.',
-            fallbackAttendees: [{ id: '1', displayName: 'attendee', systemPrompt: '', firstMessage: '' }]
-          }
+            fallbackAttendees: [{ id: '1', displayName: 'attendee', systemPrompt: '', firstMessage: '' }],
+          },
         });
       }
     };
@@ -143,11 +143,12 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
 
   useEffect(() => {
     console.log('PromptBuilderSuite: useEffect onAttendeesChange triggered');
-    onAttendeesChange?.(activeAttendees);
+    //  onAttendeesChange?.(activeAttendees);
   }, [activeAttendees, onAttendeesChange]);
 
   const handleAttendeeDataChange = useCallback(
     (attendeeId: string, data: { systemPrompt: string; firstMessage: string; displayName: string }) => {
+      console.log('handle attendee data change with id ', attendeeId);
       dispatch({ type: 'UPDATE_ATTENDEE', payload: { id: attendeeId, data } });
     },
     [],
@@ -164,18 +165,6 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
 
     try {
       await savePromptBuilder(newAttendee);
-      // Reload attendees to get the new one
-      const data = await fetchAllPromptBuildersForPersona('attendee');
-      const attendeeData: AttendeeData[] = data.map((pb) => ({
-        id: pb.id || '',
-        displayName: pb.name,
-        systemPrompt: pb.system_prompt,
-        firstMessage: pb.firstMessage || '',
-        archived: pb.archived,
-        created_at: pb.created_at,
-        updated_at: pb.updated_at,
-      }));
-      dispatch({ type: 'LOAD_ATTENDEES_SUCCESS', payload: attendeeData });
       toast({
         title: 'Success',
         description: 'New attendee created successfully',

@@ -220,19 +220,12 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       load();
     }, [persona, state.loading]);
 
-    const memoizedOnDataChange = useCallback(() => {
-      console.log('PromptBuilder: memoizedOnDataChange called', {
-        systemPrompt: state.systemPrompt?.length,
-        firstMessage: state.firstMessage?.length,
-        displayName: state.displayName,
-      });
-      onDataChange?.({ systemPrompt: state.systemPrompt, firstMessage: state.firstMessage, displayName: state.displayName });
-    }, [state.systemPrompt, state.firstMessage, state.displayName, onDataChange]);
-
     useEffect(() => {
-      console.log('PromptBuilder: useEffect onDataChange triggered');
-      memoizedOnDataChange();
-    }, [memoizedOnDataChange]);
+      if (initialDisplayName === state.displayName && initialFirstMessage === state.firstMessage && initialPrompt === state.systemPrompt) {
+        return;
+      }
+      onDataChange?.({ systemPrompt: state.systemPrompt, firstMessage: state.firstMessage, displayName: state.displayName });
+    }, [initialDisplayName, initialFirstMessage, initialPrompt, state.systemPrompt, state.firstMessage, state.displayName, onDataChange]);
 
     useImperativeHandle(ref, () => ({
       getSystemPrompt: () => state.systemPrompt,
