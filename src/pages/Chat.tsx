@@ -22,7 +22,8 @@ interface ChatState {
 
 type ChatAction =
   | { type: 'SET_USER_TEXT_INPUT'; payload: string }
-  | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string } };
+  | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string } }
+  | { type: 'MARK_MESSAGE_FOR_RESPONSE'; payload: { messageIndex: number } };
 
 function reducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
@@ -36,9 +37,14 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
         history: newHistory,
         userTextInput: action.payload.sender === state.speaker ? '' : state.userTextInput,
         speaker: action.payload.sender === 'organizer' ? 'attendee' : 'organizer',
-        lastMessageIndexForResponse: newHistory.length - 1,
       };
     }
+
+    case 'MARK_MESSAGE_FOR_RESPONSE':
+      return {
+        ...state,
+        lastMessageIndexForResponse: action.payload.messageIndex,
+      };
 
     default:
       return state;
@@ -130,19 +136,26 @@ const Chat = ({
 
   // If speaker is AI, request message in 1 tick
   useEffect(() => {
-    const currentMessageIndex = state.history.length - 1;
     if (
       state.history.length === 0 ||
       state.history[state.history.length - 1].sender === state.speaker ||
       paused ||
       speakerMode === 'human' ||
-      currentMessageIndex <= state.lastMessageIndexForResponse
+      state.history.length - 1 <= state.lastMessageIndexForResponse
     ) {
       return;
     }
 
     setTimeout(async () => {
       const lastMessage = state.history[state.history.length - 1];
+      const currentMessageIndex = state.history.length - 1;
+      
+      // Mark this message as being processed before making the request
+      dispatch({
+        type: 'MARK_MESSAGE_FOR_RESPONSE',
+        payload: { messageIndex: currentMessageIndex },
+      });
+      
       try {
         const response = await participant.chat(lastMessage.content);
         dispatch({
@@ -162,6 +175,13 @@ const Chat = ({
   useEffect(() => {
     if (hasStarted && state.history.length === 0 && organizerMode === 'ai' && state.lastMessageIndexForResponse === -1) {
       onStatusUpdate({ started: true, lastActivity: new Date() });
+      
+      // Mark initialization as in progress
+      dispatch({
+        type: 'MARK_MESSAGE_FOR_RESPONSE',
+        payload: { messageIndex: 0 },
+      });
+      
       organizerParticipant
         .chat(null)
         .then((firstMessage) => {
