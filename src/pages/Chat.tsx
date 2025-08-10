@@ -17,14 +17,13 @@ interface ChatState {
   history: Message[];
   speaker: 'organizer' | 'attendee';
   userTextInput: string;
-  chatInitializationComplete: boolean;
+  lastMessageIndexForResponse: number;
 }
 
 type ChatAction =
   | { type: 'SET_USER_TEXT_INPUT'; payload: string }
   | { type: 'START_CHAT'; payload: { firstMessage: string } }
-  | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string } }
-  | { type: 'MARK_INITIALIZATION_COMPLETE' };
+  | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string } };
 
 function reducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
@@ -44,13 +43,9 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
         history: [...state.history, constructMessage(action.payload.sender, action.payload.content)],
         userTextInput: action.payload.sender === state.speaker ? '' : state.userTextInput,
         speaker: action.payload.sender === 'organizer' ? 'attendee' : 'organizer',
+        lastMessageIndexForResponse: state.history.length,
       };
 
-    case 'MARK_INITIALIZATION_COMPLETE':
-      return {
-        ...state,
-        chatInitializationComplete: true,
-      };
 
     default:
       return state;
@@ -117,7 +112,7 @@ const Chat = ({
     history: [],
     speaker: 'organizer' as const,
     userTextInput: '',
-    chatInitializationComplete: false,
+    lastMessageIndexForResponse: -1,
   });
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -142,11 +137,13 @@ const Chat = ({
 
   // If speaker is AI, request message in 1 tick
   useEffect(() => {
+    const currentMessageIndex = state.history.length - 1;
     if (
       state.history.length === 0 ||
       state.history[state.history.length - 1].sender === state.speaker ||
       paused ||
-      speakerMode === 'human'
+      speakerMode === 'human' ||
+      currentMessageIndex <= state.lastMessageIndexForResponse
     ) {
       return;
     }
@@ -166,12 +163,11 @@ const Chat = ({
         console.error('Error in chat loop:', error);
       }
     }, 0);
-  }, [state.history, state.speaker, paused, speakerMode, participant]);
+  }, [state.history, state.speaker, paused, speakerMode, participant, state.lastMessageIndexForResponse]);
 
   // Start chat when hasStarted prop changes to true
   useEffect(() => {
-    if (hasStarted && state.history.length === 0 && organizerMode === 'ai' && !state.chatInitializationComplete) {
-      dispatch({ type: 'MARK_INITIALIZATION_COMPLETE' });
+    if (hasStarted && state.history.length === 0 && organizerMode === 'ai' && state.lastMessageIndexForResponse === -1) {
       onStatusUpdate({ started: true, lastActivity: new Date() });
       organizerParticipant
         .chat(null)
@@ -183,7 +179,7 @@ const Chat = ({
           console.error('Error starting chat:', error);
         });
     }
-  }, [hasStarted, state.history.length, organizerMode, organizerParticipant, onStatusUpdate, state.chatInitializationComplete]);
+  }, [hasStarted, state.history.length, organizerMode, organizerParticipant, onStatusUpdate, state.lastMessageIndexForResponse]);
 
   // Update message count when history changes
   useEffect(() => {
