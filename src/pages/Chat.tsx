@@ -22,7 +22,6 @@ interface ChatState {
 
 type ChatAction =
   | { type: 'SET_USER_TEXT_INPUT'; payload: string }
-  | { type: 'START_CHAT'; payload: { firstMessage: string } }
   | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string } };
 
 function reducer(state: ChatState, action: ChatAction): ChatState {
@@ -30,22 +29,16 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
     case 'SET_USER_TEXT_INPUT':
       return { ...state, userTextInput: action.payload };
 
-    case 'START_CHAT':
+    case 'SEND_MESSAGE': {
+      const newHistory = [...state.history, constructMessage(action.payload.sender, action.payload.content)];
       return {
         ...state,
-        history: [...state.history, constructMessage('organizer', action.payload.firstMessage)],
-        speaker: 'attendee',
-      };
-
-    case 'SEND_MESSAGE':
-      return {
-        ...state,
-        history: [...state.history, constructMessage(action.payload.sender, action.payload.content)],
+        history: newHistory,
         userTextInput: action.payload.sender === state.speaker ? '' : state.userTextInput,
         speaker: action.payload.sender === 'organizer' ? 'attendee' : 'organizer',
-        lastMessageIndexForResponse: state.history.length,
+        lastMessageIndexForResponse: newHistory.length - 1,
       };
-
+    }
 
     default:
       return state;
@@ -172,7 +165,7 @@ const Chat = ({
       organizerParticipant
         .chat(null)
         .then((firstMessage) => {
-          dispatch({ type: 'START_CHAT', payload: { firstMessage } });
+          dispatch({ type: 'SEND_MESSAGE', payload: { sender: 'organizer', content: firstMessage } });
           onStatusUpdate({ messageCount: 1, lastActivity: new Date() });
         })
         .catch((error) => {
