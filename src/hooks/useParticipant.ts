@@ -44,7 +44,7 @@ export const useParticipant = (
 
   const chat = useCallback(
     async (msg: string | null): Promise<string> => {
-      if (messages.length === 0) {
+      if (messages.length === 0 && firstMessage) {
         return firstMessage;
       }
       if (msg === null) {
