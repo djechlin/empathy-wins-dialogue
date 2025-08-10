@@ -1,10 +1,11 @@
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/ui/button';
 import { Input } from '@/ui/input';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
-import { fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
+import { archivePromptBuilder, fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { Archive, ArchiveRestore, ChevronDown } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useReducer } from 'react';
 
 interface PromptBuilderProps {
@@ -14,7 +15,10 @@ interface PromptBuilderProps {
   initialFirstMessage?: string;
   initialDisplayName?: string;
   defaultOpen?: boolean;
+  archived?: boolean;
+  promptBuilderId?: string;
   onDataChange?: (data: { systemPrompt: string; firstMessage: string; displayName: string }) => void;
+  onArchiveToggle?: (id: string, archived: boolean) => void;
 }
 
 export interface PromptBuilderRef {
@@ -117,7 +121,7 @@ const generateTimestampedName = (type: string): string => {
 };
 
 const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
-  ({ persona, color, initialPrompt = '', initialFirstMessage = '', initialDisplayName, defaultOpen = true, onDataChange }, ref) => {
+  ({ persona, color, initialPrompt = '', initialFirstMessage = '', initialDisplayName, defaultOpen = true, archived = false, promptBuilderId, onDataChange, onArchiveToggle }, ref) => {
     const initialState: PromptBuilderState = {
       systemPrompt: initialPrompt,
       firstMessage: initialFirstMessage,
@@ -131,6 +135,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     };
 
     const [state, dispatch] = useReducer(promptBuilderReducer, initialState);
+    const { toast } = useToast();
 
     const handleSave = useCallback(async () => {
       // If already saved (not dirty), auto-succeed
@@ -177,6 +182,40 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
         }
       },
       [handleSaveNameEdit, handleCancelNameEdit],
+    );
+
+    const handleArchiveToggle = useCallback(
+      async (currentlyArchived: boolean) => {
+        if (!promptBuilderId || !onArchiveToggle) return;
+
+        onArchiveToggle(promptBuilderId, !currentlyArchived);
+
+        try {
+          const success = await archivePromptBuilder(promptBuilderId, !currentlyArchived);
+          if (!success) {
+            onArchiveToggle(promptBuilderId, currentlyArchived);
+            toast({
+              title: 'Error',
+              description: `Failed to ${!currentlyArchived ? 'archive' : 'unarchive'} ${persona}`,
+              variant: 'destructive',
+            });
+          } else {
+            toast({
+              title: 'Success',
+              description: `${persona} ${!currentlyArchived ? 'archived' : 'unarchived'} successfully`,
+            });
+          }
+        } catch (error) {
+          console.error('Archive error:', error);
+          onArchiveToggle(promptBuilderId, currentlyArchived);
+          toast({
+            title: 'Error',
+            description: `Failed to ${!currentlyArchived ? 'archive' : 'unarchive'} ${persona}`,
+            variant: 'destructive',
+          });
+        }
+      },
+      [promptBuilderId, onArchiveToggle, toast, persona],
     );
 
     useEffect(() => {
@@ -234,6 +273,19 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
 
     return (
       <div className={`${color} rounded-lg p-4`}>
+        {persona === 'attendee' && promptBuilderId && onArchiveToggle && (
+          <div className="flex justify-end mb-2">
+            <Button
+              onClick={() => handleArchiveToggle(archived)}
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 p-0 text-gray-400 hover:text-blue-500"
+              title={archived ? 'Unarchive' : 'Archive'}
+            >
+              {archived ? <ArchiveRestore className="h-3 w-3" /> : <Archive className="h-3 w-3" />}
+            </Button>
+          </div>
+        )}
         <div className="flex items-center justify-between w-full mb-2">
           <button className="flex items-center gap-2 flex-1" onClick={() => dispatch({ type: 'SET_IS_OPEN', payload: !state.isOpen })}>
             <span className="font-medium capitalize">{persona}</span>

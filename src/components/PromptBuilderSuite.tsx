@@ -3,8 +3,8 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { generateTimestampName } from '@/utils/id';
-import { archivePromptBuilder, fetchAllPromptBuildersForPersona, savePromptBuilder } from '@/utils/promptBuilder';
-import { Archive, ArchiveRestore, ChevronRight, Plus } from 'lucide-react';
+import { fetchAllPromptBuildersForPersona, savePromptBuilder } from '@/utils/promptBuilder';
+import { ChevronRight, Plus } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useReducer, useRef } from 'react';
 import PromptBuilder, { type PromptBuilderRef } from './PromptBuilder';
 
@@ -180,36 +180,11 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
   }, [toast]);
 
   const handleArchiveToggle = useCallback(
-    async (attendeeId: string, currentlyArchived: boolean) => {
-      console.log('PromptBuilderSuite: async handleArchiveToggle() called', { attendeeId, currentlyArchived });
-      dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id: attendeeId, archived: !currentlyArchived } });
-
-      try {
-        const success = await archivePromptBuilder(attendeeId, !currentlyArchived);
-        if (!success) {
-          dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id: attendeeId, archived: currentlyArchived } });
-          toast({
-            title: 'Error',
-            description: `Failed to ${!currentlyArchived ? 'archive' : 'unarchive'} attendee`,
-            variant: 'destructive',
-          });
-        } else {
-          toast({
-            title: 'Success',
-            description: `Attendee ${!currentlyArchived ? 'archived' : 'unarchived'} successfully`,
-          });
-        }
-      } catch (error) {
-        console.error('Archive error:', error);
-        dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id: attendeeId, archived: currentlyArchived } });
-        toast({
-          title: 'Error',
-          description: `Failed to ${!currentlyArchived ? 'archive' : 'unarchive'} attendee`,
-          variant: 'destructive',
-        });
-      }
+    (attendeeId: string, archived: boolean) => {
+      console.log('PromptBuilderSuite: handleArchiveToggle() called', { attendeeId, archived });
+      dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id: attendeeId, archived } });
     },
-    [toast],
+    [],
   );
 
   useImperativeHandle(ref, () => ({
@@ -249,30 +224,20 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
       {activeAttendees.length > 0 ? (
         <div className="space-y-3">
           {activeAttendees.map((attendee, index) => (
-            <div key={attendee.id} className="space-y-2">
-              <div className="flex justify-end">
-                <Button
-                  onClick={() => handleArchiveToggle(attendee.id, attendee.archived || false)}
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 w-6 p-0 text-gray-400 hover:text-blue-500"
-                  title="Archive"
-                >
-                  <Archive className="h-3 w-3" />
-                </Button>
-              </div>
-              <PromptBuilder
-                key={attendee.id}
-                ref={index === 0 ? promptBuilderRef : undefined}
-                persona="attendee"
-                initialPrompt={attendee.systemPrompt}
-                initialFirstMessage={attendee.firstMessage}
-                initialDisplayName={attendee.displayName}
-                color={color}
-                defaultOpen={defaultOpen}
-                onDataChange={(data) => handleAttendeeDataChange(attendee.id, data)}
-              />
-            </div>
+            <PromptBuilder
+              key={attendee.id}
+              ref={index === 0 ? promptBuilderRef : undefined}
+              persona="attendee"
+              initialPrompt={attendee.systemPrompt}
+              initialFirstMessage={attendee.firstMessage}
+              initialDisplayName={attendee.displayName}
+              color={color}
+              defaultOpen={defaultOpen}
+              archived={attendee.archived || false}
+              promptBuilderId={attendee.id}
+              onDataChange={(data) => handleAttendeeDataChange(attendee.id, data)}
+              onArchiveToggle={handleArchiveToggle}
+            />
           ))}
         </div>
       ) : (
@@ -298,18 +263,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-3 mt-2">
             {archivedAttendees.map((attendee) => (
-              <div key={attendee.id} className="space-y-2 opacity-60">
-                <div className="flex justify-end">
-                  <Button
-                    onClick={() => handleArchiveToggle(attendee.id, attendee.archived || false)}
-                    size="sm"
-                    variant="ghost"
-                    className="h-6 w-6 p-0 text-gray-400 hover:text-blue-500"
-                    title="Unarchive"
-                  >
-                    <ArchiveRestore className="h-3 w-3" />
-                  </Button>
-                </div>
+              <div key={attendee.id} className="opacity-60">
                 <PromptBuilder
                   key={attendee.id}
                   persona="attendee"
@@ -318,7 +272,10 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
                   initialDisplayName={attendee.displayName}
                   color={color}
                   defaultOpen={false}
+                  archived={attendee.archived || false}
+                  promptBuilderId={attendee.id}
                   onDataChange={(data) => handleAttendeeDataChange(attendee.id, data)}
+                  onArchiveToggle={handleArchiveToggle}
                 />
               </div>
             ))}
