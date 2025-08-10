@@ -3,7 +3,7 @@ import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
 import { generateTimestampId } from '@/utils/id';
-import { Bot, Pause, Play, Send, User } from 'lucide-react';
+import { Bot, Send, User } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 interface Message {
@@ -44,7 +44,6 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
         speaker: action.payload.sender === 'organizer' ? 'attendee' : 'organizer',
       };
 
-
     default:
       return state;
   }
@@ -59,6 +58,12 @@ function constructMessage(sender: 'organizer' | 'attendee', content: string) {
   };
 }
 
+interface ChatStatus {
+  started?: boolean;
+  messageCount?: number;
+  lastActivity?: Date;
+}
+
 interface ChatProps {
   attendeeDisplayName: string;
   organizerPromptText: string;
@@ -69,6 +74,7 @@ interface ChatProps {
   paused: boolean;
   hasStarted: boolean;
   onStarted: (started: boolean) => void;
+  onStatusUpdate: (updates: ChatStatus) => void;
 }
 
 const AiThinking = ({ participant }: { participant: 'organizer' | 'attendee' }) => (
@@ -89,16 +95,17 @@ const AiThinking = ({ participant }: { participant: 'organizer' | 'attendee' }) 
   </div>
 );
 
-const Chat = ({ 
-  attendeeDisplayName, 
-  organizerPromptText, 
-  organizerFirstMessage, 
+const Chat = ({
+  attendeeDisplayName,
+  organizerPromptText,
+  organizerFirstMessage,
   attendeeSystemPrompt,
   organizerMode,
   attendeeMode,
   paused,
   hasStarted,
   onStarted,
+  onStatusUpdate,
 }: ChatProps) => {
   const [state, dispatch] = useReducer(reducer, {
     history: [],
@@ -191,14 +198,26 @@ const Chat = ({
   // Start chat when hasStarted prop changes to true
   useEffect(() => {
     if (hasStarted && state.history.length === 0 && organizerMode === 'ai') {
-      organizerParticipant.chat(null).then((firstMessage) => {
-        dispatch({ type: 'START_CHAT', payload: { firstMessage } });
-        onStarted(true);
-      }).catch((error) => {
-        console.error('Error starting chat:', error);
-      });
+      onStatusUpdate({ started: true, lastActivity: new Date() });
+      organizerParticipant
+        .chat(null)
+        .then((firstMessage) => {
+          dispatch({ type: 'START_CHAT', payload: { firstMessage } });
+          onStarted(true);
+          onStatusUpdate({ messageCount: 1, lastActivity: new Date() });
+        })
+        .catch((error) => {
+          console.error('Error starting chat:', error);
+        });
     }
-  }, [hasStarted, state.history.length, organizerMode, organizerParticipant, onStarted]);
+  }, [hasStarted, state.history.length, organizerMode, organizerParticipant, onStarted, onStatusUpdate]);
+
+  // Update message count when history changes
+  useEffect(() => {
+    if (state.history.length > 0) {
+      onStatusUpdate({ messageCount: state.history.length, lastActivity: new Date() });
+    }
+  }, [state.history.length, onStatusUpdate]);
 
   return (
     <Card className="h-full flex flex-col">
@@ -273,20 +292,13 @@ const Chat = ({
                     : 'Type your message as the attendee...'
             }
             className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
-              paused || (organizerMode === 'ai' && attendeeMode === 'ai')
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : ''
+              paused || (organizerMode === 'ai' && attendeeMode === 'ai') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''
             }`}
             disabled={paused || isAwaitingAiResponse || (organizerMode === 'ai' && attendeeMode === 'ai')}
           />
           <Button
             onClick={sendHumanMessage}
-            disabled={
-              paused ||
-              !state.userTextInput.trim() ||
-              isAwaitingAiResponse ||
-              (organizerMode === 'ai' && attendeeMode === 'ai')
-            }
+            disabled={paused || !state.userTextInput.trim() || isAwaitingAiResponse || (organizerMode === 'ai' && attendeeMode === 'ai')}
             className={`px-4 ${
               paused || (organizerMode === 'ai' && attendeeMode === 'ai')
                 ? 'bg-gray-400 cursor-not-allowed'

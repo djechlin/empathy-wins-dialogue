@@ -2,7 +2,7 @@ import { AttendeeData } from '@/components/PromptBuilderSuite';
 import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
-import { Bot, ChevronRight, Pause, Play, User } from 'lucide-react';
+import { Bot, ChevronRight, MessageCircle, Pause, Play, User, Users } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import Chat from './Chat';
 
@@ -10,6 +10,12 @@ interface ChatSuiteProps {
   attendees: AttendeeData[];
   organizerPromptText: string;
   organizerFirstMessage: string;
+}
+
+interface ChatStatus {
+  started: boolean;
+  messageCount: number;
+  lastActivity: Date | null;
 }
 
 const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: ChatSuiteProps) => {
@@ -22,6 +28,14 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
   const [attendeeMode, setAttendeeMode] = useState<'human' | 'ai'>('ai');
   const [paused, setPaused] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  
+  // Track individual chat statuses
+  const [chatStatuses, setChatStatuses] = useState<Record<string, ChatStatus>>(() => 
+    attendees.reduce((acc, attendee) => ({
+      ...acc,
+      [attendee.id]: { started: false, messageCount: 0, lastActivity: null }
+    }), {})
+  );
 
   const toggleAttendee = useCallback((attendeeId: string) => {
     setOpenAttendees((prev) => ({
@@ -30,14 +44,17 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
     }));
   }, []);
 
-  const handleModeToggle = useCallback((participant: 'organizer' | 'attendee', mode: 'human' | 'ai') => {
-    if (hasStarted) return;
-    if (participant === 'organizer') {
-      setOrganizerMode(mode);
-    } else {
-      setAttendeeMode(mode);
-    }
-  }, [hasStarted]);
+  const handleModeToggle = useCallback(
+    (participant: 'organizer' | 'attendee', mode: 'human' | 'ai') => {
+      if (hasStarted) return;
+      if (participant === 'organizer') {
+        setOrganizerMode(mode);
+      } else {
+        setAttendeeMode(mode);
+      }
+    },
+    [hasStarted],
+  );
 
   const handleStartAll = useCallback(() => {
     setHasStarted(true);
@@ -47,11 +64,50 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
     setPaused(!paused);
   }, [paused]);
 
+  const updateChatStatus = useCallback((chatId: string, updates: Partial<ChatStatus>) => {
+    setChatStatuses(prev => ({
+      ...prev,
+      [chatId]: { ...prev[chatId], ...updates }
+    }));
+  }, []);
+
+  // Calculate suite statistics
+  const totalChats = attendees.filter(a => a.systemPrompt.trim() !== '').length;
+  const startedChats = Object.values(chatStatuses).filter(status => status.started).length;
+  const totalMessages = Object.values(chatStatuses).reduce((sum, status) => sum + status.messageCount, 0);
+  const activeChats = hasStarted && !paused ? startedChats : 0;
+
   return (
     <div className="space-y-4">
       <div className="bg-gray-50 border rounded-lg p-4">
-        <h3 className="font-semibold mb-4">Suite Controls</h3>
-        
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold">Suite Controls</h3>
+          <div className="flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 rounded-full">
+              <Users size={14} className="text-blue-600" />
+              <span className="text-blue-700 font-medium">{totalChats} chats</span>
+            </div>
+            {hasStarted && (
+              <>
+                <div className="flex items-center gap-1 px-2 py-1 bg-green-100 rounded-full">
+                  <div className={`w-2 h-2 rounded-full ${activeChats > 0 ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                  <span className="text-green-700 font-medium">{activeChats} active</span>
+                </div>
+                <div className="flex items-center gap-1 px-2 py-1 bg-purple-100 rounded-full">
+                  <MessageCircle size={14} className="text-purple-600" />
+                  <span className="text-purple-700 font-medium">{totalMessages} messages</span>
+                </div>
+                {paused && (
+                  <div className="flex items-center gap-1 px-2 py-1 bg-orange-100 rounded-full">
+                    <Pause size={14} className="text-orange-600" />
+                    <span className="text-orange-700 font-medium">paused</span>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
@@ -131,12 +187,7 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
               </Button>
             )}
             {hasStarted && (
-              <Button
-                onClick={handlePauseToggle}
-                size="sm"
-                variant={paused ? 'default' : 'outline'}
-                className="text-xs px-3"
-              >
+              <Button onClick={handlePauseToggle} size="sm" variant={paused ? 'default' : 'outline'} className="text-xs px-3">
                 {paused ? (
                   <>
                     <Play size={12} className="mr-1" />
@@ -161,9 +212,19 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
         .map((attendee) => (
           <Collapsible key={attendee.id} open={openAttendees[attendee.id] || false} onOpenChange={() => toggleAttendee(attendee.id)}>
             <CollapsibleTrigger asChild>
-              <div className="w-full justify-start text-sm font-medium p-2 h-auto cursor-pointer hover:bg-gray-100 rounded-md flex items-center">
-                <ChevronRight className={cn('h-4 w-4 mr-2 transition-transform', openAttendees[attendee.id] ? 'rotate-90' : '')} />
-                Chat with {attendee.displayName}
+              <div className="w-full justify-start text-sm font-medium p-2 h-auto cursor-pointer hover:bg-gray-100 rounded-md flex items-center justify-between">
+                <div className="flex items-center">
+                  <ChevronRight className={cn('h-4 w-4 mr-2 transition-transform', openAttendees[attendee.id] ? 'rotate-90' : '')} />
+                  Chat with {attendee.displayName}
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  {chatStatuses[attendee.id]?.started && (
+                    <>
+                      <div className={`w-2 h-2 rounded-full ${hasStarted && !paused ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                      <span className="text-gray-600">{chatStatuses[attendee.id]?.messageCount || 0} msgs</span>
+                    </>
+                  )}
+                </div>
               </div>
             </CollapsibleTrigger>
 
@@ -178,6 +239,7 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
                 paused={paused}
                 hasStarted={hasStarted}
                 onStarted={setHasStarted}
+                onStatusUpdate={(updates) => updateChatStatus(attendee.id, updates)}
               />
             </CollapsibleContent>
           </Collapsible>
