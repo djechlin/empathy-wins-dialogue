@@ -34,7 +34,8 @@ interface WorkbenchState {
 
 type WorkbenchAction =
   | { type: 'SET_USER_TEXT_INPUT'; payload: string }
-  | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string; switchSpeaker?: boolean } }
+  | { type: 'START_CONVERSATION'; payload: { firstMessage: string } }
+  | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string } }
   | { type: 'TOGGLE_MODE'; payload: { participant: 'organizer' | 'attendee'; mode: 'human' | 'ai' } }
   | { type: 'SELECT_PROMPT'; payload: { participant: 'organizer' | 'attendee'; prompt: PromptBuilderData | null } }
   | { type: 'UPDATE_PROMPT'; payload: { participant: 'organizer' | 'attendee'; promptText: string } }
@@ -45,13 +46,19 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
     case 'SET_USER_TEXT_INPUT':
       return { ...state, userTextInput: action.payload };
 
+    case 'START_CONVERSATION':
+      return {
+        ...state,
+        conversationHistory: [...state.conversationHistory, constructMessage('organizer', action.payload.firstMessage)],
+        speaker: 'attendee',
+      };
 
     case 'SEND_MESSAGE':
       return {
         ...state,
         conversationHistory: [...state.conversationHistory, constructMessage(action.payload.sender, action.payload.content)],
         userTextInput: action.payload.sender === state.speaker ? '' : state.userTextInput,
-        speaker: action.payload.switchSpeaker ? (action.payload.sender === 'organizer' ? 'attendee' : 'organizer') : state.speaker,
+        speaker: action.payload.sender === 'organizer' ? 'attendee' : 'organizer',
       };
 
     case 'TOGGLE_MODE':
@@ -153,11 +160,32 @@ const Workbench = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [state.conversationHistory, isAwaitingAiResponse]);
 
+  // Conversation loop - the "while true"
+  useEffect(() => {
+    if (state.conversationHistory.length === 0) return; // No conversation yet
+
+    setTimeout(async () => {
+      try {
+        const currentParticipant = state.speaker === 'organizer' ? organizerParticipant : attendeeParticipant;
+        const lastMessage = state.conversationHistory[state.conversationHistory.length - 1];
+        
+        const response = await currentParticipant.chat(lastMessage.content);
+        
+        dispatch({ type: 'SEND_MESSAGE', payload: { 
+          sender: state.speaker, 
+          content: response 
+        }});
+      } catch (error) {
+        console.error('Error in conversation loop:', error);
+      }
+    }, 0);
+  }, [state.conversationHistory, state.speaker, organizerParticipant, attendeeParticipant]);
+
   const sendHumanMessage = async () => {
     if (!state.userTextInput.trim() || currentSpeakerHumanOrAi === 'ai') return;
 
     const userMessage = state.userTextInput;
-    dispatch({ type: 'SEND_MESSAGE', payload: { sender: state.speaker, content: userMessage, switchSpeaker: true } });
+    dispatch({ type: 'SEND_MESSAGE', payload: { sender: state.speaker, content: userMessage } });
 
     if (otherSpeakerHumanOrAi === 'ai') {
       try {
@@ -226,15 +254,7 @@ const Workbench = () => {
     try {
       if (state.organizerHumanOrAi === 'ai') {
         const firstMessage = await organizerParticipant.chat(null);
-        dispatch({ type: 'SEND_MESSAGE', payload: { sender: 'organizer', content: firstMessage, switchSpeaker: true } });
-
-        if (state.attendeeHumanOrAi === 'ai') {
-          const attendeeResponse = await attendeeParticipant.chat(firstMessage);
-          dispatch({ type: 'SEND_MESSAGE', payload: { sender: 'attendee', content: attendeeResponse, switchSpeaker: true } });
-
-          const organizerResponse = await organizerParticipant.chat(attendeeResponse);
-          dispatch({ type: 'SEND_MESSAGE', payload: { sender: 'organizer', content: organizerResponse, switchSpeaker: true } });
-        }
+        dispatch({ type: 'START_CONVERSATION', payload: { firstMessage } });
       }
     } catch (error) {
       console.error('Error starting conversation:', error);
