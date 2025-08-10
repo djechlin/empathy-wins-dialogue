@@ -5,7 +5,7 @@ import { Textarea } from '@/ui/textarea';
 import { fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useReducer } from 'react';
 
 interface PromptBuilderProps {
   persona: 'organizer' | 'attendee';
@@ -22,6 +22,71 @@ export interface PromptBuilderRef {
   getFirstMessage: () => string;
 }
 
+interface PromptBuilderState {
+  systemPrompt: string;
+  firstMessage: string;
+  isSaving: boolean;
+  isSaved: boolean;
+  saveError: string | null;
+  displayName: string;
+  loading: 'new' | 'loading' | 'loaded' | 'error';
+  isEditingName: boolean;
+  editNameValue: string;
+  isOpen: boolean;
+}
+
+type PromptBuilderAction =
+  | { type: 'SET_SYSTEM_PROMPT'; payload: string }
+  | { type: 'SET_FIRST_MESSAGE'; payload: string }
+  | { type: 'SET_IS_SAVING'; payload: boolean }
+  | { type: 'SET_IS_SAVED'; payload: boolean }
+  | { type: 'SET_SAVE_ERROR'; payload: string | null }
+  | { type: 'SET_DISPLAY_NAME'; payload: string }
+  | { type: 'SET_LOADING'; payload: 'new' | 'loading' | 'loaded' | 'error' }
+  | { type: 'SET_IS_EDITING_NAME'; payload: boolean }
+  | { type: 'SET_EDIT_NAME_VALUE'; payload: string }
+  | { type: 'SET_IS_OPEN'; payload: boolean }
+  | { type: 'LOAD_PROMPT_DATA'; payload: { systemPrompt: string; firstMessage: string; displayName: string } }
+  | { type: 'RESET_SAVE_STATE' };
+
+const promptBuilderReducer = (state: PromptBuilderState, action: PromptBuilderAction): PromptBuilderState => {
+  switch (action.type) {
+    case 'SET_SYSTEM_PROMPT':
+      return { ...state, systemPrompt: action.payload };
+    case 'SET_FIRST_MESSAGE':
+      return { ...state, firstMessage: action.payload };
+    case 'SET_IS_SAVING':
+      return { ...state, isSaving: action.payload };
+    case 'SET_IS_SAVED':
+      return { ...state, isSaved: action.payload };
+    case 'SET_SAVE_ERROR':
+      return { ...state, saveError: action.payload };
+    case 'SET_DISPLAY_NAME':
+      return { ...state, displayName: action.payload };
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload };
+    case 'SET_IS_EDITING_NAME':
+      return { ...state, isEditingName: action.payload };
+    case 'SET_EDIT_NAME_VALUE':
+      return { ...state, editNameValue: action.payload };
+    case 'SET_IS_OPEN':
+      return { ...state, isOpen: action.payload };
+    case 'LOAD_PROMPT_DATA':
+      return {
+        ...state,
+        systemPrompt: action.payload.systemPrompt,
+        firstMessage: action.payload.firstMessage,
+        displayName: action.payload.displayName,
+        editNameValue: action.payload.displayName,
+        isSaved: true
+      };
+    case 'RESET_SAVE_STATE':
+      return { ...state, isSaved: false, saveError: null };
+    default:
+      return state;
+  }
+};
+
 // Generate timestamped name for prompt builder instance
 const generateTimestampedName = (type: string): string => {
   const now = new Date();
@@ -35,60 +100,64 @@ const generateTimestampedName = (type: string): string => {
 
 const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
   ({ persona, color, initialPrompt = '', initialFirstMessage = '', initialDisplayName, defaultOpen = true, onDataChange }, ref) => {
-    const [systemPrompt, setSystemPrompt] = useState(initialPrompt);
-    const [firstMessage, setFirstMessage] = useState(initialFirstMessage);
-    const [isSaving, setIsSaving] = useState(false);
-    const [isSaved, setIsSaved] = useState(true);
-    const [saveError, setSaveError] = useState<string | null>(null);
-    const [displayName, setDisplayName] = useState(initialDisplayName || persona);
-    const [loading, setLoading] = useState<'new' | 'loading' | 'loaded' | 'error'>(initialPrompt || initialFirstMessage ? 'loaded' : 'new');
-    const [isEditingName, setIsEditingName] = useState(false);
-    const [editNameValue, setEditNameValue] = useState(displayName);
-    const [isOpen, setIsOpen] = useState(defaultOpen);
+    const initialState: PromptBuilderState = {
+      systemPrompt: initialPrompt,
+      firstMessage: initialFirstMessage,
+      isSaving: false,
+      isSaved: true,
+      saveError: null,
+      displayName: initialDisplayName || persona,
+      loading: initialPrompt || initialFirstMessage ? 'loaded' : 'new',
+      isEditingName: false,
+      editNameValue: initialDisplayName || persona,
+      isOpen: defaultOpen
+    };
+
+    const [state, dispatch] = useReducer(promptBuilderReducer, initialState);
 
     const handleSave = async () => {
       // If already saved (not dirty), auto-succeed
-      if (isSaved) {
+      if (state.isSaved) {
         return true;
       }
 
-      if (displayName === persona) {
-        setDisplayName(generateTimestampedName(persona));
+      if (state.displayName === persona) {
+        dispatch({ type: 'SET_DISPLAY_NAME', payload: generateTimestampedName(persona) });
       }
 
-      setIsSaving(true);
-      setSaveError(null);
+      dispatch({ type: 'SET_IS_SAVING', payload: true });
+      dispatch({ type: 'SET_SAVE_ERROR', payload: null });
       try {
         const result = await savePromptBuilder({
-          name: displayName,
-          system_prompt: systemPrompt,
+          name: state.displayName,
+          system_prompt: state.systemPrompt,
           persona,
-          firstMessage,
+          firstMessage: state.firstMessage,
         });
 
         if (result) {
-          setIsSaved(true);
+          dispatch({ type: 'SET_IS_SAVED', payload: true });
         } else {
-          setSaveError('Save failed - operation returned false');
+          dispatch({ type: 'SET_SAVE_ERROR', payload: 'Save failed - operation returned false' });
         }
         return result;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        setSaveError(errorMessage);
+        dispatch({ type: 'SET_SAVE_ERROR', payload: errorMessage });
         return false;
       } finally {
-        setIsSaving(false);
+        dispatch({ type: 'SET_IS_SAVING', payload: false });
       }
     };
 
     const handleSaveNameEdit = () => {
-      setDisplayName(editNameValue.trim() || persona);
-      setIsEditingName(false);
+      dispatch({ type: 'SET_DISPLAY_NAME', payload: state.editNameValue.trim() || persona });
+      dispatch({ type: 'SET_IS_EDITING_NAME', payload: false });
     };
 
     const handleCancelNameEdit = () => {
-      setEditNameValue(displayName);
-      setIsEditingName(false);
+      dispatch({ type: 'SET_EDIT_NAME_VALUE', payload: state.displayName });
+      dispatch({ type: 'SET_IS_EDITING_NAME', payload: false });
     };
 
     const handleNameKeyDown = (e: React.KeyboardEvent) => {
@@ -101,64 +170,60 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       }
     };
 
-    // Sync editNameValue with displayName when displayName changes from external sources
     useEffect(() => {
-      if (!isEditingName) {
-        setEditNameValue(displayName);
-      }
-    }, [displayName, isEditingName]);
-
-    useEffect(() => {
-      setIsSaved(false);
-      setSaveError(null);
-    }, [systemPrompt, firstMessage, displayName]);
+      dispatch({ type: 'RESET_SAVE_STATE' });
+    }, [state.systemPrompt, state.firstMessage, state.displayName]);
 
     useEffect(() => {
       const load = async () => {
-        if (loading !== 'new') {
+        if (state.loading !== 'new') {
           return;
         }
 
         try {
           const recentPrompt = await fetchMostRecentPromptForPersona(persona);
           if (recentPrompt) {
-            setSystemPrompt(recentPrompt.system_prompt);
-            setFirstMessage(recentPrompt.firstMessage || '');
-            setDisplayName(recentPrompt.name);
-            setIsSaved(true);
+            dispatch({
+              type: 'LOAD_PROMPT_DATA',
+              payload: {
+                systemPrompt: recentPrompt.system_prompt,
+                firstMessage: recentPrompt.firstMessage || '',
+                displayName: recentPrompt.name
+              }
+            });
           }
-          setLoading('loaded');
+          dispatch({ type: 'SET_LOADING', payload: 'loaded' });
         } catch (error) {
-          console.error(`PromptBuilder ${name}: Error loading most recent prompt:`, error);
-          setLoading('error');
+          console.error(`PromptBuilder: Error loading most recent prompt:`, error);
+          dispatch({ type: 'SET_LOADING', payload: 'error' });
         }
       };
 
       load();
-    }, [persona, loading]);
+    }, [persona, state.loading]);
 
     useEffect(() => {
-      onDataChange?.({ systemPrompt, firstMessage, displayName });
-    }, [systemPrompt, firstMessage, displayName, onDataChange]);
+      onDataChange?.({ systemPrompt: state.systemPrompt, firstMessage: state.firstMessage, displayName: state.displayName });
+    }, [state.systemPrompt, state.firstMessage, state.displayName, onDataChange]);
 
     useImperativeHandle(ref, () => ({
-      getSystemPrompt: () => systemPrompt,
-      getFirstMessage: () => firstMessage || '',
+      getSystemPrompt: () => state.systemPrompt,
+      getFirstMessage: () => state.firstMessage || '',
     }));
 
     return (
       <div className={`${color} rounded-lg p-4`}>
         <div className="flex items-center justify-between w-full mb-2">
-          <button className="flex items-center gap-2 flex-1" onClick={() => setIsOpen(!isOpen)}>
+          <button className="flex items-center gap-2 flex-1" onClick={() => dispatch({ type: 'SET_IS_OPEN', payload: !state.isOpen })}>
             <span className="font-medium capitalize">{persona}</span>
-            {isEditingName ? (
+            {state.isEditingName ? (
               <Input
-                value={editNameValue}
-                onChange={(e) => setEditNameValue(e.target.value)}
+                value={state.editNameValue}
+                onChange={(e) => dispatch({ type: 'SET_EDIT_NAME_VALUE', payload: e.target.value })}
                 onKeyDown={handleNameKeyDown}
                 onBlur={handleSaveNameEdit}
                 className="text-xs font-mono h-6 px-1 py-0.5 min-w-0 w-auto ml-2"
-                style={{ width: `${Math.max(editNameValue.length * 8, 80)}px` }}
+                style={{ width: `${Math.max(state.editNameValue.length * 8, 80)}px` }}
                 autoFocus
                 onClick={(e) => e.stopPropagation()}
               />
@@ -167,29 +232,29 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                 className="text-xs text-gray-500 font-mono cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded ml-2"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsEditingName(true);
-                  setEditNameValue(displayName);
+                  dispatch({ type: 'SET_IS_EDITING_NAME', payload: true });
+                  dispatch({ type: 'SET_EDIT_NAME_VALUE', payload: state.displayName });
                 }}
               >
-                {displayName}
+                {state.displayName}
               </span>
             )}
-            <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <motion.div animate={{ rotate: state.isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
               <ChevronDown className="h-4 w-4 shrink-0" />
             </motion.div>
           </button>
           <Button
             onClick={handleSave}
-            disabled={isSaving || isSaved}
+            disabled={state.isSaving || state.isSaved}
             size="sm"
             variant="outline"
             className="text-xs px-2 py-1 h-auto font-sans ml-2"
           >
-            {isSaving ? 'Saving...' : isSaved ? 'Saved' : 'Save'}
+            {state.isSaving ? 'Saving...' : state.isSaved ? 'Saved' : 'Save'}
           </Button>
         </div>
         <AnimatePresence initial={false}>
-          {isOpen && (
+          {state.isOpen && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
@@ -198,18 +263,18 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
               className="overflow-hidden"
             >
               <div className="space-y-4 pt-4">
-                {saveError && (
+                {state.saveError && (
                   <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm">
                     <div className="font-medium">Save Error:</div>
-                    <div className="mt-1">{saveError}</div>
+                    <div className="mt-1">{state.saveError}</div>
                   </div>
                 )}
-                {persona === 'organizer' && setFirstMessage && (
+                {persona === 'organizer' && (
                   <div>
                     <Label className="text-sm mb-2 block text-gray-600">First message (not part of prompt)</Label>
                     <Textarea
-                      value={firstMessage}
-                      onChange={(e) => setFirstMessage(e.target.value)}
+                      value={state.firstMessage}
+                      onChange={(e) => dispatch({ type: 'SET_FIRST_MESSAGE', payload: e.target.value })}
                       placeholder="Enter first message..."
                       className="min-h-[100px] text-sm flex-1"
                     />
@@ -218,9 +283,9 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                 <div>
                   <Label className="text-sm mb-2 block text-gray-600">System Prompt</Label>
                   <Textarea
-                    value={systemPrompt}
-                    onChange={(e) => setSystemPrompt(e.target.value)}
-                    placeholder={`Enter ${name.toLowerCase()} system prompt...`}
+                    value={state.systemPrompt}
+                    onChange={(e) => dispatch({ type: 'SET_SYSTEM_PROMPT', payload: e.target.value })}
+                    placeholder={`Enter ${persona} system prompt...`}
                     className="min-h-[200px] text-sm flex-1"
                   />
                 </div>
