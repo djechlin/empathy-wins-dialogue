@@ -244,7 +244,6 @@ const Workbench = () => {
     dispatch({ type: 'UPDATE_PROMPT', payload: { participant: 'attendee', promptText: systemPrompt } });
   }, []);
 
-
   const handleAttendeesChange = useCallback((attendees: AttendeeData[]) => {
     dispatch({ type: 'UPDATE_ATTENDEES', payload: attendees });
   }, []);

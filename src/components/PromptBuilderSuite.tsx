@@ -63,13 +63,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
 
     return (
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-medium">Attendees</h3>
-          <Button onClick={addAttendee} size="sm" variant="outline" className="text-xs px-2 py-1 h-auto">
-            <Plus className="h-3 w-3 mr-1" />
-            Add Attendee
-          </Button>
-        </div>
+        <h3 className="font-medium">Attendees</h3>
 
         {attendees.map((attendee, index) => (
           <div key={attendee.id} className="relative">
@@ -93,6 +87,12 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
             />
           </div>
         ))}
+
+        {/* Add Prompt Builder button at bottom */}
+        <Button onClick={addAttendee} size="sm" variant="outline" className="w-full text-xs py-2">
+          <Plus className="h-3 w-3 mr-1" />
+          Add Prompt Builder
+        </Button>
       </div>
     );
   },
