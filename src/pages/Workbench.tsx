@@ -1,193 +1,234 @@
 import Navbar from '@/components/layout/Navbar';
 import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
 import PromptBuilderSet from '@/components/PromptBuilderSet';
+import { useParticipant } from '@/hooks/useParticipant';
 import { Accordion } from '@/ui/accordion';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
-import { Bot, Play, Send, User } from 'lucide-react';
-import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
-import { useAiParticipant } from '@/hooks/useAiParticipant';
+import { Bot, Play, Send, User } from 'lucide-react';
+import React, { useEffect, useReducer, useRef } from 'react';
 
-// Default prompts
-const DEFAULT_ORGANIZER_PROMPT = `You are an experienced political organizer reaching out to someone who attended a recent Bernie Sanders/AOC "Fight Oligarchy" event. Your goal is to follow up and try to get them more involved in future activism.
-
-Be warm, personal, and persuasive. Build rapport and make a compelling case for why their continued involvement matters.`;
-
-const DEFAULT_ATTENDEE_PROMPT = `You are someone who attended a Bernie Sanders/AOC "Fight Oligarchy" event. You're politically aware but not deeply engaged. You voted against Trump but aren't super active in politics.
-
-You get that Trump is a problem but think protests are low impact. You're kind of bored and don't have much to do. You should be somewhat skeptical at first but can be convinced to get more involved with the right approach.`;
-
-const DEFAULT_VARIABLES = {
-  survey_questions: `1. How likely are you to attend another political event in the next month?
-2. What issues are you most passionate about?
-3. Would you be interested in volunteering for upcoming campaigns?`,
-  'Event Context': 'Bernie Sanders/AOC "Fight Oligarchy" rally',
-  'Target Outcome': 'Get attendee to volunteer for next campaign or attend another event',
-};
-
-type ParticipantId = 'organizer' | 'attendee';
 type ParticipantMode = 'human' | 'ai';
 
 interface Message {
   id: string;
-  sender: ParticipantId;
+  sender: 'organizer' | 'attendee';
   content: string;
   timestamp: Date;
 }
 
+interface WorkbenchState {
+  userTextInput: string;
+  showPromptSets: boolean;
+  organizerPrompt: PromptBuilderData | null;
+  attendeePrompt: PromptBuilderData | null;
+  organizerHumanOrAi: 'human' | 'ai';
+  attendeeHumanOrAi: 'human' | 'ai';
+  speaker: 'organizer' | 'attendee';
+  conversationHistory: Message[];
+}
+
+type WorkbenchAction =
+  | { type: 'SET_USER_TEXT_INPUT'; payload: string }
+  | { type: 'START_CONVERSATION'; payload: { firstMessage: string } }
+  | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string; switchSpeaker?: boolean } }
+  | { type: 'TOGGLE_MODE'; payload: { participant: 'organizer' | 'attendee'; mode: 'human' | 'ai' } }
+  | { type: 'SELECT_PROMPT'; payload: { participant: 'organizer' | 'attendee'; prompt: PromptBuilderData | null } }
+  | { type: 'TOGGLE_PROMPT_SETS' };
+
+function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
+  switch (action.type) {
+    case 'SET_USER_TEXT_INPUT':
+      return { ...state, userTextInput: action.payload };
+
+    case 'START_CONVERSATION':
+      return {
+        ...state,
+        conversationHistory: [...state.conversationHistory, constructMessage('organizer', action.payload.firstMessage)],
+        speaker: 'attendee',
+      };
+
+    case 'SEND_MESSAGE':
+      return {
+        ...state,
+        conversationHistory: [...state.conversationHistory, constructMessage(action.payload.sender, action.payload.content)],
+        userTextInput: action.payload.sender === state.speaker ? '' : state.userTextInput,
+        speaker: action.payload.switchSpeaker ? (action.payload.sender === 'organizer' ? 'attendee' : 'organizer') : state.speaker,
+      };
+
+    case 'TOGGLE_MODE':
+      return {
+        ...state,
+        [action.payload.participant === 'organizer' ? 'organizerHumanOrAi' : 'attendeeHumanOrAi']: action.payload.mode,
+      };
+
+    case 'SELECT_PROMPT':
+      return {
+        ...state,
+        [action.payload.participant === 'organizer' ? 'organizerPrompt' : 'attendeePrompt']: action.payload.prompt,
+        showPromptSets: false,
+      };
+
+    case 'TOGGLE_PROMPT_SETS':
+      return { ...state, showPromptSets: !state.showPromptSets };
+
+    default:
+      return state;
+  }
+}
+
+function constructMessage(sender: 'organizer' | 'attendee', content: string) {
+  return {
+    id: `${sender}-${Date.now()}`,
+    sender,
+    content,
+    timestamp: new Date(),
+  };
+}
+
+const AiThinking = () => (
+  <div className="flex justify-start">
+    <div className="max-w-xs px-4 py-2 rounded-lg bg-gray-100 border border-gray-200">
+      <div className="flex items-center gap-2 mb-1">
+        <Bot size={12} className="text-gray-400" />
+        <span className="text-xs text-gray-600">AI thinking...</span>
+      </div>
+      <div className="flex space-x-1">
+        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+      </div>
+    </div>
+  </div>
+);
+
 const Workbench = () => {
-  const [inputValue, setInputValue] = useState('');
-  const [showPromptSets, setShowPromptSets] = useState(false);
-  const [currentOrganizerPrompt, setCurrentOrganizerPrompt] = useState<PromptBuilderData | null>(null);
-  const [currentAttendeePrompt, setCurrentAttendeePrompt] = useState<PromptBuilderData | null>(null);
-  const [organizerMode, setOrganizerMode] = useState<ParticipantMode>('ai');
-  const [attendeeMode, setAttendeeMode] = useState<ParticipantMode>('ai');
-  const [currentSpeaker, setCurrentSpeaker] = useState<ParticipantId>('organizer');
-  const [combinedMessages, setCombinedMessages] = useState<Message[]>([]);
+  const [state, dispatch] = useReducer(workbenchReducer, {
+    userTextInput: '',
+    showPromptSets: false,
+    organizerPrompt: null,
+    attendeePrompt: null,
+    organizerHumanOrAi: 'ai',
+    attendeeHumanOrAi: 'ai',
+    speaker: 'organizer',
+    conversationHistory: [],
+  });
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const organizerRef = useRef<PromptBuilderRef>(null);
   const attendeeRef = useRef<PromptBuilderRef>(null);
 
-  // Initialize participant hooks
-  const organizerAi = useAiParticipant();
-  const attendeeAi = useAiParticipant();
-
-  // Computed state
-  const hasStarted = () => combinedMessages.length > 0;
-  const getParticipantMode = (participantId: ParticipantId) => {
-    return participantId === 'organizer' ? organizerMode : attendeeMode;
+  // Helper for getting human text input
+  const getTextInput = (): Promise<string> => {
+    return new Promise((resolve) => {
+      // TODO: Implement proper human input handling
+      resolve(state.userTextInput);
+    });
   };
-  const isAwaitingAiResponse = useMemo(
-    () => getParticipantMode(currentSpeaker) === 'ai' && hasStarted(),
-    [currentSpeaker, organizerMode, attendeeMode, combinedMessages.length],
+
+  // Initialize participant hooks
+  const organizerParticipant = useParticipant(
+    state.organizerHumanOrAi,
+    organizerRef.current?.getFirstMessage() || null,
+    organizerRef.current?.getFullPrompt() || '',
+    getTextInput,
   );
+  const attendeeParticipant = useParticipant(state.attendeeHumanOrAi, null, attendeeRef.current?.getFullPrompt() || '', getTextInput);
+
+  const otherSpeaker = state.speaker === 'organizer' ? 'attendee' : 'organizer';
+  const currentSpeakerHumanOrAi = state.speaker === 'organizer' ? state.organizerHumanOrAi : state.attendeeHumanOrAi;
+  const otherSpeakerHumanOrAi = state.speaker === 'organizer' ? state.attendeeHumanOrAi : state.organizerHumanOrAi;
+  const isAwaitingAiResponse = state.conversationHistory.length > 0 && currentSpeakerHumanOrAi === 'ai';
+
+  const hasStarted = () => state.conversationHistory.length > 0;
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [combinedMessages, isAwaitingAiResponse]);
+  }, [state.conversationHistory, isAwaitingAiResponse]);
 
-  const addMessage = (sender: ParticipantId, content: string) => {
-    const message: Message = {
-      id: `${sender}-${Date.now()}`,
-      sender,
-      content,
-      timestamp: new Date(),
-    };
-    setCombinedMessages((prev) => [...prev, message]);
-  };
+  const sendHumanMessage = async () => {
+    if (!state.userTextInput.trim() || currentSpeakerHumanOrAi === 'ai') return;
 
-  const sendMessage = async () => {
-    if (!inputValue.trim()) return;
+    const userMessage = state.userTextInput;
+    dispatch({ type: 'SEND_MESSAGE', payload: { sender: state.speaker, content: userMessage, switchSpeaker: true } });
 
-    const speaker = currentSpeaker;
-    const speakerMode = speaker === 'organizer' ? organizerMode : attendeeMode;
-
-    if (speakerMode !== 'human') return;
-
-    // Add human message
-    addMessage(speaker, inputValue);
-    const messageToSend = inputValue;
-    setInputValue('');
-
-    // Get response from other participant if they're AI
-    const otherSpeaker = speaker === 'organizer' ? 'attendee' : 'organizer';
-    const otherMode = otherSpeaker === 'organizer' ? organizerMode : attendeeMode;
-
-    if (otherMode === 'ai') {
+    if (otherSpeakerHumanOrAi === 'ai') {
       try {
-        const participant = otherSpeaker === 'organizer' ? organizerAi : attendeeAi;
-        const promptBuilder = otherSpeaker === 'organizer' ? organizerRef.current : attendeeRef.current;
-        const response = await participant.chat(messageToSend, promptBuilder);
-        addMessage(otherSpeaker, response);
+        const response = await handleParticipantResponse(otherSpeaker, 'ai', userMessage);
+        dispatch({ type: 'SEND_MESSAGE', payload: { sender: otherSpeaker, content: response } });
       } catch (error) {
         console.error('Error getting AI response:', error);
       }
     }
-
-    // Switch speakers
-    setCurrentSpeaker(otherSpeaker);
   };
 
-  // Mode toggle handlers
-  const handleModeToggle = (participantId: ParticipantId, mode: ParticipantMode) => {
-    if (combinedMessages.length > 0) return; // Can't change after conversation starts
-
-    if (participantId === 'organizer') {
-      setOrganizerMode(mode);
+  // Helper method for handling participant responses
+  const handleParticipantResponse = async (
+    participantId: 'organizer' | 'attendee',
+    mode: 'human' | 'ai',
+    message: string,
+  ): Promise<string> => {
+    if (mode === 'ai') {
+      const participant = participantId === 'organizer' ? organizerParticipant : attendeeParticipant;
+      return await participant.chat(message);
     } else {
-      setAttendeeMode(mode);
+      return await getTextInput();
     }
+  };
+
+  const handleModeToggle = (participantId: 'organizer' | 'attendee', mode: ParticipantMode) => {
+    if (state.conversationHistory.length > 0) return;
+
+    dispatch({ type: 'TOGGLE_MODE', payload: { participant: participantId, mode } });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      sendHumanMessage();
     }
   };
 
   const handleSelectOrganizerPrompt = (prompt: PromptBuilderData) => {
-    setCurrentOrganizerPrompt(prompt);
-    setShowPromptSets(false);
+    dispatch({ type: 'SELECT_PROMPT', payload: { participant: 'organizer', prompt } });
   };
 
   const handleSelectAttendeePrompt = (prompt: PromptBuilderData) => {
-    setCurrentAttendeePrompt(prompt);
-    setShowPromptSets(false);
+    dispatch({ type: 'SELECT_PROMPT', payload: { participant: 'attendee', prompt } });
   };
 
   const handleCreateNewOrganizer = () => {
-    setCurrentOrganizerPrompt(null);
-    setShowPromptSets(false);
+    dispatch({ type: 'SELECT_PROMPT', payload: { participant: 'organizer', prompt: null } });
   };
 
   const handleCreateNewAttendee = () => {
-    setCurrentAttendeePrompt(null);
-    setShowPromptSets(false);
+    dispatch({ type: 'SELECT_PROMPT', payload: { participant: 'attendee', prompt: null } });
   };
 
-  const startAutoConversation = async () => {
-    if (combinedMessages.length > 0) return;
+  const startConversation = async () => {
+    if (state.conversationHistory.length > 0) return;
 
     try {
-      // Start with organizer if they're AI
-      if (organizerMode === 'ai' && organizerRef.current) {
-        const firstMessage = organizerRef.current.getFirstMessage();
-        const startMessage = firstMessage || "Let's start this conversation.";
+      if (state.organizerHumanOrAi === 'ai' && organizerRef.current) {
+        const firstMessage = organizerRef.current.getFirstMessage() || "Let's start this conversation.";
 
-        // Display the first message directly
-        addMessage('organizer', startMessage);
-        setCurrentSpeaker('attendee');
+        dispatch({ type: 'START_CONVERSATION', payload: { firstMessage } });
 
-        // If attendee is also AI, continue the conversation
-        if (attendeeMode === 'ai') {
-          const attendeeResponse = await attendeeAi.chat(startMessage, attendeeRef.current);
-          addMessage('attendee', attendeeResponse);
-          setCurrentSpeaker('organizer');
+        if (state.attendeeHumanOrAi === 'ai') {
+          const attendeeResponse = await attendeeParticipant.chat(firstMessage);
+          dispatch({ type: 'SEND_MESSAGE', payload: { sender: 'attendee', content: attendeeResponse, switchSpeaker: true } });
 
-          // Continue AI/AI conversation with organizer's response
-          const organizerResponse = await organizerAi.chat(attendeeResponse, organizerRef.current);
-          addMessage('organizer', organizerResponse);
-          setCurrentSpeaker('attendee');
+          const organizerResponse = await organizerParticipant.chat(attendeeResponse);
+          dispatch({ type: 'SEND_MESSAGE', payload: { sender: 'organizer', content: organizerResponse, switchSpeaker: true } });
         }
       }
     } catch (error) {
       console.error('Error starting conversation:', error);
     }
   };
-
-  const hasStarted = () => combinedMessages.length > 0;
-  const getParticipantMode = (participantId: ParticipantId) => {
-    return participantId === 'organizer' ? organizerMode : attendeeMode;
-  };
-  const isAwaitingAiResponse = useMemo(
-    () => getParticipantMode(currentSpeaker) === 'ai' && hasStarted(),
-    [currentSpeaker, organizerMode, attendeeMode, combinedMessages.length],
-  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -199,12 +240,12 @@ const Workbench = () => {
             <div className="space-y-4 h-full overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-semibold">Participants</h2>
-                <Button onClick={() => setShowPromptSets(!showPromptSets)} size="sm" variant="outline" className="text-xs">
-                  {showPromptSets ? 'Edit Current' : 'Browse All'}
+                <Button onClick={() => dispatch({ type: 'TOGGLE_PROMPT_SETS' })} size="sm" variant="outline" className="text-xs">
+                  {state.showPromptSets ? 'Edit Current' : 'Browse All'}
                 </Button>
               </div>
 
-              {showPromptSets ? (
+              {state.showPromptSets ? (
                 <div className="space-y-4">
                   <PromptBuilderSet
                     persona="organizer"
@@ -225,8 +266,6 @@ const Workbench = () => {
                     ref={organizerRef}
                     name="organizer"
                     color="bg-purple-200"
-                    initialPrompt={currentOrganizerPrompt?.system_prompt || DEFAULT_ORGANIZER_PROMPT}
-                    initialVariables={currentOrganizerPrompt?.variables || DEFAULT_VARIABLES}
                     showFirstMessage={true}
                   />
 
@@ -234,8 +273,6 @@ const Workbench = () => {
                     ref={attendeeRef}
                     name="attendee"
                     color="bg-orange-200"
-                    initialPrompt={currentAttendeePrompt?.system_prompt || DEFAULT_ATTENDEE_PROMPT}
-                    initialVariables={currentAttendeePrompt?.variables || {}}
                   />
                 </Accordion>
               )}
@@ -256,15 +293,15 @@ const Workbench = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (combinedMessages.length === 0) {
+                            if (state.conversationHistory.length === 0) {
                               handleModeToggle('organizer', 'human');
                             }
                           }}
-                          disabled={combinedMessages.length > 0}
+                          disabled={state.conversationHistory.length > 0}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            combinedMessages.length > 0
+                            state.conversationHistory.length > 0
                               ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                              : getParticipantMode('organizer') === 'human'
+                              : state.organizerHumanOrAi === 'human'
                                 ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
                                 : 'text-gray-600 hover:text-gray-900'
                           }`}
@@ -275,15 +312,15 @@ const Workbench = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (combinedMessages.length === 0) {
+                            if (state.conversationHistory.length === 0) {
                               handleModeToggle('organizer', 'ai');
                             }
                           }}
-                          disabled={combinedMessages.length > 0}
+                          disabled={state.conversationHistory.length > 0}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            combinedMessages.length > 0
+                            state.conversationHistory.length > 0
                               ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                              : getParticipantMode('organizer') === 'ai'
+                              : state.organizerHumanOrAi === 'ai'
                                 ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
                                 : 'text-gray-600 hover:text-gray-900'
                           }`}
@@ -300,15 +337,15 @@ const Workbench = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (combinedMessages.length === 0) {
+                            if (state.conversationHistory.length === 0) {
                               handleModeToggle('attendee', 'human');
                             }
                           }}
-                          disabled={combinedMessages.length > 0}
+                          disabled={state.conversationHistory.length > 0}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            combinedMessages.length > 0
+                            state.conversationHistory.length > 0
                               ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                              : getParticipantMode('attendee') === 'human'
+                              : state.attendeeHumanOrAi === 'human'
                                 ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
                                 : 'text-gray-600 hover:text-gray-900'
                           }`}
@@ -319,15 +356,15 @@ const Workbench = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (combinedMessages.length === 0) {
+                            if (state.conversationHistory.length === 0) {
                               handleModeToggle('attendee', 'ai');
                             }
                           }}
-                          disabled={combinedMessages.length > 0}
+                          disabled={state.conversationHistory.length > 0}
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            combinedMessages.length > 0
+                            state.conversationHistory.length > 0
                               ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                              : getParticipantMode('attendee') === 'ai'
+                              : state.attendeeHumanOrAi === 'ai'
                                 ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
                                 : 'text-gray-600 hover:text-gray-900'
                           }`}
@@ -341,7 +378,7 @@ const Workbench = () => {
 
                   {!hasStarted() && (
                     <div className="mt-2">
-                      <Button onClick={startAutoConversation} size="sm" className="px-4">
+                      <Button onClick={startConversation} size="sm" className="px-4">
                         <Play size={16} className="mr-2" />
                         Start
                       </Button>
@@ -350,7 +387,7 @@ const Workbench = () => {
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {combinedMessages.map((message) => (
+                  {state.conversationHistory.map((message) => (
                     <div key={message.id} className={`flex ${message.sender === 'organizer' ? 'justify-end' : 'justify-start'}`}>
                       <div
                         className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
@@ -374,23 +411,20 @@ const Workbench = () => {
 
                   {/* Show waiting indicator for next expected response */}
                   {hasStarted() &&
-                    currentSpeaker &&
-                    getParticipantMode(currentSpeaker) === 'human' &&
+                    state.speaker &&
+                    currentSpeakerHumanOrAi === 'human' &&
                     !isAwaitingAiResponse &&
                     (() => {
-                      const waitingFor = currentSpeaker;
-                      const waitingForOrganizer = waitingFor === 'organizer';
-
                       return (
-                        <div className={`flex ${waitingForOrganizer ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`flex ${state.speaker === 'organizer' ? 'justify-end' : 'justify-start'}`}>
                           <div
                             className={`max-w-xs px-4 py-2 rounded-lg border-2 border-dashed ${
-                              waitingForOrganizer ? 'border-purple-300 bg-purple-50' : 'border-orange-300 bg-orange-50'
+                              state.speaker === 'organizer' ? 'border-purple-300 bg-purple-50' : 'border-orange-300 bg-orange-50'
                             }`}
                           >
                             <div className="flex items-center gap-2 mb-1">
-                              <User size={12} className={waitingForOrganizer ? 'text-purple-400' : 'text-orange-400'} />
-                              <span className="text-xs text-gray-500">{waitingForOrganizer ? 'Organizer' : 'Attendee'}</span>
+                              <User size={12} className={state.speaker === 'organizer' ? 'text-purple-400' : 'text-orange-400'} />
+                              <span className="text-xs text-gray-500">{state.speaker === 'organizer' ? 'Organizer' : 'Attendee'}</span>
                             </div>
                             <p className="text-sm italic text-gray-500">Waiting for human...</p>
                           </div>
@@ -398,21 +432,7 @@ const Workbench = () => {
                       );
                     })()}
 
-                  {isAwaitingAiResponse && (
-                    <div className="flex justify-start">
-                      <div className="max-w-xs px-4 py-2 rounded-lg bg-gray-100 border border-gray-200">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Bot size={12} className="text-gray-400" />
-                          <span className="text-xs text-gray-600">AI thinking...</span>
-                        </div>
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  {isAwaitingAiResponse && <AiThinking />}
                   <div ref={messagesEndRef} />
                 </div>
 
@@ -420,36 +440,34 @@ const Workbench = () => {
                   <div className="flex space-x-2">
                     <Textarea
                       ref={inputRef}
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
+                      value={state.userTextInput}
+                      onChange={(e) => dispatch({ type: 'SET_USER_TEXT_INPUT', payload: e.target.value })}
                       onKeyPress={handleKeyPress}
                       placeholder={
-                        getParticipantMode('organizer') === 'ai' && getParticipantMode('attendee') === 'ai'
+                        state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai'
                           ? 'Both participants are in AI mode - conversation runs automatically'
-                          : currentSpeaker === 'organizer'
+                          : state.speaker === 'organizer'
                             ? 'Type your message as the organizer...'
                             : 'Type your message as the attendee...'
                       }
                       className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
-                        getParticipantMode('organizer') === 'ai' && getParticipantMode('attendee') === 'ai'
+                        state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai'
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                           : ''
                       }`}
-                      disabled={
-                        isAwaitingAiResponse || (getParticipantMode('organizer') === 'ai' && getParticipantMode('attendee') === 'ai')
-                      }
+                      disabled={isAwaitingAiResponse || (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai')}
                     />
                     <Button
-                      onClick={sendMessage}
+                      onClick={sendHumanMessage}
                       disabled={
-                        !inputValue.trim() ||
+                        !state.userTextInput.trim() ||
                         isAwaitingAiResponse ||
-                        (getParticipantMode('organizer') === 'ai' && getParticipantMode('attendee') === 'ai')
+                        (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai')
                       }
                       className={`px-4 ${
-                        getParticipantMode('organizer') === 'ai' && getParticipantMode('attendee') === 'ai'
+                        state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai'
                           ? 'bg-gray-400 cursor-not-allowed'
-                          : currentSpeaker === 'organizer'
+                          : state.speaker === 'organizer'
                             ? 'bg-purple-600 hover:bg-purple-700 text-white'
                             : 'bg-orange-600 hover:bg-orange-700 text-white'
                       }`}
