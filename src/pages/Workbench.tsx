@@ -8,7 +8,7 @@ import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
 import { Bot, Play, Send, User } from 'lucide-react';
-import React, { useEffect, useReducer, useRef } from 'react';
+import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 
 type ParticipantMode = 'human' | 'ai';
 
@@ -34,7 +34,6 @@ interface WorkbenchState {
 
 type WorkbenchAction =
   | { type: 'SET_USER_TEXT_INPUT'; payload: string }
-  | { type: 'START_CONVERSATION'; payload: { firstMessage: string } }
   | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string; switchSpeaker?: boolean } }
   | { type: 'TOGGLE_MODE'; payload: { participant: 'organizer' | 'attendee'; mode: 'human' | 'ai' } }
   | { type: 'SELECT_PROMPT'; payload: { participant: 'organizer' | 'attendee'; prompt: PromptBuilderData | null } }
@@ -46,12 +45,6 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
     case 'SET_USER_TEXT_INPUT':
       return { ...state, userTextInput: action.payload };
 
-    case 'START_CONVERSATION':
-      return {
-        ...state,
-        conversationHistory: [...state.conversationHistory, constructMessage('organizer', action.payload.firstMessage)],
-        speaker: 'attendee',
-      };
 
     case 'SEND_MESSAGE':
       return {
@@ -219,22 +212,21 @@ const Workbench = () => {
     dispatch({ type: 'SELECT_PROMPT', payload: { participant: 'attendee', prompt: null } });
   };
 
-  const handleOrganizerPromptChange = (promptText: string) => {
+  const handleOrganizerPromptChange = useCallback((promptText: string) => {
     dispatch({ type: 'UPDATE_PROMPT', payload: { participant: 'organizer', promptText } });
-  };
+  }, []);
 
-  const handleAttendeePromptChange = (promptText: string) => {
+  const handleAttendeePromptChange = useCallback((promptText: string) => {
     dispatch({ type: 'UPDATE_PROMPT', payload: { participant: 'attendee', promptText } });
-  };
+  }, []);
 
   const startConversation = async () => {
     if (state.conversationHistory.length > 0) return;
 
     try {
-      if (state.organizerHumanOrAi === 'ai' && organizerRef.current) {
-        const firstMessage = organizerRef.current.getFirstMessage() || "Let's start this conversation.";
-
-        dispatch({ type: 'START_CONVERSATION', payload: { firstMessage } });
+      if (state.organizerHumanOrAi === 'ai') {
+        const firstMessage = await organizerParticipant.chat(null);
+        dispatch({ type: 'SEND_MESSAGE', payload: { sender: 'organizer', content: firstMessage, switchSpeaker: true } });
 
         if (state.attendeeHumanOrAi === 'ai') {
           const attendeeResponse = await attendeeParticipant.chat(firstMessage);
@@ -281,20 +273,15 @@ const Workbench = () => {
                 </div>
               ) : (
                 <Accordion type="multiple" defaultValue={['organizer', 'attendee']} className="w-full space-y-4">
-                  <PromptBuilder 
-                    ref={organizerRef} 
-                    name="organizer" 
-                    color="bg-purple-200" 
+                  <PromptBuilder
+                    ref={organizerRef}
+                    name="organizer"
+                    color="bg-purple-200"
                     showFirstMessage={true}
                     onPromptChange={handleOrganizerPromptChange}
                   />
 
-                  <PromptBuilder 
-                    ref={attendeeRef} 
-                    name="attendee" 
-                    color="bg-orange-200"
-                    onPromptChange={handleAttendeePromptChange}
-                  />
+                  <PromptBuilder ref={attendeeRef} name="attendee" color="bg-orange-200" onPromptChange={handleAttendeePromptChange} />
                 </Accordion>
               )}
             </div>
