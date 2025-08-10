@@ -11,6 +11,8 @@ interface PromptBuilderProps {
   name: string;
   color: string; // Tailwind background color class (e.g., 'bg-purple-200')
   initialPrompt?: string;
+  initialFirstMessage?: string;
+  initialDisplayName?: string;
   initialVariables?: Record<string, string>;
   showFirstMessage?: boolean;
   defaultOpen?: boolean;
@@ -35,14 +37,27 @@ const generateTimestampedName = (type: string): string => {
 };
 
 const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
-  ({ name, color, initialPrompt = '', showFirstMessage = false, defaultOpen = true, onPromptChange, onDataChange }, ref) => {
+  (
+    {
+      name,
+      color,
+      initialPrompt = '',
+      initialFirstMessage = '',
+      initialDisplayName,
+      showFirstMessage = false,
+      defaultOpen = true,
+      onPromptChange,
+      onDataChange,
+    },
+    ref,
+  ) => {
     const [systemPrompt, setSystemPrompt] = useState(initialPrompt);
-    const [firstMessage, setFirstMessage] = useState('');
+    const [firstMessage, setFirstMessage] = useState(initialFirstMessage);
     const [isSaving, setIsSaving] = useState(false);
     const [isSaved, setIsSaved] = useState(true);
     const [saveError, setSaveError] = useState<string | null>(null);
-    const [displayName, setDisplayName] = useState(name);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [displayName, setDisplayName] = useState(initialDisplayName || name);
+    const [isLoaded, setIsLoaded] = useState(!!initialPrompt || !!initialDisplayName);
     const [isEditingName, setIsEditingName] = useState(false);
     const [editNameValue, setEditNameValue] = useState(displayName);
     const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -165,21 +180,21 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       <div className={`${color} rounded-lg p-4`}>
         <div className="flex items-center justify-between w-full mb-2">
           <button className="flex items-center gap-2 flex-1" onClick={() => setIsOpen(!isOpen)}>
-            <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>(
+            <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>
             {isEditingName ? (
               <Input
                 value={editNameValue}
                 onChange={(e) => setEditNameValue(e.target.value)}
                 onKeyDown={handleNameKeyDown}
                 onBlur={handleSaveNameEdit}
-                className="text-xs font-mono h-6 px-1 py-0.5 min-w-0 w-auto"
+                className="text-xs font-mono h-6 px-1 py-0.5 min-w-0 w-auto ml-2"
                 style={{ width: `${Math.max(editNameValue.length * 8, 80)}px` }}
                 autoFocus
                 onClick={(e) => e.stopPropagation()}
               />
             ) : (
               <span
-                className="text-xs text-gray-500 font-mono cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
+                className="text-xs text-gray-500 font-mono cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded ml-2"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleStartEditingName();

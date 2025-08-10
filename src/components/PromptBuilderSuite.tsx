@@ -179,7 +179,10 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
         <PromptBuilder
           key={attendee.id}
           ref={!isArchived && index === 0 ? promptBuilderRef : undefined}
-          name={attendee.displayName}
+          name="attendee"
+          initialPrompt={attendee.systemPrompt}
+          initialFirstMessage={attendee.firstMessage}
+          initialDisplayName={attendee.displayName}
           color={color}
           defaultOpen={defaultOpen && !isArchived}
           onPromptChange={onPromptChange}

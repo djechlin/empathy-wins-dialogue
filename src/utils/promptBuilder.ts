@@ -153,7 +153,7 @@ export const fetchAllPromptBuildersForPersona = async (persona: string): Promise
     console.log('fetchAllPromptBuildersForPersona: Auth result:', authResult);
     const {
       data: { user },
-    } = authResult as any;
+    } = authResult as { data: { user: { id: string } | null } };
 
     console.log('fetchAllPromptBuildersForPersona: User check:', user ? `User ID: ${user.id}` : 'No user');
     if (!user) {
