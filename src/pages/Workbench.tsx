@@ -1,7 +1,7 @@
 import Navbar from '@/components/layout/Navbar';
 import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
 import PromptBuilderSuite, { type PromptBuilderSuiteRef } from '@/components/PromptBuilderSuite';
-import ConversationPanel from './ConversationPanel';
+import Conversation from './Conversation';
 import { useParticipant } from '@/hooks/useParticipant';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
 import React, { useCallback, useEffect, useReducer, useRef } from 'react';
@@ -109,7 +109,6 @@ function constructMessage(sender: 'organizer' | 'attendee', content: string) {
     timestamp: new Date(),
   };
 }
-
 
 const Workbench = () => {
   const [state, dispatch] = useReducer(workbenchReducer, {
@@ -284,7 +283,8 @@ const Workbench = () => {
             </div>
 
             {/* Conversation Column */}
-            <ConversationPanel
+            <div className="space-y-4 h-full">
+              <Conversation
               attendeeDisplayName={state.attendeeData.displayName}
               conversationHistory={state.conversationHistory}
               paused={state.paused}
@@ -302,7 +302,8 @@ const Workbench = () => {
               inputRef={inputRef}
               messagesEndRef={messagesEndRef}
               hasStarted={hasStarted}
-            />
+              />
+            </div>
           </div>
         </div>
       </div>

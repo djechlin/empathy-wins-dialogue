@@ -11,7 +11,7 @@ interface Message {
   timestamp: Date;
 }
 
-interface ConversationPanelProps {
+interface ConversationProps {
   // State props
   attendeeDisplayName: string;
   conversationHistory: Message[];
@@ -21,7 +21,7 @@ interface ConversationPanelProps {
   speaker: 'organizer' | 'attendee';
   userTextInput: string;
   isAwaitingAiResponse: boolean;
-  
+
   // Event handlers
   onTogglePause: () => void;
   onModeToggle: (participant: 'organizer' | 'attendee', mode: 'human' | 'ai') => void;
@@ -29,11 +29,11 @@ interface ConversationPanelProps {
   onUserTextInputChange: (value: string) => void;
   onKeyPress: (e: React.KeyboardEvent) => void;
   onSendMessage: () => void;
-  
+
   // Refs
   inputRef: React.RefObject<HTMLTextAreaElement>;
   messagesEndRef: React.RefObject<HTMLDivElement>;
-  
+
   // Helper functions
   hasStarted: () => boolean;
 }
@@ -56,7 +56,7 @@ const AiThinking = ({ participant }: { participant: 'organizer' | 'attendee' }) 
   </div>
 );
 
-const ConversationPanel = ({
+const Conversation = ({
   attendeeDisplayName,
   conversationHistory,
   paused,
@@ -74,22 +74,16 @@ const ConversationPanel = ({
   inputRef,
   messagesEndRef,
   hasStarted,
-}: ConversationPanelProps) => {
+}: ConversationProps) => {
   const currentSpeakerHumanOrAi = speaker === 'organizer' ? organizerHumanOrAi : attendeeHumanOrAi;
 
   return (
-    <div className="space-y-4 h-full">
-      <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col">
         <div className="border-b px-4 py-3 bg-gray-50">
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-semibold">Chat with {attendeeDisplayName}</h2>
             {hasStarted() && (
-              <Button
-                onClick={onTogglePause}
-                size="sm"
-                variant={paused ? 'default' : 'outline'}
-                className="text-xs px-3"
-              >
+              <Button onClick={onTogglePause} size="sm" variant={paused ? 'default' : 'outline'} className="text-xs px-3">
                 {paused ? (
                   <>
                     <Play size={12} className="mr-1" />
@@ -272,21 +266,14 @@ const ConversationPanel = ({
                       : 'Type your message as the attendee...'
               }
               className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
-                paused || (organizerHumanOrAi === 'ai' && attendeeHumanOrAi === 'ai')
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : ''
+                paused || (organizerHumanOrAi === 'ai' && attendeeHumanOrAi === 'ai') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''
               }`}
-              disabled={
-                paused || isAwaitingAiResponse || (organizerHumanOrAi === 'ai' && attendeeHumanOrAi === 'ai')
-              }
+              disabled={paused || isAwaitingAiResponse || (organizerHumanOrAi === 'ai' && attendeeHumanOrAi === 'ai')}
             />
             <Button
               onClick={onSendMessage}
               disabled={
-                paused ||
-                !userTextInput.trim() ||
-                isAwaitingAiResponse ||
-                (organizerHumanOrAi === 'ai' && attendeeHumanOrAi === 'ai')
+                paused || !userTextInput.trim() || isAwaitingAiResponse || (organizerHumanOrAi === 'ai' && attendeeHumanOrAi === 'ai')
               }
               className={`px-4 ${
                 paused || (organizerHumanOrAi === 'ai' && attendeeHumanOrAi === 'ai')
@@ -301,8 +288,7 @@ const ConversationPanel = ({
           </div>
         </div>
       </Card>
-    </div>
   );
 };
 
-export default ConversationPanel;
+export default Conversation;
