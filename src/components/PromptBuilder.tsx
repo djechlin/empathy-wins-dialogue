@@ -22,11 +22,17 @@ export interface PromptBuilderRef {
   getFirstMessage: () => string;
 }
 
+enum SaveStatus {
+  SAVED = 'saved',
+  DIRTY = 'dirty',
+  SAVING = 'saving',
+  ERROR = 'error'
+}
+
 interface PromptBuilderState {
   systemPrompt: string;
   firstMessage: string;
-  isSaving: boolean;
-  isSaved: boolean;
+  saveStatus: SaveStatus;
   saveError: string | null;
   displayName: string;
   loading: 'new' | 'loading' | 'loaded' | 'error';
@@ -38,8 +44,7 @@ interface PromptBuilderState {
 type PromptBuilderAction =
   | { type: 'SET_SYSTEM_PROMPT'; payload: string }
   | { type: 'SET_FIRST_MESSAGE'; payload: string }
-  | { type: 'SET_IS_SAVING'; payload: boolean }
-  | { type: 'SET_IS_SAVED'; payload: boolean }
+  | { type: 'SET_SAVE_STATUS'; payload: SaveStatus }
   | { type: 'SET_SAVE_ERROR'; payload: string | null }
   | { type: 'SET_DISPLAY_NAME'; payload: string }
   | { type: 'SET_LOADING'; payload: 'new' | 'loading' | 'loaded' | 'error' }
@@ -47,7 +52,7 @@ type PromptBuilderAction =
   | { type: 'SET_EDIT_NAME_VALUE'; payload: string }
   | { type: 'SET_IS_OPEN'; payload: boolean }
   | { type: 'LOAD_PROMPT_DATA'; payload: { systemPrompt: string; firstMessage: string; displayName: string } }
-  | { type: 'RESET_SAVE_STATE' };
+  | { type: 'MARK_DIRTY' };
 
 const promptBuilderReducer = (state: PromptBuilderState, action: PromptBuilderAction): PromptBuilderState => {
   switch (action.type) {
@@ -55,10 +60,8 @@ const promptBuilderReducer = (state: PromptBuilderState, action: PromptBuilderAc
       return { ...state, systemPrompt: action.payload };
     case 'SET_FIRST_MESSAGE':
       return { ...state, firstMessage: action.payload };
-    case 'SET_IS_SAVING':
-      return { ...state, isSaving: action.payload };
-    case 'SET_IS_SAVED':
-      return { ...state, isSaved: action.payload };
+    case 'SET_SAVE_STATUS':
+      return { ...state, saveStatus: action.payload };
     case 'SET_SAVE_ERROR':
       return { ...state, saveError: action.payload };
     case 'SET_DISPLAY_NAME':
@@ -78,10 +81,10 @@ const promptBuilderReducer = (state: PromptBuilderState, action: PromptBuilderAc
         firstMessage: action.payload.firstMessage,
         displayName: action.payload.displayName,
         editNameValue: action.payload.displayName,
-        isSaved: true
+        saveStatus: SaveStatus.SAVED,
       };
-    case 'RESET_SAVE_STATE':
-      return { ...state, isSaved: false, saveError: null };
+    case 'MARK_DIRTY':
+      return { ...state, saveStatus: SaveStatus.DIRTY, saveError: null };
     default:
       return state;
   }
@@ -103,21 +106,20 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     const initialState: PromptBuilderState = {
       systemPrompt: initialPrompt,
       firstMessage: initialFirstMessage,
-      isSaving: false,
-      isSaved: true,
+      saveStatus: SaveStatus.SAVED,
       saveError: null,
       displayName: initialDisplayName || persona,
       loading: initialPrompt || initialFirstMessage ? 'loaded' : 'new',
       isEditingName: false,
       editNameValue: initialDisplayName || persona,
-      isOpen: defaultOpen
+      isOpen: defaultOpen,
     };
 
     const [state, dispatch] = useReducer(promptBuilderReducer, initialState);
 
     const handleSave = async () => {
       // If already saved (not dirty), auto-succeed
-      if (state.isSaved) {
+      if (state.saveStatus === SaveStatus.SAVED) {
         return true;
       }
 
@@ -125,7 +127,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
         dispatch({ type: 'SET_DISPLAY_NAME', payload: generateTimestampedName(persona) });
       }
 
-      dispatch({ type: 'SET_IS_SAVING', payload: true });
+      dispatch({ type: 'SET_SAVE_STATUS', payload: SaveStatus.SAVING });
       dispatch({ type: 'SET_SAVE_ERROR', payload: null });
       try {
         const result = await savePromptBuilder({
@@ -136,17 +138,17 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
         });
 
         if (result) {
-          dispatch({ type: 'SET_IS_SAVED', payload: true });
+          dispatch({ type: 'SET_SAVE_STATUS', payload: SaveStatus.SAVED });
         } else {
+          dispatch({ type: 'SET_SAVE_STATUS', payload: SaveStatus.ERROR });
           dispatch({ type: 'SET_SAVE_ERROR', payload: 'Save failed - operation returned false' });
         }
         return result;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
+        dispatch({ type: 'SET_SAVE_STATUS', payload: SaveStatus.ERROR });
         dispatch({ type: 'SET_SAVE_ERROR', payload: errorMessage });
         return false;
-      } finally {
-        dispatch({ type: 'SET_IS_SAVING', payload: false });
       }
     };
 
@@ -171,7 +173,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     };
 
     useEffect(() => {
-      dispatch({ type: 'RESET_SAVE_STATE' });
+      dispatch({ type: 'MARK_DIRTY' });
     }, [state.systemPrompt, state.firstMessage, state.displayName]);
 
     useEffect(() => {
@@ -188,8 +190,8 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
               payload: {
                 systemPrompt: recentPrompt.system_prompt,
                 firstMessage: recentPrompt.firstMessage || '',
-                displayName: recentPrompt.name
-              }
+                displayName: recentPrompt.name,
+              },
             });
           }
           dispatch({ type: 'SET_LOADING', payload: 'loaded' });
@@ -245,12 +247,12 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
           </button>
           <Button
             onClick={handleSave}
-            disabled={state.isSaving || state.isSaved}
+            disabled={state.saveStatus === SaveStatus.SAVING || state.saveStatus === SaveStatus.SAVED}
             size="sm"
             variant="outline"
             className="text-xs px-2 py-1 h-auto font-sans ml-2"
           >
-            {state.isSaving ? 'Saving...' : state.isSaved ? 'Saved' : 'Save'}
+            {state.saveStatus === SaveStatus.SAVING ? 'Saving...' : state.saveStatus === SaveStatus.SAVED ? 'Saved' : 'Save'}
           </Button>
         </div>
         <AnimatePresence initial={false}>
