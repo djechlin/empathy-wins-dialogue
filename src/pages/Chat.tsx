@@ -125,15 +125,11 @@ const Chat = ({
 
   const organizerParticipant = useParticipant(organizerMode, organizerFirstMessage || null, organizerPromptText, getTextInput);
   const attendeeParticipant = useParticipant(attendeeMode, null, attendeeSystemPrompt, getTextInput);
-  const participant = useMemo(
-    () => (state.speaker === 'organizer' ? organizerParticipant : attendeeParticipant),
-    [state.speaker, organizerParticipant, attendeeParticipant],
-  );
-
-  const otherSpeaker = state.speaker === 'organizer' ? 'attendee' : 'organizer';
-  const speakerMode = state.speaker === 'organizer' ? organizerMode : attendeeMode;
-  const otherSpeakerMode = state.speaker === 'organizer' ? attendeeMode : organizerMode;
-  const isAwaitingAiResponse = state.history.length > 0 && speakerMode === 'ai';
+  
+  const currentSpeaker = state.speaker;
+  const currentSpeakerMode = currentSpeaker === 'organizer' ? organizerMode : attendeeMode;
+  const currentParticipant = currentSpeaker === 'organizer' ? organizerParticipant : attendeeParticipant;
+  const isAwaitingAiResponse = state.history.length > 0 && currentSpeakerMode === 'ai';
 
   useEffect(() => {
     // Scroll to bottom when new messages are added
@@ -143,10 +139,9 @@ const Chat = ({
   useEffect(() => {
     if (
       state.history.length === 0 ||
-      state.history[state.history.length - 1].sender === state.speaker ||
+      state.history[state.history.length - 1].sender === currentSpeaker ||
       paused ||
-      // May be wrong
-      speakerMode === 'human'
+      currentSpeakerMode === 'human'
     ) {
       return;
     }
@@ -155,11 +150,11 @@ const Chat = ({
 
     setTimeout(async () => {
       try {
-        const response = await participant.chat(lastMessage.content);
+        const response = await currentParticipant.chat(lastMessage.content);
         dispatch({
           type: 'SEND_MESSAGE',
           payload: {
-            sender: state.speaker,
+            sender: currentSpeaker,
             content: response,
           },
         });
@@ -167,23 +162,16 @@ const Chat = ({
         console.error('Error in chat loop:', error);
       }
     }, 0);
-  }, [state.history, state.speaker, paused, speakerMode, participant]);
+  }, [state.history, currentSpeaker, paused, currentSpeakerMode, currentParticipant]);
 
   const sendHumanMessage = useCallback(async () => {
-    if (!state.userTextInput.trim() || speakerMode === 'ai' || paused) return;
+    if (!state.userTextInput.trim() || currentSpeakerMode === 'ai' || paused) return;
 
     const userMessage = state.userTextInput;
-    dispatch({ type: 'SEND_MESSAGE', payload: { sender: state.speaker, content: userMessage } });
+    dispatch({ type: 'SEND_MESSAGE', payload: { sender: currentSpeaker, content: userMessage } });
 
-    if (otherSpeakerMode === 'ai') {
-      try {
-        const response = await participant.chat(userMessage);
-        dispatch({ type: 'SEND_MESSAGE', payload: { sender: otherSpeaker, content: response } });
-      } catch (error) {
-        console.error('Error getting AI response:', error);
-      }
-    }
-  }, [state.userTextInput, speakerMode, paused, state.speaker, otherSpeakerMode, participant, otherSpeaker]);
+    // Don't manually get AI response here - let the auto-response effect handle it
+  }, [state.userTextInput, currentSpeakerMode, paused, currentSpeaker]);
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent) => {
@@ -250,20 +238,20 @@ const Chat = ({
 
         {/* Show waiting indicator for next expected response */}
         {hasStarted &&
-          state.speaker &&
-          speakerMode === 'human' &&
+          currentSpeaker &&
+          currentSpeakerMode === 'human' &&
           !isAwaitingAiResponse &&
           (() => {
             return (
-              <div className={`flex ${state.speaker === 'organizer' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`flex ${currentSpeaker === 'organizer' ? 'justify-end' : 'justify-start'}`}>
                 <div
                   className={`max-w-xs px-4 py-2 rounded-lg border-2 border-dashed ${
-                    state.speaker === 'organizer' ? 'border-purple-300 bg-purple-50' : 'border-orange-300 bg-orange-50'
+                    currentSpeaker === 'organizer' ? 'border-purple-300 bg-purple-50' : 'border-orange-300 bg-orange-50'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <User size={12} className={state.speaker === 'organizer' ? 'text-purple-400' : 'text-orange-400'} />
-                    <span className="text-xs text-gray-500">{state.speaker === 'organizer' ? 'Organizer' : 'Attendee'}</span>
+                    <User size={12} className={currentSpeaker === 'organizer' ? 'text-purple-400' : 'text-orange-400'} />
+                    <span className="text-xs text-gray-500">{currentSpeaker === 'organizer' ? 'Organizer' : 'Attendee'}</span>
                   </div>
                   <p className="text-sm italic text-gray-500">Waiting for human...</p>
                 </div>
@@ -271,7 +259,7 @@ const Chat = ({
             );
           })()}
 
-        {isAwaitingAiResponse && <AiThinking participant={state.speaker} />}
+        {isAwaitingAiResponse && <AiThinking participant={currentSpeaker} />}
         <div ref={messagesEndRef} />
       </div>
 
@@ -287,7 +275,7 @@ const Chat = ({
                 ? 'Chat is paused'
                 : organizerMode === 'ai' && attendeeMode === 'ai'
                   ? 'Both participants are in AI mode - chat runs automatically'
-                  : state.speaker === 'organizer'
+                  : currentSpeaker === 'organizer'
                     ? 'Type your message as the organizer...'
                     : 'Type your message as the attendee...'
             }
@@ -302,7 +290,7 @@ const Chat = ({
             className={`px-4 ${
               paused || (organizerMode === 'ai' && attendeeMode === 'ai')
                 ? 'bg-gray-400 cursor-not-allowed'
-                : state.speaker === 'organizer'
+                : currentSpeaker === 'organizer'
                   ? 'bg-purple-600 hover:bg-purple-700 text-white'
                   : 'bg-orange-600 hover:bg-orange-700 text-white'
             }`}
