@@ -1,8 +1,8 @@
 import Navbar from '@/components/layout/Navbar';
 import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
-import PromptBuilderSuite, { type AttendeeData, type PromptBuilderSuiteRef } from '@/components/PromptBuilderSuite';
+import PromptBuilderSuite, { type AttendeeData } from '@/components/PromptBuilderSuite';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
-import React, { useCallback, useReducer, useRef } from 'react';
+import { useCallback, useReducer, useRef } from 'react';
 import ConversationSuite from './ConversationSuite';
 
 interface WorkbenchState {
@@ -52,7 +52,6 @@ const Workbench = () => {
   });
 
   const organizerRef = useRef<PromptBuilderRef>(null);
-  const attendeeRef = useRef<PromptBuilderSuiteRef>(null);
 
   const handleOrganizerPromptChange = useCallback((data: { systemPrompt: string; firstMessage: string }) => {
     dispatch({ type: 'UPDATE_ORGANIZER_DATA', payload: data });
@@ -80,13 +79,7 @@ const Workbench = () => {
                   onDataChange={handleOrganizerPromptChange}
                 />
 
-                <PromptBuilderSuite
-                  ref={attendeeRef}
-                  name="attendee"
-                  color="bg-orange-200"
-                  defaultOpen={true}
-                  onAttendeesChange={handleAttendeesChange}
-                />
+                <PromptBuilderSuite name="attendee" color="bg-orange-200" defaultOpen={true} onAttendeesChange={handleAttendeesChange} />
               </div>
             </div>
 

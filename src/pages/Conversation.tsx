@@ -1,9 +1,9 @@
+import { useParticipant } from '@/hooks/useParticipant';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
 import { Bot, Pause, Play, Send, User } from 'lucide-react';
-import React, { useCallback, useEffect, useReducer, useRef } from 'react';
-import { useParticipant } from '@/hooks/useParticipant';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 interface Message {
   id: string;
@@ -13,12 +13,12 @@ interface Message {
 }
 
 interface ConversationState {
-  conversationHistory: Message[];
+  history: Message[];
   paused: boolean;
   speaker: 'organizer' | 'attendee';
   userTextInput: string;
-  organizerHumanOrAi: 'human' | 'ai';
-  attendeeHumanOrAi: 'human' | 'ai';
+  organizerMode: 'human' | 'ai';
+  attendeeMode: 'human' | 'ai';
 }
 
 type ConversationAction =
@@ -36,14 +36,14 @@ function conversationReducer(state: ConversationState, action: ConversationActio
     case 'START_CONVERSATION':
       return {
         ...state,
-        conversationHistory: [...state.conversationHistory, constructMessage('organizer', action.payload.firstMessage)],
+        history: [...state.history, constructMessage('organizer', action.payload.firstMessage)],
         speaker: 'attendee',
       };
 
     case 'SEND_MESSAGE':
       return {
         ...state,
-        conversationHistory: [...state.conversationHistory, constructMessage(action.payload.sender, action.payload.content)],
+        history: [...state.history, constructMessage(action.payload.sender, action.payload.content)],
         userTextInput: action.payload.sender === state.speaker ? '' : state.userTextInput,
         speaker: action.payload.sender === 'organizer' ? 'attendee' : 'organizer',
       };
@@ -51,7 +51,7 @@ function conversationReducer(state: ConversationState, action: ConversationActio
     case 'TOGGLE_MODE':
       return {
         ...state,
-        [action.payload.participant === 'organizer' ? 'organizerHumanOrAi' : 'attendeeHumanOrAi']: action.payload.mode,
+        [action.payload.participant === 'organizer' ? 'organizerMode' : 'attendeeMode']: action.payload.mode,
       };
 
     case 'TOGGLE_PAUSE':
@@ -96,19 +96,14 @@ const AiThinking = ({ participant }: { participant: 'organizer' | 'attendee' }) 
   </div>
 );
 
-const Conversation = ({
-  attendeeDisplayName,
-  organizerPromptText,
-  organizerFirstMessage,
-  attendeeSystemPrompt,
-}: ConversationProps) => {
+const Conversation = ({ attendeeDisplayName, organizerPromptText, organizerFirstMessage, attendeeSystemPrompt }: ConversationProps) => {
   const [state, dispatch] = useReducer(conversationReducer, {
-    conversationHistory: [],
+    history: [],
     paused: false,
     speaker: 'organizer' as const,
     userTextInput: '',
-    organizerHumanOrAi: 'ai' as const,
-    attendeeHumanOrAi: 'ai' as const,
+    organizerMode: 'ai' as const,
+    attendeeMode: 'ai' as const,
   });
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -121,58 +116,44 @@ const Conversation = ({
     });
   }, [state.userTextInput]);
 
-  // Initialize participant hooks
-  const organizerParticipant = useParticipant(
-    state.organizerHumanOrAi,
-    organizerFirstMessage || null,
-    organizerPromptText,
-    getTextInput,
-  );
-
-  const attendeeParticipant = useParticipant(
-    state.attendeeHumanOrAi, 
-    null, 
-    attendeeSystemPrompt, 
-    getTextInput
-  );
+  const organizerParticipant = useParticipant(state.organizerMode, organizerFirstMessage || null, organizerPromptText, getTextInput);
+  const attendeeParticipant = useParticipant(state.attendeeMode, null, attendeeSystemPrompt, getTextInput);
+  const participant = useMemo(() => (state.speaker === 'organizer' ? organizerParticipant : attendeeParticipant), [state.speaker, organizerParticipant, attendeeParticipant]);
 
   const otherSpeaker = state.speaker === 'organizer' ? 'attendee' : 'organizer';
-  const currentSpeakerHumanOrAi = state.speaker === 'organizer' ? state.organizerHumanOrAi : state.attendeeHumanOrAi;
-  const otherSpeakerHumanOrAi = state.speaker === 'organizer' ? state.attendeeHumanOrAi : state.organizerHumanOrAi;
-  const isAwaitingAiResponse = state.conversationHistory.length > 0 && currentSpeakerHumanOrAi === 'ai';
+  const speakerMode = state.speaker === 'organizer' ? state.organizerMode : state.attendeeMode;
+  const otherSpeakerMode = state.speaker === 'organizer' ? state.attendeeMode : state.organizerMode;
+  const isAwaitingAiResponse = speakerMode === 'ai';
 
-  const hasStarted = () => state.conversationHistory.length > 0;
+  const hasStarted = useMemo(() => state.history.length > 0, [state.history]);
 
-  // Auto-scroll effect
   useEffect(() => {
-    console.log('Conversation: useEffect scrollIntoView triggered', {
-      conversationHistoryLength: state.conversationHistory.length,
-      isAwaitingAiResponse,
-    });
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [state.conversationHistory, isAwaitingAiResponse]);
+  }, [state.history]);
 
-  // Conversation loop effect
   useEffect(() => {
     console.log('Conversation: useEffect conversation loop triggered', {
-      conversationHistoryLength: state.conversationHistory.length,
+      historyLength: state.history.length,
       paused: state.paused,
       speaker: state.speaker,
-      currentSpeakerHumanOrAi,
+      speakerMode,
     });
-    if (state.conversationHistory.length === 0) return;
-    if (state.paused) return;
-    if (currentSpeakerHumanOrAi === 'human') return;
+    if (
+      state.history.length === 0 ||
+      state.history[state.history.length - 1].sender === state.speaker ||
+      state.paused ||
+      // May be wrong
+      speakerMode === 'human'
+    ) {
+      return;
+    }
 
-    const lastMessage = state.conversationHistory[state.conversationHistory.length - 1];
-    if (lastMessage.sender === state.speaker) return;
+    const lastMessage = state.history[state.history.length - 1];
 
     setTimeout(async () => {
       console.log('Conversation: async conversation loop timeout called', { speaker: state.speaker });
       try {
-        const currentParticipant = state.speaker === 'organizer' ? organizerParticipant : attendeeParticipant;
-        const response = await currentParticipant.chat(lastMessage.content);
-
+        const response = await participant.chat(lastMessage.content);
         dispatch({
           type: 'SEND_MESSAGE',
           payload: {
@@ -184,53 +165,36 @@ const Conversation = ({
         console.error('Error in conversation loop:', error);
       }
     }, 0);
-  }, [state.conversationHistory, state.speaker, state.paused, currentSpeakerHumanOrAi, organizerParticipant, attendeeParticipant]);
-
-  const handleParticipantResponse = useCallback(
-    async (participantId: 'organizer' | 'attendee', mode: 'human' | 'ai', message: string): Promise<string> => {
-      if (mode === 'ai') {
-        const participant = participantId === 'organizer' ? organizerParticipant : attendeeParticipant;
-        return await participant.chat(message);
-      } else {
-        return await getTextInput();
-      }
-    },
-    [organizerParticipant, attendeeParticipant, getTextInput],
-  );
+  }, [state.history, state.speaker, state.paused, speakerMode, participant]);
 
   const sendHumanMessage = useCallback(async () => {
     console.log('Conversation: async sendHumanMessage() called', {
       userTextInputLength: state.userTextInput.trim().length,
-      currentSpeakerHumanOrAi,
+      speakerMode,
       paused: state.paused,
     });
-    if (!state.userTextInput.trim() || currentSpeakerHumanOrAi === 'ai' || state.paused) return;
+    if (!state.userTextInput.trim() || speakerMode === 'ai' || state.paused) return;
 
     const userMessage = state.userTextInput;
     dispatch({ type: 'SEND_MESSAGE', payload: { sender: state.speaker, content: userMessage } });
 
-    if (otherSpeakerHumanOrAi === 'ai') {
+    if (otherSpeakerMode === 'ai') {
       try {
-        const response = await handleParticipantResponse(otherSpeaker, 'ai', userMessage);
+        const response = await participant.chat(userMessage);
         dispatch({ type: 'SEND_MESSAGE', payload: { sender: otherSpeaker, content: response } });
       } catch (error) {
         console.error('Error getting AI response:', error);
       }
     }
-  }, [
-    state.userTextInput,
-    currentSpeakerHumanOrAi,
-    state.paused,
-    state.speaker,
-    otherSpeakerHumanOrAi,
-    handleParticipantResponse,
-    otherSpeaker,
-  ]);
+  }, [state.userTextInput, speakerMode, state.paused, state.speaker, otherSpeakerMode, participant, otherSpeaker]);
 
-  const handleModeToggle = (participantId: 'organizer' | 'attendee', mode: 'human' | 'ai') => {
-    if (state.conversationHistory.length > 0) return;
-    dispatch({ type: 'TOGGLE_MODE', payload: { participant: participantId, mode } });
-  };
+  const handleModeToggle = useCallback(
+    (persona: 'organizer' | 'attendee', mode: 'human' | 'ai') => {
+      if (state.history.length > 0) return;
+      dispatch({ type: 'TOGGLE_MODE', payload: { participant: persona, mode } });
+    },
+    [state.history],
+  );
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent) => {
@@ -242,26 +206,31 @@ const Conversation = ({
     [sendHumanMessage],
   );
 
-  const startConversation = async () => {
-    if (state.conversationHistory.length > 0) return;
+  const startConversation = useCallback(async () => {
+    if (hasStarted) return;
 
     try {
-      if (state.organizerHumanOrAi === 'ai') {
+      if (state.organizerMode === 'ai') {
         const firstMessage = await organizerParticipant.chat(null);
         dispatch({ type: 'START_CONVERSATION', payload: { firstMessage } });
       }
     } catch (error) {
       console.error('Error starting conversation:', error);
     }
-  };
+  }, [hasStarted, organizerParticipant, state.organizerMode]);
 
   return (
     <Card className="h-full flex flex-col">
       <div className="border-b px-4 py-3 bg-gray-50">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold">Chat with {attendeeDisplayName}</h2>
-          {hasStarted() && (
-            <Button onClick={() => dispatch({ type: 'TOGGLE_PAUSE' })} size="sm" variant={state.paused ? 'default' : 'outline'} className="text-xs px-3">
+          {hasStarted && (
+            <Button
+              onClick={() => dispatch({ type: 'TOGGLE_PAUSE' })}
+              size="sm"
+              variant={state.paused ? 'default' : 'outline'}
+              className="text-xs px-3"
+            >
               {state.paused ? (
                 <>
                   <Play size={12} className="mr-1" />
@@ -284,15 +253,15 @@ const Conversation = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (state.conversationHistory.length === 0) {
+                  if (state.history.length === 0) {
                     handleModeToggle('organizer', 'human');
                   }
                 }}
-                disabled={state.conversationHistory.length > 0}
+                disabled={state.history.length > 0}
                 className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                  state.conversationHistory.length > 0
+                  state.history.length > 0
                     ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                    : state.organizerHumanOrAi === 'human'
+                    : state.organizerMode === 'human'
                       ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
                       : 'text-gray-600 hover:text-gray-900'
                 }`}
@@ -303,15 +272,15 @@ const Conversation = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (state.conversationHistory.length === 0) {
+                  if (state.history.length === 0) {
                     handleModeToggle('organizer', 'ai');
                   }
                 }}
-                disabled={state.conversationHistory.length > 0}
+                disabled={state.history.length > 0}
                 className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                  state.conversationHistory.length > 0
+                  state.history.length > 0
                     ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                    : state.organizerHumanOrAi === 'ai'
+                    : state.organizerMode === 'ai'
                       ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
                       : 'text-gray-600 hover:text-gray-900'
                 }`}
@@ -328,15 +297,15 @@ const Conversation = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (state.conversationHistory.length === 0) {
+                  if (state.history.length === 0) {
                     handleModeToggle('attendee', 'human');
                   }
                 }}
-                disabled={state.conversationHistory.length > 0}
+                disabled={state.history.length > 0}
                 className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                  state.conversationHistory.length > 0
+                  state.history.length > 0
                     ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                    : state.attendeeHumanOrAi === 'human'
+                    : state.attendeeMode === 'human'
                       ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
                       : 'text-gray-600 hover:text-gray-900'
                 }`}
@@ -347,15 +316,15 @@ const Conversation = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (state.conversationHistory.length === 0) {
+                  if (state.history.length === 0) {
                     handleModeToggle('attendee', 'ai');
                   }
                 }}
-                disabled={state.conversationHistory.length > 0}
+                disabled={state.history.length > 0}
                 className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                  state.conversationHistory.length > 0
+                  state.history.length > 0
                     ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                    : state.attendeeHumanOrAi === 'ai'
+                    : state.attendeeMode === 'ai'
                       ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
                       : 'text-gray-600 hover:text-gray-900'
                 }`}
@@ -367,7 +336,7 @@ const Conversation = ({
           </div>
         </div>
 
-        {!hasStarted() && (
+        {!hasStarted && (
           <div className="mt-2">
             <Button onClick={startConversation} size="sm" className="px-4">
               <Play size={16} className="mr-2" />
@@ -378,7 +347,7 @@ const Conversation = ({
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {state.conversationHistory.map((message) => (
+        {state.history.map((message) => (
           <div key={message.id} className={`flex ${message.sender === 'organizer' ? 'justify-end' : 'justify-start'}`}>
             <div
               className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
@@ -401,9 +370,9 @@ const Conversation = ({
         ))}
 
         {/* Show waiting indicator for next expected response */}
-        {hasStarted() &&
+        {hasStarted &&
           state.speaker &&
-          currentSpeakerHumanOrAi === 'human' &&
+          speakerMode === 'human' &&
           !isAwaitingAiResponse &&
           (() => {
             return (
@@ -437,24 +406,29 @@ const Conversation = ({
             placeholder={
               state.paused
                 ? 'Conversation is paused'
-                : state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai'
+                : state.organizerMode === 'ai' && state.attendeeMode === 'ai'
                   ? 'Both participants are in AI mode - conversation runs automatically'
                   : state.speaker === 'organizer'
                     ? 'Type your message as the organizer...'
                     : 'Type your message as the attendee...'
             }
             className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
-              state.paused || (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''
+              state.paused || (state.organizerMode === 'ai' && state.attendeeMode === 'ai')
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : ''
             }`}
-            disabled={state.paused || isAwaitingAiResponse || (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai')}
+            disabled={state.paused || isAwaitingAiResponse || (state.organizerMode === 'ai' && state.attendeeMode === 'ai')}
           />
           <Button
             onClick={sendHumanMessage}
             disabled={
-              state.paused || !state.userTextInput.trim() || isAwaitingAiResponse || (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai')
+              state.paused ||
+              !state.userTextInput.trim() ||
+              isAwaitingAiResponse ||
+              (state.organizerMode === 'ai' && state.attendeeMode === 'ai')
             }
             className={`px-4 ${
-              state.paused || (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai')
+              state.paused || (state.organizerMode === 'ai' && state.attendeeMode === 'ai')
                 ? 'bg-gray-400 cursor-not-allowed'
                 : state.speaker === 'organizer'
                   ? 'bg-purple-600 hover:bg-purple-700 text-white'

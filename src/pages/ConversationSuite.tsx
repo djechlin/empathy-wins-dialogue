@@ -1,15 +1,12 @@
-import React, { useState, useCallback } from 'react';
-import Conversation from './Conversation';
+import { AttendeeData } from '@/components/PromptBuilderSuite';
+import { cn } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { AttendeeData } from '@/components/PromptBuilderSuite';
+import { useCallback, useState } from 'react';
+import Conversation from './Conversation';
 
 interface ConversationSuiteProps {
-  // Array of attendees
   attendees: AttendeeData[];
-
-  // Organizer data
   organizerPromptText: string;
   organizerFirstMessage: string;
 }
