@@ -2,6 +2,7 @@ import { useParticipant } from '@/hooks/useParticipant';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
+import { generateTimestampId } from '@/utils/id';
 import { Bot, Pause, Play, Send, User } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
@@ -64,7 +65,7 @@ function conversationReducer(state: ConversationState, action: ConversationActio
 
 function constructMessage(sender: 'organizer' | 'attendee', content: string) {
   return {
-    id: `${sender}-${Date.now()}`,
+    id: generateTimestampId(sender),
     sender,
     content,
     timestamp: new Date(),

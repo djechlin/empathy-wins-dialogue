@@ -144,23 +144,17 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
 
       dispatch({ type: 'START_SAVING' });
       try {
-        const result = await savePromptBuilder({
+        await savePromptBuilder({
           name: state.displayName,
           system_prompt: state.systemPrompt,
           persona,
           firstMessage: state.firstMessage,
         });
 
-        if (result) {
-          dispatch({ type: 'SAVE_SUCCESS' });
-        } else {
-          dispatch({ type: 'SAVE_FAILED', payload: 'Save failed - operation returned false' });
-        }
-        return result;
+        dispatch({ type: 'SAVE_SUCCESS' });
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         dispatch({ type: 'SAVE_FAILED', payload: errorMessage });
-        return false;
       }
     }, [state.saveStatus, state.displayName, state.systemPrompt, state.firstMessage, persona]);
 

@@ -2,6 +2,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
+import { generateTimestampName } from '@/utils/id';
 import { archivePromptBuilder, fetchAllPromptBuildersForPersona, savePromptBuilder } from '@/utils/promptBuilder';
 import { Archive, ArchiveRestore, ChevronRight, Plus } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useReducer, useRef } from 'react';
@@ -136,33 +137,32 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
   );
 
   const addAttendee = useCallback(async () => {
-    console.log('PromptBuilderSuite: async addAttendee() called', { attendeesCount: state.attendees.length });
+    console.log('PromptBuilderSuite: async addAttendee() called');
     const newAttendee = {
-      name: `attendee-${state.attendees.length + 1}`,
+      name: generateTimestampName('attendee'),
       system_prompt: '',
       persona: 'attendee',
       firstMessage: '',
     };
 
     try {
-      const success = await savePromptBuilder(newAttendee);
-      if (success) {
-        const data = await fetchAllPromptBuildersForPersona('attendee');
-        const attendeeData: AttendeeData[] = data.map((pb) => ({
-          id: pb.id || '',
-          displayName: pb.name,
-          systemPrompt: pb.system_prompt,
-          firstMessage: pb.firstMessage || '',
-          archived: pb.archived,
-          created_at: pb.created_at,
-          updated_at: pb.updated_at,
-        }));
-        dispatch({ type: 'LOAD_ATTENDEES', payload: attendeeData });
-        toast({
-          title: 'Success',
-          description: 'New attendee created successfully',
-        });
-      }
+      await savePromptBuilder(newAttendee);
+      // If we get here, save was successful
+      const data = await fetchAllPromptBuildersForPersona('attendee');
+      const attendeeData: AttendeeData[] = data.map((pb) => ({
+        id: pb.id || '',
+        displayName: pb.name,
+        systemPrompt: pb.system_prompt,
+        firstMessage: pb.firstMessage || '',
+        archived: pb.archived,
+        created_at: pb.created_at,
+        updated_at: pb.updated_at,
+      }));
+      dispatch({ type: 'LOAD_ATTENDEES', payload: attendeeData });
+      toast({
+        title: 'Success',
+        description: 'New attendee created successfully',
+      });
     } catch (error) {
       console.error('Error creating attendee:', error);
       toast({
@@ -171,7 +171,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
         variant: 'destructive',
       });
     }
-  }, [state.attendees.length, toast]);
+  }, [toast]);
 
   const handleArchiveToggle = useCallback(
     async (attendeeId: string, currentlyArchived: boolean) => {
@@ -210,7 +210,6 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     getPromptBuilder: () => promptBuilderRef.current,
     getAttendees: () => activeAttendees,
   }));
-
 
   if (state.loading === 'loading') {
     return (

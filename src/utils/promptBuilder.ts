@@ -11,7 +11,7 @@ export interface PromptBuilderData {
   updated_at?: string;
 }
 
-export const savePromptBuilder = async (data: PromptBuilderData): Promise<boolean> => {
+export const savePromptBuilder = async (data: PromptBuilderData): Promise<void> => {
   try {
     const {
       data: { user },
@@ -29,10 +29,6 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<boolea
       first_message: data.firstMessage || null,
     };
 
-    console.log('Attempting to insert prompt builder record:', promptBuilderRecord);
-    console.log('Current user:', user);
-    console.log('User roles:', user.role);
-
     const { error, data: insertedData } = await supabase.from('prompt_builders').insert(promptBuilderRecord).select();
 
     if (error) {
@@ -40,7 +36,6 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<boolea
     }
 
     console.log('Successfully inserted prompt builder:', insertedData);
-    return true;
   } catch (error) {
     console.error('Error in savePromptBuilder:', error);
     throw error;
