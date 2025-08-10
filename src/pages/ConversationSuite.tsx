@@ -27,7 +27,7 @@ const ConversationSuite = ({ attendees, organizerPromptText, organizerFirstMessa
     <div className="space-y-4">
       <h3 className="font-semibold">Conversations</h3>
 
-      {attendees.map((attendee) => (
+      {attendees.filter(attendee => attendee.systemPrompt.trim() !== '').map((attendee) => (
         <Collapsible key={attendee.id} open={openAttendees[attendee.id] || false} onOpenChange={() => toggleAttendee(attendee.id)}>
           <CollapsibleTrigger asChild>
             <div className="w-full justify-start text-sm font-medium p-2 h-auto cursor-pointer hover:bg-gray-100 rounded-md flex items-center">

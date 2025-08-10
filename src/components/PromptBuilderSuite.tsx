@@ -143,7 +143,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
 
   useEffect(() => {
     console.log('PromptBuilderSuite: useEffect onAttendeesChange triggered');
-    //  onAttendeesChange?.(activeAttendees);
+    onAttendeesChange?.(activeAttendees);
   }, [activeAttendees, onAttendeesChange]);
 
   const handleAttendeeDataChange = useCallback(
@@ -169,7 +169,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
         title: 'Success',
         description: 'New attendee created successfully',
       });
-      
+
       // Refetch attendees to show the new one
       try {
         dispatch({ type: 'SET_LOADING', payload: 'loading' });
