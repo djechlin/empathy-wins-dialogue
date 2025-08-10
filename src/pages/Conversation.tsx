@@ -127,12 +127,13 @@ const Conversation = ({ attendeeDisplayName, organizerPromptText, organizerFirst
   const otherSpeaker = state.speaker === 'organizer' ? 'attendee' : 'organizer';
   const speakerMode = state.speaker === 'organizer' ? state.organizerMode : state.attendeeMode;
   const otherSpeakerMode = state.speaker === 'organizer' ? state.attendeeMode : state.organizerMode;
-  const isAwaitingAiResponse = speakerMode === 'ai';
+  const isAwaitingAiResponse = state.history.length > 0 && speakerMode === 'ai';
 
   const hasStarted = useMemo(() => state.history.length > 0, [state.history]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // Scroll to bottom when new messages are added
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [state.history]);
 
   useEffect(() => {
@@ -350,7 +351,7 @@ const Conversation = ({ attendeeDisplayName, organizerPromptText, organizerFirst
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto scroll-smooth p-4 space-y-4">
         {state.history.map((message) => (
           <div key={message.id} className={`flex ${message.sender === 'organizer' ? 'justify-end' : 'justify-start'}`}>
             <div
