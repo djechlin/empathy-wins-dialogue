@@ -1,7 +1,7 @@
 import Navbar from '@/components/layout/Navbar';
 import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
-import PromptBuilderSuite, { type PromptBuilderSuiteRef } from '@/components/PromptBuilderSuite';
-import Conversation from './Conversation';
+import PromptBuilderSuite, { type PromptBuilderSuiteRef, type AttendeeData } from '@/components/PromptBuilderSuite';
+import ConversationSuite from './ConversationSuite';
 import { useParticipant } from '@/hooks/useParticipant';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
 import React, { useCallback, useEffect, useReducer, useRef } from 'react';
@@ -23,6 +23,7 @@ interface WorkbenchState {
   attendeePromptText: string;
   organizerFirstMessage: string;
   attendeeData: { systemPrompt: string; firstMessage: string; displayName: string };
+  attendees: AttendeeData[];
   organizerHumanOrAi: 'human' | 'ai';
   attendeeHumanOrAi: 'human' | 'ai';
   speaker: 'organizer' | 'attendee';
@@ -39,6 +40,7 @@ type WorkbenchAction =
   | { type: 'UPDATE_PROMPT'; payload: { participant: 'organizer' | 'attendee'; promptText: string } }
   | { type: 'UPDATE_ORGANIZER_DATA'; payload: { systemPrompt: string; firstMessage: string } }
   | { type: 'UPDATE_ATTENDEE_DATA'; payload: { systemPrompt: string; firstMessage: string; displayName: string } }
+  | { type: 'UPDATE_ATTENDEES'; payload: AttendeeData[] }
   | { type: 'TOGGLE_PAUSE' };
 
 function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
@@ -93,6 +95,12 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
         attendeeData: action.payload,
       };
 
+    case 'UPDATE_ATTENDEES':
+      return {
+        ...state,
+        attendees: action.payload,
+      };
+
     case 'TOGGLE_PAUSE':
       return { ...state, paused: !state.paused };
 
@@ -119,6 +127,7 @@ const Workbench = () => {
     attendeePromptText: '',
     organizerFirstMessage: '',
     attendeeData: { systemPrompt: '', firstMessage: '', displayName: 'attendee' },
+    attendees: [{ id: '1', displayName: 'attendee', systemPrompt: '', firstMessage: '' }],
     organizerHumanOrAi: 'ai',
     attendeeHumanOrAi: 'ai',
     speaker: 'organizer',
@@ -235,8 +244,9 @@ const Workbench = () => {
     dispatch({ type: 'UPDATE_PROMPT', payload: { participant: 'attendee', promptText: systemPrompt } });
   }, []);
 
-  const handleAttendeeDataChange = useCallback((data: { systemPrompt: string; firstMessage: string; displayName: string }) => {
-    dispatch({ type: 'UPDATE_ATTENDEE_DATA', payload: data });
+
+  const handleAttendeesChange = useCallback((attendees: AttendeeData[]) => {
+    dispatch({ type: 'UPDATE_ATTENDEES', payload: attendees });
   }, []);
 
   const startConversation = async () => {
@@ -277,31 +287,30 @@ const Workbench = () => {
                   color="bg-orange-200"
                   defaultOpen={true}
                   onPromptChange={handleAttendeePromptChange}
-                  onDataChange={handleAttendeeDataChange}
+                  onAttendeesChange={handleAttendeesChange}
                 />
               </div>
             </div>
 
             {/* Conversation Column */}
             <div className="space-y-4 h-full">
-              <Conversation
-              attendeeDisplayName={state.attendeeData.displayName}
-              conversationHistory={state.conversationHistory}
-              paused={state.paused}
-              organizerHumanOrAi={state.organizerHumanOrAi}
-              attendeeHumanOrAi={state.attendeeHumanOrAi}
-              speaker={state.speaker}
-              userTextInput={state.userTextInput}
-              isAwaitingAiResponse={isAwaitingAiResponse}
-              onTogglePause={() => dispatch({ type: 'TOGGLE_PAUSE' })}
-              onModeToggle={handleModeToggle}
-              onStartConversation={startConversation}
-              onUserTextInputChange={(value) => dispatch({ type: 'SET_USER_TEXT_INPUT', payload: value })}
-              onKeyPress={handleKeyPress}
-              onSendMessage={sendHumanMessage}
-              inputRef={inputRef}
-              messagesEndRef={messagesEndRef}
-              hasStarted={hasStarted}
+              <ConversationSuite
+                organizerHumanOrAi={state.organizerHumanOrAi}
+                attendees={state.attendees}
+                conversationHistory={state.conversationHistory}
+                paused={state.paused}
+                speaker={state.speaker}
+                userTextInput={state.userTextInput}
+                isAwaitingAiResponse={isAwaitingAiResponse}
+                onTogglePause={() => dispatch({ type: 'TOGGLE_PAUSE' })}
+                onModeToggle={handleModeToggle}
+                onStartConversation={startConversation}
+                onUserTextInputChange={(value) => dispatch({ type: 'SET_USER_TEXT_INPUT', payload: value })}
+                onKeyPress={handleKeyPress}
+                onSendMessage={sendHumanMessage}
+                inputRef={inputRef}
+                messagesEndRef={messagesEndRef}
+                hasStarted={hasStarted}
               />
             </div>
           </div>
