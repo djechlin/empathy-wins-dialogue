@@ -125,10 +125,13 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     // Auto-load most recent prompt for this persona on mount
     useEffect(() => {
       const loadMostRecentPrompt = async () => {
+        console.log(`PromptBuilder ${name}: Starting to load...`);
         if (isLoaded) return; // Avoid loading multiple times
 
         try {
+          console.log(`PromptBuilder ${name}: Fetching for persona: ${name.toLowerCase()}`);
           const recentPrompt = await fetchMostRecentPromptForPersona(name.toLowerCase());
+          console.log(`PromptBuilder ${name}: Received data:`, recentPrompt);
           if (recentPrompt) {
             setSystemPrompt(recentPrompt.system_prompt);
             setFirstMessage(recentPrompt.firstMessage || '');
@@ -136,9 +139,10 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
             setIsSaved(true); // Mark as saved since we just loaded it
           }
         } catch (error) {
-          console.error('Error loading most recent prompt:', error);
+          console.error(`PromptBuilder ${name}: Error loading most recent prompt:`, error);
         } finally {
           setIsLoaded(true);
+          console.log(`PromptBuilder ${name}: Loading complete`);
         }
       };
 

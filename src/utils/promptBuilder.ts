@@ -49,12 +49,14 @@ export const savePromptBuilder = async (data: PromptBuilderData, persona?: strin
 
 export const fetchMostRecentPromptForPersona = async (persona: string): Promise<PromptBuilderData | null> => {
   try {
+    console.log(`fetchMostRecentPromptForPersona: Starting fetch for persona: ${persona}`);
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
+    console.log('fetchMostRecentPromptForPersona: User check:', user ? `User ID: ${user.id}` : 'No user');
     if (!user) {
-      console.error('No authenticated user');
+      console.error('fetchMostRecentPromptForPersona: No authenticated user');
       return null;
     }
 
@@ -140,18 +142,29 @@ export const fetchMostRecentPromptBuilders = async (): Promise<Record<string, Pr
 
 export const fetchAllPromptBuildersForPersona = async (persona: string): Promise<PromptBuilderData[]> => {
   try {
+    console.log(`fetchAllPromptBuildersForPersona: Starting fetch for persona: ${persona}`);
+    console.log('fetchAllPromptBuildersForPersona: About to call supabase.auth.getUser()...');
+
+    // Add timeout to prevent hanging
+    const authPromise = supabase.auth.getUser();
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Authentication timeout')), 5000));
+
+    const authResult = await Promise.race([authPromise, timeoutPromise]);
+    console.log('fetchAllPromptBuildersForPersona: Auth result:', authResult);
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = authResult as any;
 
+    console.log('fetchAllPromptBuildersForPersona: User check:', user ? `User ID: ${user.id}` : 'No user');
     if (!user) {
-      console.error('No authenticated user');
+      console.error('fetchAllPromptBuildersForPersona: No authenticated user');
       return [];
     }
 
     const { data: promptBuilders, error } = await supabase
       .from('prompt_builders')
       .select('*')
+      .eq('user_id', user.id)
       .eq('persona', persona)
       .order('updated_at', { ascending: false });
 

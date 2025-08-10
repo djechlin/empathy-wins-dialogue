@@ -35,6 +35,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     const promptBuilderRef = useRef<PromptBuilderRef>(null);
     const [attendees, setAttendees] = useState<AttendeeData[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [archivedOpen, setArchivedOpen] = useState(false);
     const { toast } = useToast();
 
@@ -44,9 +45,12 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     // Fetch attendees on load
     useEffect(() => {
       const loadAttendees = async () => {
+        console.log('PromptBuilderSuite: Starting to load attendees...');
         setLoading(true);
         try {
+          console.log('PromptBuilderSuite: Fetching attendees from database...');
           const data = await fetchAllPromptBuildersForPersona('attendee');
+          console.log('PromptBuilderSuite: Received raw data:', data);
           const attendeeData: AttendeeData[] = data.map((pb) => ({
             id: pb.id || '',
             displayName: pb.name,
@@ -56,13 +60,16 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
             created_at: pb.created_at,
             updated_at: pb.updated_at,
           }));
+          console.log('PromptBuilderSuite: Mapped attendee data:', attendeeData);
           setAttendees(attendeeData);
         } catch (error) {
-          console.error('Error loading attendees:', error);
+          console.error('PromptBuilderSuite: Error loading attendees:', error);
+          setError(`Authentication required. Please sign in to load your attendees.`);
           // Fallback to default attendee if fetch fails
           setAttendees([{ id: '1', displayName: 'attendee', systemPrompt: '', firstMessage: '' }]);
         } finally {
           setLoading(false);
+          console.log('PromptBuilderSuite: Loading complete');
         }
       };
       loadAttendees();
@@ -188,6 +195,18 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
           <div className="animate-pulse space-y-3">
             <div className="h-20 bg-gray-200 rounded"></div>
             <div className="h-20 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="space-y-4">
+          <h3 className="font-medium">Attendees</h3>
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="font-medium">Error Loading Attendees:</div>
+            <div className="mt-1">{error}</div>
           </div>
         </div>
       );
