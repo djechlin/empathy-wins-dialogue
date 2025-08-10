@@ -123,12 +123,16 @@ function constructMessage(sender: 'organizer' | 'attendee', content: string) {
   };
 }
 
-const AiThinking = () => (
-  <div className="flex justify-start">
-    <div className="max-w-xs px-4 py-2 rounded-lg bg-gray-100 border border-gray-200">
+const AiThinking = ({ participant }: { participant: 'organizer' | 'attendee' }) => (
+  <div className={`flex ${participant === 'organizer' ? 'justify-end' : 'justify-start'}`}>
+    <div className={`max-w-xs px-4 py-2 rounded-lg border border-gray-200 ${
+      participant === 'organizer' ? 'bg-purple-100' : 'bg-orange-100'
+    }`}>
       <div className="flex items-center gap-2 mb-1">
         <Bot size={12} className="text-gray-400" />
-        <span className="text-xs text-gray-600">AI thinking...</span>
+        <span className="text-xs text-gray-600">
+          {participant === 'organizer' ? 'Organizer' : 'Attendee'} AI thinking...
+        </span>
       </div>
       <div className="flex space-x-1">
         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
@@ -365,7 +369,7 @@ const Workbench = () => {
                       <Button
                         onClick={() => dispatch({ type: 'TOGGLE_PAUSE' })}
                         size="sm"
-                        variant={state.paused ? "default" : "outline"}
+                        variant={state.paused ? 'default' : 'outline'}
                         className="text-xs px-3"
                       >
                         {state.paused ? (
@@ -529,7 +533,7 @@ const Workbench = () => {
                       );
                     })()}
 
-                  {isAwaitingAiResponse && <AiThinking />}
+                  {isAwaitingAiResponse && <AiThinking participant={state.speaker} />}
                   <div ref={messagesEndRef} />
                 </div>
 
@@ -544,17 +548,19 @@ const Workbench = () => {
                         state.paused
                           ? 'Conversation is paused'
                           : state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai'
-                          ? 'Both participants are in AI mode - conversation runs automatically'
-                          : state.speaker === 'organizer'
-                            ? 'Type your message as the organizer...'
-                            : 'Type your message as the attendee...'
+                            ? 'Both participants are in AI mode - conversation runs automatically'
+                            : state.speaker === 'organizer'
+                              ? 'Type your message as the organizer...'
+                              : 'Type your message as the attendee...'
                       }
                       className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
                         state.paused || (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai')
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                           : ''
                       }`}
-                      disabled={state.paused || isAwaitingAiResponse || (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai')}
+                      disabled={
+                        state.paused || isAwaitingAiResponse || (state.organizerHumanOrAi === 'ai' && state.attendeeHumanOrAi === 'ai')
+                      }
                     />
                     <Button
                       onClick={sendHumanMessage}
