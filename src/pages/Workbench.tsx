@@ -157,14 +157,21 @@ const Workbench = () => {
   const hasStarted = () => state.conversationHistory.length > 0;
 
   useEffect(() => {
+    console.log('Workbench: useEffect scrollIntoView triggered', { conversationHistoryLength: state.conversationHistory.length, isAwaitingAiResponse });
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [state.conversationHistory, isAwaitingAiResponse]);
 
   useEffect(() => {
+    console.log('Workbench: useEffect conversation loop triggered', { 
+      conversationHistoryLength: state.conversationHistory.length, 
+      paused: state.paused, 
+      speaker: state.speaker 
+    });
     if (state.conversationHistory.length === 0) return; // No conversation yet
     if (state.paused) return; // Conversation is paused
 
     setTimeout(async () => {
+      console.log('Workbench: async conversation loop timeout called', { speaker: state.speaker });
       try {
         const currentParticipant = state.speaker === 'organizer' ? organizerParticipant : attendeeParticipant;
         const lastMessage = state.conversationHistory[state.conversationHistory.length - 1];
@@ -185,6 +192,11 @@ const Workbench = () => {
   }, [state.conversationHistory, state.speaker, state.paused, organizerParticipant, attendeeParticipant]);
 
   const sendHumanMessage = async () => {
+    console.log('Workbench: async sendHumanMessage() called', { 
+      userTextInputLength: state.userTextInput.trim().length, 
+      currentSpeakerHumanOrAi, 
+      paused: state.paused 
+    });
     if (!state.userTextInput.trim() || currentSpeakerHumanOrAi === 'ai' || state.paused) return;
 
     const userMessage = state.userTextInput;

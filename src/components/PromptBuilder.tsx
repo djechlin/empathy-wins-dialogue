@@ -183,11 +183,14 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     };
 
     useEffect(() => {
+      console.log('PromptBuilder: useEffect MARK_DIRTY triggered', { systemPrompt: state.systemPrompt?.length, firstMessage: state.firstMessage?.length, displayName: state.displayName });
       dispatch({ type: 'MARK_DIRTY' });
     }, [state.systemPrompt, state.firstMessage, state.displayName]);
 
     useEffect(() => {
+      console.log('PromptBuilder: useEffect load triggered', { persona, loading: state.loading });
       const load = async () => {
+        console.log('PromptBuilder: async load() called', { persona, loading: state.loading });
         if (state.loading !== 'new') {
           return;
         }
@@ -215,6 +218,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     }, [persona, state.loading]);
 
     useEffect(() => {
+      console.log('PromptBuilder: useEffect onDataChange triggered', { systemPrompt: state.systemPrompt?.length, firstMessage: state.firstMessage?.length, displayName: state.displayName });
       onDataChange?.({ systemPrompt: state.systemPrompt, firstMessage: state.firstMessage, displayName: state.displayName });
     }, [state.systemPrompt, state.firstMessage, state.displayName, onDataChange]);
 

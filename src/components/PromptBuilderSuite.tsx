@@ -41,7 +41,9 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
   const archivedAttendees = useMemo(() => attendees.filter((a) => a.archived), [attendees]);
 
   useEffect(() => {
+    console.log('PromptBuilderSuite: useEffect loadAttendees triggered', { loading });
     const loadAttendees = async () => {
+      console.log('PromptBuilderSuite: async loadAttendees() called', { loading });
       try {
         if (loading !== 'new') {
           return;
@@ -69,6 +71,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
   }, [loading]);
 
   useEffect(() => {
+    console.log('PromptBuilderSuite: useEffect onAttendeesChange triggered', { activeAttendeesCount: activeAttendees.length });
     onAttendeesChange?.(activeAttendees);
   }, [activeAttendees, onAttendeesChange]);
 
@@ -80,7 +83,8 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     [attendees],
   );
 
-  const addAttendee = async () => {
+  const addAttendee = useCallback(async () => {
+    console.log('PromptBuilderSuite: async addAttendee() called', { attendeesCount: attendees.length });
     const newAttendee = {
       name: `attendee-${attendees.length + 1}`,
       system_prompt: '',
@@ -115,10 +119,11 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
         variant: 'destructive',
       });
     }
-  };
+  }, [attendees.length, toast]);
 
   const handleArchiveToggle = useCallback(
     async (attendeeId: string, currentlyArchived: boolean) => {
+      console.log('PromptBuilderSuite: async handleArchiveToggle() called', { attendeeId, currentlyArchived });
       setAttendees((prev) => prev.map((a) => (a.id === attendeeId ? { ...a, archived: !currentlyArchived } : a)));
 
       try {
