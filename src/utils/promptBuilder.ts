@@ -6,7 +6,6 @@ export interface PromptBuilderData {
   system_prompt: string;
   persona: string;
   firstMessage?: string;
-  variables: Record<string, string>;
   archived?: boolean;
   created_at?: string;
   updated_at?: string;
@@ -28,7 +27,6 @@ export const savePromptBuilder = async (data: PromptBuilderData, persona?: strin
       system_prompt: data.system_prompt,
       persona: persona || data.persona,
       first_message: data.firstMessage || null,
-      variables_and_content: JSON.stringify(data.variables),
     };
 
     console.log('Attempting to insert prompt builder record:', promptBuilderRecord);

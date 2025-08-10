@@ -18,7 +18,6 @@ export type Database = {
         Args: {
           operationName?: string;
           query?: string;
-          variables?: Json;
           extensions?: Json;
         };
         Returns: Json;
@@ -155,7 +154,6 @@ export type Database = {
           system_prompt: string;
           updated_at: string;
           user_id: string;
-          variables_and_content: string;
         };
         Insert: {
           archived?: boolean | null;
@@ -167,7 +165,6 @@ export type Database = {
           system_prompt: string;
           updated_at?: string;
           user_id: string;
-          variables_and_content: string;
         };
         Update: {
           archived?: boolean | null;
@@ -179,7 +176,6 @@ export type Database = {
           system_prompt?: string;
           updated_at?: string;
           user_id?: string;
-          variables_and_content?: string;
         };
         Relationships: [];
       };

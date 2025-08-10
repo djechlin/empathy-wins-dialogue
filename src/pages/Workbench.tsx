@@ -27,7 +27,7 @@ interface WorkbenchState {
   organizerPromptText: string;
   attendeePromptText: string;
   organizerFirstMessage: string;
-  attendeeData: { fullPrompt: string; firstMessage: string; variables: Record<string, string>; displayName: string };
+  attendeeData: { systemPrompt: string; firstMessage: string; displayName: string };
   organizerHumanOrAi: 'human' | 'ai';
   attendeeHumanOrAi: 'human' | 'ai';
   speaker: 'organizer' | 'attendee';
@@ -42,11 +42,8 @@ type WorkbenchAction =
   | { type: 'TOGGLE_MODE'; payload: { participant: 'organizer' | 'attendee'; mode: 'human' | 'ai' } }
   | { type: 'SELECT_PROMPT'; payload: { participant: 'organizer' | 'attendee'; prompt: PromptBuilderData | null } }
   | { type: 'UPDATE_PROMPT'; payload: { participant: 'organizer' | 'attendee'; promptText: string } }
-  | { type: 'UPDATE_ORGANIZER_DATA'; payload: { fullPrompt: string; firstMessage: string; variables: Record<string, string> } }
-  | {
-      type: 'UPDATE_ATTENDEE_DATA';
-      payload: { fullPrompt: string; firstMessage: string; variables: Record<string, string>; displayName: string };
-    }
+  | { type: 'UPDATE_ORGANIZER_DATA'; payload: { systemPrompt: string; firstMessage: string } }
+  | { type: 'UPDATE_ATTENDEE_DATA'; payload: { systemPrompt: string; firstMessage: string; displayName: string } }
   | { type: 'TOGGLE_PAUSE' }
   | { type: 'TOGGLE_PROMPT_SETS' };
 
@@ -92,14 +89,14 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
     case 'UPDATE_ORGANIZER_DATA':
       return {
         ...state,
-        organizerPromptText: action.payload.fullPrompt,
+        organizerPromptText: action.payload.systemPrompt,
         organizerFirstMessage: action.payload.firstMessage,
       };
 
     case 'UPDATE_ATTENDEE_DATA':
       return {
         ...state,
-        attendeePromptText: action.payload.fullPrompt,
+        attendeePromptText: action.payload.systemPrompt,
         attendeeData: action.payload,
       };
 
@@ -150,7 +147,7 @@ const Workbench = () => {
     organizerPromptText: '',
     attendeePromptText: '',
     organizerFirstMessage: '',
-    attendeeData: { fullPrompt: '', firstMessage: '', variables: {}, displayName: 'attendee' },
+    attendeeData: { systemPrompt: '', firstMessage: '', displayName: 'attendee' },
     organizerHumanOrAi: 'ai',
     attendeeHumanOrAi: 'ai',
     speaker: 'organizer',
@@ -275,23 +272,17 @@ const Workbench = () => {
     dispatch({ type: 'SELECT_PROMPT', payload: { participant: 'attendee', prompt: null } });
   };
 
-  const handleOrganizerPromptChange = useCallback(
-    (data: { fullPrompt: string; firstMessage: string; variables: Record<string, string> }) => {
-      dispatch({ type: 'UPDATE_ORGANIZER_DATA', payload: data });
-    },
-    [],
-  );
-
-  const handleAttendeePromptChange = useCallback((fullPrompt: string) => {
-    dispatch({ type: 'UPDATE_PROMPT', payload: { participant: 'attendee', promptText: fullPrompt } });
+  const handleOrganizerPromptChange = useCallback((data: { systemPrompt: string; firstMessage: string }) => {
+    dispatch({ type: 'UPDATE_ORGANIZER_DATA', payload: data });
   }, []);
 
-  const handleAttendeeDataChange = useCallback(
-    (data: { fullPrompt: string; firstMessage: string; variables: Record<string, string>; displayName: string }) => {
-      dispatch({ type: 'UPDATE_ATTENDEE_DATA', payload: data });
-    },
-    [],
-  );
+  const handleAttendeePromptChange = useCallback((systemPrompt: string) => {
+    dispatch({ type: 'UPDATE_PROMPT', payload: { participant: 'attendee', promptText: systemPrompt } });
+  }, []);
+
+  const handleAttendeeDataChange = useCallback((data: { systemPrompt: string; firstMessage: string; displayName: string }) => {
+    dispatch({ type: 'UPDATE_ATTENDEE_DATA', payload: data });
+  }, []);
 
   const startConversation = async () => {
     if (state.conversationHistory.length > 0) return;
