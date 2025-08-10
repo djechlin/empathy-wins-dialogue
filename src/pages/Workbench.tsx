@@ -66,9 +66,9 @@ const Workbench = () => {
       <Navbar pageTitle="Workbench" pageSummary="Develop AI organizer prompts" />
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ height: 'calc(100vh - 120px)' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Participants Column */}
-            <div className="space-y-4 h-full overflow-y-auto">
+            <div className="space-y-4">
               <div className="w-full space-y-4">
                 <PromptBuilder
                   ref={organizerRef}
@@ -83,7 +83,7 @@ const Workbench = () => {
             </div>
 
             {/* Conversation Column */}
-            <div className="space-y-4 h-full">
+            <div className="space-y-4">
               <ConversationSuite
                 attendees={state.attendees}
                 organizerPromptText={state.organizerPromptText}
