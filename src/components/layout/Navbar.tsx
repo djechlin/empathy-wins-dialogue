@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Button } from '@/ui/button';
-import { LogIn, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/ui/button';
 import { User } from '@supabase/supabase-js';
+import { ArrowRight, LogIn } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 interface NavbarProps {
   pageTitle?: string;
@@ -32,13 +32,9 @@ const Navbar = ({ pageTitle, pageSummary }: NavbarProps) => {
   ];
 
   useEffect(() => {
-    console.log('Navbar: Setting up auth state listener');
-
-    // Set up auth state listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Navbar: Auth state change event:', event, session?.user?.id ? `User: ${session.user.id}` : 'No user');
       setUser(session?.user ?? null);
     });
 
@@ -47,13 +43,11 @@ const Navbar = ({ pageTitle, pageSummary }: NavbarProps) => {
       if (error) {
         console.error('Navbar: Error getting initial session:', error);
       } else {
-        console.log('Navbar: Initial session check:', session?.user?.id ? `User: ${session.user.id}` : 'No session');
         setUser(session?.user ?? null);
       }
     });
 
     return () => {
-      console.log('Navbar: Cleaning up auth subscription');
       subscription.unsubscribe();
     };
   }, []);

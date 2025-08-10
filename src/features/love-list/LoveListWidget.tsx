@@ -79,7 +79,6 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>(() => {
       });
 
       foundHobbies.forEach((hobby: string, index: number) => {
-        console.log('replacing the hobby: ', hobby);
         replacements.push({
           original: hobby,
           replacement: (
@@ -186,8 +185,6 @@ const LoveListWidgetInner = forwardRef<LoveListInnerHandle>(() => {
     const onTranscript = (data: LiveTranscriptionEvent) => {
       const { is_final: isFinal, speech_final: speechFinal } = data;
       const thisCaption = data.channel.alternatives[0].transcript;
-
-      console.log('transcript data:', { isFinal, speechFinal, text: thisCaption });
 
       if (thisCaption !== '') {
         if (isFinal) {

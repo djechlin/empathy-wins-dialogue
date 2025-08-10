@@ -214,20 +214,13 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     );
 
     useEffect(() => {
-      console.log('PromptBuilder: useEffect MARK_DIRTY triggered', {
-        systemPrompt: state.systemPrompt?.length,
-        firstMessage: state.firstMessage?.length,
-        displayName: state.displayName,
-      });
       if (state.saveStatus === SaveStatus.SAVED) {
         dispatch({ type: 'MARK_DIRTY' });
       }
     }, [state.systemPrompt, state.firstMessage, state.displayName, state.saveStatus]);
 
     useEffect(() => {
-      console.log('PromptBuilder: useEffect load triggered', { persona, loading: state.loading });
       const load = async () => {
-        console.log('PromptBuilder: async load() called', { persona, loading: state.loading });
         if (state.loading !== 'new') {
           return;
         }

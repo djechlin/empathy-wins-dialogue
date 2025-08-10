@@ -29,13 +29,11 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<void> 
       first_message: data.firstMessage || null,
     };
 
-    const { error, data: insertedData } = await supabase.from('prompt_builders').insert(promptBuilderRecord).select();
+    const { error } = await supabase.from('prompt_builders').insert(promptBuilderRecord);
 
     if (error) {
       throw new Error(error.message || 'Database error occurred');
     }
-
-    console.log('Successfully inserted prompt builder:', insertedData);
   } catch (error) {
     console.error('Error in savePromptBuilder:', error);
     throw error;
@@ -44,12 +42,10 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<void> 
 
 export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'attendee'): Promise<PromptBuilderData | null> => {
   try {
-    console.log(`fetchMostRecentPromptForPersona: Starting fetch for persona: ${persona}`);
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    console.log('fetchMostRecentPromptForPersona: User check:', user ? `User ID: ${user.id}` : 'No user');
     if (!user) {
       console.error('fetchMostRecentPromptForPersona: No authenticated user');
       return null;
@@ -137,17 +133,12 @@ export const fetchMostRecentPromptBuilders = async (): Promise<Record<string, Pr
 
 export const fetchAllPromptBuildersForPersona = async (persona: string): Promise<PromptBuilderData[]> => {
   try {
-    console.log(`fetchAllPromptBuildersForPersona: Starting fetch for persona: ${persona}`);
-    console.log('fetchAllPromptBuildersForPersona: About to call supabase.auth.getUser()...');
-
-    // Add timeout to prevent hanging
     const authPromise = supabase.auth.getUser();
     const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Authentication timeout')), 5000));
 
     let user: { id: string } | null = null;
     try {
       const authResult = await Promise.race([authPromise, timeoutPromise]);
-      console.log('fetchAllPromptBuildersForPersona: Auth result:', authResult);
 
       const {
         data: { user: authUser },
@@ -160,7 +151,6 @@ export const fetchAllPromptBuildersForPersona = async (persona: string): Promise
       }
 
       user = authUser;
-      console.log('fetchAllPromptBuildersForPersona: User check:', user ? `User ID: ${user.id}` : 'No user');
       if (!user) {
         console.error('fetchAllPromptBuildersForPersona: No authenticated user');
         return [];

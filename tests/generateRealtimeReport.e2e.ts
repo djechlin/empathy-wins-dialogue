@@ -19,9 +19,6 @@ describe('generateRealtimeReport E2E', () => {
     // It should pass if we get a 200 response, fail otherwise
     const result = await generateRealtimeReport(fullTranscript, newMessages, 'framing');
 
-    console.log('Smoke test result:');
-    console.log(JSON.stringify(result, null, 2));
-
     expect(result).toBeDefined();
   }, 30000); // 30 second timeout for API call
 
@@ -58,9 +55,7 @@ Canvasser: Hi there, my name is Sarah and I'm calling about healthcare so everyo
 Voter: Oh, okay. What's this about exactly?
     `;
 
-    console.log('Testing framing phase...');
     const framingResult = await generateRealtimeReport(framingMessages, framingMessages, 'framing');
-    console.log('Framing result:', framingResult);
 
     // Test listening phase
     const listeningMessages = `
@@ -77,9 +72,7 @@ Canvasser: That's beautiful. My own mom did something similar - she worked night
 Voter: It's really hard for him. His medications are so expensive, and he sometimes skips doses to make them last longer.
     `;
 
-    console.log('Testing listening phase...');
     const listeningResult = await generateRealtimeReport(fullConversation, listeningMessages, 'listening');
-    console.log('Listening result:', listeningResult);
 
     // Test exploring phase
     const exploringMessages = `
@@ -88,9 +81,7 @@ Canvasser: That must be really scary for you, knowing he's having to make those 
 Voter: Yeah, exactly. I worry about him all the time. I wish there was something I could do to help make healthcare more affordable for people like him.
     `;
 
-    console.log('Testing exploring phase...');
     const exploringResult = await generateRealtimeReport(fullConversation, exploringMessages, 'exploring');
-    console.log('Exploring result:', exploringResult);
 
     // All results should be defined
     expect(framingResult).toBeDefined();

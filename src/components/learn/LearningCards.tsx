@@ -42,9 +42,6 @@ const LearningCards = () => {
           if (data[0].value !== null) {
             setComfortLevel([data[0].value]);
           }
-          console.log('Loaded comfort level from database:', data[0].value);
-        } else {
-          console.log('No willingness data found');
         }
       } catch (error) {
         console.error('Error in fetching willingness data:', error);
@@ -89,8 +86,6 @@ const LearningCards = () => {
         toast.error('You must be logged in to save your comfort level');
         return;
       }
-
-      console.log('Saving comfort level:', comfortLevel[0]);
 
       // Insert the comfort level into the willingness table
       // user_id will be set automatically via the DEFAULT value we set

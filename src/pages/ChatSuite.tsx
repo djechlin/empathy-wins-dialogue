@@ -27,25 +27,27 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
     <div className="space-y-4">
       <h3 className="font-semibold">Chats</h3>
 
-      {attendees.filter(attendee => attendee.systemPrompt.trim() !== '').map((attendee) => (
-        <Collapsible key={attendee.id} open={openAttendees[attendee.id] || false} onOpenChange={() => toggleAttendee(attendee.id)}>
-          <CollapsibleTrigger asChild>
-            <div className="w-full justify-start text-sm font-medium p-2 h-auto cursor-pointer hover:bg-gray-100 rounded-md flex items-center">
-              <ChevronRight className={cn('h-4 w-4 mr-2 transition-transform', openAttendees[attendee.id] ? 'rotate-90' : '')} />
-              Chat with {attendee.displayName}
-            </div>
-          </CollapsibleTrigger>
+      {attendees
+        .filter((attendee) => attendee.systemPrompt.trim() !== '')
+        .map((attendee) => (
+          <Collapsible key={attendee.id} open={openAttendees[attendee.id] || false} onOpenChange={() => toggleAttendee(attendee.id)}>
+            <CollapsibleTrigger asChild>
+              <div className="w-full justify-start text-sm font-medium p-2 h-auto cursor-pointer hover:bg-gray-100 rounded-md flex items-center">
+                <ChevronRight className={cn('h-4 w-4 mr-2 transition-transform', openAttendees[attendee.id] ? 'rotate-90' : '')} />
+                Chat with {attendee.displayName}
+              </div>
+            </CollapsibleTrigger>
 
-          <CollapsibleContent className="mt-2">
-            <Chat
-              attendeeDisplayName={attendee.displayName}
-              organizerPromptText={organizerPromptText}
-              organizerFirstMessage={organizerFirstMessage}
-              attendeeSystemPrompt={attendee.systemPrompt}
-            />
-          </CollapsibleContent>
-        </Collapsible>
-      ))}
+            <CollapsibleContent className="mt-2">
+              <Chat
+                attendeeDisplayName={attendee.displayName}
+                organizerPromptText={organizerPromptText}
+                organizerFirstMessage={organizerFirstMessage}
+                attendeeSystemPrompt={attendee.systemPrompt}
+              />
+            </CollapsibleContent>
+          </Collapsible>
+        ))}
     </div>
   );
 };

@@ -19,7 +19,6 @@ export const getAuthInfo = async (): Promise<AuthInfo> => {
     }
 
     if (session?.user) {
-      console.log('getAuthInfo: Session found for user:', session.user.id);
       return {
         isLoggedIn: true,
         userEmail: session.user.email,
@@ -27,7 +26,6 @@ export const getAuthInfo = async (): Promise<AuthInfo> => {
       };
     }
 
-    console.log('getAuthInfo: No session found');
     return { isLoggedIn: false };
   } catch (error) {
     console.error('getAuthInfo: Unexpected error:', error);
@@ -41,7 +39,6 @@ export const getAuthHeaders = async (): Promise<Record<string, string>> => {
     const headers: Record<string, string> = {};
 
     if (authInfo.isLoggedIn) {
-      console.log('getAuthHeaders: Getting auth headers for logged in user');
       const {
         data: { session },
         error,
@@ -54,7 +51,6 @@ export const getAuthHeaders = async (): Promise<Record<string, string>> => {
 
       if (session?.access_token) {
         headers['Authorization'] = `Bearer ${session.access_token}`;
-        console.log('getAuthHeaders: Added Authorization header');
       } else {
         console.error('getAuthHeaders: No access token found in session');
       }
@@ -65,10 +61,7 @@ export const getAuthHeaders = async (): Promise<Record<string, string>> => {
       if (authInfo.userId) {
         headers['X-User-ID'] = authInfo.userId;
       }
-    } else {
-      console.log('getAuthHeaders: User not logged in, returning empty headers');
     }
-
     return headers;
   } catch (error) {
     console.error('getAuthHeaders: Unexpected error:', error);

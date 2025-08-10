@@ -107,13 +107,11 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
   const archivedAttendees = useMemo(() => state.attendees.filter((a) => a.archived), [state.attendees]);
 
   useEffect(() => {
-    console.log('PromptBuilderSuite: useEffect loadAttendees triggered', { loading: state.loading });
     if (state.loading !== 'new') {
       return;
     }
 
     const loadAttendees = async () => {
-      console.log('PromptBuilderSuite: async loadAttendees() called', { loading: state.loading });
       try {
         dispatch({ type: 'SET_LOADING', payload: 'loading' });
         const data = await fetchAllPromptBuildersForPersona('attendee');
@@ -142,20 +140,17 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
   }, [state.loading]);
 
   useEffect(() => {
-    console.log('PromptBuilderSuite: useEffect onAttendeesChange triggered');
     onAttendeesChange?.(activeAttendees);
   }, [activeAttendees, onAttendeesChange]);
 
   const handleAttendeeDataChange = useCallback(
     (attendeeId: string, data: { systemPrompt: string; firstMessage: string; displayName: string }) => {
-      console.log('handle attendee data change with id ', attendeeId);
       dispatch({ type: 'UPDATE_ATTENDEE', payload: { id: attendeeId, data } });
     },
     [],
   );
 
   const addAttendee = useCallback(async () => {
-    console.log('PromptBuilderSuite: async addAttendee() called');
     const newAttendee = {
       name: generateTimestampName('attendee'),
       system_prompt: '',
@@ -199,7 +194,6 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
   }, [toast]);
 
   const handleArchiveToggle = useCallback((attendeeId: string, archived: boolean) => {
-    console.log('PromptBuilderSuite: handleArchiveToggle() called', { attendeeId, archived });
     dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id: attendeeId, archived } });
   }, []);
 

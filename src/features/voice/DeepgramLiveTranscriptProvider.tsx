@@ -18,7 +18,6 @@ interface DeepgramLiveTranscriptContextProviderProps {
 
 const getApiKey = async (): Promise<string> => {
   const r = await getDeepgramAccessToken();
-  console.log('getdeepgramtoken r:', r);
   return r;
 };
 
@@ -36,9 +35,7 @@ const DeepgramLiveTranscriptContextInner: FunctionComponent<{ children: ReactNod
    * @returns A Promise that resolves when the connection is established.
    */
   const connect = async (options: LiveSchema, endpoint?: string) => {
-    console.log('setting up microphone first...');
     await setupMicrophone();
-    console.log('microphone ready, creating deepgram client');
     const key = await getApiKey();
     const deepgram = createClient(key);
 
