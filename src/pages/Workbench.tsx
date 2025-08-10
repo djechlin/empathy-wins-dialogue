@@ -133,12 +133,12 @@ const Workbench = () => {
   const attendeeRef = useRef<PromptBuilderSuiteRef>(null);
 
   // Helper for getting human text input
-  const getTextInput = (): Promise<string> => {
+  const getTextInput = useCallback((): Promise<string> => {
     return new Promise((resolve) => {
       // TODO: Implement proper human input handling
       resolve(state.userTextInput);
     });
-  };
+  }, [state.userTextInput]);
 
   // Initialize participant hooks
   const organizerParticipant = useParticipant(
@@ -157,24 +157,32 @@ const Workbench = () => {
   const hasStarted = () => state.conversationHistory.length > 0;
 
   useEffect(() => {
-    console.log('Workbench: useEffect scrollIntoView triggered', { conversationHistoryLength: state.conversationHistory.length, isAwaitingAiResponse });
+    console.log('Workbench: useEffect scrollIntoView triggered', {
+      conversationHistoryLength: state.conversationHistory.length,
+      isAwaitingAiResponse,
+    });
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [state.conversationHistory, isAwaitingAiResponse]);
 
   useEffect(() => {
-    console.log('Workbench: useEffect conversation loop triggered', { 
-      conversationHistoryLength: state.conversationHistory.length, 
-      paused: state.paused, 
-      speaker: state.speaker 
+    console.log('Workbench: useEffect conversation loop triggered', {
+      conversationHistoryLength: state.conversationHistory.length,
+      paused: state.paused,
+      speaker: state.speaker,
+      currentSpeakerHumanOrAi,
     });
     if (state.conversationHistory.length === 0) return; // No conversation yet
     if (state.paused) return; // Conversation is paused
+    if (currentSpeakerHumanOrAi === 'human') return; // Don't auto-respond for human speakers
+
+    const lastMessage = state.conversationHistory[state.conversationHistory.length - 1];
+    // Don't respond if the last message was from the current speaker (avoid self-response loop)
+    if (lastMessage.sender === state.speaker) return;
 
     setTimeout(async () => {
       console.log('Workbench: async conversation loop timeout called', { speaker: state.speaker });
       try {
         const currentParticipant = state.speaker === 'organizer' ? organizerParticipant : attendeeParticipant;
-        const lastMessage = state.conversationHistory[state.conversationHistory.length - 1];
 
         const response = await currentParticipant.chat(lastMessage.content);
 
@@ -189,13 +197,26 @@ const Workbench = () => {
         console.error('Error in conversation loop:', error);
       }
     }, 0);
-  }, [state.conversationHistory, state.speaker, state.paused, organizerParticipant, attendeeParticipant]);
+  }, [state.conversationHistory, state.speaker, state.paused, currentSpeakerHumanOrAi, organizerParticipant, attendeeParticipant]);
 
-  const sendHumanMessage = async () => {
-    console.log('Workbench: async sendHumanMessage() called', { 
-      userTextInputLength: state.userTextInput.trim().length, 
-      currentSpeakerHumanOrAi, 
-      paused: state.paused 
+  // Helper method for handling participant responses
+  const handleParticipantResponse = useCallback(
+    async (participantId: 'organizer' | 'attendee', mode: 'human' | 'ai', message: string): Promise<string> => {
+      if (mode === 'ai') {
+        const participant = participantId === 'organizer' ? organizerParticipant : attendeeParticipant;
+        return await participant.chat(message);
+      } else {
+        return await getTextInput();
+      }
+    },
+    [organizerParticipant, attendeeParticipant, getTextInput],
+  );
+
+  const sendHumanMessage = useCallback(async () => {
+    console.log('Workbench: async sendHumanMessage() called', {
+      userTextInputLength: state.userTextInput.trim().length,
+      currentSpeakerHumanOrAi,
+      paused: state.paused,
     });
     if (!state.userTextInput.trim() || currentSpeakerHumanOrAi === 'ai' || state.paused) return;
 
@@ -210,21 +231,15 @@ const Workbench = () => {
         console.error('Error getting AI response:', error);
       }
     }
-  };
-
-  // Helper method for handling participant responses
-  const handleParticipantResponse = async (
-    participantId: 'organizer' | 'attendee',
-    mode: 'human' | 'ai',
-    message: string,
-  ): Promise<string> => {
-    if (mode === 'ai') {
-      const participant = participantId === 'organizer' ? organizerParticipant : attendeeParticipant;
-      return await participant.chat(message);
-    } else {
-      return await getTextInput();
-    }
-  };
+  }, [
+    state.userTextInput,
+    currentSpeakerHumanOrAi,
+    state.paused,
+    state.speaker,
+    otherSpeakerHumanOrAi,
+    handleParticipantResponse,
+    otherSpeaker,
+  ]);
 
   const handleModeToggle = (participantId: 'organizer' | 'attendee', mode: ParticipantMode) => {
     if (state.conversationHistory.length > 0) return;
@@ -232,12 +247,15 @@ const Workbench = () => {
     dispatch({ type: 'TOGGLE_MODE', payload: { participant: participantId, mode } });
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendHumanMessage();
-    }
-  };
+  const handleKeyPress = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendHumanMessage();
+      }
+    },
+    [sendHumanMessage],
+  );
 
   const handleOrganizerPromptChange = useCallback((data: { systemPrompt: string; firstMessage: string }) => {
     dispatch({ type: 'UPDATE_ORGANIZER_DATA', payload: data });

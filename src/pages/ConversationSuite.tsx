@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Conversation from './Conversation';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { ChevronRight } from 'lucide-react';
@@ -64,12 +64,12 @@ const ConversationSuite = ({
     [attendees[0]?.id || '1']: true, // Default first attendee open
   });
 
-  const toggleAttendee = (attendeeId: string) => {
+  const toggleAttendee = useCallback((attendeeId: string) => {
     setOpenAttendees((prev) => ({
       ...prev,
       [attendeeId]: !prev[attendeeId],
     }));
-  };
+  }, []);
 
   return (
     <div className="space-y-4">

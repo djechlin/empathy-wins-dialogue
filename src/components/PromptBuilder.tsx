@@ -5,7 +5,7 @@ import { Textarea } from '@/ui/textarea';
 import { fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import { forwardRef, useEffect, useImperativeHandle, useReducer } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useReducer } from 'react';
 
 interface PromptBuilderProps {
   persona: 'organizer' | 'attendee';
@@ -132,7 +132,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
 
     const [state, dispatch] = useReducer(promptBuilderReducer, initialState);
 
-    const handleSave = async () => {
+    const handleSave = useCallback(async () => {
       // If already saved (not dirty), auto-succeed
       if (state.saveStatus === SaveStatus.SAVED) {
         return true;
@@ -162,30 +162,39 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
         dispatch({ type: 'SAVE_FAILED', payload: errorMessage });
         return false;
       }
-    };
+    }, [state.saveStatus, state.displayName, state.systemPrompt, state.firstMessage, persona]);
 
-    const handleSaveNameEdit = () => {
+    const handleSaveNameEdit = useCallback(() => {
       dispatch({ type: 'COMPLETE_NAME_EDIT', payload: state.editNameValue.trim() || persona });
-    };
+    }, [state.editNameValue, persona]);
 
-    const handleCancelNameEdit = () => {
+    const handleCancelNameEdit = useCallback(() => {
       dispatch({ type: 'CANCEL_NAME_EDIT' });
-    };
+    }, []);
 
-    const handleNameKeyDown = (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        handleSaveNameEdit();
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
-        handleCancelNameEdit();
-      }
-    };
+    const handleNameKeyDown = useCallback(
+      (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleSaveNameEdit();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          handleCancelNameEdit();
+        }
+      },
+      [handleSaveNameEdit, handleCancelNameEdit],
+    );
 
     useEffect(() => {
-      console.log('PromptBuilder: useEffect MARK_DIRTY triggered', { systemPrompt: state.systemPrompt?.length, firstMessage: state.firstMessage?.length, displayName: state.displayName });
-      dispatch({ type: 'MARK_DIRTY' });
-    }, [state.systemPrompt, state.firstMessage, state.displayName]);
+      console.log('PromptBuilder: useEffect MARK_DIRTY triggered', {
+        systemPrompt: state.systemPrompt?.length,
+        firstMessage: state.firstMessage?.length,
+        displayName: state.displayName,
+      });
+      if (state.saveStatus === SaveStatus.SAVED) {
+        dispatch({ type: 'MARK_DIRTY' });
+      }
+    }, [state.systemPrompt, state.firstMessage, state.displayName, state.saveStatus]);
 
     useEffect(() => {
       console.log('PromptBuilder: useEffect load triggered', { persona, loading: state.loading });
@@ -217,10 +226,19 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       load();
     }, [persona, state.loading]);
 
-    useEffect(() => {
-      console.log('PromptBuilder: useEffect onDataChange triggered', { systemPrompt: state.systemPrompt?.length, firstMessage: state.firstMessage?.length, displayName: state.displayName });
+    const memoizedOnDataChange = useCallback(() => {
+      console.log('PromptBuilder: memoizedOnDataChange called', {
+        systemPrompt: state.systemPrompt?.length,
+        firstMessage: state.firstMessage?.length,
+        displayName: state.displayName,
+      });
       onDataChange?.({ systemPrompt: state.systemPrompt, firstMessage: state.firstMessage, displayName: state.displayName });
     }, [state.systemPrompt, state.firstMessage, state.displayName, onDataChange]);
+
+    useEffect(() => {
+      console.log('PromptBuilder: useEffect onDataChange triggered');
+      memoizedOnDataChange();
+    }, [memoizedOnDataChange]);
 
     useImperativeHandle(ref, () => ({
       getSystemPrompt: () => state.systemPrompt,
