@@ -159,8 +159,8 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
 
     return (
       <div className={`${color} rounded-lg p-4`}>
-        <button className="flex items-center justify-between w-full group" onClick={() => setIsOpen(!isOpen)}>
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between w-full mb-2">
+          <button className="flex items-center gap-2 flex-1" onClick={() => setIsOpen(!isOpen)}>
             <span className="font-medium">{name.charAt(0).toUpperCase() + name.slice(1)}</span>(
             {isEditingName ? (
               <Input
@@ -184,25 +184,20 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                 {displayName}
               </span>
             )}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleSave();
-              }}
-              disabled={isSaving || isSaved}
-              size="sm"
-              variant="outline"
-              className="text-xs px-2 py-1 h-auto font-sans"
-            >
-              {isSaving ? 'Saving...' : isSaved ? 'Saved' : 'Save'}
-            </Button>
             <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
               <ChevronDown className="h-4 w-4 shrink-0" />
             </motion.div>
-          </div>
-        </button>
+          </button>
+          <Button
+            onClick={handleSave}
+            disabled={isSaving || isSaved}
+            size="sm"
+            variant="outline"
+            className="text-xs px-2 py-1 h-auto font-sans ml-2"
+          >
+            {isSaving ? 'Saving...' : isSaved ? 'Saved' : 'Save'}
+          </Button>
+        </div>
         <AnimatePresence initial={false}>
           {isOpen && (
             <motion.div
