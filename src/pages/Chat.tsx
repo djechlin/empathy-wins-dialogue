@@ -15,19 +15,14 @@ interface Message {
 
 interface ChatState {
   history: Message[];
-  paused: boolean;
   speaker: 'organizer' | 'attendee';
   userTextInput: string;
-  organizerMode: 'human' | 'ai';
-  attendeeMode: 'human' | 'ai';
 }
 
 type ChatAction =
   | { type: 'SET_USER_TEXT_INPUT'; payload: string }
   | { type: 'START_CHAT'; payload: { firstMessage: string } }
-  | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string } }
-  | { type: 'TOGGLE_MODE'; payload: { participant: 'organizer' | 'attendee'; mode: 'human' | 'ai' } }
-  | { type: 'TOGGLE_PAUSE' };
+  | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string } };
 
 function reducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
@@ -49,14 +44,6 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
         speaker: action.payload.sender === 'organizer' ? 'attendee' : 'organizer',
       };
 
-    case 'TOGGLE_MODE':
-      return {
-        ...state,
-        [action.payload.participant === 'organizer' ? 'organizerMode' : 'attendeeMode']: action.payload.mode,
-      };
-
-    case 'TOGGLE_PAUSE':
-      return { ...state, paused: !state.paused };
 
     default:
       return state;
@@ -77,6 +64,11 @@ interface ChatProps {
   organizerPromptText: string;
   organizerFirstMessage: string;
   attendeeSystemPrompt: string;
+  organizerMode: 'human' | 'ai';
+  attendeeMode: 'human' | 'ai';
+  paused: boolean;
+  hasStarted: boolean;
+  onStarted: (started: boolean) => void;
 }
 
 const AiThinking = ({ participant }: { participant: 'organizer' | 'attendee' }) => (
@@ -97,14 +89,21 @@ const AiThinking = ({ participant }: { participant: 'organizer' | 'attendee' }) 
   </div>
 );
 
-const Chat = ({ attendeeDisplayName, organizerPromptText, organizerFirstMessage, attendeeSystemPrompt }: ChatProps) => {
+const Chat = ({ 
+  attendeeDisplayName, 
+  organizerPromptText, 
+  organizerFirstMessage, 
+  attendeeSystemPrompt,
+  organizerMode,
+  attendeeMode,
+  paused,
+  hasStarted,
+  onStarted,
+}: ChatProps) => {
   const [state, dispatch] = useReducer(reducer, {
     history: [],
-    paused: false,
     speaker: 'organizer' as const,
     userTextInput: '',
-    organizerMode: 'ai' as const,
-    attendeeMode: 'ai' as const,
   });
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -117,19 +116,17 @@ const Chat = ({ attendeeDisplayName, organizerPromptText, organizerFirstMessage,
     });
   }, [state.userTextInput]);
 
-  const organizerParticipant = useParticipant(state.organizerMode, organizerFirstMessage || null, organizerPromptText, getTextInput);
-  const attendeeParticipant = useParticipant(state.attendeeMode, null, attendeeSystemPrompt, getTextInput);
+  const organizerParticipant = useParticipant(organizerMode, organizerFirstMessage || null, organizerPromptText, getTextInput);
+  const attendeeParticipant = useParticipant(attendeeMode, null, attendeeSystemPrompt, getTextInput);
   const participant = useMemo(
     () => (state.speaker === 'organizer' ? organizerParticipant : attendeeParticipant),
     [state.speaker, organizerParticipant, attendeeParticipant],
   );
 
   const otherSpeaker = state.speaker === 'organizer' ? 'attendee' : 'organizer';
-  const speakerMode = state.speaker === 'organizer' ? state.organizerMode : state.attendeeMode;
-  const otherSpeakerMode = state.speaker === 'organizer' ? state.attendeeMode : state.organizerMode;
+  const speakerMode = state.speaker === 'organizer' ? organizerMode : attendeeMode;
+  const otherSpeakerMode = state.speaker === 'organizer' ? attendeeMode : organizerMode;
   const isAwaitingAiResponse = state.history.length > 0 && speakerMode === 'ai';
-
-  const hasStarted = useMemo(() => state.history.length > 0, [state.history]);
 
   useEffect(() => {
     // Scroll to bottom when new messages are added
@@ -140,7 +137,7 @@ const Chat = ({ attendeeDisplayName, organizerPromptText, organizerFirstMessage,
     if (
       state.history.length === 0 ||
       state.history[state.history.length - 1].sender === state.speaker ||
-      state.paused ||
+      paused ||
       // May be wrong
       speakerMode === 'human'
     ) {
@@ -163,10 +160,10 @@ const Chat = ({ attendeeDisplayName, organizerPromptText, organizerFirstMessage,
         console.error('Error in chat loop:', error);
       }
     }, 0);
-  }, [state.history, state.speaker, state.paused, speakerMode, participant]);
+  }, [state.history, state.speaker, paused, speakerMode, participant]);
 
   const sendHumanMessage = useCallback(async () => {
-    if (!state.userTextInput.trim() || speakerMode === 'ai' || state.paused) return;
+    if (!state.userTextInput.trim() || speakerMode === 'ai' || paused) return;
 
     const userMessage = state.userTextInput;
     dispatch({ type: 'SEND_MESSAGE', payload: { sender: state.speaker, content: userMessage } });
@@ -179,15 +176,7 @@ const Chat = ({ attendeeDisplayName, organizerPromptText, organizerFirstMessage,
         console.error('Error getting AI response:', error);
       }
     }
-  }, [state.userTextInput, speakerMode, state.paused, state.speaker, otherSpeakerMode, participant, otherSpeaker]);
-
-  const handleModeToggle = useCallback(
-    (persona: 'organizer' | 'attendee', mode: 'human' | 'ai') => {
-      if (state.history.length > 0) return;
-      dispatch({ type: 'TOGGLE_MODE', payload: { participant: persona, mode } });
-    },
-    [state.history],
-  );
+  }, [state.userTextInput, speakerMode, paused, state.speaker, otherSpeakerMode, participant, otherSpeaker]);
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent) => {
@@ -199,144 +188,22 @@ const Chat = ({ attendeeDisplayName, organizerPromptText, organizerFirstMessage,
     [sendHumanMessage],
   );
 
-  const startChat = useCallback(async () => {
-    if (hasStarted) return;
-
-    try {
-      if (state.organizerMode === 'ai') {
-        const firstMessage = await organizerParticipant.chat(null);
+  // Start chat when hasStarted prop changes to true
+  useEffect(() => {
+    if (hasStarted && state.history.length === 0 && organizerMode === 'ai') {
+      organizerParticipant.chat(null).then((firstMessage) => {
         dispatch({ type: 'START_CHAT', payload: { firstMessage } });
-      }
-    } catch (error) {
-      console.error('Error starting chat:', error);
+        onStarted(true);
+      }).catch((error) => {
+        console.error('Error starting chat:', error);
+      });
     }
-  }, [hasStarted, organizerParticipant, state.organizerMode]);
+  }, [hasStarted, state.history.length, organizerMode, organizerParticipant, onStarted]);
 
   return (
     <Card className="h-full flex flex-col">
-      <div className="border-b px-4 py-3 bg-gray-50">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold">Chat with {attendeeDisplayName}</h2>
-          {hasStarted && (
-            <Button
-              onClick={() => dispatch({ type: 'TOGGLE_PAUSE' })}
-              size="sm"
-              variant={state.paused ? 'default' : 'outline'}
-              className="text-xs px-3"
-            >
-              {state.paused ? (
-                <>
-                  <Play size={12} className="mr-1" />
-                  Resume
-                </>
-              ) : (
-                <>
-                  <Pause size={12} className="mr-1" />
-                  Pause
-                </>
-              )}
-            </Button>
-          )}
-        </div>
-
-        <div className="flex items-center gap-4 mb-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-700">Organizer:</span>
-            <div className="flex bg-gray-200 rounded-lg p-1">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (state.history.length === 0) {
-                    handleModeToggle('organizer', 'human');
-                  }
-                }}
-                disabled={state.history.length > 0}
-                className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                  state.history.length > 0
-                    ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                    : state.organizerMode === 'human'
-                      ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
-                      : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <User size={12} />
-                Human
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (state.history.length === 0) {
-                    handleModeToggle('organizer', 'ai');
-                  }
-                }}
-                disabled={state.history.length > 0}
-                className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                  state.history.length > 0
-                    ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                    : state.organizerMode === 'ai'
-                      ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
-                      : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <Bot size={12} />
-                AI
-              </button>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-700">Attendee:</span>
-            <div className="flex bg-gray-200 rounded-lg p-1">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (state.history.length === 0) {
-                    handleModeToggle('attendee', 'human');
-                  }
-                }}
-                disabled={state.history.length > 0}
-                className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                  state.history.length > 0
-                    ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                    : state.attendeeMode === 'human'
-                      ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
-                      : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <User size={12} />
-                Human
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (state.history.length === 0) {
-                    handleModeToggle('attendee', 'ai');
-                  }
-                }}
-                disabled={state.history.length > 0}
-                className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                  state.history.length > 0
-                    ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                    : state.attendeeMode === 'ai'
-                      ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
-                      : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <Bot size={12} />
-                AI
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {!hasStarted && (
-          <div className="mt-2">
-            <Button onClick={startChat} size="sm" className="px-4">
-              <Play size={16} className="mr-2" />
-              Start
-            </Button>
-          </div>
-        )}
+      <div className="border-b px-2 py-2 bg-gray-50">
+        <h2 className="font-semibold text-center">Chat with {attendeeDisplayName}</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto scroll-smooth p-4 space-y-4">
@@ -397,31 +264,31 @@ const Chat = ({ attendeeDisplayName, organizerPromptText, organizerFirstMessage,
             onChange={(e) => dispatch({ type: 'SET_USER_TEXT_INPUT', payload: e.target.value })}
             onKeyPress={handleKeyPress}
             placeholder={
-              state.paused
+              paused
                 ? 'Chat is paused'
-                : state.organizerMode === 'ai' && state.attendeeMode === 'ai'
+                : organizerMode === 'ai' && attendeeMode === 'ai'
                   ? 'Both participants are in AI mode - chat runs automatically'
                   : state.speaker === 'organizer'
                     ? 'Type your message as the organizer...'
                     : 'Type your message as the attendee...'
             }
             className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
-              state.paused || (state.organizerMode === 'ai' && state.attendeeMode === 'ai')
+              paused || (organizerMode === 'ai' && attendeeMode === 'ai')
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : ''
             }`}
-            disabled={state.paused || isAwaitingAiResponse || (state.organizerMode === 'ai' && state.attendeeMode === 'ai')}
+            disabled={paused || isAwaitingAiResponse || (organizerMode === 'ai' && attendeeMode === 'ai')}
           />
           <Button
             onClick={sendHumanMessage}
             disabled={
-              state.paused ||
+              paused ||
               !state.userTextInput.trim() ||
               isAwaitingAiResponse ||
-              (state.organizerMode === 'ai' && state.attendeeMode === 'ai')
+              (organizerMode === 'ai' && attendeeMode === 'ai')
             }
             className={`px-4 ${
-              state.paused || (state.organizerMode === 'ai' && state.attendeeMode === 'ai')
+              paused || (organizerMode === 'ai' && attendeeMode === 'ai')
                 ? 'bg-gray-400 cursor-not-allowed'
                 : state.speaker === 'organizer'
                   ? 'bg-purple-600 hover:bg-purple-700 text-white'
