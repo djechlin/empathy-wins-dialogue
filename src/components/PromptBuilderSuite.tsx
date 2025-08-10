@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState, useEffect, useMemo } from 'react';
 import PromptBuilder, { type PromptBuilderRef } from './PromptBuilder';
 import { Button } from '@/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
@@ -38,8 +38,8 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     const [archivedOpen, setArchivedOpen] = useState(false);
     const { toast } = useToast();
 
-    const activeAttendees = attendees.filter((a) => !a.archived);
-    const archivedAttendees = attendees.filter((a) => a.archived);
+    const activeAttendees = useMemo(() => attendees.filter((a) => !a.archived), [attendees]);
+    const archivedAttendees = useMemo(() => attendees.filter((a) => a.archived), [attendees]);
 
     // Fetch attendees on load
     useEffect(() => {
