@@ -3,7 +3,7 @@ import { Button } from '@/ui/button';
 import { Input } from '@/ui/input';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
-import { archivePromptBuilder, fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
+import { fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Archive, ArchiveRestore, ChevronDown } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useReducer } from 'react';
@@ -199,35 +199,16 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     );
 
     const handleArchiveToggle = useCallback(
-      async (currentlyArchived: boolean) => {
+      (currentlyArchived: boolean) => {
         if (!promptBuilderId || !onArchiveToggle) return;
 
+        // Optimistically update the UI immediately
         onArchiveToggle(promptBuilderId, !currentlyArchived);
 
-        try {
-          const success = await archivePromptBuilder(promptBuilderId, !currentlyArchived);
-          if (!success) {
-            onArchiveToggle(promptBuilderId, currentlyArchived);
-            toast({
-              title: 'Error',
-              description: `Failed to ${!currentlyArchived ? 'archive' : 'unarchive'} ${persona}`,
-              variant: 'destructive',
-            });
-          } else {
-            toast({
-              title: 'Success',
-              description: `${persona} ${!currentlyArchived ? 'archived' : 'unarchived'} successfully`,
-            });
-          }
-        } catch (error) {
-          console.error('Archive error:', error);
-          onArchiveToggle(promptBuilderId, currentlyArchived);
-          toast({
-            title: 'Error',
-            description: `Failed to ${!currentlyArchived ? 'archive' : 'unarchive'} ${persona}`,
-            variant: 'destructive',
-          });
-        }
+        toast({
+          title: 'Success',
+          description: `${persona} ${!currentlyArchived ? 'archived' : 'unarchived'} successfully`,
+        });
       },
       [promptBuilderId, onArchiveToggle, toast, persona],
     );
