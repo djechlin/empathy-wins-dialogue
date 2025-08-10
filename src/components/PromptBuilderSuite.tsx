@@ -157,8 +157,8 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     }));
 
     const AttendeeItem = ({ attendee, index, isArchived }: { attendee: AttendeeData; index: number; isArchived: boolean }) => (
-      <div className={cn('relative', isArchived ? 'opacity-60' : '')}>
-        <div className="absolute top-2 right-2 z-10 flex gap-1">
+      <div className={cn('space-y-2', isArchived ? 'opacity-60' : '')}>
+        <div className="flex justify-end">
           <Button
             onClick={() => handleArchiveToggle(attendee.id, attendee.archived || false)}
             size="sm"
