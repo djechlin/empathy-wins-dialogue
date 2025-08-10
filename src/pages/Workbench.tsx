@@ -168,13 +168,16 @@ const Workbench = () => {
       try {
         const currentParticipant = state.speaker === 'organizer' ? organizerParticipant : attendeeParticipant;
         const lastMessage = state.conversationHistory[state.conversationHistory.length - 1];
-        
+
         const response = await currentParticipant.chat(lastMessage.content);
-        
-        dispatch({ type: 'SEND_MESSAGE', payload: { 
-          sender: state.speaker, 
-          content: response 
-        }});
+
+        dispatch({
+          type: 'SEND_MESSAGE',
+          payload: {
+            sender: state.speaker,
+            content: response,
+          },
+        });
       } catch (error) {
         console.error('Error in conversation loop:', error);
       }
