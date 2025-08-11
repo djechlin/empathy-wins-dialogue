@@ -170,6 +170,7 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, onDirt
       system_prompt: '',
       persona,
       firstMessage: '',
+      starred: true,
     };
 
     try {
