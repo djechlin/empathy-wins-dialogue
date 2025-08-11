@@ -176,7 +176,6 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
   const handleArchiveToggle = useCallback(
     async (id: string, archived: boolean) => {
       try {
-        // Update database first
         const success = await archivePromptBuilder(id, archived);
 
         if (success) {

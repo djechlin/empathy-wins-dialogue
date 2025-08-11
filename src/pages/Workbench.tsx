@@ -72,7 +72,7 @@ const Workbench = () => {
   }, []);
 
   const handleCoachesChange = useCallback((coaches: PromptBuilderData[]) => {
-    dispatch({ type: 'UPDATE_COACHES', payload: coaches });
+    dispatch({ type: 'UPDATE_COACHES', payload: coaches.filter((c) => c.starred) });
   }, []);
 
   return (
@@ -97,7 +97,7 @@ const Workbench = () => {
                   defaultOpen={true}
                   onPromptBuildersChange={handleAttendeesChange}
                 />
-                <PromptBuilderSuite persona="coach" color="bg-red-200" defaultOpen={true} onPromptBuildersChange={handleCoachesChange} />
+                <PromptBuilderSuite persona="attendee" color="bg-red-200" defaultOpen={true} onPromptBuildersChange={handleCoachesChange} />
               </div>
             </div>
 

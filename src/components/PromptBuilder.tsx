@@ -4,7 +4,7 @@ import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
 import { fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Archive, ArchiveRestore, Star, ChevronDown } from 'lucide-react';
+import { Archive, ArchiveRestore, ChevronDown, Star } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useReducer } from 'react';
 
 interface PromptBuilderProps {
@@ -44,6 +44,11 @@ interface PromptBuilderState {
   isEditingName: boolean;
   editNameValue: string;
   isOpen: boolean;
+  lastSavedPromptBuilder: {
+    systemPrompt: string;
+    firstMessage: string;
+    displayName: string;
+  } | null;
 }
 
 type PromptBuilderAction =
@@ -62,7 +67,8 @@ type PromptBuilderAction =
   | { type: 'SAVE_SUCCESS' }
   | { type: 'SAVE_FAILED'; payload: string }
   | { type: 'COMPLETE_NAME_EDIT'; payload: string }
-  | { type: 'CANCEL_NAME_EDIT' };
+  | { type: 'CANCEL_NAME_EDIT' }
+  | { type: 'UPDATE_LAST_SAVED'; payload: { systemPrompt: string; firstMessage: string; displayName: string } };
 
 const promptBuilderReducer = (state: PromptBuilderState, action: PromptBuilderAction): PromptBuilderState => {
   switch (action.type) {
@@ -92,19 +98,37 @@ const promptBuilderReducer = (state: PromptBuilderState, action: PromptBuilderAc
         displayName: action.payload.displayName,
         editNameValue: action.payload.displayName,
         saveStatus: SaveStatus.SAVED,
+        lastSavedPromptBuilder: {
+          systemPrompt: action.payload.systemPrompt,
+          firstMessage: action.payload.firstMessage,
+          displayName: action.payload.displayName,
+        },
       };
     case 'MARK_DIRTY':
       return { ...state, saveStatus: SaveStatus.DIRTY, saveError: null };
     case 'START_SAVING':
       return { ...state, saveStatus: SaveStatus.SAVING, saveError: null };
     case 'SAVE_SUCCESS':
-      return { ...state, saveStatus: SaveStatus.SAVED };
+      return {
+        ...state,
+        saveStatus: SaveStatus.SAVED,
+        lastSavedPromptBuilder: {
+          systemPrompt: state.systemPrompt,
+          firstMessage: state.firstMessage,
+          displayName: state.displayName,
+        },
+      };
     case 'SAVE_FAILED':
       return { ...state, saveStatus: SaveStatus.ERROR, saveError: action.payload };
     case 'COMPLETE_NAME_EDIT':
       return { ...state, displayName: action.payload, isEditingName: false };
     case 'CANCEL_NAME_EDIT':
       return { ...state, editNameValue: state.displayName, isEditingName: false };
+    case 'UPDATE_LAST_SAVED':
+      return {
+        ...state,
+        lastSavedPromptBuilder: action.payload,
+      };
     default:
       return state;
   }
@@ -149,35 +173,57 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       isEditingName: false,
       editNameValue: initialDisplayName || persona,
       isOpen: defaultOpen,
+      lastSavedPromptBuilder:
+        initialPrompt || initialFirstMessage || initialDisplayName
+          ? {
+              systemPrompt: initialPrompt,
+              firstMessage: initialFirstMessage,
+              displayName: initialDisplayName || persona,
+            }
+          : null,
     };
 
     const [state, dispatch] = useReducer(promptBuilderReducer, initialState);
 
+    const isDirty = useCallback(() => {
+      if (!state.lastSavedPromptBuilder) return false;
+
+      return (
+        state.systemPrompt !== state.lastSavedPromptBuilder.systemPrompt ||
+        state.firstMessage !== state.lastSavedPromptBuilder.firstMessage ||
+        state.displayName !== state.lastSavedPromptBuilder.displayName
+      );
+    }, [state.systemPrompt, state.firstMessage, state.displayName, state.lastSavedPromptBuilder]);
+
     const handleSave = useCallback(async () => {
-      // If already saved (not dirty), auto-succeed
-      if (state.saveStatus === SaveStatus.SAVED) {
+      // If not dirty, no need to save
+      if (!isDirty()) {
         return true;
       }
 
+      let finalDisplayName = state.displayName;
       if (state.displayName === persona) {
-        dispatch({ type: 'SET_DISPLAY_NAME', payload: generateTimestampedName(persona) });
+        finalDisplayName = generateTimestampedName(persona);
+        dispatch({ type: 'SET_DISPLAY_NAME', payload: finalDisplayName });
       }
 
       dispatch({ type: 'START_SAVING' });
       try {
         await savePromptBuilder({
-          name: state.displayName,
+          name: finalDisplayName,
           system_prompt: state.systemPrompt,
           persona,
           firstMessage: state.firstMessage,
         });
 
         dispatch({ type: 'SAVE_SUCCESS' });
+        return true;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         dispatch({ type: 'SAVE_FAILED', payload: errorMessage });
+        return false;
       }
-    }, [state.saveStatus, state.displayName, state.systemPrompt, state.firstMessage, persona]);
+    }, [isDirty, state.systemPrompt, state.firstMessage, state.displayName, persona]);
 
     const handleSaveNameEdit = useCallback(() => {
       dispatch({ type: 'COMPLETE_NAME_EDIT', payload: state.editNameValue.trim() || persona });
@@ -219,10 +265,13 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     );
 
     useEffect(() => {
-      if (state.saveStatus === SaveStatus.SAVED) {
+      const dirty = isDirty();
+      if (dirty && state.saveStatus === SaveStatus.SAVED) {
         dispatch({ type: 'MARK_DIRTY' });
+      } else if (!dirty && state.saveStatus === SaveStatus.DIRTY) {
+        dispatch({ type: 'SAVE_SUCCESS' });
       }
-    }, [state.systemPrompt, state.firstMessage, state.displayName, state.saveStatus]);
+    }, [isDirty, state.systemPrompt, state.firstMessage, state.displayName, state.lastSavedPromptBuilder, state.saveStatus]);
 
     useEffect(() => {
       const load = async () => {
@@ -294,7 +343,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
             )}
           </button>
           <div className="flex items-center gap-2 ml-auto">
-            {persona === 'attendee' && promptBuilderId && onStarToggle && (
+            {persona !== 'organizer' && promptBuilderId && onStarToggle && (
               <Button
                 onClick={() => handleStarToggle(starred)}
                 size="sm"
@@ -305,7 +354,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                 <Star className={`h-3 w-3 ${starred ? 'fill-current' : ''}`} />
               </Button>
             )}
-            {persona === 'attendee' && promptBuilderId && onArchiveToggle && (
+            {persona !== 'organizer' && promptBuilderId && onArchiveToggle && (
               <Button
                 onClick={() => handleArchiveToggle(archived)}
                 size="sm"
@@ -318,12 +367,14 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
             )}
             <Button
               onClick={handleSave}
-              disabled={state.saveStatus === SaveStatus.SAVING || state.saveStatus === SaveStatus.SAVED}
+              disabled={state.saveStatus === SaveStatus.SAVING || (!isDirty() && state.saveStatus === SaveStatus.SAVED)}
               size="sm"
               variant="outline"
-              className="text-xs px-2 py-1 h-auto font-sans"
+              className={`text-xs px-2 py-1 h-auto font-sans ${
+                isDirty() ? 'bg-orange-50 border-orange-200 text-orange-700' : 'text-gray-500'
+              }`}
             >
-              {state.saveStatus === SaveStatus.SAVING ? 'Saving...' : state.saveStatus === SaveStatus.SAVED ? 'Saved' : 'Save'}
+              {state.saveStatus === SaveStatus.SAVING ? 'Saving...' : isDirty() ? 'Save Changes' : 'Saved'}
             </Button>
             <button onClick={() => dispatch({ type: 'SET_IS_OPEN', payload: !state.isOpen })}>
               <motion.div animate={{ rotate: state.isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
