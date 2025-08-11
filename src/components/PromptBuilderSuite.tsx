@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { generateTimestampName } from '@/utils/id';
-import { fetchAllPromptBuildersForPersona, savePromptBuilder } from '@/utils/promptBuilder';
+import { archivePromptBuilder, fetchAllPromptBuildersForPersona, savePromptBuilder } from '@/utils/promptBuilder';
 import { ChevronRight, Plus } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useReducer, useRef } from 'react';
 import PromptBuilder, { type PromptBuilderRef } from './PromptBuilder';
@@ -193,9 +193,35 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     }
   }, [toast]);
 
-  const handleArchiveToggle = useCallback((attendeeId: string, archived: boolean) => {
-    dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id: attendeeId, archived } });
-  }, []);
+  const handleArchiveToggle = useCallback(async (attendeeId: string, archived: boolean) => {
+    try {
+      // Update database first
+      const success = await archivePromptBuilder(attendeeId, archived);
+      
+      if (success) {
+        // Only update local state if database update succeeded
+        dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id: attendeeId, archived } });
+        
+        toast({
+          title: 'Success',
+          description: `Attendee ${archived ? 'archived' : 'unarchived'} successfully`,
+        });
+      } else {
+        toast({
+          title: 'Error',
+          description: 'Failed to update archive status',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling archive status:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update archive status',
+        variant: 'destructive',
+      });
+    }
+  }, [toast]);
 
   useImperativeHandle(ref, () => ({
     getPromptBuilder: () => promptBuilderRef.current,

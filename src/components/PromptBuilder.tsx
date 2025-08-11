@@ -1,4 +1,3 @@
-import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/ui/button';
 import { Input } from '@/ui/input';
 import { Label } from '@/ui/label';
@@ -149,7 +148,6 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     };
 
     const [state, dispatch] = useReducer(promptBuilderReducer, initialState);
-    const { toast } = useToast();
 
     const handleSave = useCallback(async () => {
       // If already saved (not dirty), auto-succeed
@@ -202,15 +200,9 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       (currentlyArchived: boolean) => {
         if (!promptBuilderId || !onArchiveToggle) return;
 
-        // Optimistically update the UI immediately
         onArchiveToggle(promptBuilderId, !currentlyArchived);
-
-        toast({
-          title: 'Success',
-          description: `${persona} ${!currentlyArchived ? 'archived' : 'unarchived'} successfully`,
-        });
       },
-      [promptBuilderId, onArchiveToggle, toast, persona],
+      [promptBuilderId, onArchiveToggle],
     );
 
     useEffect(() => {
