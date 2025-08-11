@@ -11,7 +11,7 @@ import {
   starPromptBuilder,
 } from '@/utils/promptBuilder';
 import { ChevronRight, Plus } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import PromptBuilder from './PromptBuilder';
 
 interface PromptBuilderSuiteProps {
@@ -19,6 +19,7 @@ interface PromptBuilderSuiteProps {
   defaultOpen?: boolean;
   persona: 'organizer' | 'attendee';
   onPromptBuildersChange?: (pbs: PromptBuilderData[]) => void;
+  onDirtyChange?: (dirty: boolean) => void;
 }
 interface PromptBuilderSuiteState {
   promptBuilders: PromptBuilderData[];
@@ -74,7 +75,7 @@ function promptBuilderSuiteReducer(state: PromptBuilderSuiteState, action: Promp
   }
 }
 
-const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, persona }: PromptBuilderSuiteProps) => {
+const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, onDirtyChange, persona }: PromptBuilderSuiteProps) => {
   const [state, dispatch] = useReducer(promptBuilderSuiteReducer, {
     persona,
     promptBuilders: [],
@@ -83,6 +84,20 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
     archivedOpen: false,
   });
   const { toast } = useToast();
+
+  // Track dirty state for each prompt builder
+  const [dirtyStates, setDirtyStates] = useState<Record<string, boolean>>({});
+
+  const handlePromptBuilderDirtyChange = useCallback((id: string, dirty: boolean) => {
+    setDirtyStates((prev) => ({ ...prev, [id]: dirty }));
+  }, []);
+
+  // Check if any prompt builder is dirty
+  const anyDirty = Object.values(dirtyStates).some(Boolean);
+
+  useEffect(() => {
+    onDirtyChange?.(anyDirty);
+  }, [anyDirty, onDirtyChange]);
 
   const unarchivedPromptBuilders = useMemo(
     () =>
@@ -278,6 +293,7 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
               starred={pb.starred || false}
               promptBuilderId={pb.id}
               onDataChange={(data) => handlePromptBuilderDataChange(pb.id, data)}
+              onDirtyChange={(dirty) => handlePromptBuilderDirtyChange(pb.id!, dirty)}
               onArchiveToggle={handleArchiveToggle}
               onStarToggle={handleStarToggle}
             />
@@ -317,6 +333,7 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
                   starred={pb.starred || false}
                   promptBuilderId={pb.id}
                   onDataChange={(data) => handlePromptBuilderDataChange(pb.id, data)}
+                  onDirtyChange={(dirty) => handlePromptBuilderDirtyChange(pb.id!, dirty)}
                   onArchiveToggle={handleArchiveToggle}
                   onStarToggle={handleStarToggle}
                 />

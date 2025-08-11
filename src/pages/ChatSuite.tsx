@@ -9,6 +9,7 @@ interface ChatSuiteProps {
   coaches: PromptBuilderData[];
   organizerPromptText: string;
   organizerFirstMessage: string;
+  anyDirty?: boolean;
 }
 
 interface ChatStatus {
@@ -19,7 +20,7 @@ interface ChatStatus {
 
 const MemoizedChat = React.memo(Chat);
 
-const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMessage }: ChatSuiteProps) => {
+const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMessage, anyDirty = false }: ChatSuiteProps) => {
   // Suite-level chat controls
   const [organizerMode, setOrganizerMode] = useState<'human' | 'ai'>('ai');
   const [attendeeMode, setAttendeeMode] = useState<'human' | 'ai'>('ai');
@@ -103,15 +104,10 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
           <div className="text-sm font-medium text-gray-700">Active Coaches:</div>
           <div className="flex flex-wrap gap-2">
             {coaches.map((coach) => (
-              <div
-                key={coach.id}
-                className="bg-red-100 border border-red-200 rounded-lg px-3 py-2 text-sm"
-              >
+              <div key={coach.id} className="bg-red-100 border border-red-200 rounded-lg px-3 py-2 text-sm">
                 <div className="font-medium text-red-800">{coach.name}</div>
                 <div className="text-xs text-red-600 truncate max-w-[200px]">
-                  {coach.system_prompt.length > 50 
-                    ? `${coach.system_prompt.substring(0, 47)}...`
-                    : coach.system_prompt || 'No prompt set'}
+                  {coach.system_prompt.length > 50 ? `${coach.system_prompt.substring(0, 47)}...` : coach.system_prompt || 'No prompt set'}
                 </div>
               </div>
             ))}
@@ -228,7 +224,7 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
             {controlStatus === 'ready' && (
               <Button onClick={handleStartAll} size="sm" className="px-3">
                 <Play size={14} className="mr-1" />
-                Start All
+                {anyDirty ? 'Save all & Start' : 'Start All'}
               </Button>
             )}
             {(controlStatus === 'started' || controlStatus === 'paused') && (

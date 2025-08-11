@@ -18,6 +18,7 @@ interface PromptBuilderProps {
   starred?: boolean;
   promptBuilderId?: string;
   onDataChange?: (data: { systemPrompt: string; firstMessage: string; displayName: string }) => void;
+  onDirtyChange?: (dirty: boolean) => void;
   onArchiveToggle?: (id: string, archived: boolean) => void;
   onStarToggle?: (id: string, starred: boolean) => void;
 }
@@ -161,6 +162,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       starred = false,
       promptBuilderId,
       onDataChange,
+      onDirtyChange,
       onArchiveToggle,
       onStarToggle,
     },
@@ -276,7 +278,19 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       } else if (!dirty && state.saveStatus === SaveStatus.DIRTY) {
         dispatch({ type: 'SAVE_SUCCESS', payload: { id: state.id || '' } });
       }
-    }, [isDirty, state.id, state.systemPrompt, state.firstMessage, state.displayName, state.lastSavedPromptBuilder, state.saveStatus]);
+
+      // Notify parent of dirty state changes
+      onDirtyChange?.(dirty || state.saveStatus === SaveStatus.DIRTY);
+    }, [
+      isDirty,
+      state.id,
+      state.systemPrompt,
+      state.firstMessage,
+      state.displayName,
+      state.lastSavedPromptBuilder,
+      state.saveStatus,
+      onDirtyChange,
+    ]);
 
     useEffect(() => {
       const load = async () => {

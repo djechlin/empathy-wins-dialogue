@@ -12,13 +12,19 @@ interface WorkbenchState {
   organizerFirstMessage: string;
   attendees: PromptBuilderData[];
   coaches: PromptBuilderData[];
+  organizerDirty: boolean;
+  attendeesDirty: boolean;
+  coachesDirty: boolean;
 }
 
 type WorkbenchAction =
   | { type: 'SELECT_PROMPT'; payload: { participant: 'organizer'; prompt: PromptBuilderData | null } }
   | { type: 'UPDATE_ORGANIZER_DATA'; payload: { systemPrompt: string; firstMessage: string } }
   | { type: 'UPDATE_ATTENDEES'; payload: PromptBuilderData[] }
-  | { type: 'UPDATE_COACHES'; payload: PromptBuilderData[] };
+  | { type: 'UPDATE_COACHES'; payload: PromptBuilderData[] }
+  | { type: 'SET_ORGANIZER_DIRTY'; payload: boolean }
+  | { type: 'SET_ATTENDEES_DIRTY'; payload: boolean }
+  | { type: 'SET_COACHES_DIRTY'; payload: boolean };
 
 function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
   switch (action.type) {
@@ -47,6 +53,24 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
         coaches: action.payload,
       };
 
+    case 'SET_ORGANIZER_DIRTY':
+      return {
+        ...state,
+        organizerDirty: action.payload,
+      };
+
+    case 'SET_ATTENDEES_DIRTY':
+      return {
+        ...state,
+        attendeesDirty: action.payload,
+      };
+
+    case 'SET_COACHES_DIRTY':
+      return {
+        ...state,
+        coachesDirty: action.payload,
+      };
+
     default:
       return state;
   }
@@ -59,6 +83,9 @@ const Workbench = () => {
     organizerFirstMessage: '',
     attendees: [{ id: generateTimestampId(), name: 'attendee', system_prompt: '', firstMessage: '', persona: 'attendee' as const }],
     coaches: [],
+    organizerDirty: false,
+    attendeesDirty: false,
+    coachesDirty: false,
   });
 
   const organizerRef = useRef<PromptBuilderRef>(null);
@@ -75,6 +102,22 @@ const Workbench = () => {
     dispatch({ type: 'UPDATE_COACHES', payload: coaches.filter((c) => c.starred) });
   }, []);
 
+  const handleOrganizerDirtyChange = useCallback((dirty: boolean) => {
+    dispatch({ type: 'SET_ORGANIZER_DIRTY', payload: dirty });
+  }, []);
+
+  const handleAttendeesDirtyChange = useCallback((dirty: boolean) => {
+    dispatch({ type: 'SET_ATTENDEES_DIRTY', payload: dirty });
+  }, []);
+
+  const handleCoachesDirtyChange = useCallback((dirty: boolean) => {
+    dispatch({ type: 'SET_COACHES_DIRTY', payload: dirty });
+  }, []);
+
+  const anyDirty = state.organizerDirty || state.attendeesDirty || state.coachesDirty;
+
+  // Toast only on save - will be handled by individual components
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar pageTitle="Workbench" pageSummary="Develop AI organizer prompts" />
@@ -89,6 +132,7 @@ const Workbench = () => {
                   color="bg-purple-200"
                   defaultOpen={true}
                   onDataChange={handleOrganizerPromptChange}
+                  onDirtyChange={handleOrganizerDirtyChange}
                 />
 
                 <PromptBuilderSuite
@@ -96,8 +140,15 @@ const Workbench = () => {
                   color="bg-orange-200"
                   defaultOpen={true}
                   onPromptBuildersChange={handleAttendeesChange}
+                  onDirtyChange={handleAttendeesDirtyChange}
                 />
-                <PromptBuilderSuite persona="attendee" color="bg-red-200" defaultOpen={true} onPromptBuildersChange={handleCoachesChange} />
+                <PromptBuilderSuite
+                  persona="attendee"
+                  color="bg-red-200"
+                  defaultOpen={true}
+                  onPromptBuildersChange={handleCoachesChange}
+                  onDirtyChange={handleCoachesDirtyChange}
+                />
               </div>
             </div>
 
@@ -108,6 +159,7 @@ const Workbench = () => {
                 coaches={state.coaches}
                 organizerPromptText={state.organizerPromptText}
                 organizerFirstMessage={state.organizerFirstMessage}
+                anyDirty={anyDirty}
               />
             </div>
           </div>

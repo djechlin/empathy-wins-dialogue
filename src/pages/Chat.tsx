@@ -408,7 +408,7 @@ const Chat = ({
               <ChevronRight className="h-4 w-4 text-gray-500" />
             </motion.div>
             <div className="text-left">
-              <h3 className="font-medium text-gray-900 font-sans">Chat with {attendeeDisplayName}</h3>
+              <h3 className="font-medium text-gray-900 font-sans">{attendeeDisplayName}</h3>
               <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                 <div className={`w-2 h-2 rounded-full ${getStatusColor(chatStatus)}`} />
                 <span>{getStatusText(chatStatus)}</span>
