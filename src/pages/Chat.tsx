@@ -100,14 +100,14 @@ const CoachResults = ({
   const parseScore = (text: string): { score: number | null; content: string } => {
     const lines = text.split('\n');
     const firstLine = lines[0]?.trim();
-    
-    const scoreMatch = firstLine?.match(/^Score:\s*\[([0-5])\]$/);
+
+    const scoreMatch = firstLine?.match(/^Score:\s*([0-5])$/);
     if (scoreMatch) {
       const score = parseInt(scoreMatch[1], 10);
       const remainingContent = lines.slice(1).join('\n').trim();
       return { score, content: remainingContent };
     }
-    
+
     return { score: null, content: text };
   };
 
@@ -189,7 +189,7 @@ const CoachResults = ({
         {coaches.map((coach) => {
           const evaluation = evaluations[coach.id];
           const { score, content } = evaluation ? parseScore(evaluation) : { score: null, content: '' };
-          
+
           return (
             <div key={coach.id} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <div className="flex items-center justify-between gap-2 mb-2">
@@ -198,9 +198,7 @@ const CoachResults = ({
                   <span className="text-sm font-medium text-gray-900">{coach.name}</span>
                 </div>
                 {score !== null && (
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getScoreBadgeColor(score)}`}>
-                    Score: {score}/5
-                  </span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getScoreBadgeColor(score)}`}>Score: {score}/5</span>
                 )}
               </div>
               <div className="text-sm text-gray-600 bg-white p-2 rounded">
