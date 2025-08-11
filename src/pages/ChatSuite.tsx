@@ -6,6 +6,7 @@ import Chat from './Chat';
 
 interface ChatSuiteProps {
   attendees: PromptBuilderData[];
+  coaches: PromptBuilderData[];
   organizerPromptText: string;
   organizerFirstMessage: string;
 }
@@ -18,7 +19,7 @@ interface ChatStatus {
 
 const MemoizedChat = React.memo(Chat);
 
-const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: ChatSuiteProps) => {
+const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMessage }: ChatSuiteProps) => {
   // Suite-level chat controls
   const [organizerMode, setOrganizerMode] = useState<'human' | 'ai'>('ai');
   const [attendeeMode, setAttendeeMode] = useState<'human' | 'ai'>('ai');
@@ -251,6 +252,7 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
             attendeeMode={attendeeMode}
             controlStatus={controlStatus}
             onStatusUpdate={statusUpdateCallbacks[attendee.id]}
+            coaches={coaches}
             defaultOpen={false}
           />
         ))}

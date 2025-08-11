@@ -1,6 +1,7 @@
 import Navbar from '@/components/layout/Navbar';
 import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
 import PromptBuilderSuite from '@/components/PromptBuilderSuite';
+import { generateTimestampId } from '@/utils/id';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
 import { useCallback, useReducer, useRef } from 'react';
 import ChatSuite from './ChatSuite';
@@ -10,12 +11,14 @@ interface WorkbenchState {
   organizerPromptText: string;
   organizerFirstMessage: string;
   attendees: PromptBuilderData[];
+  coaches: PromptBuilderData[];
 }
 
 type WorkbenchAction =
   | { type: 'SELECT_PROMPT'; payload: { participant: 'organizer'; prompt: PromptBuilderData | null } }
   | { type: 'UPDATE_ORGANIZER_DATA'; payload: { systemPrompt: string; firstMessage: string } }
-  | { type: 'UPDATE_ATTENDEES'; payload: PromptBuilderData[] };
+  | { type: 'UPDATE_ATTENDEES'; payload: PromptBuilderData[] }
+  | { type: 'UPDATE_COACHES'; payload: PromptBuilderData[] };
 
 function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
   switch (action.type) {
@@ -38,6 +41,12 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
         attendees: action.payload,
       };
 
+    case 'UPDATE_COACHES':
+      return {
+        ...state,
+        coaches: action.payload,
+      };
+
     default:
       return state;
   }
@@ -48,7 +57,8 @@ const Workbench = () => {
     organizerPrompt: null,
     organizerPromptText: '',
     organizerFirstMessage: '',
-    attendees: [{ id: '1', name: 'attendee', system_prompt: '', firstMessage: '', persona: 'attendee' as const }],
+    attendees: [{ id: generateTimestampId(), name: 'attendee', system_prompt: '', firstMessage: '', persona: 'attendee' as const }],
+    coaches: [],
   });
 
   const organizerRef = useRef<PromptBuilderRef>(null);
@@ -59,6 +69,10 @@ const Workbench = () => {
 
   const handleAttendeesChange = useCallback((attendees: PromptBuilderData[]) => {
     dispatch({ type: 'UPDATE_ATTENDEES', payload: attendees });
+  }, []);
+
+  const handleCoachesChange = useCallback((coaches: PromptBuilderData[]) => {
+    dispatch({ type: 'UPDATE_COACHES', payload: coaches });
   }, []);
 
   return (
@@ -83,6 +97,7 @@ const Workbench = () => {
                   defaultOpen={true}
                   onPromptBuildersChange={handleAttendeesChange}
                 />
+                <PromptBuilderSuite persona="coach" color="bg-red-200" defaultOpen={true} onPromptBuildersChange={handleCoachesChange} />
               </div>
             </div>
 
@@ -90,6 +105,7 @@ const Workbench = () => {
             <div className="space-y-4">
               <ChatSuite
                 attendees={state.attendees}
+                coaches={state.coaches}
                 organizerPromptText={state.organizerPromptText}
                 organizerFirstMessage={state.organizerFirstMessage}
               />

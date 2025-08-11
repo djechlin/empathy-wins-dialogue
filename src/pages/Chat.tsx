@@ -3,6 +3,7 @@ import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
 import { generateTimestampId } from '@/utils/id';
+import { PromptBuilderData } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bot, ChevronRight, MessageCircle, Send, User } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
@@ -76,6 +77,7 @@ interface ChatProps {
   attendeeMode: 'human' | 'ai';
   controlStatus: 'ready' | 'started' | 'paused' | 'ended';
   onStatusUpdate: (updates: ChatStatus) => void;
+  coaches?: PromptBuilderData[];
   defaultOpen?: boolean;
 }
 
@@ -97,6 +99,42 @@ const AiThinking = ({ participant }: { participant: 'organizer' | 'attendee' }) 
   </div>
 );
 
+const CoachResults = ({ 
+  coaches, 
+  messages, 
+  controlStatus 
+}: { 
+  coaches: PromptBuilderData[];
+  messages: Message[];
+  controlStatus: 'ready' | 'started' | 'paused' | 'ended';
+}) => {
+  if (coaches.length === 0 || messages.length === 0 || controlStatus === 'ready') {
+    return null;
+  }
+
+  return (
+    <div className="border-t bg-gray-50 p-4">
+      <div className="flex items-center gap-2 mb-3">
+        <Bot size={16} className="text-red-600" />
+        <h4 className="font-medium text-gray-900">Coach Evaluations</h4>
+      </div>
+      <div className="space-y-3">
+        {coaches.map((coach) => (
+          <div key={coach.id} className="bg-white border border-red-200 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-3 h-3 bg-red-200 rounded-full" />
+              <span className="text-sm font-medium text-gray-900">{coach.name}</span>
+            </div>
+            <div className="text-sm text-gray-600 bg-red-50 p-2 rounded">
+              <span className="italic">Evaluation will appear here once conversation is complete</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const Chat = ({
   attendeeDisplayName,
   organizerPromptText,
@@ -106,6 +144,7 @@ const Chat = ({
   attendeeMode,
   controlStatus,
   onStatusUpdate,
+  coaches = [],
   defaultOpen = true,
 }: ChatProps) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -441,6 +480,13 @@ const Chat = ({
                   </div>
                 </div>
               )}
+              
+              {/* Coach Results Section */}
+              <CoachResults 
+                coaches={coaches} 
+                messages={state.history}
+                controlStatus={controlStatus}
+              />
             </div>
           </motion.div>
         )}
