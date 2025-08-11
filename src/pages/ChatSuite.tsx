@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { Bot, ChevronRight, MessageCircle, Pause, Play, User, Users } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Chat from './Chat';
 
 interface ChatSuiteProps {
@@ -17,6 +17,8 @@ interface ChatStatus {
   messageCount: number;
   lastActivity: Date | null;
 }
+
+const MemoizedChat = React.memo(Chat);
 
 const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: ChatSuiteProps) => {
   const [openAttendees, setOpenAttendees] = useState<Record<string, boolean>>({
@@ -213,7 +215,7 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
       {attendees
         .filter((attendee) => attendee.systemPrompt.trim() !== '')
         .map((attendee) => (
-          <Collapsible key={attendee.id} open={openAttendees[attendee.id] || false} onOpenChange={() => toggleAttendee(attendee.id)}>
+          <Collapsible key={attendee.id} onOpenChange={() => toggleAttendee(attendee.id)}>
             <CollapsibleTrigger asChild>
               <div className="w-full justify-start text-sm font-medium p-2 h-auto cursor-pointer hover:bg-gray-100 rounded-md flex items-center justify-between">
                 <div className="flex items-center">
@@ -232,7 +234,7 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
             </CollapsibleTrigger>
 
             <CollapsibleContent className="mt-2">
-              <Chat
+              <MemoizedChat
                 attendeeDisplayName={attendee.displayName}
                 organizerPromptText={organizerPromptText}
                 organizerFirstMessage={organizerFirstMessage}
