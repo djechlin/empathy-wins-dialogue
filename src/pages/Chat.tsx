@@ -142,11 +142,21 @@ const CoachResults = ({
             }
 
             const response = data as WorkbenchResponse;
-            if (response.error) {
+            if (response?.error) {
               throw new Error(`Error from workbench: ${response.error}`);
             }
 
-            newEvaluations[coach.id] = response.message || 'No evaluation available';
+            // Handle response - could be in message property or directly as string
+            let evaluation: string;
+            if (response?.message) {
+              evaluation = response.message;
+            } else if (typeof data === 'string') {
+              evaluation = data;
+            } else {
+              evaluation = 'No evaluation available';
+            }
+
+            newEvaluations[coach.id] = evaluation;
           }
 
           setEvaluations(newEvaluations);
