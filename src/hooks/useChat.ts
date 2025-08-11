@@ -119,7 +119,7 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
       return;
     }
     const next = state.queue[0];
-    const nextReceiver = next === null ? 0 : (1 - next.senderIndex) as 0 | 1;
+    const nextReceiver = next === null ? 0 : ((1 - next.senderIndex) as 0 | 1);
     // dequeue step
     setState((prev) => ({ ...prev, queue: prev.queue.slice(1), thinking: pp[nextReceiver], speaker: pp[nextReceiver] }));
     setTimeout(async () => {
@@ -139,7 +139,7 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
   const start = useCallback(async () => {
     setState((prev) => {
       if (prev.controlStatus !== 'ready') {
-        return;
+        return prev;
       }
       return { ...prev, controlStatus: 'started' };
     });
@@ -147,9 +147,9 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
   const pause = useCallback(() => {
     setState((prev) => {
       if (prev.controlStatus !== 'started') {
-        return;
+        return prev;
       }
-      return { ...prev, controlStatus: 'started' };
+      return { ...prev, controlStatus: 'paused' };
     });
   }, []);
 
