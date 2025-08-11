@@ -176,10 +176,15 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
         .map((attendee) => (
           <MemoizedChat
             key={attendee.id}
-            attendeeDisplayName={attendee.name}
-            organizerPromptText={organizerPromptText}
-            organizerFirstMessage={organizerFirstMessage}
-            attendeeSystemPrompt={attendee.system_prompt}
+            attendeePb={attendee}
+            organizerPb={{
+              name: 'Organizer',
+              system_prompt: organizerPromptText,
+              firstMessage: organizerFirstMessage,
+              id: 'organizer',
+              starred: true,
+              persona: 'organizer',
+            }}
             organizerMode={organizerMode}
             attendeeMode="ai"
             controlStatus={controlStatus}
@@ -192,10 +197,15 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
       {/* Fixed Human Chat */}
       <MemoizedChat
         key="human"
-        attendeeDisplayName="Human"
-        organizerPromptText={organizerPromptText}
-        organizerFirstMessage={organizerFirstMessage}
-        attendeeSystemPrompt=""
+        attendeePb={{ name: 'Human', system_prompt: '', firstMessage: '', id: 'human', starred: true, persona: 'attendee' }}
+        organizerPb={{
+          name: 'Organizer',
+          system_prompt: organizerPromptText,
+          firstMessage: organizerFirstMessage,
+          id: 'organizer',
+          starred: true,
+          persona: 'organizer',
+        }}
         organizerMode={organizerMode}
         attendeeMode="human"
         controlStatus={controlStatus}
@@ -203,7 +213,7 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
         coaches={coaches}
         defaultOpen={false}
       />
-      
+
       {/* Active Coaches Cards - Moved to bottom */}
       {coaches.length > 0 && (
         <div className="space-y-2">

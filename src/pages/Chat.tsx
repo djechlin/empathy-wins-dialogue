@@ -1,70 +1,53 @@
-import { useParticipant } from '@/hooks/useParticipant';
+import type { Message } from '@/hooks/useChat';
+import { useChat } from '@/hooks/useChat';
+import { supabase } from '@/integrations/supabase/client';
+import { WorkbenchRequest, WorkbenchResponse } from '@/types/edge-function-types';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
-import { generateTimestampId } from '@/utils/id';
 import { PromptBuilderData } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bot, ChevronRight, MessageCircle, Send, User } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { WorkbenchRequest, WorkbenchResponse } from '@/types/edge-function-types';
 import ScrollToBottom from 'react-scroll-to-bottom';
 
-interface Message {
-  id: string;
-  sender: 'organizer' | 'attendee';
-  content: string;
-  timestamp: Date;
-}
-
 interface ChatState {
-  history: Message[];
-  speaker: 'organizer' | 'attendee';
   userTextInput: string;
-  lastMessageIndexForResponse: number;
+  userSentQueue: string[];
+  pendingPromiseResolve: ((value: string) => void) | null;
 }
 
-type ChatAction =
+type ChatAction = 
   | { type: 'SET_USER_TEXT_INPUT'; payload: string }
-  | { type: 'SEND_MESSAGE'; payload: { sender: 'organizer' | 'attendee'; content: string } }
-  | { type: 'MARK_MESSAGE_FOR_RESPONSE'; payload: { messageIndex: number } };
+  | { type: 'SEND_USER_MESSAGE'; payload: string }
+  | { type: 'SENT_USER_MESSAGE' }
+  | { type: 'SET_PENDING_PROMISE'; payload: ((value: string) => void) | null };
 
 function reducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
     case 'SET_USER_TEXT_INPUT':
       return { ...state, userTextInput: action.payload };
-
-    case 'SEND_MESSAGE': {
-      const newHistory = [...state.history, constructMessage(action.payload.sender, action.payload.content)];
-      return {
-        ...state,
-        history: newHistory,
-        userTextInput: action.payload.sender === state.speaker ? '' : state.userTextInput,
-        speaker: action.payload.sender === 'organizer' ? 'attendee' : 'organizer',
-      };
-    }
-
-    case 'MARK_MESSAGE_FOR_RESPONSE':
-      return {
-        ...state,
-        lastMessageIndexForResponse: action.payload.messageIndex,
-      };
-
+    case 'SEND_USER_MESSAGE':
+      const newQueue = [...state.userSentQueue, action.payload];
+      // Resolve any pending promise with the first message in queue
+      if (state.pendingPromiseResolve && newQueue.length > 0) {
+        state.pendingPromiseResolve(newQueue[0]);
+        return {
+          ...state,
+          userTextInput: '',
+          userSentQueue: newQueue.slice(1),
+          pendingPromiseResolve: null,
+        };
+      }
+      return { ...state, userTextInput: '', userSentQueue: newQueue };
+    case 'SENT_USER_MESSAGE':
+      return { ...state, userSentQueue: state.userSentQueue.slice(1) };
+    case 'SET_PENDING_PROMISE':
+      return { ...state, pendingPromiseResolve: action.payload };
     default:
       return state;
   }
 }
-
-function constructMessage(sender: 'organizer' | 'attendee', content: string) {
-  return {
-    id: generateTimestampId(sender),
-    sender,
-    content,
-    timestamp: new Date(),
-  };
-}
-
 interface ChatStatus {
   started?: boolean;
   messageCount?: number;
@@ -72,10 +55,8 @@ interface ChatStatus {
 }
 
 interface ChatProps {
-  attendeeDisplayName: string;
-  organizerPromptText: string;
-  organizerFirstMessage: string;
-  attendeeSystemPrompt: string;
+  attendeePb: PromptBuilderData;
+  organizerPb: PromptBuilderData;
   organizerMode: 'human' | 'ai';
   attendeeMode: 'human' | 'ai';
   controlStatus: 'ready' | 'started' | 'paused' | 'ended';
@@ -84,7 +65,7 @@ interface ChatProps {
   defaultOpen?: boolean;
 }
 
-const AiThinking = ({ participant }: { participant: 'organizer' | 'attendee' }) => (
+const AiThinking = ({ persona: participant }: { persona: 'organizer' | 'attendee' }) => (
   <div className={`flex ${participant === 'organizer' ? 'justify-end' : 'justify-start'}`}>
     <div
       className={`max-w-xs px-4 py-2 rounded-lg border border-gray-200 ${participant === 'organizer' ? 'bg-purple-100' : 'bg-orange-100'}`}
@@ -211,10 +192,8 @@ const CoachResults = ({
 };
 
 const Chat = ({
-  attendeeDisplayName,
-  organizerPromptText,
-  organizerFirstMessage,
-  attendeeSystemPrompt,
+  attendeePb,
+  organizerPb,
   organizerMode,
   attendeeMode,
   controlStatus,
@@ -224,126 +203,66 @@ const Chat = ({
 }: ChatProps) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [state, dispatch] = useReducer(reducer, {
-    history: [],
-    speaker: 'organizer' as const,
     userTextInput: '',
-    lastMessageIndexForResponse: -1,
+    userSentQueue: [],
+    pendingPromiseResolve: null,
   });
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const initializationStarted = useRef(false);
 
-  // Helper for getting human text input - memoized with useCallback to prevent useParticipant re-runs
   const getTextInput = useCallback((): Promise<string> => {
-    return Promise.resolve(state.userTextInput);
-  }, [state.userTextInput]);
+    return new Promise((resolve) => {
+      // If there's already a message in the queue, resolve immediately
+      if (state.userSentQueue.length > 0) {
+        const message = state.userSentQueue[0];
+        dispatch({ type: 'SENT_USER_MESSAGE' });
+        resolve(message);
+      } else {
+        // Otherwise, store the resolve function to be called when user sends a message
+        dispatch({ type: 'SET_PENDING_PROMISE', payload: resolve });
+      }
+    });
+  }, [state.userSentQueue]);
 
-  const organizerParticipant = useParticipant(organizerMode, organizerFirstMessage || null, organizerPromptText, getTextInput);
-  const attendeeParticipant = useParticipant(attendeeMode, null, attendeeSystemPrompt, getTextInput);
-  const participant = useMemo(
-    () => (state.speaker === 'organizer' ? organizerParticipant : attendeeParticipant),
-    [state.speaker, organizerParticipant, attendeeParticipant],
-  );
+  const chatEngine = useChat([
+    {
+      mode: organizerMode,
+      organizerFirstMessage: organizerPb.firstMessage || null,
+      systemPrompt: organizerPb.system_prompt,
+      getTextInput,
+      persona: 'organizer',
+    },
+    {
+      mode: attendeeMode,
+      systemPrompt: attendeePb.system_prompt,
+      getTextInput,
+      organizerFirstMessage: null,
+      persona: 'attendee',
+    },
+  ]);
 
-  const speakerMode = useMemo(
-    () => (state.speaker === 'organizer' ? organizerMode : attendeeMode),
-    [state.speaker, organizerMode, attendeeMode],
-  );
+  const aiThinking = useMemo(() => chatEngine.thinking?.mode === 'ai', [chatEngine.thinking]);
 
-  const isAwaitingAiResponse = useMemo(() => state.history.length > 0 && speakerMode === 'ai', [state.history.length, speakerMode]);
-
-  // If speaker is AI, request message in 1 tick
   useEffect(() => {
-    if (
-      state.history.length === 0 ||
-      state.history[state.history.length - 1].sender === state.speaker ||
-      controlStatus !== 'started' ||
-      speakerMode === 'human' ||
-      state.history.length - 1 <= state.lastMessageIndexForResponse
-    ) {
+    if (controlStatus !== 'ready') {
       return;
     }
-
-    console.log('start a timeout with ', state.history.length - 1);
-
-    setTimeout(async () => {
-      const lastMessage = state.history[state.history.length - 1];
-      const currentMessageIndex = state.history.length - 1;
-
-      // Mark this message as being processed before making the request
-      dispatch({
-        type: 'MARK_MESSAGE_FOR_RESPONSE',
-        payload: { messageIndex: currentMessageIndex },
-      });
-
-      try {
-        console.log('participant chat, from the big timeout: ', state.history.length - 1);
-        const response = await participant.chat(lastMessage.content);
-        dispatch({
-          type: 'SEND_MESSAGE',
-          payload: {
-            sender: state.speaker,
-            content: response,
-          },
-        });
-      } catch (error) {
-        console.error('Error in chat loop:', error);
-      }
-    }, 0);
-  }, [state.history, state.speaker, controlStatus, speakerMode, participant, state.lastMessageIndexForResponse]);
-
-  // Start chat when controlStatus changes to started
-  useEffect(() => {
-    if (
-      controlStatus === 'started' &&
-      state.history.length === 0 &&
-      organizerMode === 'ai' &&
-      state.lastMessageIndexForResponse === -1 &&
-      !initializationStarted.current
-    ) {
-      console.log('Initializing chat with organizer first message');
-      initializationStarted.current = true;
-      onStatusUpdate({ started: true, lastActivity: new Date() });
-
-      // Mark initialization as in progress to prevent duplicate calls
-      dispatch({
-        type: 'MARK_MESSAGE_FOR_RESPONSE',
-        payload: { messageIndex: 0 },
-      });
-
-      organizerParticipant
-        .chat(null)
-        .then((firstMessage) => {
-          console.log('Received organizer first message:', firstMessage);
-          dispatch({ type: 'SEND_MESSAGE', payload: { sender: 'organizer', content: firstMessage } });
-          onStatusUpdate({ messageCount: 1, lastActivity: new Date() });
-        })
-        .catch((error) => {
-          console.error('Error starting chat:', error);
-          initializationStarted.current = false; // Reset on error
-        });
-    }
-  }, [controlStatus, state.history.length, organizerMode, state.lastMessageIndexForResponse, organizerParticipant, onStatusUpdate]);
-
-  // Reset initialization flag when chat is reset
-  useEffect(() => {
-    if (controlStatus === 'ready') {
-      initializationStarted.current = false;
-    }
-  }, [controlStatus]);
+    chatEngine.start();
+  }, [controlStatus, chatEngine]);
 
   // Update message count when history changes
   useEffect(() => {
-    if (state.history.length > 0) {
-      onStatusUpdate({ messageCount: state.history.length, lastActivity: new Date() });
+    if (chatEngine.history.length > 0) {
+      onStatusUpdate({ messageCount: chatEngine.history.length, lastActivity: new Date() });
     }
-  }, [state.history.length, onStatusUpdate]);
+  }, [chatEngine.history.length, onStatusUpdate]);
 
   const sendHumanMessage = useCallback(() => {
-    if (!state.userTextInput.trim() || speakerMode === 'ai' || controlStatus !== 'started') return;
-    dispatch({ type: 'SEND_MESSAGE', payload: { sender: state.speaker, content: state.userTextInput } });
-  }, [controlStatus, speakerMode, state.speaker, state.userTextInput]);
+    if (!state.userTextInput.trim() || chatEngine.thinking?.mode !== 'human') return;
+
+    dispatch({ type: 'SEND_USER_MESSAGE', payload: state.userTextInput.trim() });
+  }, [chatEngine.thinking, state.userTextInput]);
 
   const sendHumanMessageOnPressEnter = useCallback(
     (e: React.KeyboardEvent) => {
@@ -355,15 +274,15 @@ const Chat = ({
     [sendHumanMessage],
   );
 
-  const lastMessage = state.history[state.history.length - 1];
+  const lastMessage = chatEngine.history[chatEngine.history.length - 1];
   const chatStatus = useMemo(() => {
     if (controlStatus === 'ready') return 'ready';
     if (controlStatus === 'paused') return 'paused';
     if (controlStatus === 'ended') return 'ended';
-    if (isAwaitingAiResponse) return 'ai-thinking';
-    if (speakerMode === 'human') return 'waiting-human';
+    if (aiThinking) return 'ai-thinking';
+    if (chatEngine.speaker.mode === 'human') return 'waiting-human';
     return 'active';
-  }, [controlStatus, isAwaitingAiResponse, speakerMode]);
+  }, [controlStatus, aiThinking, chatEngine.speaker]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -401,7 +320,6 @@ const Chat = ({
 
   return (
     <Card className="overflow-hidden">
-      {/* Chat Header - Always Visible */}
       <button onClick={() => setIsOpen(!isOpen)} className="w-full p-4 hover:bg-gray-50 transition-colors duration-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -410,9 +328,9 @@ const Chat = ({
             </motion.div>
             <div className="text-left">
               <div className="flex items-center gap-2">
-                {attendeeDisplayName === 'Human' && <User size={16} className="text-blue-600" />}
-                <h3 className="font-medium text-gray-900 font-sans">{attendeeDisplayName}</h3>
-                {attendeeDisplayName === 'Human' && <span className="text-xs text-gray-500">(manual input)</span>}
+                {attendeePb.name === 'Human' && <User size={16} className="text-blue-600" />}
+                <h3 className="font-medium text-gray-900 font-sans">{attendeePb.name}</h3>
+                {attendeePb.name === 'Human' && <span className="text-xs text-gray-500">(manual input)</span>}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                 <div className={`w-2 h-2 rounded-full ${getStatusColor(chatStatus)}`} />
@@ -422,10 +340,10 @@ const Chat = ({
           </div>
 
           <div className="flex items-center gap-4 text-sm">
-            {state.history.length > 0 && (
+            {chatEngine.history.length > 0 && (
               <div className="flex items-center gap-2 text-gray-600">
                 <MessageCircle size={14} />
-                <span>{state.history.length} messages</span>
+                <span>{chatEngine.history.length} messages</span>
               </div>
             )}
             {lastMessage && (
@@ -464,7 +382,7 @@ const Chat = ({
               {/* Chat Messages Area */}
               <ScrollToBottom className="h-96 p-4 bg-gray-50" followButtonClassName="hidden">
                 <div className="space-y-4">
-                  {state.history.map((message) => (
+                  {chatEngine.history.map((message) => (
                     <motion.div
                       key={message.id}
                       initial={{ opacity: 0, y: 10 }}
@@ -493,29 +411,31 @@ const Chat = ({
                   ))}
 
                   {/* Show waiting indicator for next expected response */}
-                  {controlStatus === 'started' && state.speaker && speakerMode === 'human' && !isAwaitingAiResponse && (
+                  {controlStatus === 'started' && chatEngine.speaker.mode === 'human' && !aiThinking && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`flex ${state.speaker === 'organizer' ? 'justify-end' : 'justify-start'}`}
+                      className={`flex ${chatEngine.speaker.persona === 'organizer' ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
                         className={`max-w-xs px-4 py-2 rounded-lg border-2 border-dashed ${
-                          state.speaker === 'organizer' ? 'border-purple-300 bg-purple-50' : 'border-orange-300 bg-orange-50'
+                          chatEngine.speaker.persona === 'organizer' ? 'border-purple-300 bg-purple-50' : 'border-orange-300 bg-orange-50'
                         }`}
                       >
                         <div className="flex items-center gap-2 mb-1">
-                          <User size={12} className={state.speaker === 'organizer' ? 'text-purple-400' : 'text-orange-400'} />
-                          <span className="text-xs text-gray-500">{state.speaker === 'organizer' ? 'Organizer' : 'Attendee'}</span>
+                          <User size={12} className={chatEngine.speaker.persona === 'organizer' ? 'text-purple-400' : 'text-orange-400'} />
+                          <span className="text-xs text-gray-500">
+                            {chatEngine.speaker.persona === 'organizer' ? 'Organizer' : 'Attendee'}
+                          </span>
                         </div>
                         <p className="text-sm italic text-gray-500">Waiting for human...</p>
                       </div>
                     </motion.div>
                   )}
 
-                  {isAwaitingAiResponse && (
+                  {aiThinking && (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                      <AiThinking participant={state.speaker} />
+                      <AiThinking persona={chatEngine.speaker.persona} />
                     </motion.div>
                   )}
                   <div ref={messagesEndRef} />
@@ -536,22 +456,22 @@ const Chat = ({
                           ? 'Chat is paused'
                           : controlStatus === 'ended'
                             ? 'Chat has ended'
-                            : state.speaker === 'organizer'
+                            : chatEngine.speaker.persona === 'organizer'
                               ? 'Type your message as the organizer...'
                               : 'Type your message as the attendee...'
                       }
                       className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
                         controlStatus !== 'started' ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''
                       }`}
-                      disabled={controlStatus !== 'started' || isAwaitingAiResponse}
+                      disabled={controlStatus !== 'started'}
                     />
                     <Button
                       onClick={sendHumanMessage}
-                      disabled={controlStatus !== 'started' || !state.userTextInput.trim() || isAwaitingAiResponse}
+                      disabled={controlStatus !== 'started' || !state.userTextInput.trim() || chatEngine.thinking?.mode !== 'human'}
                       className={`px-4 transition-colors duration-200 ${
                         controlStatus !== 'started'
                           ? 'bg-gray-400 cursor-not-allowed'
-                          : state.speaker === 'organizer'
+                          : chatEngine.speaker.persona === 'organizer'
                             ? 'bg-purple-600 hover:bg-purple-700 text-white'
                             : 'bg-orange-600 hover:bg-orange-700 text-white'
                       }`}
@@ -562,7 +482,7 @@ const Chat = ({
                 </div>
               )}
 
-              <CoachResults coaches={coaches} messages={state.history} controlStatus={controlStatus} />
+              <CoachResults coaches={coaches} messages={chatEngine.history} controlStatus={controlStatus} />
             </div>
           </motion.div>
         )}
