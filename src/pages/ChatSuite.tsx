@@ -1,8 +1,6 @@
 import { AttendeeData } from '@/components/PromptBuilderSuite';
-import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
-import { Bot, ChevronRight, MessageCircle, Pause, Play, User, Users } from 'lucide-react';
+import { Bot, MessageCircle, Pause, Play, User, Users } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
 import Chat from './Chat';
 
@@ -21,9 +19,6 @@ interface ChatStatus {
 const MemoizedChat = React.memo(Chat);
 
 const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: ChatSuiteProps) => {
-  const [openAttendees, setOpenAttendees] = useState<Record<string, boolean>>({
-    [attendees[0]?.id || '1']: true,
-  });
 
   // Suite-level chat controls
   const [organizerMode, setOrganizerMode] = useState<'human' | 'ai'>('ai');
@@ -42,12 +37,6 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
     ),
   );
 
-  const toggleAttendee = useCallback((attendeeId: string) => {
-    setOpenAttendees((prev) => ({
-      ...prev,
-      [attendeeId]: !prev[attendeeId],
-    }));
-  }, []);
 
   const handleModeToggle = useCallback(
     (participant: 'organizer' | 'attendee', mode: 'human' | 'ai') => {
@@ -226,39 +215,20 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
 
       {attendees
         .filter((attendee) => attendee.systemPrompt.trim() !== '')
-        .map((attendee) => (
-          <Collapsible key={attendee.id} onOpenChange={() => toggleAttendee(attendee.id)}>
-            <CollapsibleTrigger asChild>
-              <div className="w-full justify-start text-sm font-medium p-2 h-auto cursor-pointer hover:bg-gray-100 rounded-md flex items-center justify-between">
-                <div className="flex items-center">
-                  <ChevronRight className={cn('h-4 w-4 mr-2 transition-transform', openAttendees[attendee.id] ? 'rotate-90' : '')} />
-                  Chat with {attendee.displayName}
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  {chatStatuses[attendee.id]?.started && (
-                    <>
-                      <div className={`w-2 h-2 rounded-full ${hasStarted && !paused ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
-                      <span className="text-gray-600">{chatStatuses[attendee.id]?.messageCount || 0} msgs</span>
-                    </>
-                  )}
-                </div>
-              </div>
-            </CollapsibleTrigger>
-
-            <CollapsibleContent className="mt-2">
-              <MemoizedChat
-                attendeeDisplayName={attendee.displayName}
-                organizerPromptText={organizerPromptText}
-                organizerFirstMessage={organizerFirstMessage}
-                attendeeSystemPrompt={attendee.systemPrompt}
-                organizerMode={organizerMode}
-                attendeeMode={attendeeMode}
-                paused={paused}
-                hasStarted={hasStarted}
-                onStatusUpdate={statusUpdateCallbacks[attendee.id]}
-              />
-            </CollapsibleContent>
-          </Collapsible>
+        .map((attendee, index) => (
+          <MemoizedChat
+            key={attendee.id}
+            attendeeDisplayName={attendee.displayName}
+            organizerPromptText={organizerPromptText}
+            organizerFirstMessage={organizerFirstMessage}
+            attendeeSystemPrompt={attendee.systemPrompt}
+            organizerMode={organizerMode}
+            attendeeMode={attendeeMode}
+            paused={paused}
+            hasStarted={hasStarted}
+            onStatusUpdate={statusUpdateCallbacks[attendee.id]}
+            defaultOpen={index === 0}
+          />
         ))}
     </div>
   );

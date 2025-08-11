@@ -1,10 +1,12 @@
 import { useParticipant } from '@/hooks/useParticipant';
+import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { Textarea } from '@/ui/textarea';
 import { generateTimestampId } from '@/utils/id';
-import { Bot, Send, User } from 'lucide-react';
-import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import { Bot, ChevronRight, Send, User } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 interface Message {
   id: string;
@@ -76,6 +78,7 @@ interface ChatProps {
   paused: boolean;
   hasStarted: boolean;
   onStatusUpdate: (updates: ChatStatus) => void;
+  defaultOpen?: boolean;
 }
 
 const AiThinking = ({ participant }: { participant: 'organizer' | 'attendee' }) => (
@@ -106,7 +109,9 @@ const Chat = ({
   paused,
   hasStarted,
   onStatusUpdate,
+  defaultOpen = true,
 }: ChatProps) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [state, dispatch] = useReducer(reducer, {
     history: [],
     speaker: 'organizer' as const,
@@ -179,16 +184,17 @@ const Chat = ({
 
   // Start chat when hasStarted prop changes to true
   useEffect(() => {
-    if (hasStarted && 
-        state.history.length === 0 && 
-        organizerMode === 'ai' && 
-        state.lastMessageIndexForResponse === -1 &&
-        !initializationStarted.current) {
-      
+    if (
+      hasStarted &&
+      state.history.length === 0 &&
+      organizerMode === 'ai' &&
+      state.lastMessageIndexForResponse === -1 &&
+      !initializationStarted.current
+    ) {
       console.log('Initializing chat with organizer first message');
       initializationStarted.current = true;
       onStatusUpdate({ started: true, lastActivity: new Date() });
-      
+
       // Mark initialization as in progress to prevent duplicate calls
       dispatch({
         type: 'MARK_MESSAGE_FOR_RESPONSE',
@@ -239,12 +245,31 @@ const Chat = ({
   );
 
   return (
-    <Card className="h-full flex flex-col">
-      <div className="border-b px-2 py-2 bg-gray-50">
-        <h2 className="font-semibold text-center">Chat with {attendeeDisplayName}</h2>
-      </div>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger asChild>
+        <div className="w-full justify-start text-sm font-medium p-2 h-auto cursor-pointer hover:bg-gray-100 rounded-md flex items-center justify-between">
+          <div className="flex items-center">
+            <ChevronRight className={cn('h-4 w-4 mr-2 transition-transform', isOpen ? 'rotate-90' : '')} />
+            Chat with {attendeeDisplayName}
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            {state.history.length > 0 && (
+              <>
+                <div className={`w-2 h-2 rounded-full ${hasStarted && !paused ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                <span className="text-gray-600">{state.history.length} msgs</span>
+              </>
+            )}
+          </div>
+        </div>
+      </CollapsibleTrigger>
 
-      <div className="flex-1 overflow-y-auto scroll-smooth p-4 space-y-4">
+      <CollapsibleContent className="mt-2">
+        <Card className="h-full flex flex-col">
+          <div className="border-b px-2 py-2 bg-gray-50">
+            <h2 className="font-semibold text-center">Chat with {attendeeDisplayName}</h2>
+          </div>
+
+          <div className="flex-1 overflow-y-auto scroll-smooth p-4 space-y-4">
         {state.history.map((message) => (
           <div key={message.id} className={`flex ${message.sender === 'organizer' ? 'justify-end' : 'justify-start'}`}>
             <div
@@ -329,8 +354,10 @@ const Chat = ({
             <Send size={16} />
           </Button>
         </div>
-      </div>
-    </Card>
+          </div>
+        </Card>
+      </CollapsibleContent>
+    </Collapsible>
   );
 };
 
