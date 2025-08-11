@@ -125,7 +125,7 @@ const Chat = ({
 
   const organizerParticipant = useParticipant(organizerMode, organizerFirstMessage || null, organizerPromptText, getTextInput);
   const attendeeParticipant = useParticipant(attendeeMode, null, attendeeSystemPrompt, getTextInput);
-  
+
   const currentSpeaker = state.speaker;
   const currentSpeakerMode = currentSpeaker === 'organizer' ? organizerMode : attendeeMode;
   const currentParticipant = currentSpeaker === 'organizer' ? organizerParticipant : attendeeParticipant;
