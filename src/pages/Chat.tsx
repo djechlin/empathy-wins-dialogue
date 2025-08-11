@@ -7,6 +7,8 @@ import { PromptBuilderData } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bot, ChevronRight, MessageCircle, Send, User } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { WorkbenchRequest, WorkbenchResponse } from '@/types/edge-function-types';
 
 interface Message {
   id: string;
@@ -99,15 +101,67 @@ const AiThinking = ({ participant }: { participant: 'organizer' | 'attendee' }) 
   </div>
 );
 
-const CoachResults = ({ 
-  coaches, 
-  messages, 
-  controlStatus 
-}: { 
+const CoachResults = ({
+  coaches,
+  messages,
+  controlStatus,
+}: {
   coaches: PromptBuilderData[];
   messages: Message[];
   controlStatus: 'ready' | 'started' | 'paused' | 'ended';
 }) => {
+  const [evaluations, setEvaluations] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (controlStatus === 'ended' && coaches.length > 0 && messages.length > 0) {
+      const getCoachEvaluations = async () => {
+        setLoading(true);
+        setError(null);
+
+        const transcript = messages.map((msg) => `${msg.sender}: ${msg.content}`).join('\n\n');
+
+        const newEvaluations: Record<string, string> = {};
+
+        try {
+          for (const coach of coaches) {
+            const request: WorkbenchRequest = {
+              coach: {
+                transcript,
+                coach: coach.system_prompt,
+              },
+            };
+
+            const { data, error: supabaseError } = await supabase.functions.invoke('workbench', {
+              body: request,
+            });
+
+            if (supabaseError) {
+              throw new Error(`Failed to get evaluation for ${coach.name}: ${supabaseError.message}`);
+            }
+
+            const response = data as WorkbenchResponse;
+            if (response.error) {
+              throw new Error(`Error from workbench: ${response.error}`);
+            }
+
+            newEvaluations[coach.id] = response.message || 'No evaluation available';
+          }
+
+          setEvaluations(newEvaluations);
+        } catch (err) {
+          console.error('Error getting coach evaluations:', err);
+          setError(err instanceof Error ? err.message : 'Failed to get evaluations');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      getCoachEvaluations();
+    }
+  }, [controlStatus, coaches, messages]);
+
   if (coaches.length === 0 || messages.length === 0 || controlStatus === 'ready') {
     return null;
   }
@@ -126,7 +180,17 @@ const CoachResults = ({
               <span className="text-sm font-medium text-gray-900">{coach.name}</span>
             </div>
             <div className="text-sm text-gray-600 bg-red-50 p-2 rounded">
-              <span className="italic">Evaluation will appear here once conversation is complete</span>
+              {controlStatus !== 'ended' ? (
+                <span className="italic">Evaluation will appear here once conversation is complete</span>
+              ) : loading ? (
+                <span className="italic">Getting evaluation...</span>
+              ) : error ? (
+                <span className="text-red-600">Error: {error}</span>
+              ) : evaluations[coach.id] ? (
+                <div className="whitespace-pre-wrap">{evaluations[coach.id]}</div>
+              ) : (
+                <span className="italic">No evaluation available</span>
+              )}
             </div>
           </div>
         ))}
@@ -480,13 +544,8 @@ const Chat = ({
                   </div>
                 </div>
               )}
-              
-              {/* Coach Results Section */}
-              <CoachResults 
-                coaches={coaches} 
-                messages={state.history}
-                controlStatus={controlStatus}
-              />
+
+              <CoachResults coaches={coaches} messages={state.history} controlStatus={controlStatus} />
             </div>
           </motion.div>
         )}
