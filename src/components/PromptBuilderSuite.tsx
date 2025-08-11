@@ -305,8 +305,8 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, onDirt
         </div>
       )}
 
-      <Button onClick={addPromptBuilder} size="sm" variant="outline" className="w-full text-xs py-2">
-        <Plus className="h-3 w-3 mr-1" />
+      <Button onClick={addPromptBuilder} size="default" variant="secondary" className="w-full text-sm py-3 font-medium">
+        <Plus className="h-4 w-4 mr-2" />
         Add {persona}
       </Button>
 

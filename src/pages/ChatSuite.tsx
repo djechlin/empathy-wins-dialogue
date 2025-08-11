@@ -1,6 +1,6 @@
 import { Button } from '@/ui/button';
 import { PromptBuilderData } from '@/utils/promptBuilder';
-import { Bot, MessageCircle, Pause, Play, Square, User, Users } from 'lucide-react';
+import { MessageCircle, Pause, Play, Square, User, Users, Zap } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
 import Chat from './Chat';
 
@@ -179,7 +179,7 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
                         : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  <Bot size={12} />
+                  <Zap size={12} />
                   AI
                 </button>
               </div>
@@ -213,7 +213,7 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
                         : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  <Bot size={12} />
+                  <Zap size={12} />
                   AI
                 </button>
               </div>
