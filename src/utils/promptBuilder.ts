@@ -152,7 +152,8 @@ export const fetchAllPromptBuildersForPersona = async (persona: 'organizer' | 'a
       .from('prompt_builders')
       .select('*')
       .eq('persona', persona)
-      .order('updated_at', { ascending: false });
+      .eq('archived', false)
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching prompt builders:', error);
