@@ -1,3 +1,4 @@
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/ui/button';
 import { Input } from '@/ui/input';
 import { Label } from '@/ui/label';
@@ -199,6 +200,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     };
 
     const [state, dispatch] = useReducer(promptBuilderReducer, initialState);
+    const { toast } = useToast();
 
     const isDirty = useCallback(() => {
       if (!state.lastSavedPromptBuilder) return false;
@@ -233,13 +235,22 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
         });
 
         dispatch({ type: 'SAVE_SUCCESS', payload: { id: savedData.id } });
+        toast({
+          title: 'Success',
+          description: `${getPersonaDisplayName(persona)} saved successfully`,
+        });
         return true;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         dispatch({ type: 'SAVE_FAILED', payload: errorMessage });
+        toast({
+          title: 'Error',
+          description: `Failed to save ${getPersonaDisplayName(persona).toLowerCase()}: ${errorMessage}`,
+          variant: 'destructive',
+        });
         return false;
       }
-    }, [isDirty, state.id, state.systemPrompt, state.firstMessage, state.displayName, persona]);
+    }, [isDirty, state.id, state.systemPrompt, state.firstMessage, state.displayName, persona, toast]);
 
     const handleSaveNameEdit = useCallback(() => {
       dispatch({ type: 'COMPLETE_NAME_EDIT', payload: state.editNameValue.trim() || persona });
