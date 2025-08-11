@@ -90,6 +90,8 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
 
   return (
     <div className="space-y-4">
+      <h3 className="font-semibold font-sans">Chats</h3>
+      
       <div className="bg-gray-50 border rounded-lg p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4 text-sm">
@@ -204,7 +206,12 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
             )}
             {(controlStatus === 'started' || controlStatus === 'paused') && (
               <>
-                <Button onClick={handlePauseToggle} size="sm" variant={controlStatus === 'paused' ? 'default' : 'outline'} className="text-xs px-3">
+                <Button
+                  onClick={handlePauseToggle}
+                  size="sm"
+                  variant={controlStatus === 'paused' ? 'default' : 'outline'}
+                  className="text-xs px-3"
+                >
                   {controlStatus === 'paused' ? (
                     <>
                       <Play size={12} className="mr-1" />
@@ -226,8 +233,6 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
           </div>
         </div>
       </div>
-
-      <h3 className="font-semibold font-sans">Chats</h3>
 
       {attendees
         .filter((attendee) => attendee.systemPrompt.trim() !== '')
