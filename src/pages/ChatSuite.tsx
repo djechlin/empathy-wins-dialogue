@@ -130,8 +130,8 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
           </div>
         </div>
 
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between mb-4 gap-4">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700">Organizer:</span>
               <div className="flex bg-gray-200 rounded-lg p-1">
@@ -201,10 +201,10 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {controlStatus === 'ready' && (
-              <Button onClick={handleStartAll} size="sm" className="px-4">
-                <Play size={16} className="mr-2" />
+              <Button onClick={handleStartAll} size="sm" className="px-3">
+                <Play size={14} className="mr-1" />
                 Start All
               </Button>
             )}
@@ -214,21 +214,21 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
                   onClick={handlePauseToggle}
                   size="sm"
                   variant={controlStatus === 'paused' ? 'default' : 'outline'}
-                  className="text-xs px-3"
+                  className="text-xs px-2"
                 >
                   {controlStatus === 'paused' ? (
                     <>
                       <Play size={12} className="mr-1" />
-                      Resume All
+                      Resume
                     </>
                   ) : (
                     <>
                       <Pause size={12} className="mr-1" />
-                      Pause All
+                      Pause
                     </>
                   )}
                 </Button>
-                <Button onClick={handleFinish} size="sm" variant="destructive" className="text-xs px-3">
+                <Button onClick={handleFinish} size="sm" variant="destructive" className="text-xs px-2">
                   <Square size={12} className="mr-1" />
                   Finish
                 </Button>
