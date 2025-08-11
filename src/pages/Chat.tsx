@@ -74,8 +74,7 @@ interface ChatProps {
   attendeeSystemPrompt: string;
   organizerMode: 'human' | 'ai';
   attendeeMode: 'human' | 'ai';
-  paused: boolean;
-  hasStarted: boolean;
+  controlStatus: 'ready' | 'started' | 'paused' | 'ended';
   onStatusUpdate: (updates: ChatStatus) => void;
   defaultOpen?: boolean;
 }
@@ -105,8 +104,7 @@ const Chat = ({
   attendeeSystemPrompt,
   organizerMode,
   attendeeMode,
-  paused,
-  hasStarted,
+  controlStatus,
   onStatusUpdate,
   defaultOpen = true,
 }: ChatProps) => {
@@ -146,7 +144,7 @@ const Chat = ({
     if (
       state.history.length === 0 ||
       state.history[state.history.length - 1].sender === state.speaker ||
-      paused ||
+      controlStatus !== 'started' ||
       speakerMode === 'human' ||
       state.history.length - 1 <= state.lastMessageIndexForResponse
     ) {
@@ -179,12 +177,12 @@ const Chat = ({
         console.error('Error in chat loop:', error);
       }
     }, 0);
-  }, [state.history, state.speaker, paused, speakerMode, participant, state.lastMessageIndexForResponse]);
+  }, [state.history, state.speaker, controlStatus, speakerMode, participant, state.lastMessageIndexForResponse]);
 
-  // Start chat when hasStarted prop changes to true
+  // Start chat when controlStatus changes to started
   useEffect(() => {
     if (
-      hasStarted &&
+      controlStatus === 'started' &&
       state.history.length === 0 &&
       organizerMode === 'ai' &&
       state.lastMessageIndexForResponse === -1 &&
@@ -212,14 +210,14 @@ const Chat = ({
           initializationStarted.current = false; // Reset on error
         });
     }
-  }, [hasStarted, state.history.length, organizerMode, state.lastMessageIndexForResponse, organizerParticipant, onStatusUpdate]);
+  }, [controlStatus, state.history.length, organizerMode, state.lastMessageIndexForResponse, organizerParticipant, onStatusUpdate]);
 
   // Reset initialization flag when chat is reset
   useEffect(() => {
-    if (!hasStarted) {
+    if (controlStatus === 'ready') {
       initializationStarted.current = false;
     }
-  }, [hasStarted]);
+  }, [controlStatus]);
 
   // Update message count when history changes
   useEffect(() => {
@@ -229,9 +227,9 @@ const Chat = ({
   }, [state.history.length, onStatusUpdate]);
 
   const sendHumanMessage = useCallback(() => {
-    if (!state.userTextInput.trim() || speakerMode === 'ai' || paused) return;
+    if (!state.userTextInput.trim() || speakerMode === 'ai' || controlStatus !== 'started') return;
     dispatch({ type: 'SEND_MESSAGE', payload: { sender: state.speaker, content: state.userTextInput } });
-  }, [paused, speakerMode, state.speaker, state.userTextInput]);
+  }, [controlStatus, speakerMode, state.speaker, state.userTextInput]);
 
   const sendHumanMessageOnPressEnter = useCallback(
     (e: React.KeyboardEvent) => {
@@ -245,12 +243,13 @@ const Chat = ({
 
   const lastMessage = state.history[state.history.length - 1];
   const chatStatus = useMemo(() => {
-    if (!hasStarted) return 'ready';
-    if (paused) return 'paused';
+    if (controlStatus === 'ready') return 'ready';
+    if (controlStatus === 'paused') return 'paused';
+    if (controlStatus === 'ended') return 'ended';
     if (isAwaitingAiResponse) return 'ai-thinking';
     if (speakerMode === 'human') return 'waiting-human';
     return 'active';
-  }, [hasStarted, paused, isAwaitingAiResponse, speakerMode]);
+  }, [controlStatus, isAwaitingAiResponse, speakerMode]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -262,6 +261,8 @@ const Chat = ({
         return 'bg-yellow-500 animate-pulse';
       case 'paused':
         return 'bg-orange-500';
+      case 'ended':
+        return 'bg-red-500';
       default:
         return 'bg-gray-400';
     }
@@ -277,6 +278,8 @@ const Chat = ({
         return 'Waiting for human...';
       case 'paused':
         return 'Paused';
+      case 'ended':
+        return 'Ended';
       default:
         return 'Ready';
     }
@@ -371,7 +374,7 @@ const Chat = ({
                 ))}
 
                 {/* Show waiting indicator for next expected response */}
-                {hasStarted && state.speaker && speakerMode === 'human' && !isAwaitingAiResponse && (
+                {controlStatus === 'started' && state.speaker && speakerMode === 'human' && !isAwaitingAiResponse && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -409,22 +412,24 @@ const Chat = ({
                       onChange={(e) => dispatch({ type: 'SET_USER_TEXT_INPUT', payload: e.target.value })}
                       onKeyPress={sendHumanMessageOnPressEnter}
                       placeholder={
-                        paused
+                        controlStatus === 'paused'
                           ? 'Chat is paused'
-                          : state.speaker === 'organizer'
-                            ? 'Type your message as the organizer...'
-                            : 'Type your message as the attendee...'
+                          : controlStatus === 'ended'
+                            ? 'Chat has ended'
+                            : state.speaker === 'organizer'
+                              ? 'Type your message as the organizer...'
+                              : 'Type your message as the attendee...'
                       }
                       className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
-                        paused ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''
+                        controlStatus !== 'started' ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''
                       }`}
-                      disabled={paused || isAwaitingAiResponse}
+                      disabled={controlStatus !== 'started' || isAwaitingAiResponse}
                     />
                     <Button
                       onClick={sendHumanMessage}
-                      disabled={paused || !state.userTextInput.trim() || isAwaitingAiResponse}
+                      disabled={controlStatus !== 'started' || !state.userTextInput.trim() || isAwaitingAiResponse}
                       className={`px-4 transition-colors duration-200 ${
-                        paused
+                        controlStatus !== 'started'
                           ? 'bg-gray-400 cursor-not-allowed'
                           : state.speaker === 'organizer'
                             ? 'bg-purple-600 hover:bg-purple-700 text-white'
