@@ -7,6 +7,7 @@ export interface PromptBuilderData {
   persona: 'organizer' | 'attendee';
   firstMessage?: string;
   archived?: boolean;
+  starred?: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -76,6 +77,7 @@ export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'at
       persona: pb.persona as 'organizer' | 'attendee', // part of the 'where'
       firstMessage: pb.first_message || undefined,
       archived: pb.archived || false,
+      starred: pb.starred || false,
       created_at: pb.created_at,
       updated_at: pb.updated_at,
     };
@@ -117,7 +119,6 @@ export const fetchAllPromptBuildersForPersona = async (persona: 'organizer' | 'a
     const { data: promptBuilders, error } = await supabase
       .from('prompt_builders')
       .select('*')
-      .eq('user_id', user.id)
       .eq('persona', persona)
       .order('updated_at', { ascending: false });
 
@@ -137,7 +138,8 @@ export const fetchAllPromptBuildersForPersona = async (persona: 'organizer' | 'a
       system_prompt: pb.system_prompt,
       persona: pb.persona || '',
       firstMessage: pb.first_message || undefined,
-      archived: pb.archived || false, // Will work once archived field is added to DB
+      archived: pb.archived || false,
+      starred: pb.starred || false,
       created_at: pb.created_at,
       updated_at: pb.updated_at,
     }));
@@ -159,6 +161,22 @@ export const archivePromptBuilder = async (id: string, archived: boolean): Promi
     return true;
   } catch (error) {
     console.error('Error in archivePromptBuilder:', error);
+    return false;
+  }
+};
+
+export const starPromptBuilder = async (id: string, starred: boolean): Promise<boolean> => {
+  try {
+    const { error } = await supabase.from('prompt_builders').update({ starred }).eq('id', id);
+
+    if (error) {
+      console.error('Error updating prompt builder starred status:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error in starPromptBuilder:', error);
     return false;
   }
 };

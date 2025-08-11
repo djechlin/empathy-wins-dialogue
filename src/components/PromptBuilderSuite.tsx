@@ -3,7 +3,13 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { generateTimestampName } from '@/utils/id';
-import { fetchAllPromptBuildersForPersona, savePromptBuilder, type PromptBuilderData } from '@/utils/promptBuilder';
+import {
+  archivePromptBuilder,
+  fetchAllPromptBuildersForPersona,
+  PromptBuilderData,
+  savePromptBuilder,
+  starPromptBuilder,
+} from '@/utils/promptBuilder';
 import { ChevronRight, Plus } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import PromptBuilder from './PromptBuilder';
@@ -28,6 +34,7 @@ type PromptBuilderSuiteAction =
   | { type: 'LOAD_SUCCESS'; payload: PromptBuilderData[] }
   | { type: 'UPDATE'; payload: { id: string; data: Partial<PromptBuilderData> } }
   | { type: 'TOGGLE_ARCHIVE'; payload: { id: string; archived: boolean } }
+  | { type: 'TOGGLE_STARRED'; payload: { id: string; starred: boolean } }
   | { type: 'TOGGLE_ARCHIVED_EXPANDED' };
 
 function promptBuilderSuiteReducer(state: PromptBuilderSuiteState, action: PromptBuilderSuiteAction): PromptBuilderSuiteState {
@@ -53,6 +60,12 @@ function promptBuilderSuiteReducer(state: PromptBuilderSuiteState, action: Promp
         promptBuilders: state.promptBuilders.map((a) => (a.id === action.payload.id ? { ...a, archived: action.payload.archived } : a)),
       };
 
+    case 'TOGGLE_STARRED':
+      return {
+        ...state,
+        promptBuilders: state.promptBuilders.map((a) => (a.id === action.payload.id ? { ...a, starred: action.payload.starred } : a)),
+      };
+
     case 'TOGGLE_ARCHIVED_EXPANDED':
       return { ...state, archivedOpen: !state.archivedOpen };
 
@@ -71,7 +84,17 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
   });
   const { toast } = useToast();
 
-  const unarchivedPromptBuilders = useMemo(() => state.promptBuilders.filter((a) => !a.archived), [state.promptBuilders]);
+  const unarchivedPromptBuilders = useMemo(
+    () =>
+      state.promptBuilders
+        .filter((a) => !a.archived)
+        .sort((a, b) => {
+          if (a.starred && !b.starred) return -1;
+          if (!a.starred && b.starred) return 1;
+          return a.name.localeCompare(b.name);
+        }),
+    [state.promptBuilders],
+  );
   const archivedPromptBuilders = useMemo(() => state.promptBuilders.filter((a) => a.archived), [state.promptBuilders]);
 
   useEffect(() => {
@@ -82,8 +105,8 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
     const load = async () => {
       try {
         dispatch({ type: 'SET_LOADING', payload: 'loading' });
-        const PromptBuilderData = await fetchAllPromptBuildersForPersona(state.persona);
-        dispatch({ type: 'LOAD_SUCCESS', payload: PromptBuilderData });
+        const data = await fetchAllPromptBuildersForPersona(persona);
+        dispatch({ type: 'LOAD_SUCCESS', payload: data });
       } catch (error) {
         console.error('PromptBuilderSuite: Error loading:', error);
         toast({
@@ -94,7 +117,7 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
       }
     };
     load();
-  }, [state.loading, toast, state.persona]);
+  }, [state.loading, toast, persona]);
 
   useEffect(() => {
     onPromptBuildersChange?.(unarchivedPromptBuilders);
@@ -134,8 +157,8 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
 
       try {
         dispatch({ type: 'SET_LOADING', payload: 'loading' });
-        const PromptBuilderData = await fetchAllPromptBuildersForPersona(persona);
-        dispatch({ type: 'LOAD_SUCCESS', payload: PromptBuilderData });
+        const data = await fetchAllPromptBuildersForPersona(persona);
+        dispatch({ type: 'LOAD_SUCCESS', payload: data });
       } catch (refetchError) {
         console.error('Error refetching prompt builders after creation:', refetchError);
         dispatch({ type: 'SET_LOADING', payload: 'loaded' });
@@ -150,9 +173,70 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
     }
   }, [toast, persona]);
 
-  const handleArchiveToggle = useCallback((id: string, archived: boolean) => {
-    dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id, archived } });
-  }, []);
+  const handleArchiveToggle = useCallback(
+    async (id: string, archived: boolean) => {
+      try {
+        // Update database first
+        const success = await archivePromptBuilder(id, archived);
+
+        if (success) {
+          dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id, archived } });
+
+          toast({
+            title: 'Success',
+            description: `${archived ? 'hidden' : 'unhidden'} successfully`,
+          });
+        } else {
+          toast({
+            title: 'Error',
+            description: 'Failed to update archive status',
+            variant: 'destructive',
+          });
+        }
+      } catch (error) {
+        console.error('Error toggling archive status:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to update archive status',
+          variant: 'destructive',
+        });
+      }
+    },
+    [toast],
+  );
+
+  const handleStarToggle = useCallback(
+    async (id: string, starred: boolean) => {
+      try {
+        // Update database first
+        const success = await starPromptBuilder(id, starred);
+
+        if (success) {
+          // Only update local state if database update succeeded
+          dispatch({ type: 'TOGGLE_STARRED', payload: { id: id, starred } });
+
+          toast({
+            title: 'Success',
+            description: `${starred ? 'starred' : 'unstarred'} successfully`,
+          });
+        } else {
+          toast({
+            title: 'Error',
+            description: 'Failed to update starred status',
+            variant: 'destructive',
+          });
+        }
+      } catch (error) {
+        console.error('Error toggling starred status:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to update starred status',
+          variant: 'destructive',
+        });
+      }
+    },
+    [toast],
+  );
 
   if (state.loading === 'loading') {
     return (
@@ -192,9 +276,11 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
               color={color}
               defaultOpen={defaultOpen}
               archived={pb.archived || false}
+              starred={pb.starred || false}
               promptBuilderId={pb.id}
               onDataChange={(data) => handlePromptBuilderDataChange(pb.id, data)}
               onArchiveToggle={handleArchiveToggle}
+              onStarToggle={handleStarToggle}
             />
           ))}
         </div>
@@ -214,7 +300,7 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="sm" className="w-full justify-start text-xs text-gray-600 hover:text-gray-900">
               <ChevronRight className={cn('h-3 w-3 mr-1 transition-transform', state.archivedOpen ? 'rotate-90' : '')} />
-              Archived ({archivedPromptBuilders.length})
+              Hidden ({archivedPromptBuilders.length})
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-3 mt-2">
@@ -229,9 +315,11 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
                   color={color}
                   defaultOpen={false}
                   archived={pb.archived || false}
+                  starred={pb.starred || false}
                   promptBuilderId={pb.id}
                   onDataChange={(data) => handlePromptBuilderDataChange(pb.id, data)}
                   onArchiveToggle={handleArchiveToggle}
+                  onStarToggle={handleStarToggle}
                 />
               </div>
             ))}

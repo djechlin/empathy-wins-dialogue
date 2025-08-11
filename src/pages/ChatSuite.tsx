@@ -1,9 +1,7 @@
-import { type PromptBuilderData } from '@/utils/promptBuilder';
-import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
-import { Bot, ChevronRight, MessageCircle, Pause, Play, User, Users } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { PromptBuilderData } from '@/utils/promptBuilder';
+import { Bot, MessageCircle, Pause, Play, Square, User, Users } from 'lucide-react';
+import React, { useCallback, useMemo, useState } from 'react';
 import Chat from './Chat';
 
 interface ChatSuiteProps {
@@ -18,54 +16,54 @@ interface ChatStatus {
   lastActivity: Date | null;
 }
 
-const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: ChatSuiteProps) => {
-  const [openAttendees, setOpenAttendees] = useState<Record<string, boolean>>({
-    [attendees[0]?.id || '1']: true,
-  });
+const MemoizedChat = React.memo(Chat);
 
+const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: ChatSuiteProps) => {
   // Suite-level chat controls
   const [organizerMode, setOrganizerMode] = useState<'human' | 'ai'>('ai');
   const [attendeeMode, setAttendeeMode] = useState<'human' | 'ai'>('ai');
-  const [paused, setPaused] = useState(false);
-  const [hasStarted, setHasStarted] = useState(false);
+  const [controlStatus, setControlStatus] = useState<'ready' | 'started' | 'paused' | 'ended'>('ready');
 
   // Track individual chat statuses
   const [chatStatuses, setChatStatuses] = useState<Record<string, ChatStatus>>(() =>
-    attendees.reduce(
-      (acc, attendee) => ({
-        ...acc,
-        [attendee.id]: { started: false, messageCount: 0, lastActivity: null },
-      }),
-      {},
-    ),
+    attendees
+      .filter((attendee) => attendee.starred)
+      .reduce(
+        (acc, attendee) => ({
+          ...acc,
+          [attendee.id]: { started: false, messageCount: 0, lastActivity: null },
+        }),
+        {},
+      ),
   );
-
-  const toggleAttendee = useCallback((attendeeId: string) => {
-    setOpenAttendees((prev) => ({
-      ...prev,
-      [attendeeId]: !prev[attendeeId],
-    }));
-  }, []);
 
   const handleModeToggle = useCallback(
     (participant: 'organizer' | 'attendee', mode: 'human' | 'ai') => {
-      if (hasStarted) return;
+      if (controlStatus !== 'ready') return;
       if (participant === 'organizer') {
         setOrganizerMode(mode);
       } else {
         setAttendeeMode(mode);
       }
     },
-    [hasStarted],
+    [controlStatus],
   );
 
   const handleStartAll = useCallback(() => {
-    setHasStarted(true);
+    setControlStatus('started');
   }, []);
 
   const handlePauseToggle = useCallback(() => {
-    setPaused(!paused);
-  }, [paused]);
+    if (controlStatus === 'started') {
+      setControlStatus('paused');
+    } else if (controlStatus === 'paused') {
+      setControlStatus('started');
+    }
+  }, [controlStatus]);
+
+  const handleFinish = useCallback(() => {
+    setControlStatus('ended');
+  }, []);
 
   const updateChatStatus = useCallback((chatId: string, updates: Partial<ChatStatus>) => {
     setChatStatuses((prev) => ({
@@ -74,23 +72,38 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
     }));
   }, []);
 
-  // Calculate suite statistics
-  const totalChats = attendees.filter((a) => a.system_prompt.trim() !== '').length;
-  const startedChats = Object.values(chatStatuses).filter((status) => status.started).length;
-  const totalMessages = Object.values(chatStatuses).reduce((sum, status) => sum + status.messageCount, 0);
-  const activeChats = hasStarted && !paused ? startedChats : 0;
+  // Create memoized status update callbacks for each starred attendee
+  const statusUpdateCallbacks = useMemo(() => {
+    const callbacks: Record<string, (updates: Partial<ChatStatus>) => void> = {};
+    attendees
+      .filter((attendee) => attendee.starred)
+      .forEach((attendee) => {
+        callbacks[attendee.id] = (updates: Partial<ChatStatus>) => updateChatStatus(attendee.id, updates);
+      });
+    return callbacks;
+  }, [attendees, updateChatStatus]);
+
+  // Calculate suite statistics with useMemo to prevent recalculation on every render
+  const { totalChats, totalMessages, activeChats } = useMemo(() => {
+    const total = attendees.filter((a) => a.starred && a.system_prompt.trim() !== '').length;
+    const started = Object.values(chatStatuses).filter((status) => status.started).length;
+    const messages = Object.values(chatStatuses).reduce((sum, status) => sum + status.messageCount, 0);
+    const active = controlStatus === 'started' ? started : 0;
+    return { totalChats: total, totalMessages: messages, activeChats: active };
+  }, [attendees, chatStatuses, controlStatus]);
 
   return (
     <div className="space-y-4">
+      <h3 className="font-semibold font-sans">Chats</h3>
+
       <div className="bg-gray-50 border rounded-lg p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold">Suite Controls</h3>
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 rounded-full">
               <Users size={14} className="text-blue-600" />
               <span className="text-blue-700 font-medium">{totalChats} chats</span>
             </div>
-            {hasStarted && (
+            {controlStatus !== 'ready' && (
               <>
                 <div className="flex items-center gap-1 px-2 py-1 bg-green-100 rounded-full">
                   <div className={`w-2 h-2 rounded-full ${activeChats > 0 ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
@@ -100,10 +113,16 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
                   <MessageCircle size={14} className="text-purple-600" />
                   <span className="text-purple-700 font-medium">{totalMessages} messages</span>
                 </div>
-                {paused && (
+                {controlStatus === 'paused' && (
                   <div className="flex items-center gap-1 px-2 py-1 bg-orange-100 rounded-full">
                     <Pause size={14} className="text-orange-600" />
                     <span className="text-orange-700 font-medium">paused</span>
+                  </div>
+                )}
+                {controlStatus === 'ended' && (
+                  <div className="flex items-center gap-1 px-2 py-1 bg-red-100 rounded-full">
+                    <Square size={14} className="text-red-600" />
+                    <span className="text-red-700 font-medium">ended</span>
                   </div>
                 )}
               </>
@@ -111,16 +130,16 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
           </div>
         </div>
 
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between mb-4 gap-4">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700">Organizer:</span>
               <div className="flex bg-gray-200 rounded-lg p-1">
                 <button
                   onClick={() => handleModeToggle('organizer', 'human')}
-                  disabled={hasStarted}
+                  disabled={controlStatus !== 'ready'}
                   className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                    hasStarted
+                    controlStatus !== 'ready'
                       ? 'text-gray-400 cursor-not-allowed bg-gray-100'
                       : organizerMode === 'human'
                         ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
@@ -132,9 +151,9 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
                 </button>
                 <button
                   onClick={() => handleModeToggle('organizer', 'ai')}
-                  disabled={hasStarted}
+                  disabled={controlStatus !== 'ready'}
                   className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                    hasStarted
+                    controlStatus !== 'ready'
                       ? 'text-gray-400 cursor-not-allowed bg-gray-100'
                       : organizerMode === 'ai'
                         ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
@@ -152,9 +171,9 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
               <div className="flex bg-gray-200 rounded-lg p-1">
                 <button
                   onClick={() => handleModeToggle('attendee', 'human')}
-                  disabled={hasStarted}
+                  disabled={controlStatus !== 'ready'}
                   className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                    hasStarted
+                    controlStatus !== 'ready'
                       ? 'text-gray-400 cursor-not-allowed bg-gray-100'
                       : attendeeMode === 'human'
                         ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
@@ -166,9 +185,9 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
                 </button>
                 <button
                   onClick={() => handleModeToggle('attendee', 'ai')}
-                  disabled={hasStarted}
+                  disabled={controlStatus !== 'ready'}
                   className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                    hasStarted
+                    controlStatus !== 'ready'
                       ? 'text-gray-400 cursor-not-allowed bg-gray-100'
                       : attendeeMode === 'ai'
                         ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
@@ -182,70 +201,58 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {!hasStarted && (
-              <Button onClick={handleStartAll} size="sm" className="px-4">
-                <Play size={16} className="mr-2" />
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {controlStatus === 'ready' && (
+              <Button onClick={handleStartAll} size="sm" className="px-3">
+                <Play size={14} className="mr-1" />
                 Start All
               </Button>
             )}
-            {hasStarted && (
-              <Button onClick={handlePauseToggle} size="sm" variant={paused ? 'default' : 'outline'} className="text-xs px-3">
-                {paused ? (
-                  <>
-                    <Play size={12} className="mr-1" />
-                    Resume All
-                  </>
-                ) : (
-                  <>
-                    <Pause size={12} className="mr-1" />
-                    Pause All
-                  </>
-                )}
-              </Button>
+            {(controlStatus === 'started' || controlStatus === 'paused') && (
+              <>
+                <Button
+                  onClick={handlePauseToggle}
+                  size="sm"
+                  variant={controlStatus === 'paused' ? 'default' : 'outline'}
+                  className="text-xs px-2"
+                >
+                  {controlStatus === 'paused' ? (
+                    <>
+                      <Play size={12} className="mr-1" />
+                      Resume
+                    </>
+                  ) : (
+                    <>
+                      <Pause size={12} className="mr-1" />
+                      Pause
+                    </>
+                  )}
+                </Button>
+                <Button onClick={handleFinish} size="sm" variant="destructive" className="text-xs px-2">
+                  <Square size={12} className="mr-1" />
+                  Finish
+                </Button>
+              </>
             )}
           </div>
         </div>
       </div>
 
-      <h3 className="font-semibold">Chats</h3>
-
       {attendees
-        .filter((attendee) => attendee.system_prompt.trim() !== '')
+        .filter((attendee) => attendee.starred && attendee.system_prompt.trim() !== '')
         .map((attendee) => (
-          <Collapsible key={attendee.id} open={openAttendees[attendee.id] || false} onOpenChange={() => toggleAttendee(attendee.id)}>
-            <CollapsibleTrigger asChild>
-              <div className="w-full justify-start text-sm font-medium p-2 h-auto cursor-pointer hover:bg-gray-100 rounded-md flex items-center justify-between">
-                <div className="flex items-center">
-                  <ChevronRight className={cn('h-4 w-4 mr-2 transition-transform', openAttendees[attendee.id] ? 'rotate-90' : '')} />
-                  Chat with {attendee.name}
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  {chatStatuses[attendee.id]?.started && (
-                    <>
-                      <div className={`w-2 h-2 rounded-full ${hasStarted && !paused ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
-                      <span className="text-gray-600">{chatStatuses[attendee.id]?.messageCount || 0} msgs</span>
-                    </>
-                  )}
-                </div>
-              </div>
-            </CollapsibleTrigger>
-
-            <CollapsibleContent className="mt-2">
-              <Chat
-                attendeeDisplayName={attendee.name}
-                organizerPromptText={organizerPromptText}
-                organizerFirstMessage={organizerFirstMessage}
-                attendeeSystemPrompt={attendee.system_prompt}
-                organizerMode={organizerMode}
-                attendeeMode={attendeeMode}
-                paused={paused}
-                hasStarted={hasStarted}
-                onStarted={setHasStarted}
-                onStatusUpdate={(updates) => updateChatStatus(attendee.id, updates)}
-              />
-            </CollapsibleContent>
-          </Collapsible>
+          <MemoizedChat
+            key={attendee.id}
+            attendeeDisplayName={attendee.name}
+            organizerPromptText={organizerPromptText}
+            organizerFirstMessage={organizerFirstMessage}
+            attendeeSystemPrompt={attendee.system_prompt}
+            organizerMode={organizerMode}
+            attendeeMode={attendeeMode}
+            controlStatus={controlStatus}
+            onStatusUpdate={statusUpdateCallbacks[attendee.id]}
+            defaultOpen={false}
+          />
         ))}
     </div>
   );
