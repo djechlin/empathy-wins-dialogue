@@ -97,6 +97,27 @@ const CoachResults = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const parseScore = (text: string): { score: number | null; content: string } => {
+    const lines = text.split('\n');
+    const firstLine = lines[0]?.trim();
+    
+    const scoreMatch = firstLine?.match(/^Score:\s*\[([0-5])\]$/);
+    if (scoreMatch) {
+      const score = parseInt(scoreMatch[1], 10);
+      const remainingContent = lines.slice(1).join('\n').trim();
+      return { score, content: remainingContent };
+    }
+    
+    return { score: null, content: text };
+  };
+
+  const getScoreBadgeColor = (score: number | null): string => {
+    if (score === null) return '';
+    if (score >= 4) return 'bg-green-500 text-white';
+    if (score === 3) return 'bg-gray-500 text-white';
+    return 'bg-red-500 text-white';
+  };
+
   useEffect(() => {
     if (controlStatus === 'ended' && coaches.length > 0 && messages.length > 0) {
       const getCoachEvaluations = async () => {
@@ -129,7 +150,6 @@ const CoachResults = ({
               throw new Error(`Error from workbench: ${response.error}`);
             }
 
-            // Handle response - could be in message property or directly as string
             let evaluation: string;
             if (response?.message) {
               evaluation = response.message;
@@ -166,27 +186,39 @@ const CoachResults = ({
         <h4 className="font-medium text-gray-900">Coach Evaluations</h4>
       </div>
       <div className="space-y-3">
-        {coaches.map((coach) => (
-          <div key={coach.id} className="bg-white border border-red-200 rounded-lg p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-3 h-3 bg-red-200 rounded-full" />
-              <span className="text-sm font-medium text-gray-900">{coach.name}</span>
+        {coaches.map((coach) => {
+          const evaluation = evaluations[coach.id];
+          const { score, content } = evaluation ? parseScore(evaluation) : { score: null, content: '' };
+          
+          return (
+            <div key={coach.id} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-gray-300 rounded-full" />
+                  <span className="text-sm font-medium text-gray-900">{coach.name}</span>
+                </div>
+                {score !== null && (
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getScoreBadgeColor(score)}`}>
+                    Score: {score}/5
+                  </span>
+                )}
+              </div>
+              <div className="text-sm text-gray-600 bg-white p-2 rounded">
+                {controlStatus !== 'ended' ? (
+                  <span className="italic">Evaluation will appear here once conversation is complete</span>
+                ) : loading ? (
+                  <span className="italic">Getting evaluation...</span>
+                ) : error ? (
+                  <span className="text-red-600">Error: {error}</span>
+                ) : evaluation ? (
+                  <div className="whitespace-pre-wrap">{content || evaluation}</div>
+                ) : (
+                  <span className="italic">No evaluation available</span>
+                )}
+              </div>
             </div>
-            <div className="text-sm text-gray-600 bg-red-50 p-2 rounded">
-              {controlStatus !== 'ended' ? (
-                <span className="italic">Evaluation will appear here once conversation is complete</span>
-              ) : loading ? (
-                <span className="italic">Getting evaluation...</span>
-              ) : error ? (
-                <span className="text-red-600">Error: {error}</span>
-              ) : evaluations[coach.id] ? (
-                <div className="whitespace-pre-wrap">{evaluations[coach.id]}</div>
-              ) : (
-                <span className="italic">No evaluation available</span>
-              )}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -214,13 +246,11 @@ const Chat = ({
 
   const getTextInput = useCallback((): Promise<string> => {
     return new Promise((resolve) => {
-      // If there's already a message in the queue, resolve immediately
       if (state.userSentQueue.length > 0) {
         const message = state.userSentQueue[0];
         dispatch({ type: 'SENT_USER_MESSAGE' });
         resolve(message);
       } else {
-        // Otherwise, store the resolve function to be called when user sends a message
         dispatch({ type: 'SET_PENDING_PROMISE', payload: resolve });
       }
     });
@@ -246,10 +276,13 @@ const Chat = ({
   const aiThinking = useMemo(() => chatEngine.thinking?.mode === 'ai', [chatEngine.thinking]);
 
   useEffect(() => {
-    if (controlStatus !== 'ready') {
-      return;
+    if (controlStatus === 'ended') {
+      chatEngine.end();
+    } else if (controlStatus === 'started') {
+      chatEngine.start();
+    } else if (controlStatus === 'paused') {
+      chatEngine.pause();
     }
-    chatEngine.start();
   }, [controlStatus, chatEngine]);
 
   useEffect(() => {
