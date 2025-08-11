@@ -1,4 +1,4 @@
-import { AttendeeData } from '@/components/PromptBuilderSuite';
+import { type PromptBuilderData } from '@/utils/promptBuilder';
 import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
@@ -7,7 +7,7 @@ import { useCallback, useState } from 'react';
 import Chat from './Chat';
 
 interface ChatSuiteProps {
-  attendees: AttendeeData[];
+  attendees: PromptBuilderData[];
   organizerPromptText: string;
   organizerFirstMessage: string;
 }
@@ -75,7 +75,7 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
   }, []);
 
   // Calculate suite statistics
-  const totalChats = attendees.filter((a) => a.systemPrompt.trim() !== '').length;
+  const totalChats = attendees.filter((a) => a.system_prompt.trim() !== '').length;
   const startedChats = Object.values(chatStatuses).filter((status) => status.started).length;
   const totalMessages = Object.values(chatStatuses).reduce((sum, status) => sum + status.messageCount, 0);
   const activeChats = hasStarted && !paused ? startedChats : 0;
@@ -211,14 +211,14 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
       <h3 className="font-semibold">Chats</h3>
 
       {attendees
-        .filter((attendee) => attendee.systemPrompt.trim() !== '')
+        .filter((attendee) => attendee.system_prompt.trim() !== '')
         .map((attendee) => (
           <Collapsible key={attendee.id} open={openAttendees[attendee.id] || false} onOpenChange={() => toggleAttendee(attendee.id)}>
             <CollapsibleTrigger asChild>
               <div className="w-full justify-start text-sm font-medium p-2 h-auto cursor-pointer hover:bg-gray-100 rounded-md flex items-center justify-between">
                 <div className="flex items-center">
                   <ChevronRight className={cn('h-4 w-4 mr-2 transition-transform', openAttendees[attendee.id] ? 'rotate-90' : '')} />
-                  Chat with {attendee.displayName}
+                  Chat with {attendee.name}
                 </div>
                 <div className="flex items-center gap-2 text-xs">
                   {chatStatuses[attendee.id]?.started && (
@@ -233,10 +233,10 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
 
             <CollapsibleContent className="mt-2">
               <Chat
-                attendeeDisplayName={attendee.displayName}
+                attendeeDisplayName={attendee.name}
                 organizerPromptText={organizerPromptText}
                 organizerFirstMessage={organizerFirstMessage}
-                attendeeSystemPrompt={attendee.systemPrompt}
+                attendeeSystemPrompt={attendee.system_prompt}
                 organizerMode={organizerMode}
                 attendeeMode={attendeeMode}
                 paused={paused}

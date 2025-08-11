@@ -3,36 +3,21 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { generateTimestampName } from '@/utils/id';
-import { fetchAllPromptBuildersForPersona, savePromptBuilder } from '@/utils/promptBuilder';
+import { fetchAllPromptBuildersForPersona, savePromptBuilder, type PromptBuilderData } from '@/utils/promptBuilder';
 import { ChevronRight, Plus } from 'lucide-react';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useReducer, useRef } from 'react';
-import PromptBuilder, { type PromptBuilderRef } from './PromptBuilder';
-
-export interface AttendeeData {
-  id: string;
-  displayName: string;
-  systemPrompt: string;
-  firstMessage: string;
-  archived?: boolean;
-  created_at?: string;
-  updated_at?: string;
-}
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import PromptBuilder from './PromptBuilder';
 
 interface PromptBuilderSuiteProps {
-  name: string;
   color: string;
   defaultOpen?: boolean;
-  onAttendeesChange?: (attendees: AttendeeData[]) => void;
+  persona: 'organizer' | 'attendee';
+  onPromptBuildersChange?: (pbs: PromptBuilderData[]) => void;
 }
-
-export interface PromptBuilderSuiteRef {
-  getPromptBuilder: () => PromptBuilderRef | null;
-  getAttendees: () => AttendeeData[];
-}
-
 interface PromptBuilderSuiteState {
-  attendees: AttendeeData[];
+  promptBuilders: PromptBuilderData[];
   loading: 'new' | 'loading' | 'loaded';
+  persona: 'organizer' | 'attendee';
   error: string | null;
   archivedOpen: boolean;
 }
@@ -40,11 +25,8 @@ interface PromptBuilderSuiteState {
 type PromptBuilderSuiteAction =
   | { type: 'SET_LOADING'; payload: 'new' | 'loading' | 'loaded' }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'LOAD_ATTENDEES'; payload: AttendeeData[] }
-  | { type: 'LOAD_ATTENDEES_SUCCESS'; payload: AttendeeData[] }
-  | { type: 'LOAD_ATTENDEES_ERROR'; payload: { error: string; fallbackAttendees: AttendeeData[] } }
-  | { type: 'ADD_ATTENDEE'; payload: AttendeeData }
-  | { type: 'UPDATE_ATTENDEE'; payload: { id: string; data: Partial<AttendeeData> } }
+  | { type: 'LOAD_SUCCESS'; payload: PromptBuilderData[] }
+  | { type: 'UPDATE'; payload: { id: string; data: Partial<PromptBuilderData> } }
   | { type: 'TOGGLE_ARCHIVE'; payload: { id: string; archived: boolean } }
   | { type: 'TOGGLE_ARCHIVED_EXPANDED' };
 
@@ -56,33 +38,19 @@ function promptBuilderSuiteReducer(state: PromptBuilderSuiteState, action: Promp
     case 'SET_ERROR':
       return { ...state, error: action.payload };
 
-    case 'LOAD_ATTENDEES':
-      return { ...state, attendees: action.payload };
+    case 'LOAD_SUCCESS':
+      return { ...state, promptBuilders: action.payload, loading: 'loaded', error: null };
 
-    case 'LOAD_ATTENDEES_SUCCESS':
-      return { ...state, attendees: action.payload, loading: 'loaded', error: null };
-
-    case 'LOAD_ATTENDEES_ERROR':
+    case 'UPDATE':
       return {
         ...state,
-        attendees: action.payload.fallbackAttendees,
-        error: action.payload.error,
-        loading: 'loaded',
-      };
-
-    case 'ADD_ATTENDEE':
-      return { ...state, attendees: [...state.attendees, action.payload] };
-
-    case 'UPDATE_ATTENDEE':
-      return {
-        ...state,
-        attendees: state.attendees.map((a) => (a.id === action.payload.id ? { ...a, ...action.payload.data } : a)),
+        promptBuilders: state.promptBuilders.map((a) => (a.id === action.payload.id ? { ...a, ...action.payload.data } : a)),
       };
 
     case 'TOGGLE_ARCHIVE':
       return {
         ...state,
-        attendees: state.attendees.map((a) => (a.id === action.payload.id ? { ...a, archived: action.payload.archived } : a)),
+        promptBuilders: state.promptBuilders.map((a) => (a.id === action.payload.id ? { ...a, archived: action.payload.archived } : a)),
       };
 
     case 'TOGGLE_ARCHIVED_EXPANDED':
@@ -93,119 +61,103 @@ function promptBuilderSuiteReducer(state: PromptBuilderSuiteState, action: Promp
   }
 }
 
-const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteProps>(({ color, defaultOpen, onAttendeesChange }, ref) => {
-  const promptBuilderRef = useRef<PromptBuilderRef>(null);
+const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, persona }: PromptBuilderSuiteProps) => {
   const [state, dispatch] = useReducer(promptBuilderSuiteReducer, {
-    attendees: [],
+    persona,
+    promptBuilders: [],
     loading: 'new' as const,
     error: null,
     archivedOpen: false,
   });
   const { toast } = useToast();
 
-  const activeAttendees = useMemo(() => state.attendees.filter((a) => !a.archived), [state.attendees]);
-  const archivedAttendees = useMemo(() => state.attendees.filter((a) => a.archived), [state.attendees]);
+  const unarchivedPromptBuilders = useMemo(() => state.promptBuilders.filter((a) => !a.archived), [state.promptBuilders]);
+  const archivedPromptBuilders = useMemo(() => state.promptBuilders.filter((a) => a.archived), [state.promptBuilders]);
 
   useEffect(() => {
     if (state.loading !== 'new') {
       return;
     }
 
-    const loadAttendees = async () => {
+    const load = async () => {
       try {
         dispatch({ type: 'SET_LOADING', payload: 'loading' });
-        const data = await fetchAllPromptBuildersForPersona('attendee');
-        const attendeeData: AttendeeData[] = data.map((pb) => ({
-          id: pb.id || '',
-          displayName: pb.name,
-          systemPrompt: pb.system_prompt,
-          firstMessage: pb.firstMessage || '',
-          archived: pb.archived,
-          created_at: pb.created_at,
-          updated_at: pb.updated_at,
-        }));
-        dispatch({ type: 'LOAD_ATTENDEES_SUCCESS', payload: attendeeData });
+        const PromptBuilderData = await fetchAllPromptBuildersForPersona(state.persona);
+        dispatch({ type: 'LOAD_SUCCESS', payload: PromptBuilderData });
       } catch (error) {
-        console.error('PromptBuilderSuite: Error loading attendees:', error);
-        dispatch({
-          type: 'LOAD_ATTENDEES_ERROR',
-          payload: {
-            error: 'Authentication required. Please sign in to load your attendees.',
-            fallbackAttendees: [{ id: '1', displayName: 'attendee', systemPrompt: '', firstMessage: '' }],
-          },
+        console.error('PromptBuilderSuite: Error loading:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load',
+          variant: 'destructive',
         });
       }
     };
-    loadAttendees();
-  }, [state.loading]);
+    load();
+  }, [state.loading, toast, state.persona]);
 
   useEffect(() => {
-    onAttendeesChange?.(activeAttendees);
-  }, [activeAttendees, onAttendeesChange]);
+    onPromptBuildersChange?.(unarchivedPromptBuilders);
+  }, [unarchivedPromptBuilders, onPromptBuildersChange]);
 
-  const handleAttendeeDataChange = useCallback(
-    (attendeeId: string, data: { systemPrompt: string; firstMessage: string; displayName: string }) => {
-      dispatch({ type: 'UPDATE_ATTENDEE', payload: { id: attendeeId, data } });
+  const handlePromptBuilderDataChange = useCallback(
+    (id: string, data: { systemPrompt: string; firstMessage: string; displayName: string }) => {
+      dispatch({
+        type: 'UPDATE',
+        payload: {
+          id: id,
+          data: {
+            system_prompt: data.systemPrompt,
+            firstMessage: data.firstMessage,
+            name: data.displayName,
+          },
+        },
+      });
     },
     [],
   );
 
-  const addAttendee = useCallback(async () => {
-    const newAttendee = {
-      name: generateTimestampName('attendee'),
+  const addPromptBuilder = useCallback(async () => {
+    const newPromptBuilder = {
+      name: generateTimestampName(persona),
       system_prompt: '',
-      persona: 'attendee',
+      persona,
       firstMessage: '',
     };
 
     try {
-      await savePromptBuilder(newAttendee);
+      await savePromptBuilder(newPromptBuilder);
       toast({
         title: 'Success',
-        description: 'New attendee created successfully',
+        description: 'New prompt builder created successfully',
       });
 
-      // Refetch attendees to show the new one
       try {
         dispatch({ type: 'SET_LOADING', payload: 'loading' });
-        const data = await fetchAllPromptBuildersForPersona('attendee');
-        const attendeeData: AttendeeData[] = data.map((pb) => ({
-          id: pb.id || '',
-          displayName: pb.name,
-          systemPrompt: pb.system_prompt,
-          firstMessage: pb.firstMessage || '',
-          archived: pb.archived,
-          created_at: pb.created_at,
-          updated_at: pb.updated_at,
-        }));
-        dispatch({ type: 'LOAD_ATTENDEES_SUCCESS', payload: attendeeData });
+        const PromptBuilderData = await fetchAllPromptBuildersForPersona(persona);
+        dispatch({ type: 'LOAD_SUCCESS', payload: PromptBuilderData });
       } catch (refetchError) {
-        console.error('Error refetching attendees after creation:', refetchError);
+        console.error('Error refetching prompt builders after creation:', refetchError);
         dispatch({ type: 'SET_LOADING', payload: 'loaded' });
       }
     } catch (error) {
-      console.error('Error creating attendee:', error);
+      console.error('Error creating:', error);
       toast({
         title: 'Error',
-        description: 'Failed to create new attendee',
+        description: 'Failed to create',
         variant: 'destructive',
       });
     }
-  }, [toast]);
+  }, [toast, persona]);
 
-  const handleArchiveToggle = useCallback((attendeeId: string, archived: boolean) => {
-    dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id: attendeeId, archived } });
+  const handleArchiveToggle = useCallback((id: string, archived: boolean) => {
+    dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id, archived } });
   }, []);
-
-  useImperativeHandle(ref, () => ({
-    getPromptBuilder: () => promptBuilderRef.current,
-    getAttendees: () => activeAttendees,
-  }));
 
   if (state.loading === 'loading') {
     return (
       <div className="space-y-4">
-        <h3 className="font-medium">Attendees</h3>
+        <h3 className="font-medium capitalize">{`${persona}s`}</h3>
         <div className="animate-pulse space-y-3">
           <div className="h-20 bg-gray-200 rounded"></div>
           <div className="h-20 bg-gray-200 rounded"></div>
@@ -217,9 +169,9 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
   if (state.error) {
     return (
       <div className="space-y-4">
-        <h3 className="font-medium">Attendees</h3>
+        <h3 className="font-medium capitalize">{`${persona}s`}</h3>
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          <div className="font-medium">Error Loading Attendees:</div>
+          <div className="font-medium">Error Loading:</div>
           <div className="mt-1">{state.error}</div>
         </div>
       </div>
@@ -228,61 +180,57 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
 
   return (
     <div className="space-y-4">
-      {/* Active attendees */}
-      {activeAttendees.length > 0 ? (
+      {unarchivedPromptBuilders.length > 0 ? (
         <div className="space-y-3">
-          {activeAttendees.map((attendee, index) => (
+          {unarchivedPromptBuilders.map((pb) => (
             <PromptBuilder
-              key={attendee.id}
-              ref={index === 0 ? promptBuilderRef : undefined}
-              persona="attendee"
-              initialPrompt={attendee.systemPrompt}
-              initialFirstMessage={attendee.firstMessage}
-              initialDisplayName={attendee.displayName}
+              key={pb.id}
+              persona={state.persona}
+              initialPrompt={pb.system_prompt}
+              initialFirstMessage={pb.firstMessage}
+              initialDisplayName={pb.name}
               color={color}
               defaultOpen={defaultOpen}
-              archived={attendee.archived || false}
-              promptBuilderId={attendee.id}
-              onDataChange={(data) => handleAttendeeDataChange(attendee.id, data)}
+              archived={pb.archived || false}
+              promptBuilderId={pb.id}
+              onDataChange={(data) => handlePromptBuilderDataChange(pb.id, data)}
               onArchiveToggle={handleArchiveToggle}
             />
           ))}
         </div>
       ) : (
         <div className="text-center py-8 text-gray-500">
-          <p className="text-sm">No active attendees yet.</p>
+          <p className="text-sm">No active {`${persona}s`} yet.</p>
         </div>
       )}
 
-      {/* Add Prompt Builder button */}
-      <Button onClick={addAttendee} size="sm" variant="outline" className="w-full text-xs py-2">
+      <Button onClick={addPromptBuilder} size="sm" variant="outline" className="w-full text-xs py-2">
         <Plus className="h-3 w-3 mr-1" />
-        Add attendee
+        Add {persona}
       </Button>
 
-      {/* Archived attendees collapsible section */}
-      {archivedAttendees.length > 0 && (
+      {archivedPromptBuilders.length > 0 && (
         <Collapsible open={state.archivedOpen} onOpenChange={() => dispatch({ type: 'TOGGLE_ARCHIVED_EXPANDED' })}>
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="sm" className="w-full justify-start text-xs text-gray-600 hover:text-gray-900">
               <ChevronRight className={cn('h-3 w-3 mr-1 transition-transform', state.archivedOpen ? 'rotate-90' : '')} />
-              Archived ({archivedAttendees.length})
+              Archived ({archivedPromptBuilders.length})
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-3 mt-2">
-            {archivedAttendees.map((attendee) => (
-              <div key={attendee.id} className="opacity-60">
+            {archivedPromptBuilders.map((pb) => (
+              <div key={pb.id} className="opacity-60">
                 <PromptBuilder
-                  key={attendee.id}
-                  persona="attendee"
-                  initialPrompt={attendee.systemPrompt}
-                  initialFirstMessage={attendee.firstMessage}
-                  initialDisplayName={attendee.displayName}
+                  key={pb.id}
+                  persona={persona}
+                  initialPrompt={pb.system_prompt}
+                  initialFirstMessage={pb.firstMessage}
+                  initialDisplayName={pb.name}
                   color={color}
                   defaultOpen={false}
-                  archived={attendee.archived || false}
-                  promptBuilderId={attendee.id}
-                  onDataChange={(data) => handleAttendeeDataChange(attendee.id, data)}
+                  archived={pb.archived || false}
+                  promptBuilderId={pb.id}
+                  onDataChange={(data) => handlePromptBuilderDataChange(pb.id, data)}
                   onArchiveToggle={handleArchiveToggle}
                 />
               </div>
@@ -292,7 +240,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
       )}
     </div>
   );
-});
+};
 
 PromptBuilderSuite.displayName = 'PromptBuilderSuite';
 

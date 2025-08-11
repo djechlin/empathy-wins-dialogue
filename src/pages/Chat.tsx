@@ -4,7 +4,7 @@ import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
 import { generateTimestampId } from '@/utils/id';
 import { Bot, Send, User } from 'lucide-react';
-import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 
 interface Message {
   id: string;

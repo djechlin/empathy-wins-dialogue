@@ -1,6 +1,6 @@
 import Navbar from '@/components/layout/Navbar';
 import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
-import PromptBuilderSuite, { type AttendeeData } from '@/components/PromptBuilderSuite';
+import PromptBuilderSuite from '@/components/PromptBuilderSuite';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
 import { useCallback, useReducer, useRef } from 'react';
 import ChatSuite from './ChatSuite';
@@ -9,13 +9,13 @@ interface WorkbenchState {
   organizerPrompt: PromptBuilderData | null;
   organizerPromptText: string;
   organizerFirstMessage: string;
-  attendees: AttendeeData[];
+  attendees: PromptBuilderData[];
 }
 
 type WorkbenchAction =
   | { type: 'SELECT_PROMPT'; payload: { participant: 'organizer'; prompt: PromptBuilderData | null } }
   | { type: 'UPDATE_ORGANIZER_DATA'; payload: { systemPrompt: string; firstMessage: string } }
-  | { type: 'UPDATE_ATTENDEES'; payload: AttendeeData[] };
+  | { type: 'UPDATE_ATTENDEES'; payload: PromptBuilderData[] };
 
 function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
   switch (action.type) {
@@ -48,7 +48,7 @@ const Workbench = () => {
     organizerPrompt: null,
     organizerPromptText: '',
     organizerFirstMessage: '',
-    attendees: [{ id: '1', displayName: 'attendee', systemPrompt: '', firstMessage: '' }],
+    attendees: [{ id: '1', name: 'attendee', system_prompt: '', firstMessage: '', persona: 'attendee' as const }],
   });
 
   const organizerRef = useRef<PromptBuilderRef>(null);
@@ -57,7 +57,7 @@ const Workbench = () => {
     dispatch({ type: 'UPDATE_ORGANIZER_DATA', payload: data });
   }, []);
 
-  const handleAttendeesChange = useCallback((attendees: AttendeeData[]) => {
+  const handleAttendeesChange = useCallback((attendees: PromptBuilderData[]) => {
     dispatch({ type: 'UPDATE_ATTENDEES', payload: attendees });
   }, []);
 
@@ -77,7 +77,12 @@ const Workbench = () => {
                   onDataChange={handleOrganizerPromptChange}
                 />
 
-                <PromptBuilderSuite name="attendee" color="bg-orange-200" defaultOpen={true} onAttendeesChange={handleAttendeesChange} />
+                <PromptBuilderSuite
+                  persona="attendee"
+                  color="bg-orange-200"
+                  defaultOpen={true}
+                  onPromptBuildersChange={handleAttendeesChange}
+                />
               </div>
             </div>
 
