@@ -399,45 +399,43 @@ const Chat = ({
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Chat Input Area */}
-              <div className="border-t p-4 bg-white">
-                <div className="flex space-x-2">
-                  <Textarea
-                    ref={inputRef}
-                    value={state.userTextInput}
-                    onChange={(e) => dispatch({ type: 'SET_USER_TEXT_INPUT', payload: e.target.value })}
-                    onKeyPress={sendHumanMessageOnPressEnter}
-                    placeholder={
-                      paused
-                        ? 'Chat is paused'
-                        : organizerMode === 'ai' && attendeeMode === 'ai'
-                          ? 'Both participants are in AI mode - chat runs automatically'
+              {/* Chat Input Area - Hidden in double AI mode */}
+              {!(organizerMode === 'ai' && attendeeMode === 'ai') && (
+                <div className="border-t p-4 bg-white">
+                  <div className="flex space-x-2">
+                    <Textarea
+                      ref={inputRef}
+                      value={state.userTextInput}
+                      onChange={(e) => dispatch({ type: 'SET_USER_TEXT_INPUT', payload: e.target.value })}
+                      onKeyPress={sendHumanMessageOnPressEnter}
+                      placeholder={
+                        paused
+                          ? 'Chat is paused'
                           : state.speaker === 'organizer'
                             ? 'Type your message as the organizer...'
                             : 'Type your message as the attendee...'
-                    }
-                    className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
-                      paused || (organizerMode === 'ai' && attendeeMode === 'ai') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''
-                    }`}
-                    disabled={paused || isAwaitingAiResponse || (organizerMode === 'ai' && attendeeMode === 'ai')}
-                  />
-                  <Button
-                    onClick={sendHumanMessage}
-                    disabled={
-                      paused || !state.userTextInput.trim() || isAwaitingAiResponse || (organizerMode === 'ai' && attendeeMode === 'ai')
-                    }
-                    className={`px-4 transition-colors duration-200 ${
-                      paused || (organizerMode === 'ai' && attendeeMode === 'ai')
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : state.speaker === 'organizer'
-                          ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                          : 'bg-orange-600 hover:bg-orange-700 text-white'
-                    }`}
-                  >
-                    <Send size={16} />
-                  </Button>
+                      }
+                      className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
+                        paused ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''
+                      }`}
+                      disabled={paused || isAwaitingAiResponse}
+                    />
+                    <Button
+                      onClick={sendHumanMessage}
+                      disabled={paused || !state.userTextInput.trim() || isAwaitingAiResponse}
+                      className={`px-4 transition-colors duration-200 ${
+                        paused
+                          ? 'bg-gray-400 cursor-not-allowed'
+                          : state.speaker === 'organizer'
+                            ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                            : 'bg-orange-600 hover:bg-orange-700 text-white'
+                      }`}
+                    >
+                      <Send size={16} />
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </motion.div>
         )}
