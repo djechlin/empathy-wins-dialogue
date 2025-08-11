@@ -143,7 +143,7 @@ const Workbench = () => {
                   onDirtyChange={handleAttendeesDirtyChange}
                 />
                 <PromptBuilderSuite
-                  persona="attendee"
+                  persona="coach"
                   color="bg-red-200"
                   defaultOpen={true}
                   onPromptBuildersChange={handleCoachesChange}

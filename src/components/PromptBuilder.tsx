@@ -8,7 +8,7 @@ import { Archive, ArchiveRestore, ChevronDown, Star } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useReducer } from 'react';
 
 interface PromptBuilderProps {
-  persona: 'organizer' | 'attendee';
+  persona: 'organizer' | 'attendee' | 'coach';
   color: string; // Tailwind background color class (e.g., 'bg-purple-200')
   initialPrompt?: string;
   initialFirstMessage?: string;
@@ -136,6 +136,15 @@ const promptBuilderReducer = (state: PromptBuilderState, action: PromptBuilderAc
     default:
       return state;
   }
+};
+
+const getPersonaDisplayName = (persona: 'organizer' | 'attendee' | 'coach'): string => {
+  const names = {
+    organizer: 'Organizer',
+    attendee: 'Attendee',
+    coach: 'Coach',
+  };
+  return names[persona];
 };
 
 // Generate timestamped name for prompt builder instance
@@ -337,7 +346,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       <div className={`${color} rounded-lg p-4`}>
         <div className="flex items-center w-full mb-2">
           <button className="flex items-center gap-2" onClick={() => dispatch({ type: 'SET_IS_OPEN', payload: !state.isOpen })}>
-            <span className="font-medium capitalize">{persona}</span>
+            <span className="font-medium">{getPersonaDisplayName(persona)}</span>
             {state.isEditingName ? (
               <Input
                 value={state.editNameValue}
@@ -435,7 +444,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                   <Textarea
                     value={state.systemPrompt}
                     onChange={(e) => dispatch({ type: 'SET_SYSTEM_PROMPT', payload: e.target.value })}
-                    placeholder={`Enter ${persona} system prompt...`}
+                    placeholder={`Enter ${getPersonaDisplayName(persona).toLowerCase()} system prompt...`}
                     className="min-h-[200px] text-sm flex-1"
                   />
                 </div>

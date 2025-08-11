@@ -17,14 +17,14 @@ import PromptBuilder from './PromptBuilder';
 interface PromptBuilderSuiteProps {
   color: string;
   defaultOpen?: boolean;
-  persona: 'organizer' | 'attendee';
+  persona: 'organizer' | 'attendee' | 'coach';
   onPromptBuildersChange?: (pbs: PromptBuilderData[]) => void;
   onDirtyChange?: (dirty: boolean) => void;
 }
 interface PromptBuilderSuiteState {
   promptBuilders: PromptBuilderData[];
   loading: 'new' | 'loading' | 'loaded';
-  persona: 'organizer' | 'attendee';
+  persona: 'organizer' | 'attendee' | 'coach';
   error: string | null;
   archivedOpen: boolean;
 }
@@ -74,6 +74,15 @@ function promptBuilderSuiteReducer(state: PromptBuilderSuiteState, action: Promp
       return state;
   }
 }
+
+const getPersonaDisplayName = (persona: 'organizer' | 'attendee' | 'coach', plural: boolean = false): string => {
+  const names = {
+    organizer: plural ? 'Organizers' : 'Organizer',
+    attendee: plural ? 'Attendees' : 'Attendee',
+    coach: plural ? 'Coaches' : 'Coach',
+  };
+  return names[persona];
+};
 
 const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, onDirtyChange, persona }: PromptBuilderSuiteProps) => {
   const [state, dispatch] = useReducer(promptBuilderSuiteReducer, {
@@ -255,7 +264,7 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, onDirt
   if (state.loading === 'loading') {
     return (
       <div className="space-y-4">
-        <h3 className="font-medium capitalize">{`${persona}s`}</h3>
+        <h3 className="font-medium">{getPersonaDisplayName(persona, true)}</h3>
         <div className="animate-pulse space-y-3">
           <div className="h-20 bg-gray-200 rounded"></div>
           <div className="h-20 bg-gray-200 rounded"></div>
@@ -267,7 +276,7 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, onDirt
   if (state.error) {
     return (
       <div className="space-y-4">
-        <h3 className="font-medium capitalize">{`${persona}s`}</h3>
+        <h3 className="font-medium">{getPersonaDisplayName(persona, true)}</h3>
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
           <div className="font-medium">Error Loading:</div>
           <div className="mt-1">{state.error}</div>
@@ -301,7 +310,7 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, onDirt
         </div>
       ) : (
         <div className="text-center py-8 text-gray-500">
-          <p className="text-sm">No active {`${persona}s`} yet.</p>
+          <p className="text-sm">No active {getPersonaDisplayName(persona, true)} yet.</p>
         </div>
       )}
 
@@ -312,7 +321,7 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, onDirt
         className="w-full text-sm py-3 font-medium bg-white border-blue-600 text-blue-600 hover:bg-blue-50"
       >
         <Plus className="h-4 w-4 mr-2" />
-        Add {persona}
+        Add {getPersonaDisplayName(persona)}
       </Button>
 
       {archivedPromptBuilders.length > 0 && (

@@ -4,7 +4,7 @@ export interface PromptBuilderData {
   id?: string;
   name: string;
   system_prompt: string;
-  persona: 'organizer' | 'attendee';
+  persona: 'organizer' | 'attendee' | 'coach';
   firstMessage?: string;
   archived?: boolean;
   starred?: boolean;
@@ -73,7 +73,7 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<Prompt
   }
 };
 
-export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'attendee'): Promise<PromptBuilderData | null> => {
+export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'attendee' | 'coach'): Promise<PromptBuilderData | null> => {
   try {
     const {
       data: { user },
@@ -119,7 +119,7 @@ export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'at
   }
 };
 
-export const fetchAllPromptBuildersForPersona = async (persona: 'organizer' | 'attendee'): Promise<PromptBuilderData[]> => {
+export const fetchAllPromptBuildersForPersona = async (persona: 'organizer' | 'attendee' | 'coach'): Promise<PromptBuilderData[]> => {
   try {
     const authPromise = supabase.auth.getUser();
     const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Authentication timeout')), 5000));
