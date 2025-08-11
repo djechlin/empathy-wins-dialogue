@@ -122,7 +122,6 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
     }
     const next = state.queue[0];
     const nextReceiver = next === null ? 0 : ((1 - next.senderIndex) as 0 | 1);
-    console.log('useChat processing queue item:', { next, nextReceiver, participantProps: pp[nextReceiver] });
     // dequeue step
     setState((prev) => ({ ...prev, queue: prev.queue.slice(1), thinking: pp[nextReceiver], speaker: pp[nextReceiver] }));
     setTimeout(async () => {
@@ -141,20 +140,26 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
 
   const start = useCallback(async () => {
     setState((prev) => {
-      if (prev.controlStatus !== 'ready') {
-        return prev;
+      if (prev.controlStatus === 'ready' || prev.controlStatus === 'paused') {
+        return { ...prev, controlStatus: 'started' };
       }
-      return { ...prev, controlStatus: 'started' };
+      return prev;
     });
   }, []);
   const pause = useCallback(() => {
     setState((prev) => {
-      if (prev.controlStatus !== 'started') {
-        return prev;
+      if (prev.controlStatus === 'started') {
+        return { ...prev, controlStatus: 'paused' };
       }
-      return { ...prev, controlStatus: 'paused' };
+      return prev;
     });
   }, []);
 
-  return { start, pause, history: state.history, thinking: state.thinking, speaker: state.speaker };
+  const end = useCallback(() => {
+    setState((prev) => {
+      return { ...prev, controlStatus: 'ended' };
+    });
+  }, []);
+
+  return { start, pause, end, history: state.history, thinking: state.thinking, speaker: state.speaker };
 };

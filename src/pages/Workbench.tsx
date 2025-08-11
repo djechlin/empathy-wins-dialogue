@@ -1,9 +1,9 @@
 import Navbar from '@/components/layout/Navbar';
-import PromptBuilder, { type PromptBuilderRef } from '@/components/PromptBuilder';
+import PromptBuilder from '@/components/PromptBuilder';
 import PromptBuilderSuite from '@/components/PromptBuilderSuite';
 import { generateTimestampId } from '@/utils/id';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
-import { useCallback, useReducer, useRef } from 'react';
+import { useCallback, useReducer } from 'react';
 import ChatSuite from './ChatSuite';
 
 interface WorkbenchState {
@@ -27,6 +27,7 @@ type WorkbenchAction =
   | { type: 'SET_COACHES_DIRTY'; payload: boolean };
 
 function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
+  console.log('workbench dispatch: ', action.type);
   switch (action.type) {
     case 'SELECT_PROMPT':
       return {
@@ -88,35 +89,17 @@ const Workbench = () => {
     coachesDirty: false,
   });
 
-  const organizerRef = useRef<PromptBuilderRef>(null);
-
-  const handleOrganizerPromptChange = useCallback((data: { systemPrompt: string; firstMessage: string }) => {
+  const organizerPromptChangeCb = useCallback((data: { systemPrompt: string; firstMessage: string }) => {
     dispatch({ type: 'UPDATE_ORGANIZER_DATA', payload: data });
   }, []);
 
-  const handleAttendeesChange = useCallback((attendees: PromptBuilderData[]) => {
+  const handleAttendeesChangeCb = useCallback((attendees: PromptBuilderData[]) => {
     dispatch({ type: 'UPDATE_ATTENDEES', payload: attendees });
   }, []);
 
   const handleCoachesChange = useCallback((coaches: PromptBuilderData[]) => {
     dispatch({ type: 'UPDATE_COACHES', payload: coaches.filter((c) => c.starred) });
   }, []);
-
-  const handleOrganizerDirtyChange = useCallback((dirty: boolean) => {
-    dispatch({ type: 'SET_ORGANIZER_DIRTY', payload: dirty });
-  }, []);
-
-  const handleAttendeesDirtyChange = useCallback((dirty: boolean) => {
-    dispatch({ type: 'SET_ATTENDEES_DIRTY', payload: dirty });
-  }, []);
-
-  const handleCoachesDirtyChange = useCallback((dirty: boolean) => {
-    dispatch({ type: 'SET_COACHES_DIRTY', payload: dirty });
-  }, []);
-
-  const anyDirty = state.organizerDirty || state.attendeesDirty || state.coachesDirty;
-
-  // Toast only on save - will be handled by individual components
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -126,40 +109,24 @@ const Workbench = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="w-full space-y-4">
-                <PromptBuilder
-                  ref={organizerRef}
-                  persona="organizer"
-                  color="bg-purple-200"
-                  defaultOpen={true}
-                  onDataChange={handleOrganizerPromptChange}
-                  onDirtyChange={handleOrganizerDirtyChange}
-                />
+                <PromptBuilder persona="organizer" color="bg-purple-200" defaultOpen={true} onDataChange={organizerPromptChangeCb} />
 
                 <PromptBuilderSuite
                   persona="attendee"
                   color="bg-orange-200"
                   defaultOpen={true}
-                  onPromptBuildersChange={handleAttendeesChange}
-                  onDirtyChange={handleAttendeesDirtyChange}
+                  onPromptBuildersChange={handleAttendeesChangeCb}
                 />
-                <PromptBuilderSuite
-                  persona="coach"
-                  color="bg-red-200"
-                  defaultOpen={true}
-                  onPromptBuildersChange={handleCoachesChange}
-                  onDirtyChange={handleCoachesDirtyChange}
-                />
+                <PromptBuilderSuite persona="coach" color="bg-red-200" defaultOpen={true} onPromptBuildersChange={handleCoachesChange} />
               </div>
             </div>
 
-            {/* Conversation Column */}
             <div className="space-y-4">
               <ChatSuite
                 attendees={state.attendees}
                 coaches={state.coaches}
                 organizerPromptText={state.organizerPromptText}
                 organizerFirstMessage={state.organizerFirstMessage}
-                anyDirty={anyDirty}
               />
             </div>
           </div>

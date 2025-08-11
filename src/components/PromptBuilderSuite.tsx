@@ -94,10 +94,7 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
   });
   const { toast } = useToast();
 
-  const unarchivedPromptBuilders = useMemo(
-    () => state.promptBuilders.filter((a) => !a.archived),
-    [state.promptBuilders],
-  );
+  const unarchivedPromptBuilders = useMemo(() => state.promptBuilders.filter((a) => !a.archived), [state.promptBuilders]);
   const archivedPromptBuilders = useMemo(() => state.promptBuilders.filter((a) => a.archived), [state.promptBuilders]);
 
   useEffect(() => {
