@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { generateTimestampName } from '@/utils/id';
-import { archivePromptBuilder, fetchAllPromptBuildersForPersona, savePromptBuilder } from '@/utils/promptBuilder';
+import { archivePromptBuilder, fetchAllPromptBuildersForPersona, savePromptBuilder, starPromptBuilder } from '@/utils/promptBuilder';
 import { ChevronRight, Plus } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useReducer, useRef } from 'react';
 import PromptBuilder, { type PromptBuilderRef } from './PromptBuilder';
@@ -14,6 +14,7 @@ export interface AttendeeData {
   systemPrompt: string;
   firstMessage: string;
   archived?: boolean;
+  starred?: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -46,6 +47,7 @@ type PromptBuilderSuiteAction =
   | { type: 'ADD_ATTENDEE'; payload: AttendeeData }
   | { type: 'UPDATE_ATTENDEE'; payload: { id: string; data: Partial<AttendeeData> } }
   | { type: 'TOGGLE_ARCHIVE'; payload: { id: string; archived: boolean } }
+  | { type: 'TOGGLE_STARRED'; payload: { id: string; starred: boolean } }
   | { type: 'TOGGLE_ARCHIVED_EXPANDED' };
 
 function promptBuilderSuiteReducer(state: PromptBuilderSuiteState, action: PromptBuilderSuiteAction): PromptBuilderSuiteState {
@@ -85,6 +87,12 @@ function promptBuilderSuiteReducer(state: PromptBuilderSuiteState, action: Promp
         attendees: state.attendees.map((a) => (a.id === action.payload.id ? { ...a, archived: action.payload.archived } : a)),
       };
 
+    case 'TOGGLE_STARRED':
+      return {
+        ...state,
+        attendees: state.attendees.map((a) => (a.id === action.payload.id ? { ...a, starred: action.payload.starred } : a)),
+      };
+
     case 'TOGGLE_ARCHIVED_EXPANDED':
       return { ...state, archivedOpen: !state.archivedOpen };
 
@@ -103,7 +111,18 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
   });
   const { toast } = useToast();
 
-  const activeAttendees = useMemo(() => state.attendees.filter((a) => !a.archived), [state.attendees]);
+  const activeAttendees = useMemo(() => 
+    state.attendees
+      .filter((a) => !a.archived)
+      .sort((a, b) => {
+        // Starred items first
+        if (a.starred && !b.starred) return -1;
+        if (!a.starred && b.starred) return 1;
+        // Then by name
+        return a.displayName.localeCompare(b.displayName);
+      }), 
+    [state.attendees]
+  );
   const archivedAttendees = useMemo(() => state.attendees.filter((a) => a.archived), [state.attendees]);
 
   useEffect(() => {
@@ -121,6 +140,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
           systemPrompt: pb.system_prompt,
           firstMessage: pb.firstMessage || '',
           archived: pb.archived,
+          starred: pb.starred,
           created_at: pb.created_at,
           updated_at: pb.updated_at,
         }));
@@ -175,6 +195,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
           systemPrompt: pb.system_prompt,
           firstMessage: pb.firstMessage || '',
           archived: pb.archived,
+          starred: pb.starred,
           created_at: pb.created_at,
           updated_at: pb.updated_at,
         }));
@@ -193,35 +214,71 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
     }
   }, [toast]);
 
-  const handleArchiveToggle = useCallback(async (attendeeId: string, archived: boolean) => {
-    try {
-      // Update database first
-      const success = await archivePromptBuilder(attendeeId, archived);
-      
-      if (success) {
-        // Only update local state if database update succeeded
-        dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id: attendeeId, archived } });
-        
-        toast({
-          title: 'Success',
-          description: `Attendee ${archived ? 'archived' : 'unarchived'} successfully`,
-        });
-      } else {
+  const handleArchiveToggle = useCallback(
+    async (attendeeId: string, archived: boolean) => {
+      try {
+        // Update database first
+        const success = await archivePromptBuilder(attendeeId, archived);
+
+        if (success) {
+          // Only update local state if database update succeeded
+          dispatch({ type: 'TOGGLE_ARCHIVE', payload: { id: attendeeId, archived } });
+
+          toast({
+            title: 'Success',
+            description: `Attendee ${archived ? 'hidden' : 'unhidden'} successfully`,
+          });
+        } else {
+          toast({
+            title: 'Error',
+            description: 'Failed to update archive status',
+            variant: 'destructive',
+          });
+        }
+      } catch (error) {
+        console.error('Error toggling archive status:', error);
         toast({
           title: 'Error',
           description: 'Failed to update archive status',
           variant: 'destructive',
         });
       }
-    } catch (error) {
-      console.error('Error toggling archive status:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update archive status',
-        variant: 'destructive',
-      });
-    }
-  }, [toast]);
+    },
+    [toast],
+  );
+
+  const handleStarToggle = useCallback(
+    async (attendeeId: string, starred: boolean) => {
+      try {
+        // Update database first
+        const success = await starPromptBuilder(attendeeId, starred);
+
+        if (success) {
+          // Only update local state if database update succeeded
+          dispatch({ type: 'TOGGLE_STARRED', payload: { id: attendeeId, starred } });
+
+          toast({
+            title: 'Success',
+            description: `Attendee ${starred ? 'starred' : 'unstarred'} successfully`,
+          });
+        } else {
+          toast({
+            title: 'Error',
+            description: 'Failed to update starred status',
+            variant: 'destructive',
+          });
+        }
+      } catch (error) {
+        console.error('Error toggling starred status:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to update starred status',
+          variant: 'destructive',
+        });
+      }
+    },
+    [toast],
+  );
 
   useImperativeHandle(ref, () => ({
     getPromptBuilder: () => promptBuilderRef.current,
@@ -268,9 +325,11 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
               color={color}
               defaultOpen={defaultOpen}
               archived={attendee.archived || false}
+              starred={attendee.starred || false}
               promptBuilderId={attendee.id}
               onDataChange={(data) => handleAttendeeDataChange(attendee.id, data)}
               onArchiveToggle={handleArchiveToggle}
+              onStarToggle={handleStarToggle}
             />
           ))}
         </div>
@@ -292,7 +351,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="sm" className="w-full justify-start text-xs text-gray-600 hover:text-gray-900">
               <ChevronRight className={cn('h-3 w-3 mr-1 transition-transform', state.archivedOpen ? 'rotate-90' : '')} />
-              Archived ({archivedAttendees.length})
+              Hidden ({archivedAttendees.length})
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-3 mt-2">
@@ -307,9 +366,11 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
                   color={color}
                   defaultOpen={false}
                   archived={attendee.archived || false}
+                  starred={attendee.starred || false}
                   promptBuilderId={attendee.id}
                   onDataChange={(data) => handleAttendeeDataChange(attendee.id, data)}
                   onArchiveToggle={handleArchiveToggle}
+                  onStarToggle={handleStarToggle}
                 />
               </div>
             ))}

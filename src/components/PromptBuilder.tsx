@@ -4,7 +4,7 @@ import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
 import { fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Archive, ArchiveRestore, ChevronDown } from 'lucide-react';
+import { Archive, ArchiveRestore, Badge, ChevronDown } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useReducer } from 'react';
 
 interface PromptBuilderProps {
@@ -15,9 +15,11 @@ interface PromptBuilderProps {
   initialDisplayName?: string;
   defaultOpen?: boolean;
   archived?: boolean;
+  starred?: boolean;
   promptBuilderId?: string;
   onDataChange?: (data: { systemPrompt: string; firstMessage: string; displayName: string }) => void;
   onArchiveToggle?: (id: string, archived: boolean) => void;
+  onStarToggle?: (id: string, starred: boolean) => void;
 }
 
 export interface PromptBuilderRef {
@@ -129,9 +131,11 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       initialDisplayName,
       defaultOpen = true,
       archived = false,
+      starred = false,
       promptBuilderId,
       onDataChange,
       onArchiveToggle,
+      onStarToggle,
     },
     ref,
   ) => {
@@ -203,6 +207,15 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
         onArchiveToggle(promptBuilderId, !currentlyArchived);
       },
       [promptBuilderId, onArchiveToggle],
+    );
+
+    const handleStarToggle = useCallback(
+      (currentlyStarred: boolean) => {
+        if (!promptBuilderId || !onStarToggle) return;
+
+        onStarToggle(promptBuilderId, !currentlyStarred);
+      },
+      [promptBuilderId, onStarToggle],
     );
 
     useEffect(() => {
@@ -281,13 +294,24 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
             )}
           </button>
           <div className="flex items-center gap-2 ml-auto">
+            {persona === 'attendee' && promptBuilderId && onStarToggle && (
+              <Button
+                onClick={() => handleStarToggle(starred)}
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0 text-gray-400 hover:text-yellow-500"
+                title={starred ? 'Unstar' : 'Star'}
+              >
+                <Badge className={`h-3 w-3 ${starred ? 'text-yellow-500' : ''}`} />
+              </Button>
+            )}
             {persona === 'attendee' && promptBuilderId && onArchiveToggle && (
               <Button
                 onClick={() => handleArchiveToggle(archived)}
                 size="sm"
                 variant="ghost"
                 className="h-6 w-6 p-0 text-gray-400 hover:text-blue-500"
-                title={archived ? 'Unarchive' : 'Archive'}
+                title={archived ? 'Show' : 'Hide'}
               >
                 {archived ? <ArchiveRestore className="h-3 w-3" /> : <Archive className="h-3 w-3" />}
               </Button>

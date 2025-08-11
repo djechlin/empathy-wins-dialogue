@@ -1,6 +1,9 @@
 import { supabase } from '@/integrations/supabase/client';
-import { type WorkbenchResponse } from '@/integrations/supabase/types';
 import { useCallback, useState } from 'react';
+
+interface WorkbenchResponse {
+  message?: string;
+}
 
 interface ChatMessage {
   role: 'user' | 'assistant';

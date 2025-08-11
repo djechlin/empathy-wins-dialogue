@@ -7,6 +7,7 @@ export interface PromptBuilderData {
   persona: string;
   firstMessage?: string;
   archived?: boolean;
+  starred?: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -76,6 +77,7 @@ export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'at
       persona: pb.persona || '',
       firstMessage: pb.first_message || undefined,
       archived: pb.archived || false,
+      starred: pb.starred || false,
       created_at: pb.created_at,
       updated_at: pb.updated_at,
     };
@@ -183,7 +185,8 @@ export const fetchAllPromptBuildersForPersona = async (persona: string): Promise
       system_prompt: pb.system_prompt,
       persona: pb.persona || '',
       firstMessage: pb.first_message || undefined,
-      archived: pb.archived || false, // Will work once archived field is added to DB
+      archived: pb.archived || false,
+      starred: pb.starred || false,
       created_at: pb.created_at,
       updated_at: pb.updated_at,
     }));
@@ -205,6 +208,22 @@ export const archivePromptBuilder = async (id: string, archived: boolean): Promi
     return true;
   } catch (error) {
     console.error('Error in archivePromptBuilder:', error);
+    return false;
+  }
+};
+
+export const starPromptBuilder = async (id: string, starred: boolean): Promise<boolean> => {
+  try {
+    const { error } = await supabase.from('prompt_builders').update({ starred }).eq('id', id);
+
+    if (error) {
+      console.error('Error updating prompt builder starred status:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error in starPromptBuilder:', error);
     return false;
   }
 };
