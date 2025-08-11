@@ -17,7 +17,7 @@ interface ChatState {
   pendingPromiseResolve: ((value: string) => void) | null;
 }
 
-type ChatAction = 
+type ChatAction =
   | { type: 'SET_USER_TEXT_INPUT'; payload: string }
   | { type: 'SEND_USER_MESSAGE'; payload: string }
   | { type: 'SENT_USER_MESSAGE' }
@@ -27,7 +27,7 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
     case 'SET_USER_TEXT_INPUT':
       return { ...state, userTextInput: action.payload };
-    case 'SEND_USER_MESSAGE':
+    case 'SEND_USER_MESSAGE': {
       const newQueue = [...state.userSentQueue, action.payload];
       // Resolve any pending promise with the first message in queue
       if (state.pendingPromiseResolve && newQueue.length > 0) {
@@ -40,6 +40,7 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
         };
       }
       return { ...state, userTextInput: '', userSentQueue: newQueue };
+    }
     case 'SENT_USER_MESSAGE':
       return { ...state, userSentQueue: state.userSentQueue.slice(1) };
     case 'SET_PENDING_PROMISE':
@@ -251,7 +252,6 @@ const Chat = ({
     chatEngine.start();
   }, [controlStatus, chatEngine]);
 
-  // Update message count when history changes
   useEffect(() => {
     if (chatEngine.history.length > 0) {
       onStatusUpdate({ messageCount: chatEngine.history.length, lastActivity: new Date() });
