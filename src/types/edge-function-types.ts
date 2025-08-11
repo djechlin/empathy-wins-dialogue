@@ -8,11 +8,15 @@
 
 // Workbench Edge Function Types
 export interface WorkbenchRequest {
-  messages: Array<{
+  messages?: Array<{
     role: 'user' | 'assistant';
     content: string;
   }>;
-  systemPrompt: string;
+  systemPrompt?: string;
+  coach?: {
+    transcript: string;
+    coach: string;
+  };
 }
 
 export interface WorkbenchResponse {
