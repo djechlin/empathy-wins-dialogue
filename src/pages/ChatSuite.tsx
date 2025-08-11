@@ -91,7 +91,7 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
   return (
     <div className="space-y-4">
       <h3 className="font-semibold font-sans">Chats</h3>
-      
+
       <div className="bg-gray-50 border rounded-lg p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4 text-sm">
@@ -236,7 +236,7 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
 
       {attendees
         .filter((attendee) => attendee.systemPrompt.trim() !== '')
-        .map((attendee, index) => (
+        .map((attendee) => (
           <MemoizedChat
             key={attendee.id}
             attendeeDisplayName={attendee.displayName}
@@ -247,7 +247,7 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
             attendeeMode={attendeeMode}
             controlStatus={controlStatus}
             onStatusUpdate={statusUpdateCallbacks[attendee.id]}
-            defaultOpen={index === 0}
+            defaultOpen={false}
           />
         ))}
     </div>
