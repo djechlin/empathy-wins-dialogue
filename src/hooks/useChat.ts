@@ -49,7 +49,9 @@ const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, 
 
   const chat = useCallback(
     async (msg: string | null): Promise<string> => {
+      console.log('useParticipant.chat called:', { msg, messagesLength: messages.length, organizerFirstMessage, humanOrAi });
       if (msg === null && messages.length === 0 && organizerFirstMessage) {
+        console.log('Returning organizer first message:', organizerFirstMessage);
         setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
         return organizerFirstMessage;
       }
@@ -120,6 +122,7 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
     }
     const next = state.queue[0];
     const nextReceiver = next === null ? 0 : ((1 - next.senderIndex) as 0 | 1);
+    console.log('useChat processing queue item:', { next, nextReceiver, participantProps: pp[nextReceiver] });
     // dequeue step
     setState((prev) => ({ ...prev, queue: prev.queue.slice(1), thinking: pp[nextReceiver], speaker: pp[nextReceiver] }));
     setTimeout(async () => {
