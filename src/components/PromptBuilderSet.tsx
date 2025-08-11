@@ -7,7 +7,7 @@ import { Archive, ArchiveRestore, ChevronRight, Plus } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 interface PromptBuilderSetProps {
-  persona: string;
+  persona: 'organizer' | 'attendee';
   color: string;
   onSelectPrompt?: (prompt: PromptBuilderData) => void;
   onCreateNew?: () => void;
