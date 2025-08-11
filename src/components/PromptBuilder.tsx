@@ -35,6 +35,7 @@ enum SaveStatus {
 }
 
 interface PromptBuilderState {
+  id: string | null;
   systemPrompt: string;
   firstMessage: string;
   saveStatus: SaveStatus;
@@ -61,10 +62,10 @@ type PromptBuilderAction =
   | { type: 'SET_IS_EDITING_NAME'; payload: boolean }
   | { type: 'SET_EDIT_NAME_VALUE'; payload: string }
   | { type: 'SET_IS_OPEN'; payload: boolean }
-  | { type: 'LOAD_PROMPT_DATA'; payload: { systemPrompt: string; firstMessage: string; displayName: string } }
+  | { type: 'LOAD_PROMPT_DATA'; payload: { id?: string; systemPrompt: string; firstMessage: string; displayName: string } }
   | { type: 'MARK_DIRTY' }
   | { type: 'START_SAVING' }
-  | { type: 'SAVE_SUCCESS' }
+  | { type: 'SAVE_SUCCESS'; payload: { id: string } }
   | { type: 'SAVE_FAILED'; payload: string }
   | { type: 'COMPLETE_NAME_EDIT'; payload: string }
   | { type: 'CANCEL_NAME_EDIT' }
@@ -93,6 +94,7 @@ const promptBuilderReducer = (state: PromptBuilderState, action: PromptBuilderAc
     case 'LOAD_PROMPT_DATA':
       return {
         ...state,
+        id: action.payload.id || null,
         systemPrompt: action.payload.systemPrompt,
         firstMessage: action.payload.firstMessage,
         displayName: action.payload.displayName,
@@ -111,6 +113,7 @@ const promptBuilderReducer = (state: PromptBuilderState, action: PromptBuilderAc
     case 'SAVE_SUCCESS':
       return {
         ...state,
+        id: action.payload.id,
         saveStatus: SaveStatus.SAVED,
         lastSavedPromptBuilder: {
           systemPrompt: state.systemPrompt,
@@ -164,6 +167,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
     ref,
   ) => {
     const initialState: PromptBuilderState = {
+      id: promptBuilderId || null,
       systemPrompt: initialPrompt,
       firstMessage: initialFirstMessage,
       saveStatus: SaveStatus.SAVED,
@@ -209,21 +213,22 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
 
       dispatch({ type: 'START_SAVING' });
       try {
-        await savePromptBuilder({
+        const savedData = await savePromptBuilder({
+          id: state.id || undefined,
           name: finalDisplayName,
           system_prompt: state.systemPrompt,
           persona,
           firstMessage: state.firstMessage,
         });
 
-        dispatch({ type: 'SAVE_SUCCESS' });
+        dispatch({ type: 'SAVE_SUCCESS', payload: { id: savedData.id } });
         return true;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         dispatch({ type: 'SAVE_FAILED', payload: errorMessage });
         return false;
       }
-    }, [isDirty, state.systemPrompt, state.firstMessage, state.displayName, persona]);
+    }, [isDirty, state.id, state.systemPrompt, state.firstMessage, state.displayName, persona]);
 
     const handleSaveNameEdit = useCallback(() => {
       dispatch({ type: 'COMPLETE_NAME_EDIT', payload: state.editNameValue.trim() || persona });
@@ -269,9 +274,9 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
       if (dirty && state.saveStatus === SaveStatus.SAVED) {
         dispatch({ type: 'MARK_DIRTY' });
       } else if (!dirty && state.saveStatus === SaveStatus.DIRTY) {
-        dispatch({ type: 'SAVE_SUCCESS' });
+        dispatch({ type: 'SAVE_SUCCESS', payload: { id: state.id || '' } });
       }
-    }, [isDirty, state.systemPrompt, state.firstMessage, state.displayName, state.lastSavedPromptBuilder, state.saveStatus]);
+    }, [isDirty, state.id, state.systemPrompt, state.firstMessage, state.displayName, state.lastSavedPromptBuilder, state.saveStatus]);
 
     useEffect(() => {
       const load = async () => {
@@ -285,6 +290,7 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
             dispatch({
               type: 'LOAD_PROMPT_DATA',
               payload: {
+                id: recentPrompt.id,
                 systemPrompt: recentPrompt.system_prompt,
                 firstMessage: recentPrompt.firstMessage || '',
                 displayName: recentPrompt.name,

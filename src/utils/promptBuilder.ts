@@ -12,7 +12,7 @@ export interface PromptBuilderData {
   updated_at?: string;
 }
 
-export const savePromptBuilder = async (data: PromptBuilderData): Promise<void> => {
+export const savePromptBuilder = async (data: PromptBuilderData): Promise<PromptBuilderData> => {
   try {
     const {
       data: { user },
@@ -30,11 +30,43 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<void> 
       first_message: data.firstMessage || null,
     };
 
-    const { error } = await supabase.from('prompt_builders').insert(promptBuilderRecord);
+    let result;
+    if (data.id) {
+      // Update existing record
+      const { data: updatedData, error } = await supabase
+        .from('prompt_builders')
+        .update(promptBuilderRecord)
+        .eq('id', data.id)
+        .eq('user_id', user.id) // Ensure user can only update their own records
+        .select()
+        .single();
 
-    if (error) {
-      throw new Error(error.message || 'Database error occurred');
+      if (error) {
+        throw new Error(error.message || 'Database update error occurred');
+      }
+      result = updatedData;
+    } else {
+      // Create new record
+      const { data: insertedData, error } = await supabase.from('prompt_builders').insert(promptBuilderRecord).select().single();
+
+      if (error) {
+        throw new Error(error.message || 'Database insert error occurred');
+      }
+      result = insertedData;
     }
+
+    // Return the saved data in our expected format
+    return {
+      id: result.id,
+      name: result.name,
+      system_prompt: result.system_prompt,
+      persona: result.persona as 'organizer' | 'attendee',
+      firstMessage: result.first_message || undefined,
+      archived: result.archived || false,
+      starred: result.starred || false,
+      created_at: result.created_at,
+      updated_at: result.updated_at,
+    };
   } catch (error) {
     console.error('Error in savePromptBuilder:', error);
     throw error;
