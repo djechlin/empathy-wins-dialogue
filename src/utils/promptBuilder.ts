@@ -165,7 +165,6 @@ export const fetchAllPromptBuildersForPersona = async (persona: string): Promise
     const { data: promptBuilders, error } = await supabase
       .from('prompt_builders')
       .select('*')
-      .eq('user_id', user.id)
       .eq('persona', persona)
       .order('updated_at', { ascending: false });
 
