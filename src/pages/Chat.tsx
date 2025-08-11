@@ -1,11 +1,10 @@
 import { useParticipant } from '@/hooks/useParticipant';
-import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
 import { Card } from '@/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { Textarea } from '@/ui/textarea';
 import { generateTimestampId } from '@/utils/id';
-import { Bot, ChevronRight, Send, User } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Bot, ChevronRight, MessageCircle, Send, User } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 interface Message {
@@ -244,120 +243,206 @@ const Chat = ({
     [sendHumanMessage],
   );
 
+  const lastMessage = state.history[state.history.length - 1];
+  const chatStatus = useMemo(() => {
+    if (!hasStarted) return 'ready';
+    if (paused) return 'paused';
+    if (isAwaitingAiResponse) return 'ai-thinking';
+    if (speakerMode === 'human') return 'waiting-human';
+    return 'active';
+  }, [hasStarted, paused, isAwaitingAiResponse, speakerMode]);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'bg-green-500';
+      case 'ai-thinking':
+        return 'bg-blue-500 animate-pulse';
+      case 'waiting-human':
+        return 'bg-yellow-500 animate-pulse';
+      case 'paused':
+        return 'bg-orange-500';
+      default:
+        return 'bg-gray-400';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'Active';
+      case 'ai-thinking':
+        return 'AI thinking...';
+      case 'waiting-human':
+        return 'Waiting for human...';
+      case 'paused':
+        return 'Paused';
+      default:
+        return 'Ready';
+    }
+  };
+
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <CollapsibleTrigger asChild>
-        <div className="w-full justify-start text-sm font-medium p-2 h-auto cursor-pointer hover:bg-gray-100 rounded-md flex items-center justify-between">
-          <div className="flex items-center">
-            <ChevronRight className={cn('h-4 w-4 mr-2 transition-transform', isOpen ? 'rotate-90' : '')} />
-            Chat with {attendeeDisplayName}
+    <Card className="overflow-hidden">
+      {/* Chat Header - Always Visible */}
+      <button onClick={() => setIsOpen(!isOpen)} className="w-full p-4 hover:bg-gray-50 transition-colors duration-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <motion.div animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.3, ease: 'easeInOut' }}>
+              <ChevronRight className="h-4 w-4 text-gray-500" />
+            </motion.div>
+            <div className="text-left">
+              <h3 className="font-medium text-gray-900">Chat with {attendeeDisplayName}</h3>
+              <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                <div className={`w-2 h-2 rounded-full ${getStatusColor(chatStatus)}`} />
+                <span>{getStatusText(chatStatus)}</span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-xs">
+
+          <div className="flex items-center gap-4 text-sm">
             {state.history.length > 0 && (
-              <>
-                <div className={`w-2 h-2 rounded-full ${hasStarted && !paused ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
-                <span className="text-gray-600">{state.history.length} msgs</span>
-              </>
+              <div className="flex items-center gap-2 text-gray-600">
+                <MessageCircle size={14} />
+                <span>{state.history.length} messages</span>
+              </div>
+            )}
+            {lastMessage && (
+              <div className="text-right max-w-48">
+                <div className="text-xs text-gray-400">
+                  {lastMessage.timestamp.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </div>
+                <div className="text-xs text-gray-600 truncate">
+                  <span className="font-medium">{lastMessage.sender === 'organizer' ? 'Organizer' : 'Attendee'}:</span>{' '}
+                  {lastMessage.content}
+                </div>
+              </div>
             )}
           </div>
         </div>
-      </CollapsibleTrigger>
+      </button>
 
-      <CollapsibleContent className="mt-2">
-        <Card className="h-full flex flex-col">
-          <div className="border-b px-2 py-2 bg-gray-50">
-            <h2 className="font-semibold text-center">Chat with {attendeeDisplayName}</h2>
-          </div>
+      {/* Expandable Chat Content */}
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{
+              duration: 0.3,
+              ease: 'easeInOut',
+              opacity: { duration: 0.2 },
+            }}
+            className="overflow-hidden"
+          >
+            <div className="border-t">
+              {/* Chat Messages Area */}
+              <div className="h-96 overflow-y-auto scroll-smooth p-4 space-y-4 bg-gray-50">
+                {state.history.map((message) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className={`flex ${message.sender === 'organizer' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow-sm ${
+                        message.sender === 'organizer' ? 'bg-purple-200 text-gray-900' : 'bg-orange-200 text-gray-900'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        {message.sender === 'organizer' ? <User size={12} /> : <Bot size={12} />}
+                        <span className="text-xs opacity-75">{message.sender === 'organizer' ? 'Organizer' : 'Attendee'}</span>
+                      </div>
+                      <p className="text-sm">{message.content}</p>
+                      <p className="text-xs mt-1 text-gray-600">
+                        {message.timestamp.toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
 
-          <div className="flex-1 overflow-y-auto scroll-smooth p-4 space-y-4">
-        {state.history.map((message) => (
-          <div key={message.id} className={`flex ${message.sender === 'organizer' ? 'justify-end' : 'justify-start'}`}>
-            <div
-              className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                message.sender === 'organizer' ? 'bg-purple-200 text-gray-900' : 'bg-orange-200 text-gray-900'
-              }`}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                {message.sender === 'organizer' ? <User size={12} /> : <Bot size={12} />}
-                <span className="text-xs opacity-75">{message.sender === 'organizer' ? 'Organizer' : 'Attendee'}</span>
+                {/* Show waiting indicator for next expected response */}
+                {hasStarted && state.speaker && speakerMode === 'human' && !isAwaitingAiResponse && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`flex ${state.speaker === 'organizer' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-xs px-4 py-2 rounded-lg border-2 border-dashed ${
+                        state.speaker === 'organizer' ? 'border-purple-300 bg-purple-50' : 'border-orange-300 bg-orange-50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <User size={12} className={state.speaker === 'organizer' ? 'text-purple-400' : 'text-orange-400'} />
+                        <span className="text-xs text-gray-500">{state.speaker === 'organizer' ? 'Organizer' : 'Attendee'}</span>
+                      </div>
+                      <p className="text-sm italic text-gray-500">Waiting for human...</p>
+                    </div>
+                  </motion.div>
+                )}
+
+                {isAwaitingAiResponse && (
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                    <AiThinking participant={state.speaker} />
+                  </motion.div>
+                )}
+                <div ref={messagesEndRef} />
               </div>
-              <p className="text-sm">{message.content}</p>
-              <p className="text-xs mt-1 text-gray-600">
-                {message.timestamp.toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </p>
-            </div>
-          </div>
-        ))}
 
-        {/* Show waiting indicator for next expected response */}
-        {hasStarted &&
-          state.speaker &&
-          speakerMode === 'human' &&
-          !isAwaitingAiResponse &&
-          (() => {
-            return (
-              <div className={`flex ${state.speaker === 'organizer' ? 'justify-end' : 'justify-start'}`}>
-                <div
-                  className={`max-w-xs px-4 py-2 rounded-lg border-2 border-dashed ${
-                    state.speaker === 'organizer' ? 'border-purple-300 bg-purple-50' : 'border-orange-300 bg-orange-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <User size={12} className={state.speaker === 'organizer' ? 'text-purple-400' : 'text-orange-400'} />
-                    <span className="text-xs text-gray-500">{state.speaker === 'organizer' ? 'Organizer' : 'Attendee'}</span>
-                  </div>
-                  <p className="text-sm italic text-gray-500">Waiting for human...</p>
+              {/* Chat Input Area */}
+              <div className="border-t p-4 bg-white">
+                <div className="flex space-x-2">
+                  <Textarea
+                    ref={inputRef}
+                    value={state.userTextInput}
+                    onChange={(e) => dispatch({ type: 'SET_USER_TEXT_INPUT', payload: e.target.value })}
+                    onKeyPress={sendHumanMessageOnPressEnter}
+                    placeholder={
+                      paused
+                        ? 'Chat is paused'
+                        : organizerMode === 'ai' && attendeeMode === 'ai'
+                          ? 'Both participants are in AI mode - chat runs automatically'
+                          : state.speaker === 'organizer'
+                            ? 'Type your message as the organizer...'
+                            : 'Type your message as the attendee...'
+                    }
+                    className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
+                      paused || (organizerMode === 'ai' && attendeeMode === 'ai') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''
+                    }`}
+                    disabled={paused || isAwaitingAiResponse || (organizerMode === 'ai' && attendeeMode === 'ai')}
+                  />
+                  <Button
+                    onClick={sendHumanMessage}
+                    disabled={
+                      paused || !state.userTextInput.trim() || isAwaitingAiResponse || (organizerMode === 'ai' && attendeeMode === 'ai')
+                    }
+                    className={`px-4 transition-colors duration-200 ${
+                      paused || (organizerMode === 'ai' && attendeeMode === 'ai')
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : state.speaker === 'organizer'
+                          ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                          : 'bg-orange-600 hover:bg-orange-700 text-white'
+                    }`}
+                  >
+                    <Send size={16} />
+                  </Button>
                 </div>
               </div>
-            );
-          })()}
-
-        {isAwaitingAiResponse && <AiThinking participant={state.speaker} />}
-        <div ref={messagesEndRef} />
-      </div>
-
-      <div className="border-t p-4">
-        <div className="flex space-x-2">
-          <Textarea
-            ref={inputRef}
-            value={state.userTextInput}
-            onChange={(e) => dispatch({ type: 'SET_USER_TEXT_INPUT', payload: e.target.value })}
-            onKeyPress={sendHumanMessageOnPressEnter}
-            placeholder={
-              paused
-                ? 'Chat is paused'
-                : organizerMode === 'ai' && attendeeMode === 'ai'
-                  ? 'Both participants are in AI mode - chat runs automatically'
-                  : state.speaker === 'organizer'
-                    ? 'Type your message as the organizer...'
-                    : 'Type your message as the attendee...'
-            }
-            className={`flex-1 min-h-[40px] max-h-[120px] resize-none ${
-              paused || (organizerMode === 'ai' && attendeeMode === 'ai') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''
-            }`}
-            disabled={paused || isAwaitingAiResponse || (organizerMode === 'ai' && attendeeMode === 'ai')}
-          />
-          <Button
-            onClick={sendHumanMessage}
-            disabled={paused || !state.userTextInput.trim() || isAwaitingAiResponse || (organizerMode === 'ai' && attendeeMode === 'ai')}
-            className={`px-4 ${
-              paused || (organizerMode === 'ai' && attendeeMode === 'ai')
-                ? 'bg-gray-400 cursor-not-allowed'
-                : state.speaker === 'organizer'
-                  ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                  : 'bg-orange-600 hover:bg-orange-700 text-white'
-            }`}
-          >
-            <Send size={16} />
-          </Button>
-        </div>
-          </div>
-        </Card>
-      </CollapsibleContent>
-    </Collapsible>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Card>
   );
 };
 
