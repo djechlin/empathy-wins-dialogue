@@ -4,7 +4,7 @@ export interface PromptBuilderData {
   id?: string;
   name: string;
   system_prompt: string;
-  persona: string;
+  persona: 'organizer' | 'attendee';
   firstMessage?: string;
   archived?: boolean;
   created_at?: string;
@@ -73,7 +73,7 @@ export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'at
       id: pb.id,
       name: pb.name,
       system_prompt: pb.system_prompt,
-      persona: pb.persona || '',
+      persona: pb.persona as 'organizer' | 'attendee', // part of the 'where'
       firstMessage: pb.first_message || undefined,
       archived: pb.archived || false,
       created_at: pb.created_at,
@@ -85,53 +85,7 @@ export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'at
   }
 };
 
-export const fetchMostRecentPromptBuilders = async (): Promise<Record<string, PromptBuilderData> | null> => {
-  try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      console.error('No authenticated user');
-      return null;
-    }
-
-    const { data: promptBuilders, error } = await supabase
-      .from('prompt_builders')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('updated_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching prompt builders:', error);
-      return null;
-    }
-
-    if (!promptBuilders || promptBuilders.length === 0) {
-      return null;
-    }
-
-    // Convert to the format expected by the UI
-    const result: Record<string, PromptBuilderData> = {};
-
-    for (const pb of promptBuilders) {
-      result[pb.name] = {
-        id: pb.id,
-        name: pb.name,
-        system_prompt: pb.system_prompt,
-        persona: pb.persona || '',
-        firstMessage: pb.first_message || undefined,
-      };
-    }
-
-    return result;
-  } catch (error) {
-    console.error('Error in fetchMostRecentPromptBuilders:', error);
-    return null;
-  }
-};
-
-export const fetchAllPromptBuildersForPersona = async (persona: string): Promise<PromptBuilderData[]> => {
+export const fetchAllPromptBuildersForPersona = async (persona: 'organizer' | 'attendee'): Promise<PromptBuilderData[]> => {
   try {
     const authPromise = supabase.auth.getUser();
     const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Authentication timeout')), 5000));
