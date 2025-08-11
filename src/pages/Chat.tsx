@@ -113,9 +113,9 @@ const CoachResults = ({
 
   const getScoreBadgeColor = (score: number | null): string => {
     if (score === null) return '';
-    if (score >= 4) return 'bg-green-500 text-white';
-    if (score === 3) return 'bg-gray-500 text-white';
-    return 'bg-red-500 text-white';
+    if (score >= 4) return 'border border-green-500 text-green-700 bg-green-50';
+    if (score === 3) return 'border border-gray-500 text-gray-700 bg-gray-50';
+    return 'border border-red-500 text-red-700 bg-red-50';
   };
 
   useEffect(() => {
@@ -198,7 +198,7 @@ const CoachResults = ({
                   <span className="text-sm font-medium text-gray-900">{coach.name}</span>
                 </div>
                 {score !== null && (
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getScoreBadgeColor(score)}`}>Score: {score}/5</span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getScoreBadgeColor(score)}`}>{score}/5</span>
                 )}
               </div>
               <div className="text-sm text-gray-600 bg-white p-2 rounded">
