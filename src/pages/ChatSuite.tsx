@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { Bot, ChevronRight, MessageCircle, Pause, Play, User, Users } from 'lucide-react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import Chat from './Chat';
 
 interface ChatSuiteProps {
@@ -76,11 +76,23 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
     }));
   }, []);
 
-  // Calculate suite statistics
-  const totalChats = attendees.filter((a) => a.systemPrompt.trim() !== '').length;
-  const startedChats = Object.values(chatStatuses).filter((status) => status.started).length;
-  const totalMessages = Object.values(chatStatuses).reduce((sum, status) => sum + status.messageCount, 0);
-  const activeChats = hasStarted && !paused ? startedChats : 0;
+  // Create memoized status update callbacks for each attendee
+  const statusUpdateCallbacks = useMemo(() => {
+    const callbacks: Record<string, (updates: Partial<ChatStatus>) => void> = {};
+    attendees.forEach((attendee) => {
+      callbacks[attendee.id] = (updates: Partial<ChatStatus>) => updateChatStatus(attendee.id, updates);
+    });
+    return callbacks;
+  }, [attendees, updateChatStatus]);
+
+  // Calculate suite statistics with useMemo to prevent recalculation on every render
+  const { totalChats, totalMessages, activeChats } = useMemo(() => {
+    const total = attendees.filter((a) => a.systemPrompt.trim() !== '').length;
+    const started = Object.values(chatStatuses).filter((status) => status.started).length;
+    const messages = Object.values(chatStatuses).reduce((sum, status) => sum + status.messageCount, 0);
+    const active = hasStarted && !paused ? started : 0;
+    return { totalChats: total, totalMessages: messages, activeChats: active };
+  }, [attendees, chatStatuses, hasStarted, paused]);
 
   return (
     <div className="space-y-4">
@@ -243,7 +255,7 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
                 attendeeMode={attendeeMode}
                 paused={paused}
                 hasStarted={hasStarted}
-                onStatusUpdate={(updates) => updateChatStatus(attendee.id, updates)}
+                onStatusUpdate={statusUpdateCallbacks[attendee.id]}
               />
             </CollapsibleContent>
           </Collapsible>

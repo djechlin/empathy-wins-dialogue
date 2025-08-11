@@ -43,7 +43,8 @@ export const useParticipant = (
 
   const chat = useCallback(
     async (msg: string | null): Promise<string> => {
-      if (messages.length === 0 && organizerFirstMessage) {
+      // Handle initial organizer message case
+      if (msg === null && messages.length === 0 && organizerFirstMessage) {
         setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
         return organizerFirstMessage;
       }

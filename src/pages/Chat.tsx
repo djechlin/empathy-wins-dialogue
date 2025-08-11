@@ -116,12 +116,11 @@ const Chat = ({
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const initializationStarted = useRef(false);
 
-  // Helper for getting human text input
+  // Helper for getting human text input - memoized with useCallback to prevent useParticipant re-runs
   const getTextInput = useCallback((): Promise<string> => {
-    return new Promise((resolve) => {
-      resolve(state.userTextInput);
-    });
+    return Promise.resolve(state.userTextInput);
   }, [state.userTextInput]);
 
   const organizerParticipant = useParticipant(organizerMode, organizerFirstMessage || null, organizerPromptText, getTextInput);
@@ -131,8 +130,12 @@ const Chat = ({
     [state.speaker, organizerParticipant, attendeeParticipant],
   );
 
-  const speakerMode = state.speaker === 'organizer' ? organizerMode : attendeeMode;
-  const isAwaitingAiResponse = state.history.length > 0 && speakerMode === 'ai';
+  const speakerMode = useMemo(
+    () => (state.speaker === 'organizer' ? organizerMode : attendeeMode),
+    [state.speaker, organizerMode, attendeeMode],
+  );
+
+  const isAwaitingAiResponse = useMemo(() => state.history.length > 0 && speakerMode === 'ai', [state.history.length, speakerMode]);
 
   // If speaker is AI, request message in 1 tick
   useEffect(() => {
@@ -146,17 +149,20 @@ const Chat = ({
       return;
     }
 
+    console.log('start a timeout with ', state.history.length - 1);
+
     setTimeout(async () => {
       const lastMessage = state.history[state.history.length - 1];
       const currentMessageIndex = state.history.length - 1;
-      
+
       // Mark this message as being processed before making the request
       dispatch({
         type: 'MARK_MESSAGE_FOR_RESPONSE',
         payload: { messageIndex: currentMessageIndex },
       });
-      
+
       try {
+        console.log('participant chat, from the big timeout: ', state.history.length - 1);
         const response = await participant.chat(lastMessage.content);
         dispatch({
           type: 'SEND_MESSAGE',
@@ -173,26 +179,42 @@ const Chat = ({
 
   // Start chat when hasStarted prop changes to true
   useEffect(() => {
-    if (hasStarted && state.history.length === 0 && organizerMode === 'ai' && state.lastMessageIndexForResponse === -1) {
+    if (hasStarted && 
+        state.history.length === 0 && 
+        organizerMode === 'ai' && 
+        state.lastMessageIndexForResponse === -1 &&
+        !initializationStarted.current) {
+      
+      console.log('Initializing chat with organizer first message');
+      initializationStarted.current = true;
       onStatusUpdate({ started: true, lastActivity: new Date() });
       
-      // Mark initialization as in progress
+      // Mark initialization as in progress to prevent duplicate calls
       dispatch({
         type: 'MARK_MESSAGE_FOR_RESPONSE',
         payload: { messageIndex: 0 },
       });
-      
+
       organizerParticipant
         .chat(null)
         .then((firstMessage) => {
+          console.log('Received organizer first message:', firstMessage);
           dispatch({ type: 'SEND_MESSAGE', payload: { sender: 'organizer', content: firstMessage } });
           onStatusUpdate({ messageCount: 1, lastActivity: new Date() });
         })
         .catch((error) => {
           console.error('Error starting chat:', error);
+          initializationStarted.current = false; // Reset on error
         });
     }
-  }, [hasStarted, state.history.length, organizerMode, organizerParticipant, onStatusUpdate, state.lastMessageIndexForResponse]);
+  }, [hasStarted, state.history.length, organizerMode, state.lastMessageIndexForResponse, organizerParticipant, onStatusUpdate]);
+
+  // Reset initialization flag when chat is reset
+  useEffect(() => {
+    if (!hasStarted) {
+      initializationStarted.current = false;
+    }
+  }, [hasStarted]);
 
   // Update message count when history changes
   useEffect(() => {
