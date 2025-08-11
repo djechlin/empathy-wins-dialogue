@@ -7,7 +7,7 @@ import { Card } from '@/ui/card';
 import { Textarea } from '@/ui/textarea';
 import { PromptBuilderData } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Bot, ChevronRight, MessageCircle, Send, User } from 'lucide-react';
+import { Bot, ChevronRight, MessageCircle, Send, User, Zap } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import ScrollToBottom from 'react-scroll-to-bottom';
 
@@ -183,13 +183,11 @@ const CoachResults = ({
     return (
       <div className="border-t bg-gray-50 p-4">
         <div className="flex items-center gap-2 mb-3">
-          <Bot size={16} className="text-gray-600" />
+          <Zap size={16} className="text-gray-600" />
           <h4 className="font-medium text-gray-900">Coach Evaluations</h4>
         </div>
         <div className="bg-white border border-gray-200 rounded-lg p-3">
-          <span className="text-sm text-gray-600 italic">
-            Coach evaluation requires at least 3 messages in the conversation
-          </span>
+          <span className="text-sm text-gray-600 italic">Coach evaluation requires at least 3 messages in the conversation</span>
         </div>
       </div>
     );
@@ -198,7 +196,7 @@ const CoachResults = ({
   return (
     <div className="border-t bg-gray-50 p-4">
       <div className="flex items-center gap-2 mb-3">
-        <Bot size={16} className="text-red-600" />
+        <Zap size={16} className="text-red-600" />
         <h4 className="font-medium text-gray-900">Coach Evaluations</h4>
       </div>
       <div className="space-y-3">
