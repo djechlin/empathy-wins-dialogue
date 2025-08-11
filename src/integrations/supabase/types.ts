@@ -18,6 +18,7 @@ export type Database = {
         Args: {
           operationName?: string;
           query?: string;
+          variables?: Json;
           extensions?: Json;
         };
         Returns: Json;
@@ -151,6 +152,7 @@ export type Database = {
           id: string;
           name: string;
           persona: string | null;
+          starred: boolean;
           system_prompt: string;
           updated_at: string;
           user_id: string;
@@ -162,6 +164,7 @@ export type Database = {
           id?: string;
           name: string;
           persona?: string | null;
+          starred?: boolean;
           system_prompt: string;
           updated_at?: string;
           user_id: string;
@@ -173,6 +176,7 @@ export type Database = {
           id?: string;
           name?: string;
           persona?: string | null;
+          starred?: boolean;
           system_prompt?: string;
           updated_at?: string;
           user_id?: string;
@@ -415,18 +419,3 @@ export const Constants = {
     Enums: {},
   },
 } as const;
-
-// Edge Function Types
-export interface WorkbenchRequest {
-  messages: Array<{
-    role: 'user' | 'assistant';
-    content: string;
-  }>;
-  systemPrompt: string;
-}
-
-export interface WorkbenchResponse {
-  message?: string;
-  user_id?: string;
-  error?: string;
-}
