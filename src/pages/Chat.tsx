@@ -9,6 +9,7 @@ import { Bot, ChevronRight, MessageCircle, Send, User } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { WorkbenchRequest, WorkbenchResponse } from '@/types/edge-function-types';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 interface Message {
   id: string;
@@ -408,7 +409,11 @@ const Chat = ({
               <ChevronRight className="h-4 w-4 text-gray-500" />
             </motion.div>
             <div className="text-left">
-              <h3 className="font-medium text-gray-900 font-sans">{attendeeDisplayName}</h3>
+              <div className="flex items-center gap-2">
+                {attendeeDisplayName === 'Human' && <User size={16} className="text-blue-600" />}
+                <h3 className="font-medium text-gray-900 font-sans">{attendeeDisplayName}</h3>
+                {attendeeDisplayName === 'Human' && <span className="text-xs text-gray-500">(manual input)</span>}
+              </div>
               <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                 <div className={`w-2 h-2 rounded-full ${getStatusColor(chatStatus)}`} />
                 <span>{getStatusText(chatStatus)}</span>
@@ -457,63 +462,65 @@ const Chat = ({
           >
             <div className="border-t">
               {/* Chat Messages Area */}
-              <div className="h-96 overflow-y-auto scroll-smooth p-4 space-y-4 bg-gray-50">
-                {state.history.map((message) => (
-                  <motion.div
-                    key={message.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className={`flex ${message.sender === 'organizer' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow-sm ${
-                        message.sender === 'organizer' ? 'bg-purple-200 text-gray-900' : 'bg-orange-200 text-gray-900'
-                      }`}
+              <ScrollToBottom className="h-96 p-4 bg-gray-50" followButtonClassName="hidden">
+                <div className="space-y-4">
+                  {state.history.map((message) => (
+                    <motion.div
+                      key={message.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className={`flex ${message.sender === 'organizer' ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className="flex items-center gap-2 mb-1">
-                        {message.sender === 'organizer' ? <User size={12} /> : <Bot size={12} />}
-                        <span className="text-xs opacity-75">{message.sender === 'organizer' ? 'Organizer' : 'Attendee'}</span>
+                      <div
+                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow-sm ${
+                          message.sender === 'organizer' ? 'bg-purple-200 text-gray-900' : 'bg-orange-200 text-gray-900'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          {message.sender === 'organizer' ? <User size={12} /> : <Bot size={12} />}
+                          <span className="text-xs opacity-75">{message.sender === 'organizer' ? 'Organizer' : 'Attendee'}</span>
+                        </div>
+                        <p className="text-sm">{message.content}</p>
+                        <p className="text-xs mt-1 text-gray-600">
+                          {message.timestamp.toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </p>
                       </div>
-                      <p className="text-sm">{message.content}</p>
-                      <p className="text-xs mt-1 text-gray-600">
-                        {message.timestamp.toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  ))}
 
-                {/* Show waiting indicator for next expected response */}
-                {controlStatus === 'started' && state.speaker && speakerMode === 'human' && !isAwaitingAiResponse && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`flex ${state.speaker === 'organizer' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-xs px-4 py-2 rounded-lg border-2 border-dashed ${
-                        state.speaker === 'organizer' ? 'border-purple-300 bg-purple-50' : 'border-orange-300 bg-orange-50'
-                      }`}
+                  {/* Show waiting indicator for next expected response */}
+                  {controlStatus === 'started' && state.speaker && speakerMode === 'human' && !isAwaitingAiResponse && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`flex ${state.speaker === 'organizer' ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className="flex items-center gap-2 mb-1">
-                        <User size={12} className={state.speaker === 'organizer' ? 'text-purple-400' : 'text-orange-400'} />
-                        <span className="text-xs text-gray-500">{state.speaker === 'organizer' ? 'Organizer' : 'Attendee'}</span>
+                      <div
+                        className={`max-w-xs px-4 py-2 rounded-lg border-2 border-dashed ${
+                          state.speaker === 'organizer' ? 'border-purple-300 bg-purple-50' : 'border-orange-300 bg-orange-50'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <User size={12} className={state.speaker === 'organizer' ? 'text-purple-400' : 'text-orange-400'} />
+                          <span className="text-xs text-gray-500">{state.speaker === 'organizer' ? 'Organizer' : 'Attendee'}</span>
+                        </div>
+                        <p className="text-sm italic text-gray-500">Waiting for human...</p>
                       </div>
-                      <p className="text-sm italic text-gray-500">Waiting for human...</p>
-                    </div>
-                  </motion.div>
-                )}
+                    </motion.div>
+                  )}
 
-                {isAwaitingAiResponse && (
-                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                    <AiThinking participant={state.speaker} />
-                  </motion.div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
+                  {isAwaitingAiResponse && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                      <AiThinking participant={state.speaker} />
+                    </motion.div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+              </ScrollToBottom>
 
               {/* Chat Input Area - Hidden in double AI mode */}
               {!(organizerMode === 'ai' && attendeeMode === 'ai') && (

@@ -1,6 +1,6 @@
 import { Button } from '@/ui/button';
 import { PromptBuilderData } from '@/utils/promptBuilder';
-import { MessageCircle, Pause, Play, Square, User, Users, Zap } from 'lucide-react';
+import { MessageCircle, Pause, Play, Square, Users } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
 import Chat from './Chat';
 
@@ -21,14 +21,13 @@ interface ChatStatus {
 const MemoizedChat = React.memo(Chat);
 
 const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMessage, anyDirty = false }: ChatSuiteProps) => {
-  // Suite-level chat controls
-  const [organizerMode, setOrganizerMode] = useState<'human' | 'ai'>('ai');
-  const [attendeeMode, setAttendeeMode] = useState<'human' | 'ai'>('ai');
+  // Suite-level chat controls - organizer is always AI, attendees vary by chat
+  const organizerMode = 'ai'; // Fixed as AI
   const [controlStatus, setControlStatus] = useState<'ready' | 'started' | 'paused' | 'ended'>('ready');
 
-  // Track individual chat statuses
-  const [chatStatuses, setChatStatuses] = useState<Record<string, ChatStatus>>(() =>
-    attendees
+  // Track individual chat statuses (including Human chat)
+  const [chatStatuses, setChatStatuses] = useState<Record<string, ChatStatus>>(() => {
+    const aiChats = attendees
       .filter((attendee) => attendee.starred)
       .reduce(
         (acc, attendee) => ({
@@ -36,20 +35,16 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
           [attendee.id]: { started: false, messageCount: 0, lastActivity: null },
         }),
         {},
-      ),
-  );
+      );
 
-  const handleModeToggle = useCallback(
-    (participant: 'organizer' | 'attendee', mode: 'human' | 'ai') => {
-      if (controlStatus !== 'ready') return;
-      if (participant === 'organizer') {
-        setOrganizerMode(mode);
-      } else {
-        setAttendeeMode(mode);
-      }
-    },
-    [controlStatus],
-  );
+    // Add Human chat
+    return {
+      ...aiChats,
+      human: { started: false, messageCount: 0, lastActivity: null },
+    };
+  });
+
+  // No mode toggle needed - modes are fixed per chat
 
   const handleStartAll = useCallback(() => {
     setControlStatus('started');
@@ -74,7 +69,7 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
     }));
   }, []);
 
-  // Create memoized status update callbacks for each starred attendee
+  // Create memoized status update callbacks for each chat (AI attendees + Human)
   const statusUpdateCallbacks = useMemo(() => {
     const callbacks: Record<string, (updates: Partial<ChatStatus>) => void> = {};
     attendees
@@ -82,12 +77,15 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
       .forEach((attendee) => {
         callbacks[attendee.id] = (updates: Partial<ChatStatus>) => updateChatStatus(attendee.id, updates);
       });
+    // Add Human chat callback
+    callbacks.human = (updates: Partial<ChatStatus>) => updateChatStatus('human', updates);
     return callbacks;
   }, [attendees, updateChatStatus]);
 
   // Calculate suite statistics with useMemo to prevent recalculation on every render
   const { totalChats, totalMessages, activeChats } = useMemo(() => {
-    const total = attendees.filter((a) => a.starred && a.system_prompt.trim() !== '').length;
+    const aiChats = attendees.filter((a) => a.starred && a.system_prompt.trim() !== '').length;
+    const total = aiChats + 1; // +1 for Human chat
     const started = Object.values(chatStatuses).filter((status) => status.started).length;
     const messages = Object.values(chatStatuses).reduce((sum, status) => sum + status.messageCount, 0);
     const active = controlStatus === 'started' ? started : 0;
@@ -150,75 +148,7 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
         </div>
 
         <div className="flex items-center justify-between mb-4 gap-4">
-          <div className="flex items-center gap-4 flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">Organizer:</span>
-              <div className="flex bg-gray-200 rounded-lg p-1">
-                <button
-                  onClick={() => handleModeToggle('organizer', 'human')}
-                  disabled={controlStatus !== 'ready'}
-                  className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                    controlStatus !== 'ready'
-                      ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                      : organizerMode === 'human'
-                        ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
-                        : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <User size={12} />
-                  Human
-                </button>
-                <button
-                  onClick={() => handleModeToggle('organizer', 'ai')}
-                  disabled={controlStatus !== 'ready'}
-                  className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                    controlStatus !== 'ready'
-                      ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                      : organizerMode === 'ai'
-                        ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
-                        : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <Zap size={12} />
-                  AI
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">Attendee:</span>
-              <div className="flex bg-gray-200 rounded-lg p-1">
-                <button
-                  onClick={() => handleModeToggle('attendee', 'human')}
-                  disabled={controlStatus !== 'ready'}
-                  className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                    controlStatus !== 'ready'
-                      ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                      : attendeeMode === 'human'
-                        ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
-                        : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <User size={12} />
-                  Human
-                </button>
-                <button
-                  onClick={() => handleModeToggle('attendee', 'ai')}
-                  disabled={controlStatus !== 'ready'}
-                  className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                    controlStatus !== 'ready'
-                      ? 'text-gray-400 cursor-not-allowed bg-gray-100'
-                      : attendeeMode === 'ai'
-                        ? 'bg-white text-gray-900 shadow-sm ring-2 ring-blue-500'
-                        : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <Zap size={12} />
-                  AI
-                </button>
-              </div>
-            </div>
-          </div>
+          <div className="flex items-center gap-4 flex-1 min-w-0"></div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
             {controlStatus === 'ready' && (
@@ -257,6 +187,7 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
         </div>
       </div>
 
+      {/* AI Attendee Chats */}
       {attendees
         .filter((attendee) => attendee.starred && attendee.system_prompt.trim() !== '')
         .map((attendee) => (
@@ -267,13 +198,28 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
             organizerFirstMessage={organizerFirstMessage}
             attendeeSystemPrompt={attendee.system_prompt}
             organizerMode={organizerMode}
-            attendeeMode={attendeeMode}
+            attendeeMode="ai"
             controlStatus={controlStatus}
             onStatusUpdate={statusUpdateCallbacks[attendee.id]}
             coaches={coaches}
             defaultOpen={false}
           />
         ))}
+
+      {/* Fixed Human Chat */}
+      <MemoizedChat
+        key="human"
+        attendeeDisplayName="Human"
+        organizerPromptText={organizerPromptText}
+        organizerFirstMessage={organizerFirstMessage}
+        attendeeSystemPrompt=""
+        organizerMode={organizerMode}
+        attendeeMode="human"
+        controlStatus={controlStatus}
+        onStatusUpdate={statusUpdateCallbacks.human}
+        coaches={coaches}
+        defaultOpen={false}
+      />
     </div>
   );
 };
