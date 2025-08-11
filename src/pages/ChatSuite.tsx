@@ -19,7 +19,6 @@ interface ChatStatus {
 const MemoizedChat = React.memo(Chat);
 
 const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: ChatSuiteProps) => {
-
   // Suite-level chat controls
   const [organizerMode, setOrganizerMode] = useState<'human' | 'ai'>('ai');
   const [attendeeMode, setAttendeeMode] = useState<'human' | 'ai'>('ai');
@@ -36,7 +35,6 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
       {},
     ),
   );
-
 
   const handleModeToggle = useCallback(
     (participant: 'organizer' | 'attendee', mode: 'human' | 'ai') => {
@@ -87,7 +85,7 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
     <div className="space-y-4">
       <div className="bg-gray-50 border rounded-lg p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold">Suite Controls</h3>
+          <h3 className="font-semibold font-sans">Suite Controls</h3>
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 rounded-full">
               <Users size={14} className="text-blue-600" />
@@ -211,7 +209,7 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
         </div>
       </div>
 
-      <h3 className="font-semibold">Chats</h3>
+      <h3 className="font-semibold font-sans">Chats</h3>
 
       {attendees
         .filter((attendee) => attendee.systemPrompt.trim() !== '')
