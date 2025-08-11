@@ -28,13 +28,16 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
   const [attendeeMode, setAttendeeMode] = useState<'human' | 'ai'>('ai');
   const [paused, setPaused] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
-  
+
   // Track individual chat statuses
-  const [chatStatuses, setChatStatuses] = useState<Record<string, ChatStatus>>(() => 
-    attendees.reduce((acc, attendee) => ({
-      ...acc,
-      [attendee.id]: { started: false, messageCount: 0, lastActivity: null }
-    }), {})
+  const [chatStatuses, setChatStatuses] = useState<Record<string, ChatStatus>>(() =>
+    attendees.reduce(
+      (acc, attendee) => ({
+        ...acc,
+        [attendee.id]: { started: false, messageCount: 0, lastActivity: null },
+      }),
+      {},
+    ),
   );
 
   const toggleAttendee = useCallback((attendeeId: string) => {
@@ -65,15 +68,15 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
   }, [paused]);
 
   const updateChatStatus = useCallback((chatId: string, updates: Partial<ChatStatus>) => {
-    setChatStatuses(prev => ({
+    setChatStatuses((prev) => ({
       ...prev,
-      [chatId]: { ...prev[chatId], ...updates }
+      [chatId]: { ...prev[chatId], ...updates },
     }));
   }, []);
 
   // Calculate suite statistics
-  const totalChats = attendees.filter(a => a.systemPrompt.trim() !== '').length;
-  const startedChats = Object.values(chatStatuses).filter(status => status.started).length;
+  const totalChats = attendees.filter((a) => a.systemPrompt.trim() !== '').length;
+  const startedChats = Object.values(chatStatuses).filter((status) => status.started).length;
   const totalMessages = Object.values(chatStatuses).reduce((sum, status) => sum + status.messageCount, 0);
   const activeChats = hasStarted && !paused ? startedChats : 0;
 
@@ -238,7 +241,6 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
                 attendeeMode={attendeeMode}
                 paused={paused}
                 hasStarted={hasStarted}
-                onStarted={setHasStarted}
                 onStatusUpdate={(updates) => updateChatStatus(attendee.id, updates)}
               />
             </CollapsibleContent>
