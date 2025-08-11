@@ -1,7 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
-import { type WorkbenchResponse } from '@/integrations/supabase/types';
+import { WorkbenchResponse } from '@/types/edge-function-types';
 import { useCallback, useState } from 'react';
-
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
