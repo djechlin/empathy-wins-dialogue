@@ -26,13 +26,15 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
 
   // Track individual chat statuses
   const [chatStatuses, setChatStatuses] = useState<Record<string, ChatStatus>>(() =>
-    attendees.reduce(
-      (acc, attendee) => ({
-        ...acc,
-        [attendee.id]: { started: false, messageCount: 0, lastActivity: null },
-      }),
-      {},
-    ),
+    attendees
+      .filter((attendee) => attendee.starred)
+      .reduce(
+        (acc, attendee) => ({
+          ...acc,
+          [attendee.id]: { started: false, messageCount: 0, lastActivity: null },
+        }),
+        {},
+      ),
   );
 
   const handleModeToggle = useCallback(
@@ -70,18 +72,20 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
     }));
   }, []);
 
-  // Create memoized status update callbacks for each attendee
+  // Create memoized status update callbacks for each starred attendee
   const statusUpdateCallbacks = useMemo(() => {
     const callbacks: Record<string, (updates: Partial<ChatStatus>) => void> = {};
-    attendees.forEach((attendee) => {
-      callbacks[attendee.id] = (updates: Partial<ChatStatus>) => updateChatStatus(attendee.id, updates);
-    });
+    attendees
+      .filter((attendee) => attendee.starred)
+      .forEach((attendee) => {
+        callbacks[attendee.id] = (updates: Partial<ChatStatus>) => updateChatStatus(attendee.id, updates);
+      });
     return callbacks;
   }, [attendees, updateChatStatus]);
 
   // Calculate suite statistics with useMemo to prevent recalculation on every render
   const { totalChats, totalMessages, activeChats } = useMemo(() => {
-    const total = attendees.filter((a) => a.systemPrompt.trim() !== '').length;
+    const total = attendees.filter((a) => a.starred && a.systemPrompt.trim() !== '').length;
     const started = Object.values(chatStatuses).filter((status) => status.started).length;
     const messages = Object.values(chatStatuses).reduce((sum, status) => sum + status.messageCount, 0);
     const active = controlStatus === 'started' ? started : 0;
@@ -235,7 +239,7 @@ const ChatSuite = ({ attendees, organizerPromptText, organizerFirstMessage }: Ch
       </div>
 
       {attendees
-        .filter((attendee) => attendee.systemPrompt.trim() !== '')
+        .filter((attendee) => attendee.starred && attendee.systemPrompt.trim() !== '')
         .map((attendee) => (
           <MemoizedChat
             key={attendee.id}

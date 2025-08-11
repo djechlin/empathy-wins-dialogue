@@ -4,7 +4,7 @@ import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
 import { fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Archive, ArchiveRestore, Badge, ChevronDown } from 'lucide-react';
+import { Archive, ArchiveRestore, Star, ChevronDown } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useReducer } from 'react';
 
 interface PromptBuilderProps {
@@ -299,10 +299,10 @@ const PromptBuilder = forwardRef<PromptBuilderRef, PromptBuilderProps>(
                 onClick={() => handleStarToggle(starred)}
                 size="sm"
                 variant="ghost"
-                className="h-6 w-6 p-0 text-gray-400 hover:text-yellow-500"
+                className={`h-6 w-6 p-0 ${starred ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-500`}
                 title={starred ? 'Unstar' : 'Star'}
               >
-                <Badge className={`h-3 w-3 ${starred ? 'text-yellow-500' : ''}`} />
+                <Star className={`h-3 w-3 ${starred ? 'fill-current' : ''}`} />
               </Button>
             )}
             {persona === 'attendee' && promptBuilderId && onArchiveToggle && (

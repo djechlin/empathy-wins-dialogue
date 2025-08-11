@@ -111,17 +111,18 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
   });
   const { toast } = useToast();
 
-  const activeAttendees = useMemo(() => 
-    state.attendees
-      .filter((a) => !a.archived)
-      .sort((a, b) => {
-        // Starred items first
-        if (a.starred && !b.starred) return -1;
-        if (!a.starred && b.starred) return 1;
-        // Then by name
-        return a.displayName.localeCompare(b.displayName);
-      }), 
-    [state.attendees]
+  const activeAttendees = useMemo(
+    () =>
+      state.attendees
+        .filter((a) => !a.archived)
+        .sort((a, b) => {
+          // Starred items first
+          if (a.starred && !b.starred) return -1;
+          if (!a.starred && b.starred) return 1;
+          // Then by name
+          return a.displayName.localeCompare(b.displayName);
+        }),
+    [state.attendees],
   );
   const archivedAttendees = useMemo(() => state.attendees.filter((a) => a.archived), [state.attendees]);
 
@@ -311,7 +312,7 @@ const PromptBuilderSuite = forwardRef<PromptBuilderSuiteRef, PromptBuilderSuiteP
 
   return (
     <div className="space-y-4">
-      {/* Active attendees */}
+      {/* Active attendees (all unarchived, starred first) */}
       {activeAttendees.length > 0 ? (
         <div className="space-y-3">
           {activeAttendees.map((attendee, index) => (
