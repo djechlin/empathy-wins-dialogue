@@ -1,7 +1,7 @@
 /**
  * Manually created TypeScript types for Supabase Edge Functions
  * with the intention of being cp'ed to frontend directory
- * 
+ *
  * Unlike database schema types which are auto-generated, these Edge Function
  * types must be manually maintained to match the function implementations.
  */
