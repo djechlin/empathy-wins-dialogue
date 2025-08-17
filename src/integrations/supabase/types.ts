@@ -144,7 +144,7 @@ export type Database = {
         };
         Relationships: [];
       };
-      prompt_builders: {
+      prompts: {
         Row: {
           archived: boolean | null;
           created_at: string;

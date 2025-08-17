@@ -34,7 +34,7 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<Prompt
     if (data.id) {
       // Update existing record
       const { data: updatedData, error } = await supabase
-        .from('prompt_builders')
+        .from('prompts')
         .update(promptBuilderRecord)
         .eq('id', data.id)
         .eq('user_id', user.id) // Ensure user can only update their own records
@@ -47,7 +47,7 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<Prompt
       result = updatedData;
     } else {
       // Create new record
-      const { data: insertedData, error } = await supabase.from('prompt_builders').insert(promptBuilderRecord).select().single();
+      const { data: insertedData, error } = await supabase.from('prompts').insert(promptBuilderRecord).select().single();
 
       if (error) {
         throw new Error(error.message || 'Database insert error occurred');
@@ -84,7 +84,7 @@ export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'at
   }
 
   const { data: promptBuilders, error } = await supabase
-    .from('prompt_builders')
+    .from('prompts')
     .select('*')
     .eq('user_id', user.id)
     .eq('persona', persona)
@@ -115,11 +115,14 @@ export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'at
   };
 };
 
-export const fetchAllPromptBuildersForPersona = async (persona: 'organizer' | 'attendee' | 'coach', userId?: string): Promise<PromptBuilderData[]> => {
+export const fetchAllPromptBuildersForPersona = async (
+  persona: 'organizer' | 'attendee' | 'coach',
+  userId?: string,
+): Promise<PromptBuilderData[]> => {
   console.log('fetch all... dje');
 
   let query = supabase
-    .from('prompt_builders')
+    .from('prompts')
     .select('*')
     .eq('persona', persona)
     .eq('archived', false)
@@ -157,7 +160,7 @@ export const fetchAllPromptBuildersForPersona = async (persona: 'organizer' | 'a
 
 export const archivePromptBuilder = async (id: string, archived: boolean): Promise<boolean> => {
   try {
-    const { error } = await supabase.from('prompt_builders').update({ archived }).eq('id', id);
+    const { error } = await supabase.from('prompts').update({ archived }).eq('id', id);
 
     if (error) {
       console.error('Error updating prompt builder archive status:', error);
@@ -173,7 +176,7 @@ export const archivePromptBuilder = async (id: string, archived: boolean): Promi
 
 export const starPromptBuilder = async (id: string, starred: boolean): Promise<boolean> => {
   try {
-    const { error } = await supabase.from('prompt_builders').update({ starred }).eq('id', id);
+    const { error } = await supabase.from('prompts').update({ starred }).eq('id', id);
 
     if (error) {
       console.error('Error updating prompt builder starred status:', error);
