@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
 import { Badge } from '@/ui/badge';
+import { Button } from '@/ui/button';
 import { Separator } from '@/ui/separator';
-import { Users, UserCheck, GraduationCap, Clock, Star } from 'lucide-react';
+import Navbar from '@/components/layout/Navbar';
+import { Users, UserCheck, GraduationCap, Clock, Star, Wrench } from 'lucide-react';
 import { fetchAllPromptBuildersForPersona, type PromptBuilderData } from '@/utils/promptBuilder';
 
 type PersonaType = 'organizer' | 'attendee' | 'coach';
@@ -96,12 +99,21 @@ const PromptsHistory = () => {
         <meta name="description" content="View and manage your prompt builder history across organizers, attendees, and coaches." />
       </Helmet>
 
+      <Navbar pageTitle="Prompts History" pageSummary="View and manage your prompt builders organized by role type" />
+
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">Prompts History</h1>
-          <p className="text-lg text-muted-foreground">
-            View and manage your prompt builders organized by role type
-          </p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <p className="text-lg text-muted-foreground">
+              Browse your saved prompt builders across different personas
+            </p>
+          </div>
+          <Button asChild>
+            <Link to="/workbench" className="flex items-center gap-2">
+              <Wrench className="h-4 w-4" />
+              Go to Workbench
+            </Link>
+          </Button>
         </div>
 
         <div className="space-y-12">
