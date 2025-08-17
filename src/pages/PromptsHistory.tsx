@@ -6,6 +6,8 @@ import { Clock, GraduationCap, Star, UserCheck, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
+import Navbar from '@/components/layout/Navbar';
+
 type PersonaType = 'organizer' | 'attendee' | 'coach';
 
 interface PersonaSection {
@@ -96,10 +98,11 @@ const PromptsHistory = () => {
         <meta name="description" content="View and manage your prompt builder history across organizers, attendees, and coaches." />
       </Helmet>
 
+      <Navbar />
+
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">Prompts History</h1>
-          <p className="text-lg text-muted-foreground">View and manage your prompt builders organized by role type</p>
         </div>
 
         <div className="space-y-12">
