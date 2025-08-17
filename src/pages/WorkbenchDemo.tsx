@@ -14,7 +14,6 @@ import { Button } from '@/ui/button';
 import { ChevronDown, LogIn, Lock } from 'lucide-react';
 import { CardDescription } from '@/ui/card';
 
-
 const WorkbenchDemo = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -141,7 +140,7 @@ const WorkbenchDemo = () => {
             {/* Organizer Input Widget */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-purple-800">Organizer ID Input</CardTitle>
+                <CardTitle className="text-purple-600">Organizer Prompt</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -157,7 +156,7 @@ const WorkbenchDemo = () => {
                     <Button
                       onClick={handleFetchOrganizer}
                       disabled={!organizerId || !isValidUUID(organizerId) || loading}
-                      className="bg-purple-600 hover:bg-purple-700"
+                      className="bg-purple-500 hover:bg-purple-600"
                     >
                       {loading ? 'Loading...' : 'Fetch'}
                     </Button>
@@ -169,15 +168,15 @@ const WorkbenchDemo = () => {
 
                 {organizerData && (
                   <div className="bg-purple-50 border border-purple-200 p-3 rounded">
-                    <h3 className="font-medium text-purple-800">{organizerData.name}</h3>
+                    <h3 className="font-medium text-purple-700">{organizerData.name}</h3>
 
                     <Collapsible open={isSystemPromptOpen} onOpenChange={setIsSystemPromptOpen}>
-                      <CollapsibleTrigger className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-800 cursor-pointer mt-1">
+                      <CollapsibleTrigger className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-700 cursor-pointer mt-1">
                         <ChevronDown className={`h-3 w-3 transition-transform ${isSystemPromptOpen ? 'rotate-180' : ''}`} />
                         Click to reveal organizer system prompt
                       </CollapsibleTrigger>
                       <CollapsibleContent className="mt-2">
-                        <div className="bg-purple-100 border border-purple-300 p-2 rounded text-sm text-purple-700">
+                        <div className="bg-purple-100 border border-purple-200 p-2 rounded text-sm text-purple-600">
                           {organizerData.system_prompt}
                         </div>
                       </CollapsibleContent>
@@ -210,7 +209,7 @@ const WorkbenchDemo = () => {
               ) : (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-purple-800">Chat</CardTitle>
+                    <CardTitle className="text-purple-600">Chat</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-gray-500 text-center py-8">Enter a valid organizer UUID to start chatting</p>
