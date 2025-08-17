@@ -1,8 +1,10 @@
 import { Badge } from '@/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
+import { Button } from '@/ui/button';
+import { Card, CardContent } from '@/ui/card';
 import { Separator } from '@/ui/separator';
+import { useToast } from '@/hooks/use-toast';
 import { fetchAllPromptBuildersForPersona, type PromptBuilderData } from '@/utils/promptBuilder';
-import { Clock, GraduationCap, Star, UserCheck, Users } from 'lucide-react';
+import { Clock, Copy, GraduationCap, Star, UserCheck, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
@@ -39,6 +41,7 @@ const personaSections: PersonaSection[] = [
 ];
 
 const PromptsHistory = () => {
+  const { toast } = useToast();
   const [promptData, setPromptData] = useState<Record<PersonaType, PromptBuilderData[]>>({
     organizer: [],
     attendee: [],
@@ -80,6 +83,22 @@ const PromptsHistory = () => {
     });
   };
 
+  const copyToClipboard = async (text: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: `${type} copied!`,
+        description: 'Text has been copied to your clipboard.',
+      });
+    } catch {
+      toast({
+        title: 'Copy failed',
+        description: 'Unable to copy text to clipboard.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -100,21 +119,21 @@ const PromptsHistory = () => {
 
       <Navbar />
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="space-y-12">
+      <div className="container mx-auto px-4 py-6">
+        <div className="space-y-6">
           {personaSections.map((section) => {
             const prompts = promptData[section.persona];
             const IconComponent = section.icon;
 
             return (
-              <div key={section.persona} className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <IconComponent className="h-8 w-8 text-primary" />
+              <div key={section.persona} className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <IconComponent className="h-6 w-6 text-primary" />
                   <div>
-                    <h2 className="text-2xl font-semibold text-foreground">{section.title}</h2>
-                    <p className="text-muted-foreground">{section.description}</p>
+                    <h2 className="text-xl font-semibold text-foreground">{section.title}</h2>
+                    <p className="text-sm text-muted-foreground">{section.description}</p>
                   </div>
-                  <Badge variant="secondary" className="ml-auto">
+                  <Badge variant="secondary" className="ml-auto text-xs">
                     {prompts.length} {prompts.length === 1 ? 'prompt' : 'prompts'}
                   </Badge>
                 </div>
@@ -127,31 +146,62 @@ const PromptsHistory = () => {
                     </CardContent>
                   </Card>
                 ) : (
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  <div className="space-y-2">
                     {prompts.map((prompt) => (
-                      <Card key={prompt.id} className="hover:shadow-md transition-shadow">
-                        <CardHeader className="pb-3">
-                          <div className="flex items-start justify-between">
-                            <CardTitle className="text-lg line-clamp-2">{prompt.name}</CardTitle>
-                            {prompt.starred && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 flex-shrink-0" />}
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Clock className="h-3 w-3" />
-                            {prompt.updated_at && formatDate(prompt.updated_at)}
-                          </div>
-                        </CardHeader>
-                        <CardContent className="pt-0">
-                          <CardDescription className="line-clamp-3 mb-3">{prompt.system_prompt}</CardDescription>
-                          {prompt.firstMessage && (
-                            <div className="mt-3 p-3 bg-muted rounded-md">
-                              <p className="text-sm text-muted-foreground mb-1">First Message:</p>
-                              <p className="text-sm line-clamp-2">{prompt.firstMessage}</p>
+                      <Card key={prompt.id} className="hover:shadow-sm transition-shadow">
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between mb-3">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <h3 className="font-bold text-sm font-sans truncate">{prompt.name}</h3>
+                                    {prompt.starred && <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 flex-shrink-0" />}
+                                  </div>
+                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <Clock className="h-3 w-3" />
+                                    {prompt.updated_at && formatDate(prompt.updated_at)}
+                                  </div>
+                                </div>
+                                <Badge variant="outline" className="text-xs capitalize flex-shrink-0 ml-2">
+                                  {prompt.persona}
+                                </Badge>
+                              </div>
+
+                              <div className="space-y-3">
+                                <div>
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs font-medium text-muted-foreground">System Prompt</span>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => copyToClipboard(prompt.system_prompt, 'System prompt')}
+                                      className="h-6 w-6 p-0"
+                                    >
+                                      <Copy className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground line-clamp-2">{prompt.system_prompt}</p>
+                                </div>
+
+                                {prompt.firstMessage && (
+                                  <div>
+                                    <div className="flex items-center justify-between mb-1">
+                                      <span className="text-xs font-medium text-muted-foreground">First Message</span>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => copyToClipboard(prompt.firstMessage!, 'First message')}
+                                        className="h-6 w-6 p-0"
+                                      >
+                                        <Copy className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground line-clamp-2">{prompt.firstMessage}</p>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          )}
-                          <div className="flex items-center justify-between mt-4">
-                            <Badge variant="outline" className="capitalize">
-                              {prompt.persona}
-                            </Badge>
                           </div>
                         </CardContent>
                       </Card>
@@ -159,7 +209,7 @@ const PromptsHistory = () => {
                   </div>
                 )}
 
-                {section.persona !== 'coach' && <Separator className="mt-8" />}
+                {section.persona !== 'coach' && <Separator className="mt-4" />}
               </div>
             );
           })}
