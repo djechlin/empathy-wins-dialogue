@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/ui/card';
 import { Separator } from '@/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { fetchAllPromptBuildersForPersona, type PromptBuilderData } from '@/utils/promptBuilder';
-import { Clock, Copy, GraduationCap, Star, UserCheck, Users } from 'lucide-react';
+import { Copy, GraduationCap, Star, UserCheck, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
@@ -74,13 +74,28 @@ const PromptsHistory = () => {
   }, []);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const date = new Date(dateString);
+    const formattedDate = date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
     });
+    const time = date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZoneName: 'short',
+    });
+    return `${formattedDate} ${time}`;
+  };
+
+  const formatDateLabels = (prompt: PromptBuilderData) => {
+    const created = prompt.created_at;
+    const updated = prompt.updated_at;
+
+    if (!created && !updated) return '';
+    if (!updated || created === updated) return `Created: ${formatDate(created!)}`;
+
+    return `Created: ${formatDate(created!)} • Updated: ${formatDate(updated)}`;
   };
 
   const copyToClipboard = async (text: string, type: string) => {
@@ -158,10 +173,7 @@ const PromptsHistory = () => {
                                     <h3 className="font-bold text-sm font-sans truncate">{prompt.name}</h3>
                                     {prompt.starred && <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 flex-shrink-0" />}
                                   </div>
-                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <Clock className="h-3 w-3" />
-                                    {prompt.updated_at && formatDate(prompt.updated_at)}
-                                  </div>
+                                  <div className="text-xs text-muted-foreground">{formatDateLabels(prompt)}</div>
                                 </div>
                                 <Badge variant="outline" className="text-xs capitalize flex-shrink-0 ml-2">
                                   {prompt.persona}
