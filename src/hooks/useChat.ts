@@ -36,9 +36,11 @@ const getAiResponse = async (updatedMessages: ParticipantMessage[], systemPrompt
 };
 
 const getDemoAiResponse = async (organizerId: string): Promise<string> => {
-  const { data, error } = await supabase.functions.invoke<WorkbenchResponse>('demo', {
+  const { data, error } = await supabase.functions.invoke<WorkbenchResponse>('workbench', {
     body: {
-      organizerId,
+      demo: {
+        organizerId,
+      },
     },
   });
 
@@ -64,9 +66,9 @@ type ParticipantProps = {
   systemPrompt: string;
   getTextInput?: () => Promise<string>;
 } & (
-  | { organizerFirstMessage: string; organizerId?: never }
+  | { organizerFirstMessage: string; organizerId?: undefined }
   | { organizerFirstMessage: null; organizerId: string }
-  | { organizerFirstMessage: null; organizerId?: never }
+  | { organizerFirstMessage: null; organizerId?: undefined }
 );
 
 const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, getTextInput, organizerId }: ParticipantProps) => {
@@ -76,7 +78,7 @@ const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, 
   const chat = useCallback(
     async (msg: string | null): Promise<string> => {
       console.log('useParticipant.chat called:', { msg, messagesLength: messages.length, organizerFirstMessage, organizerId, humanOrAi });
-      
+
       // Handle first message
       if (msg === null && messages.length === 0) {
         if (organizerFirstMessage) {
@@ -95,7 +97,7 @@ const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, 
           }
         }
       }
-      
+
       if (msg === null) {
         throw new Error('No message provided');
       }
