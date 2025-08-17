@@ -288,6 +288,16 @@ const PromptBuilder = memo(
         [promptBuilderId, onStarToggle],
       );
 
+      const handleCopyUUID = useCallback(() => {
+        if (state.id) {
+          navigator.clipboard.writeText(state.id);
+          toast({
+            title: 'Copied!',
+            description: 'UUID copied to clipboard',
+          });
+        }
+      }, [state.id, toast]);
+
       useEffect(() => {
         if (isDirty && state.saveStatus === SaveStatus.SAVED) {
           dispatch({ type: 'MARK_DIRTY' });
@@ -367,6 +377,18 @@ const PromptBuilder = memo(
                   }}
                 >
                   {state.displayName}
+                </span>
+              )}
+              {state.id && (
+                <span
+                  className="text-xs text-gray-400 font-mono cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded ml-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopyUUID();
+                  }}
+                  title="Click to copy UUID"
+                >
+                  {state.id.substring(0, 4)}...
                 </span>
               )}
             </button>
