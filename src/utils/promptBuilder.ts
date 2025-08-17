@@ -115,24 +115,22 @@ export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'at
   };
 };
 
-export const fetchAllPromptBuildersForPersona = async (persona: 'organizer' | 'attendee' | 'coach'): Promise<PromptBuilderData[]> => {
+export const fetchAllPromptBuildersForPersona = async (persona: 'organizer' | 'attendee' | 'coach', userId?: string): Promise<PromptBuilderData[]> => {
   console.log('fetch all... dje');
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    toast.error('User is not logged in');
-    return null;
-  }
-
-  const { data: promptBuilders, error } = await supabase
+  let query = supabase
     .from('prompt_builders')
     .select('*')
     .eq('persona', persona)
     .eq('archived', false)
     .order('created_at', { ascending: false });
+
+  // If userId is provided, filter by that user; otherwise get all prompts
+  if (userId) {
+    query = query.eq('user_id', userId);
+  }
+
+  const { data: promptBuilders, error } = await query;
 
   if (error) {
     console.error('Error fetching prompt builders:', error);

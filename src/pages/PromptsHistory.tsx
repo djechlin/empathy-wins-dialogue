@@ -4,9 +4,11 @@ import { Card, CardContent } from '@/ui/card';
 import { Separator } from '@/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { fetchAllPromptBuildersForPersona, type PromptBuilderData } from '@/utils/promptBuilder';
+import { supabase } from '@/integrations/supabase/client';
 import { Copy, GraduationCap, Star, UserCheck, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { User } from '@supabase/supabase-js';
 
 import Navbar from '@/components/layout/Navbar';
 
@@ -48,14 +50,34 @@ const PromptsHistory = () => {
     coach: [],
   });
   const [loading, setLoading] = useState(true);
+  const [showOnlyMine, setShowOnlyMine] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     const loadAllPrompts = async () => {
       try {
+        const userId = showOnlyMine ? user?.id : undefined;
         const [organizers, attendees, coaches] = await Promise.all([
-          fetchAllPromptBuildersForPersona('organizer'),
-          fetchAllPromptBuildersForPersona('attendee'),
-          fetchAllPromptBuildersForPersona('coach'),
+          fetchAllPromptBuildersForPersona('organizer', userId),
+          fetchAllPromptBuildersForPersona('attendee', userId),
+          fetchAllPromptBuildersForPersona('coach', userId),
         ]);
 
         setPromptData({
@@ -71,7 +93,7 @@ const PromptsHistory = () => {
     };
 
     loadAllPrompts();
-  }, []);
+  }, [showOnlyMine, user]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -135,6 +157,26 @@ const PromptsHistory = () => {
       <Navbar />
 
       <div className="container mx-auto px-4 py-6">
+        <div className="mb-6">
+          <div className="flex items-center gap-2">
+            <Button
+              variant={!showOnlyMine ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowOnlyMine(false)}
+            >
+              Everyone's
+            </Button>
+            <Button
+              variant={showOnlyMine ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowOnlyMine(true)}
+              disabled={!user}
+            >
+              Mine
+            </Button>
+          </div>
+        </div>
+        
         <div className="space-y-6">
           {personaSections.map((section) => {
             const prompts = promptData[section.persona];
