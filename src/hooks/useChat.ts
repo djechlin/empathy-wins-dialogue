@@ -35,11 +35,12 @@ const getAiResponse = async (updatedMessages: ParticipantMessage[], systemPrompt
   return responseText;
 };
 
-const getDemoAiResponse = async (organizerId: string): Promise<string> => {
+const getDemoAiResponse = async (organizerId: string, messages: ParticipantMessage[] = []): Promise<string> => {
   const { data, error } = await supabase.functions.invoke<WorkbenchResponse>('workbench', {
     body: {
       demo: {
         organizerId,
+        messages,
       },
     },
   });
@@ -89,7 +90,7 @@ const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, 
           console.log('Demo mode: using demo edge function for first message');
           setIsBusy(true);
           try {
-            const responseText = await getDemoAiResponse(organizerId);
+            const responseText = await getDemoAiResponse(organizerId, []);
             setMessages([{ role: 'assistant' as const, content: responseText }]);
             return responseText;
           } finally {
@@ -114,7 +115,11 @@ const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, 
         let responseText: string;
 
         if (humanOrAi === 'ai') {
-          responseText = await getAiResponse(updatedMessages, systemPrompt);
+          if (organizerId) {
+            responseText = await getDemoAiResponse(organizerId, updatedMessages);
+          } else {
+            responseText = await getAiResponse(updatedMessages, systemPrompt);
+          }
         } else {
           responseText = await getTextInput();
         }
