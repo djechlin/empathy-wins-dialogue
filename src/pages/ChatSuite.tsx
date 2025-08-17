@@ -135,12 +135,7 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
 
           <div className="flex items-center gap-2 flex-shrink-0">
             {controlStatus === 'ready' && (
-              <Button 
-                onClick={handleStartAll} 
-                size="sm" 
-                className="px-3"
-                disabled={!hasValidOrganizer}
-              >
+              <Button onClick={handleStartAll} size="sm" className="px-3" disabled={!hasValidOrganizer}>
                 <Play size={14} className="mr-1" />
                 {'Start All'}
               </Button>

@@ -1,64 +1,12 @@
 import Navbar from '@/components/layout/Navbar';
 import Chat from '@/pages/Chat';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
-import { PromptBuilderData } from '@/utils/promptBuilder';
-import { supabase } from '@/integrations/supabase/client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { toast } from 'sonner';
 
 const WorkbenchDemo = () => {
   const [searchParams] = useSearchParams();
-  const [organizerData, setOrganizerData] = useState<PromptBuilderData | null>(null);
-  const [loading, setLoading] = useState(false);
   const controlStatus = 'started';
-
-  // UUID validation regex
-  const isValidUUID = (uuid: string): boolean => {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    return uuidRegex.test(uuid);
-  };
-
-  const fetchOrganizerData = useCallback(async (id: string) => {
-    if (!isValidUUID(id)) {
-      toast.error('Invalid organizer UUID format');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const { data, error: supabaseError } = await supabase.from('prompts').select('*').eq('id', id).eq('persona', 'organizer').single();
-
-      if (supabaseError) {
-        throw new Error(supabaseError.message);
-      }
-
-      if (!data) {
-        throw new Error('Organizer not found');
-      }
-
-      const organizer: PromptBuilderData = {
-        id: data.id,
-        name: data.name,
-        system_prompt: data.system_prompt,
-        persona: 'organizer',
-        firstMessage: data.first_message || '',
-        archived: data.archived || false,
-        starred: data.starred || false,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
-      };
-
-      setOrganizerData(organizer);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch organizer';
-      setOrganizerData(null);
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   const handleChatStatusUpdate = useCallback(() => {
     // No longer tracking chat status in UI
@@ -75,7 +23,7 @@ const WorkbenchDemo = () => {
       <div className="p-6">
         <div className="max-w-2xl mx-auto">
           <div>
-            {organizerData || urlOrganizerId ? (
+            {urlOrganizerId ? (
               <Chat
                 attendeePb={{
                   id: 'human-attendee',
@@ -85,8 +33,7 @@ const WorkbenchDemo = () => {
                   firstMessage: '',
                   starred: true,
                 }}
-                organizerPb={organizerData || undefined}
-                organizerId={!organizerData ? urlOrganizerId || undefined : undefined}
+                organizerId={urlOrganizerId}
                 organizerMode="ai"
                 attendeeMode="human"
                 controlStatus={controlStatus}
@@ -101,7 +48,7 @@ const WorkbenchDemo = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-500 text-center py-8">
-                    {loading ? 'Loading organizer...' : 'Provide a valid organizer UUID in the URL (?organizerId=...) to start chatting'}
+                    Provide a valid organizer UUID in the URL (?organizerId=...) to start chatting
                   </p>
                 </CardContent>
               </Card>

@@ -248,7 +248,7 @@ const Workbench = () => {
                 coaches={state.coaches}
                 organizerPromptText={state.organizerPromptText}
                 organizerFirstMessage={state.organizerFirstMessage}
-                hasValidOrganizer={state.organizers.filter(o => o.starred && !o.archived).length === 1}
+                hasValidOrganizer={state.organizers.filter((o) => o.starred && !o.archived).length === 1}
               />
             </div>
           </div>

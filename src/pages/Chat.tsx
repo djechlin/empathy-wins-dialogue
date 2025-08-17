@@ -271,14 +271,22 @@ const Chat = ({
   }, [state.userSentQueue]);
 
   const chatEngine = useChat([
-    {
-      mode: organizerMode,
-      organizerFirstMessage: organizerPb?.firstMessage || null,
-      organizerId: organizerId,
-      systemPrompt: organizerPb?.system_prompt || '',
-      getTextInput,
-      persona: 'organizer',
-    },
+    organizerPb?.firstMessage
+      ? {
+          mode: organizerMode,
+          organizerFirstMessage: organizerPb.firstMessage,
+          systemPrompt: organizerPb.system_prompt,
+          getTextInput,
+          persona: 'organizer',
+        }
+      : {
+          mode: organizerMode,
+          organizerFirstMessage: null,
+          organizerId: organizerId!,
+          systemPrompt: organizerPb?.system_prompt || '',
+          getTextInput,
+          persona: 'organizer',
+        },
     {
       mode: attendeeMode,
       systemPrompt: attendeePb.system_prompt,
