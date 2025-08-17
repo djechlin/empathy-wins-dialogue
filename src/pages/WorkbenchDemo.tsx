@@ -1,9 +1,6 @@
 import Navbar from '@/components/layout/Navbar';
 import Chat from '@/pages/Chat';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
-import { Input } from '@/ui/input';
-import { Label } from '@/ui/label';
 import { PromptBuilderData } from '@/utils/promptBuilder';
 import { supabase } from '@/integrations/supabase/client';
 import { useCallback, useEffect, useState } from 'react';
@@ -11,19 +8,16 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { User } from '@supabase/supabase-js';
 import { Button } from '@/ui/button';
-import { ChevronDown, LogIn, Lock } from 'lucide-react';
+import { LogIn, Lock } from 'lucide-react';
 import { CardDescription } from '@/ui/card';
 
 const WorkbenchDemo = () => {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
-  const [organizerId, setOrganizerId] = useState<string>(searchParams.get('organizerId') || '');
   const [organizerData, setOrganizerData] = useState<PromptBuilderData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const controlStatus = 'started';
-  const [isSystemPromptOpen, setIsSystemPromptOpen] = useState(false);
 
   // UUID validation regex
   const isValidUUID = (uuid: string): boolean => {
@@ -33,13 +27,11 @@ const WorkbenchDemo = () => {
 
   const fetchOrganizerData = useCallback(async (id: string) => {
     if (!isValidUUID(id)) {
-      setError('Invalid UUID format');
-      setOrganizerData(null);
+      toast.error('Invalid organizer UUID format');
       return;
     }
 
     setLoading(true);
-    setError(null);
 
     try {
       const { data, error: supabaseError } = await supabase.from('prompts').select('*').eq('id', id).eq('persona', 'organizer').single();
@@ -67,28 +59,12 @@ const WorkbenchDemo = () => {
       setOrganizerData(organizer);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch organizer';
-      setError(errorMessage);
       setOrganizerData(null);
       toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   }, []);
-
-  const handleOrganizerIdChange = (value: string) => {
-    setOrganizerId(value);
-    if (value) {
-      setSearchParams({ organizerId: value });
-    } else {
-      setSearchParams({});
-    }
-  };
-
-  const handleFetchOrganizer = () => {
-    if (organizerId.trim()) {
-      fetchOrganizerData(organizerId.trim());
-    }
-  };
 
   const handleChatStatusUpdate = useCallback(() => {
     // No longer tracking chat status in UI
@@ -118,105 +94,47 @@ const WorkbenchDemo = () => {
   // Auto-fetch organizer when organizerId is provided via URL
   useEffect(() => {
     const urlOrganizerId = searchParams.get('organizerId');
-    if (urlOrganizerId && urlOrganizerId !== organizerId) {
-      setOrganizerId(urlOrganizerId);
+    if (urlOrganizerId) {
       fetchOrganizerData(urlOrganizerId);
     }
-  }, [searchParams, organizerId, fetchOrganizerData]);
-
-  // Auto-fetch when organizerId changes and is valid
-  useEffect(() => {
-    if (organizerId && isValidUUID(organizerId)) {
-      fetchOrganizerData(organizerId);
-    }
-  }, [organizerId, fetchOrganizerData]);
+  }, [searchParams, fetchOrganizerData]);
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
       <Navbar pageTitle="Workbench Demo" pageSummary="Test organizer prompts with live chat" />
       <div className="p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 ${!user ? 'filter blur-sm pointer-events-none' : ''}`}>
-            {/* Organizer Input Widget */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-purple-600">Organizer Prompt</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="organizerId">Organizer UUID</Label>
-                  <div className="flex gap-2 mt-1">
-                    <Input
-                      id="organizerId"
-                      value={organizerId}
-                      onChange={(e) => handleOrganizerIdChange(e.target.value)}
-                      placeholder="Enter organizer UUID..."
-                      className={`flex-1 ${organizerId && !isValidUUID(organizerId) ? 'border-red-500' : ''}`}
-                    />
-                    <Button
-                      onClick={handleFetchOrganizer}
-                      disabled={!organizerId || !isValidUUID(organizerId) || loading}
-                      className="bg-purple-500 hover:bg-purple-600"
-                    >
-                      {loading ? 'Loading...' : 'Fetch'}
-                    </Button>
-                  </div>
-                  {organizerId && !isValidUUID(organizerId) && <p className="text-sm text-red-600 mt-1">Invalid UUID format</p>}
-                </div>
-
-                {error && <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm">{error}</div>}
-
-                {organizerData && (
-                  <div className="bg-purple-50 border border-purple-200 p-3 rounded">
-                    <h3 className="font-medium text-purple-700">{organizerData.name}</h3>
-
-                    <Collapsible open={isSystemPromptOpen} onOpenChange={setIsSystemPromptOpen}>
-                      <CollapsibleTrigger className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-700 cursor-pointer mt-1">
-                        <ChevronDown className={`h-3 w-3 transition-transform ${isSystemPromptOpen ? 'rotate-180' : ''}`} />
-                        Click to reveal organizer system prompt
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="mt-2">
-                        <div className="bg-purple-100 border border-purple-200 p-2 rounded text-sm text-purple-600">
-                          {organizerData.system_prompt}
-                        </div>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Chat Component */}
-            <div>
-              {organizerData ? (
-                <Chat
-                  attendeePb={{
-                    id: 'human-attendee',
-                    name: 'Human',
-                    system_prompt: '',
-                    persona: 'attendee',
-                    firstMessage: '',
-                    starred: true,
-                  }}
-                  organizerPb={organizerData}
-                  organizerMode="ai"
-                  attendeeMode="human"
-                  controlStatus={controlStatus}
-                  onStatusUpdate={handleChatStatusUpdate}
-                  coaches={[]}
-                  defaultOpen={true}
-                />
-              ) : (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-purple-600">Chat</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-500 text-center py-8">Enter a valid organizer UUID to start chatting</p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+        <div className="max-w-2xl mx-auto">
+          <div className={`${!user ? 'filter blur-sm pointer-events-none' : ''}`}>
+            {organizerData ? (
+              <Chat
+                attendeePb={{
+                  id: 'human-attendee',
+                  name: 'Human',
+                  system_prompt: '',
+                  persona: 'attendee',
+                  firstMessage: '',
+                  starred: true,
+                }}
+                organizerPb={organizerData}
+                organizerMode="ai"
+                attendeeMode="human"
+                controlStatus={controlStatus}
+                onStatusUpdate={handleChatStatusUpdate}
+                coaches={[]}
+                defaultOpen={true}
+              />
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-purple-600">Chat Demo</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-500 text-center py-8">
+                    {loading ? 'Loading organizer...' : 'Provide a valid organizer UUID in the URL (?organizerId=...) to start chatting'}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
