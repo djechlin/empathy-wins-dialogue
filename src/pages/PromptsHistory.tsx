@@ -99,21 +99,11 @@ const PromptsHistory = () => {
         <meta name="description" content="View and manage your prompt builder history across organizers, attendees, and coaches." />
       </Helmet>
 
-      <Navbar pageTitle="Prompts History" pageSummary="View and manage your prompt builders organized by role type" />
+      <Navbar />
 
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <p className="text-lg text-muted-foreground">
-              Browse your saved prompt builders across different personas
-            </p>
-          </div>
-          <Button asChild>
-            <Link to="/workbench" className="flex items-center gap-2">
-              <Wrench className="h-4 w-4" />
-              Go to Workbench
-            </Link>
-          </Button>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-foreground mb-2">Prompts History</h1>
         </div>
 
         <div className="space-y-12">

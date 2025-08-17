@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/ui/button';
 import { User } from '@supabase/supabase-js';
-import { ArrowRight, LogIn } from 'lucide-react';
+import { ArrowRight, LogIn, Wrench } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
@@ -17,6 +17,7 @@ const Navbar = ({ pageTitle, pageSummary }: NavbarProps) => {
 
   const isInChallenge = location.pathname.startsWith('/challenge');
   const isWorkbench = location.pathname === '/workbench';
+  const isPromptsHistory = location.pathname === '/prompts/history';
 
   const getCurrentStep = () => {
     if (location.pathname === '/challenge/prepare') return 1;
@@ -102,6 +103,14 @@ const Navbar = ({ pageTitle, pageSummary }: NavbarProps) => {
         </div>
 
         <div className="flex items-center gap-4">
+          {isPromptsHistory && (
+            <Button asChild variant="outline">
+              <Link to="/workbench" className="flex items-center gap-2">
+                <Wrench className="h-4 w-4" />
+                Workbench
+              </Link>
+            </Button>
+          )}
           {isWorkbench ? (
             <>
               {user ? (
