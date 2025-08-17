@@ -60,7 +60,7 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<Prompt
       id: result.id,
       name: result.name,
       system_prompt: result.system_prompt,
-      persona: result.persona as 'organizer' | 'attendee',
+      persona: result.persona as 'organizer' | 'attendee' | 'coach',
       firstMessage: result.first_message || undefined,
       archived: result.archived || false,
       starred: result.starred || false,
@@ -106,7 +106,7 @@ export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'at
       id: pb.id,
       name: pb.name,
       system_prompt: pb.system_prompt,
-      persona: pb.persona as 'organizer' | 'attendee', // part of the 'where'
+      persona: pb.persona as 'organizer' | 'attendee' | 'coach', // part of the 'where'
       firstMessage: pb.first_message || undefined,
       archived: pb.archived || false,
       starred: pb.starred || false,
@@ -169,7 +169,7 @@ export const fetchAllPromptBuildersForPersona = async (persona: 'organizer' | 'a
       id: pb.id,
       name: pb.name,
       system_prompt: pb.system_prompt,
-      persona: pb.persona || '',
+      persona: pb.persona as 'organizer' | 'attendee' | 'coach',
       firstMessage: pb.first_message || undefined,
       archived: pb.archived || false,
       starred: pb.starred || false,

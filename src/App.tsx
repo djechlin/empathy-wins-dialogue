@@ -25,6 +25,7 @@ import Text from './pages/Text';
 import RallyFollowup from './pages/RallyFollowup';
 import Workbench from './pages/Workbench';
 import Relational from './pages/Relational';
+import PromptsHistory from './pages/PromptsHistory';
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/rally-followup" element={<RallyFollowup />} />
             <Route path="/workbench" element={<Workbench />} />
             <Route path="/relational" element={<Relational />} />
+            <Route path="/prompts/history" element={<PromptsHistory />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
