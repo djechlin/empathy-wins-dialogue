@@ -17,6 +17,7 @@ const Navbar = ({ pageTitle, pageSummary }: NavbarProps) => {
 
   const isInChallenge = location.pathname.startsWith('/challenge');
   const isWorkbench = location.pathname === '/workbench';
+  const isWorkbenchDemo = location.pathname === '/workbench/demo';
   const isPromptsHistory = location.pathname === '/prompts/history';
 
   const getCurrentStep = () => {
@@ -97,7 +98,7 @@ const Navbar = ({ pageTitle, pageSummary }: NavbarProps) => {
                 </div>
               ))}
             </div>
-          ) : isWorkbench || isPromptsHistory ? (
+          ) : (isWorkbench || isPromptsHistory) && !isWorkbenchDemo ? (
             <div className="flex items-center space-x-6">
               <Link
                 to="/workbench"
@@ -122,7 +123,7 @@ const Navbar = ({ pageTitle, pageSummary }: NavbarProps) => {
         </div>
 
         <div className="flex items-center gap-4">
-          {isWorkbench || isPromptsHistory ? (
+          {(isWorkbench || isPromptsHistory) && !isWorkbenchDemo ? (
             <>
               {user ? (
                 <div className="flex items-center gap-2">
