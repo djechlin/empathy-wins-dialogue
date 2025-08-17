@@ -420,7 +420,7 @@ const PromptBuilder = memo(
               )}
             </button>
             <div className="flex items-center gap-2 ml-auto">
-              {persona !== 'organizer' && promptBuilderId && onStarToggle && (
+              {promptBuilderId && onStarToggle && (
                 <Button
                   onClick={() => handleStarToggle(starred)}
                   size="sm"
@@ -431,7 +431,7 @@ const PromptBuilder = memo(
                   <Star className={`h-3 w-3 ${starred ? 'fill-current' : ''}`} />
                 </Button>
               )}
-              {persona !== 'organizer' && promptBuilderId && onArchiveToggle && (
+              {promptBuilderId && onArchiveToggle && (
                 <Button
                   onClick={() => handleArchiveToggle(archived)}
                   size="sm"
