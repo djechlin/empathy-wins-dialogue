@@ -5,7 +5,7 @@ import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
 import { fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Archive, ArchiveRestore, ChevronDown, Star } from 'lucide-react';
+import { Archive, ArchiveRestore, ChevronDown, Share, Star } from 'lucide-react';
 import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useReducer } from 'react';
 
 interface PromptBuilderProps {
@@ -298,6 +298,17 @@ const PromptBuilder = memo(
         }
       }, [state.id, toast]);
 
+      const handleShareDemo = useCallback(() => {
+        if (state.id && persona === 'organizer') {
+          const demoUrl = `${window.location.origin}/workbench/demo?organizerId=${state.id}`;
+          navigator.clipboard.writeText(demoUrl);
+          toast({
+            title: 'Link copied!',
+            description: 'Demo link copied to clipboard',
+          });
+        }
+      }, [state.id, persona, toast]);
+
       useEffect(() => {
         if (isDirty && state.saveStatus === SaveStatus.SAVED) {
           dispatch({ type: 'MARK_DIRTY' });
@@ -380,16 +391,32 @@ const PromptBuilder = memo(
                 </span>
               )}
               {state.id && (
-                <span
-                  className="text-xs text-gray-400 font-mono cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded ml-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCopyUUID();
-                  }}
-                  title="Click to copy UUID"
-                >
-                  {state.id.substring(0, 4)}...
-                </span>
+                <div className="flex items-center gap-1 ml-1">
+                  <span
+                    className="text-xs text-gray-400 font-mono cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCopyUUID();
+                    }}
+                    title="Click to copy UUID"
+                  >
+                    {state.id.substring(0, 4)}...
+                  </span>
+                  {persona === 'organizer' && (
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShareDemo();
+                      }}
+                      size="sm"
+                      variant="ghost"
+                      className="h-5 w-5 p-0 text-gray-400 hover:text-blue-500"
+                      title="Share a link to demo with this organizer"
+                    >
+                      <Share className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
               )}
             </button>
             <div className="flex items-center gap-2 ml-auto">
