@@ -54,11 +54,7 @@ const WorkbenchDemo = () => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch organizer';
       setOrganizerData(null);
-      // Only show error toast if it's not a demo mode scenario (no database access)
-      // Demo mode is indicated by database access errors
-      if (!errorMessage.includes('JSON object requested') && !errorMessage.includes('no rows returned')) {
-        toast.error(errorMessage);
-      }
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -68,16 +64,8 @@ const WorkbenchDemo = () => {
     // No longer tracking chat status in UI
   }, []);
 
-  // Auto-fetch organizer when organizerId is provided via URL
-  // Note: In demo mode, we skip fetching organizer data since demo has no database access
-  useEffect(() => {
-    const urlOrganizerId = searchParams.get('organizerId');
-    if (urlOrganizerId) {
-      // Only attempt to fetch if we're not in demo mode
-      // Demo mode will be detected by the Chat component when organizerData is null but organizerId exists
-      fetchOrganizerData(urlOrganizerId);
-    }
-  }, [searchParams, fetchOrganizerData]);
+  // Skip fetching organizer data in demo mode - demo works with organizerId only
+  // Demo mode is indicated by the /workbench/demo route which has no database access
 
   const urlOrganizerId = searchParams.get('organizerId');
 
