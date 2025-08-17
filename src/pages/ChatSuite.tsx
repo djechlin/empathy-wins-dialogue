@@ -9,6 +9,7 @@ interface ChatSuiteProps {
   coaches: PromptBuilderData[];
   organizerPromptText: string;
   organizerFirstMessage: string;
+  hasValidOrganizer?: boolean;
 }
 
 interface ChatStatus {
@@ -19,7 +20,7 @@ interface ChatStatus {
 
 const MemoizedChat = React.memo(Chat);
 
-const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMessage }: ChatSuiteProps) => {
+const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMessage, hasValidOrganizer = false }: ChatSuiteProps) => {
   // Suite-level chat controls - organizer is always AI, attendees vary by chat
   const organizerMode = 'ai'; // Fixed as AI
   const [controlStatus, setControlStatus] = useState<'ready' | 'started' | 'paused' | 'ended'>('ready');
@@ -134,7 +135,12 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
 
           <div className="flex items-center gap-2 flex-shrink-0">
             {controlStatus === 'ready' && (
-              <Button onClick={handleStartAll} size="sm" className="px-3">
+              <Button 
+                onClick={handleStartAll} 
+                size="sm" 
+                className="px-3"
+                disabled={!hasValidOrganizer}
+              >
                 <Play size={14} className="mr-1" />
                 {'Start All'}
               </Button>
