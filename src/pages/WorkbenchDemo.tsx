@@ -4,17 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { PromptBuilderData } from '@/utils/promptBuilder';
 import { supabase } from '@/integrations/supabase/client';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { User } from '@supabase/supabase-js';
-import { Button } from '@/ui/button';
-import { LogIn, Lock } from 'lucide-react';
-import { CardDescription } from '@/ui/card';
 
 const WorkbenchDemo = () => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [user, setUser] = useState<User | null>(null);
   const [organizerData, setOrganizerData] = useState<PromptBuilderData | null>(null);
   const [loading, setLoading] = useState(false);
   const controlStatus = 'started';
@@ -70,26 +64,6 @@ const WorkbenchDemo = () => {
     // No longer tracking chat status in UI
   }, []);
 
-  // Authentication check
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.error('WorkbenchDemo: Error getting session:', error);
-      } else {
-        setUser(session?.user ?? null);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
 
   // Auto-fetch organizer when organizerId is provided via URL
   useEffect(() => {
@@ -104,7 +78,7 @@ const WorkbenchDemo = () => {
       <Navbar pageTitle="Workbench Demo" pageSummary="Test organizer prompts with live chat" />
       <div className="p-6">
         <div className="max-w-2xl mx-auto">
-          <div className={`${!user ? 'filter blur-sm pointer-events-none' : ''}`}>
+          <div>
             {organizerData ? (
               <Chat
                 attendeePb={{
@@ -138,28 +112,6 @@ const WorkbenchDemo = () => {
           </div>
         </div>
       </div>
-
-      {!user && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-md">
-            <CardHeader className="text-center pb-4">
-              <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                <Lock className="w-6 h-6 text-purple-600" />
-              </div>
-              <CardTitle className="text-2xl font-serif">Authentication Required</CardTitle>
-              <CardDescription>
-                You need to be logged in to access the Workbench Demo. Please sign in or create an account to continue.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue" onClick={() => navigate('/auth')}>
-                <LogIn className="mr-2 h-4 w-4" />
-                Sign In
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
     </div>
   );
 };
