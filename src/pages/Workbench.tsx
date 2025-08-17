@@ -1,5 +1,4 @@
 import Navbar from '@/components/layout/Navbar';
-import PromptBuilder from '@/components/PromptBuilder';
 import PromptBuilderSuite from '@/components/PromptBuilderSuite';
 import { generateTimestampId } from '@/utils/id';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
@@ -13,7 +12,7 @@ import { LogIn, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface WorkbenchState {
-  organizerPrompt: PromptBuilderData | null;
+  organizers: PromptBuilderData[];
   organizerPromptText: string;
   organizerFirstMessage: string;
   attendees: PromptBuilderData[];
@@ -24,7 +23,7 @@ interface WorkbenchState {
 }
 
 type WorkbenchAction =
-  | { type: 'SELECT_PROMPT'; payload: { participant: 'organizer'; prompt: PromptBuilderData | null } }
+  | { type: 'UPDATE_ORGANIZERS'; payload: PromptBuilderData[] }
   | { type: 'UPDATE_ORGANIZER_DATA'; payload: { systemPrompt: string; firstMessage: string } }
   | { type: 'UPDATE_ATTENDEES'; payload: PromptBuilderData[] }
   | { type: 'UPDATE_COACHES'; payload: PromptBuilderData[] }
@@ -35,10 +34,10 @@ type WorkbenchAction =
 function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
   console.log('workbench dispatch: ', action.type);
   switch (action.type) {
-    case 'SELECT_PROMPT':
+    case 'UPDATE_ORGANIZERS':
       return {
         ...state,
-        organizerPrompt: action.payload.prompt,
+        organizers: action.payload,
       };
 
     case 'UPDATE_ORGANIZER_DATA':
@@ -87,7 +86,7 @@ const Workbench = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [state, dispatch] = useReducer(workbenchReducer, {
-    organizerPrompt: null,
+    organizers: [],
     organizerPromptText: '',
     organizerFirstMessage: '',
     attendees: [{ id: generateTimestampId(), name: 'attendee', system_prompt: '', firstMessage: '', persona: 'attendee' as const }],
@@ -117,8 +116,8 @@ const Workbench = () => {
     };
   }, []);
 
-  const organizerPromptChangeCb = useCallback((data: { systemPrompt: string; firstMessage: string }) => {
-    dispatch({ type: 'UPDATE_ORGANIZER_DATA', payload: data });
+  const organizerPromptChangeCb = useCallback((organizers: PromptBuilderData[]) => {
+    dispatch({ type: 'UPDATE_ORGANIZERS', payload: organizers });
   }, []);
 
   const handleAttendeesChangeCb = useCallback((attendees: PromptBuilderData[]) => {
@@ -137,7 +136,12 @@ const Workbench = () => {
           <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 ${!user ? 'filter blur-sm pointer-events-none' : ''}`}>
             <div className="space-y-4">
               <div className="w-full space-y-4">
-                <PromptBuilder persona="organizer" color="bg-purple-200" defaultOpen={true} onDataChange={organizerPromptChangeCb} />
+                <PromptBuilderSuite
+                  persona="organizer"
+                  color="bg-purple-200"
+                  defaultOpen={true}
+                  onPromptBuildersChange={organizerPromptChangeCb}
+                />
 
                 <PromptBuilderSuite
                   persona="attendee"
@@ -174,10 +178,7 @@ const Workbench = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button 
-                className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue" 
-                onClick={() => navigate('/auth')}
-              >
+              <Button className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue" onClick={() => navigate('/auth')}>
                 <LogIn className="mr-2 h-4 w-4" />
                 Sign In
               </Button>
