@@ -3,8 +3,14 @@ import PromptBuilder from '@/components/PromptBuilder';
 import PromptBuilderSuite from '@/components/PromptBuilderSuite';
 import { generateTimestampId } from '@/utils/id';
 import { type PromptBuilderData } from '@/utils/promptBuilder';
-import { useCallback, useReducer } from 'react';
+import { useCallback, useReducer, useEffect, useState } from 'react';
 import ChatSuite from './ChatSuite';
+import { supabase } from '@/integrations/supabase/client';
+import { User } from '@supabase/supabase-js';
+import { Button } from '@/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
+import { LogIn, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface WorkbenchState {
   organizerPrompt: PromptBuilderData | null;
@@ -78,6 +84,8 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
 }
 
 const Workbench = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
   const [state, dispatch] = useReducer(workbenchReducer, {
     organizerPrompt: null,
     organizerPromptText: '',
@@ -88,6 +96,26 @@ const Workbench = () => {
     attendeesDirty: false,
     coachesDirty: false,
   });
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Workbench: Error getting session:', error);
+      } else {
+        setUser(session?.user ?? null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const organizerPromptChangeCb = useCallback((data: { systemPrompt: string; firstMessage: string }) => {
     dispatch({ type: 'UPDATE_ORGANIZER_DATA', payload: data });
@@ -102,11 +130,11 @@ const Workbench = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
       <Navbar pageTitle="Workbench" pageSummary="Develop AI organizer prompts" />
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 ${!user ? 'filter blur-sm pointer-events-none' : ''}`}>
             <div className="space-y-4">
               <div className="w-full space-y-4">
                 <PromptBuilder persona="organizer" color="bg-purple-200" defaultOpen={true} onDataChange={organizerPromptChangeCb} />
@@ -132,6 +160,31 @@ const Workbench = () => {
           </div>
         </div>
       </div>
+
+      {!user && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader className="text-center pb-4">
+              <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                <Lock className="w-6 h-6 text-purple-600" />
+              </div>
+              <CardTitle className="text-2xl font-serif">Authentication Required</CardTitle>
+              <CardDescription>
+                You need to be logged in to access the Workbench. Please sign in or create an account to continue.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue" 
+                onClick={() => navigate('/auth')}
+              >
+                <LogIn className="mr-2 h-4 w-4" />
+                Sign In
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
