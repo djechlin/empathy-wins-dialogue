@@ -159,24 +159,15 @@ const PromptsHistory = () => {
       <div className="container mx-auto px-4 py-6">
         <div className="mb-6">
           <div className="flex items-center gap-2">
-            <Button
-              variant={!showOnlyMine ? "default" : "outline"}
-              size="sm"
-              onClick={() => setShowOnlyMine(false)}
-            >
+            <Button variant={!showOnlyMine ? 'default' : 'outline'} size="sm" onClick={() => setShowOnlyMine(false)}>
               Everyone's
             </Button>
-            <Button
-              variant={showOnlyMine ? "default" : "outline"}
-              size="sm"
-              onClick={() => setShowOnlyMine(true)}
-              disabled={!user}
-            >
+            <Button variant={showOnlyMine ? 'default' : 'outline'} size="sm" onClick={() => setShowOnlyMine(true)} disabled={!user}>
               Mine
             </Button>
           </div>
         </div>
-        
+
         <div className="space-y-6">
           {personaSections.map((section) => {
             const prompts = promptData[section.persona];

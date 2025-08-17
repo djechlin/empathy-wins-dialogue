@@ -121,12 +121,7 @@ export const fetchAllPromptBuildersForPersona = async (
 ): Promise<PromptBuilderData[]> => {
   console.log('fetch all... dje');
 
-  let query = supabase
-    .from('prompts')
-    .select('*')
-    .eq('persona', persona)
-    .eq('archived', false)
-    .order('created_at', { ascending: false });
+  let query = supabase.from('prompts').select('*').eq('persona', persona).eq('archived', false).order('created_at', { ascending: false });
 
   // If userId is provided, filter by that user; otherwise get all prompts
   if (userId) {
