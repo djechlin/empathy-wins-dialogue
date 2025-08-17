@@ -1,10 +1,10 @@
+import { Badge } from '@/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
+import { Separator } from '@/ui/separator';
+import { fetchAllPromptBuildersForPersona, type PromptBuilderData } from '@/utils/promptBuilder';
+import { Clock, GraduationCap, Star, UserCheck, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
-import { Badge } from '@/ui/badge';
-import { Separator } from '@/ui/separator';
-import { Users, UserCheck, GraduationCap, Clock, Star } from 'lucide-react';
-import { fetchAllPromptBuildersForPersona, type PromptBuilderData } from '@/utils/promptBuilder';
 
 type PersonaType = 'organizer' | 'attendee' | 'coach';
 
@@ -20,27 +20,27 @@ const personaSections: PersonaSection[] = [
     title: 'Organizers',
     icon: Users,
     persona: 'organizer',
-    description: 'Prompt builders for organizer role-plays and training scenarios'
+    description: 'Prompt builders for organizer role-plays and training scenarios',
   },
   {
-    title: 'Attendees', 
+    title: 'Attendees',
     icon: UserCheck,
     persona: 'attendee',
-    description: 'Prompt builders for attendee interactions and engagement'
+    description: 'Prompt builders for attendee interactions and engagement',
   },
   {
     title: 'Coaches',
     icon: GraduationCap,
     persona: 'coach',
-    description: 'Prompt builders for coaching and mentorship scenarios'
-  }
+    description: 'Prompt builders for coaching and mentorship scenarios',
+  },
 ];
 
 const PromptsHistory = () => {
   const [promptData, setPromptData] = useState<Record<PersonaType, PromptBuilderData[]>>({
     organizer: [],
     attendee: [],
-    coach: []
+    coach: [],
   });
   const [loading, setLoading] = useState(true);
 
@@ -49,14 +49,14 @@ const PromptsHistory = () => {
       try {
         const [organizers, attendees, coaches] = await Promise.all([
           fetchAllPromptBuildersForPersona('organizer'),
-          fetchAllPromptBuildersForPersona('attendee'), 
-          fetchAllPromptBuildersForPersona('coach')
+          fetchAllPromptBuildersForPersona('attendee'),
+          fetchAllPromptBuildersForPersona('coach'),
         ]);
 
         setPromptData({
-          organizer: organizers,
-          attendee: attendees,
-          coach: coaches
+          organizer: organizers || [],
+          attendee: attendees || [],
+          coach: coaches || [],
         });
       } catch (error) {
         console.error('Error loading prompt builders:', error);
@@ -71,10 +71,10 @@ const PromptsHistory = () => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
-      month: 'short', 
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -99,9 +99,7 @@ const PromptsHistory = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">Prompts History</h1>
-          <p className="text-lg text-muted-foreground">
-            View and manage your prompt builders organized by role type
-          </p>
+          <p className="text-lg text-muted-foreground">View and manage your prompt builders organized by role type</p>
         </div>
 
         <div className="space-y-12">
@@ -126,9 +124,7 @@ const PromptsHistory = () => {
                   <Card className="border-dashed">
                     <CardContent className="flex flex-col items-center justify-center py-12">
                       <IconComponent className="h-12 w-12 text-muted-foreground mb-4" />
-                      <p className="text-muted-foreground text-center">
-                        No {section.title.toLowerCase()} prompts created yet
-                      </p>
+                      <p className="text-muted-foreground text-center">No {section.title.toLowerCase()} prompts created yet</p>
                     </CardContent>
                   </Card>
                 ) : (
@@ -138,9 +134,7 @@ const PromptsHistory = () => {
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between">
                             <CardTitle className="text-lg line-clamp-2">{prompt.name}</CardTitle>
-                            {prompt.starred && (
-                              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 flex-shrink-0" />
-                            )}
+                            {prompt.starred && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 flex-shrink-0" />}
                           </div>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Clock className="h-3 w-3" />
@@ -148,9 +142,7 @@ const PromptsHistory = () => {
                           </div>
                         </CardHeader>
                         <CardContent className="pt-0">
-                          <CardDescription className="line-clamp-3 mb-3">
-                            {prompt.system_prompt}
-                          </CardDescription>
+                          <CardDescription className="line-clamp-3 mb-3">{prompt.system_prompt}</CardDescription>
                           {prompt.firstMessage && (
                             <div className="mt-3 p-3 bg-muted rounded-md">
                               <p className="text-sm text-muted-foreground mb-1">First Message:</p>

@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-
+import { toast } from 'sonner';
 export interface PromptBuilderData {
   id?: string;
   name: string;
@@ -68,118 +68,93 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<Prompt
       updated_at: result.updated_at,
     };
   } catch (error) {
-    console.error('Error in savePromptBuilder:', error);
+    toast.error('Error in savePromptBuilder:', error);
     throw error;
   }
 };
 
 export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'attendee' | 'coach'): Promise<PromptBuilderData | null> => {
-  try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    if (!user) {
-      console.error('fetchMostRecentPromptForPersona: No authenticated user');
-      return null;
-    }
-
-    const { data: promptBuilders, error } = await supabase
-      .from('prompt_builders')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('persona', persona)
-      .order('updated_at', { ascending: false })
-      .limit(1);
-
-    if (error) {
-      console.error('Error fetching prompt builders:', error);
-      return null;
-    }
-
-    if (!promptBuilders || promptBuilders.length === 0) {
-      return null;
-    }
-
-    const pb = promptBuilders[0];
-    return {
-      id: pb.id,
-      name: pb.name,
-      system_prompt: pb.system_prompt,
-      persona: pb.persona as 'organizer' | 'attendee' | 'coach', // part of the 'where'
-      firstMessage: pb.first_message || undefined,
-      archived: pb.archived || false,
-      starred: pb.starred || false,
-      created_at: pb.created_at,
-      updated_at: pb.updated_at,
-    };
-  } catch (error) {
-    console.error('Error in fetchMostRecentPromptForPersona:', error);
+  if (!user) {
+    toast.error('User is not logged in');
     return null;
   }
+
+  const { data: promptBuilders, error } = await supabase
+    .from('prompt_builders')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('persona', persona)
+    .order('updated_at', { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error('error fetching prompts', error);
+    toast.error('Error fetching prompts: ' + error.message);
+    return null;
+  }
+
+  if (promptBuilders.length === 0) {
+    return null;
+  }
+
+  const pb = promptBuilders[0];
+  return {
+    id: pb.id,
+    name: pb.name,
+    system_prompt: pb.system_prompt,
+    persona: pb.persona as 'organizer' | 'attendee' | 'coach', // part of the 'where'
+    firstMessage: pb.first_message || undefined,
+    archived: pb.archived || false,
+    starred: pb.starred || false,
+    created_at: pb.created_at,
+    updated_at: pb.updated_at,
+  };
 };
 
 export const fetchAllPromptBuildersForPersona = async (persona: 'organizer' | 'attendee' | 'coach'): Promise<PromptBuilderData[]> => {
-  try {
-    const authPromise = supabase.auth.getUser();
-    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Authentication timeout')), 5000));
+  console.log('fetch all... dje');
 
-    let user: { id: string } | null = null;
-    try {
-      const authResult = await Promise.race([authPromise, timeoutPromise]);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-      const {
-        data: { user: authUser },
-        error: authError,
-      } = authResult as { data: { user: { id: string } | null }; error: Error | null };
+  if (!user) {
+    toast.error('User is not logged in');
+    return null;
+  }
 
-      if (authError) {
-        console.error('fetchAllPromptBuildersForPersona: Auth error:', authError);
-        return [];
-      }
+  const { data: promptBuilders, error } = await supabase
+    .from('prompt_builders')
+    .select('*')
+    .eq('persona', persona)
+    .eq('archived', false)
+    .order('created_at', { ascending: false });
 
-      user = authUser;
-      if (!user) {
-        console.error('fetchAllPromptBuildersForPersona: No authenticated user');
-        return [];
-      }
-    } catch (error) {
-      console.error('fetchAllPromptBuildersForPersona: Exception during auth check:', error);
-      return [];
-    }
-
-    const { data: promptBuilders, error } = await supabase
-      .from('prompt_builders')
-      .select('*')
-      .eq('persona', persona)
-      .eq('archived', false)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching prompt builders:', error);
-      return [];
-    }
-
-    if (!promptBuilders || promptBuilders.length === 0) {
-      return [];
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return promptBuilders.map((pb: any) => ({
-      id: pb.id,
-      name: pb.name,
-      system_prompt: pb.system_prompt,
-      persona: pb.persona as 'organizer' | 'attendee' | 'coach',
-      firstMessage: pb.first_message || undefined,
-      archived: pb.archived || false,
-      starred: pb.starred || false,
-      created_at: pb.created_at,
-      updated_at: pb.updated_at,
-    }));
-  } catch (error) {
-    console.error('Error in fetchAllPromptBuildersForPersona:', error);
+  if (error) {
+    console.error('Error fetching prompt builders:', error);
     return [];
   }
+
+  if (!promptBuilders || promptBuilders.length === 0) {
+    return [];
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return promptBuilders.map((pb: any) => ({
+    id: pb.id,
+    name: pb.name,
+    system_prompt: pb.system_prompt,
+    persona: pb.persona as 'organizer' | 'attendee' | 'coach',
+    firstMessage: pb.first_message || undefined,
+    archived: pb.archived || false,
+    starred: pb.starred || false,
+    created_at: pb.created_at,
+    updated_at: pb.updated_at,
+  }));
 };
 
 export const archivePromptBuilder = async (id: string, archived: boolean): Promise<boolean> => {
