@@ -57,7 +57,8 @@ interface ChatStatus {
 
 interface ChatProps {
   attendeePb: PromptBuilderData;
-  organizerPb: PromptBuilderData;
+  organizerPb?: PromptBuilderData;
+  organizerId?: string;
   organizerMode: 'human' | 'ai';
   attendeeMode: 'human' | 'ai';
   controlStatus: 'ready' | 'started' | 'paused' | 'ended';
@@ -239,6 +240,7 @@ const CoachResults = ({
 const Chat = ({
   attendeePb,
   organizerPb,
+  organizerId,
   organizerMode,
   attendeeMode,
   controlStatus,
@@ -271,8 +273,9 @@ const Chat = ({
   const chatEngine = useChat([
     {
       mode: organizerMode,
-      organizerFirstMessage: organizerPb.firstMessage || null,
-      systemPrompt: organizerPb.system_prompt,
+      organizerFirstMessage: organizerPb?.firstMessage || null,
+      organizerId: organizerId,
+      systemPrompt: organizerPb?.system_prompt || '',
       getTextInput,
       persona: 'organizer',
     },

@@ -35,26 +35,67 @@ const getAiResponse = async (updatedMessages: ParticipantMessage[], systemPrompt
   return responseText;
 };
 
+const getDemoAiResponse = async (organizerId: string): Promise<string> => {
+  const { data, error } = await supabase.functions.invoke<WorkbenchResponse>('demo', {
+    body: {
+      organizerId,
+    },
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  let responseText;
+  if (data?.message) {
+    responseText = data.message;
+  } else if (typeof data === 'string') {
+    responseText = data;
+  } else {
+    responseText = 'Sorry, I had trouble responding. Can you try again?';
+  }
+
+  return responseText;
+};
+
 type ParticipantProps = {
   mode: 'human' | 'ai';
   persona: 'organizer' | 'attendee';
-  organizerFirstMessage: string | null;
   systemPrompt: string;
   getTextInput?: () => Promise<string>;
-};
+} & (
+  | { organizerFirstMessage: string; organizerId?: never }
+  | { organizerFirstMessage: null; organizerId: string }
+  | { organizerFirstMessage: null; organizerId?: never }
+);
 
-const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, getTextInput }: ParticipantProps) => {
+const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, getTextInput, organizerId }: ParticipantProps) => {
   const [messages, setMessages] = useState<ParticipantMessage[]>([]);
   const [isBusy, setIsBusy] = useState(false);
 
   const chat = useCallback(
     async (msg: string | null): Promise<string> => {
-      console.log('useParticipant.chat called:', { msg, messagesLength: messages.length, organizerFirstMessage, humanOrAi });
-      if (msg === null && messages.length === 0 && organizerFirstMessage) {
-        console.log('Returning organizer first message:', organizerFirstMessage);
-        setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
-        return organizerFirstMessage;
+      console.log('useParticipant.chat called:', { msg, messagesLength: messages.length, organizerFirstMessage, organizerId, humanOrAi });
+      
+      // Handle first message
+      if (msg === null && messages.length === 0) {
+        if (organizerFirstMessage) {
+          console.log('Returning organizer first message:', organizerFirstMessage);
+          setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
+          return organizerFirstMessage;
+        } else if (organizerId && humanOrAi === 'ai') {
+          console.log('Demo mode: using demo edge function for first message');
+          setIsBusy(true);
+          try {
+            const responseText = await getDemoAiResponse(organizerId);
+            setMessages([{ role: 'assistant' as const, content: responseText }]);
+            return responseText;
+          } finally {
+            setIsBusy(false);
+          }
+        }
       }
+      
       if (msg === null) {
         throw new Error('No message provided');
       }
@@ -82,7 +123,7 @@ const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, 
         setIsBusy(false);
       }
     },
-    [messages, isBusy, systemPrompt, humanOrAi, getTextInput, organizerFirstMessage],
+    [messages, isBusy, systemPrompt, humanOrAi, getTextInput, organizerFirstMessage, organizerId],
   );
 
   return {

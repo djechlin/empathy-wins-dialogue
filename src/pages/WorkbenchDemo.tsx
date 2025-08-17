@@ -64,7 +64,6 @@ const WorkbenchDemo = () => {
     // No longer tracking chat status in UI
   }, []);
 
-
   // Auto-fetch organizer when organizerId is provided via URL
   useEffect(() => {
     const urlOrganizerId = searchParams.get('organizerId');
@@ -73,13 +72,15 @@ const WorkbenchDemo = () => {
     }
   }, [searchParams, fetchOrganizerData]);
 
+  const urlOrganizerId = searchParams.get('organizerId');
+
   return (
     <div className="min-h-screen bg-gray-50 relative">
       <Navbar pageTitle="Workbench Demo" pageSummary="Test organizer prompts with live chat" />
       <div className="p-6">
         <div className="max-w-2xl mx-auto">
           <div>
-            {organizerData ? (
+            {organizerData || urlOrganizerId ? (
               <Chat
                 attendeePb={{
                   id: 'human-attendee',
@@ -89,7 +90,8 @@ const WorkbenchDemo = () => {
                   firstMessage: '',
                   starred: true,
                 }}
-                organizerPb={organizerData}
+                organizerPb={organizerData || undefined}
+                organizerId={!organizerData ? urlOrganizerId || undefined : undefined}
                 organizerMode="ai"
                 attendeeMode="human"
                 controlStatus={controlStatus}
