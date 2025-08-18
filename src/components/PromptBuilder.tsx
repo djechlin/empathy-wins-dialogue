@@ -3,6 +3,17 @@ import { Button } from '@/ui/button';
 import { Input } from '@/ui/input';
 import { Label } from '@/ui/label';
 import { Textarea } from '@/ui/textarea';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/ui/alert-dialog';
 import { fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Archive, ArchiveRestore, ChevronDown, Share, Star } from 'lucide-react';
@@ -431,17 +442,40 @@ const PromptBuilder = memo(
                   <Star className={`h-3 w-3 ${starred ? 'fill-current' : ''}`} />
                 </Button>
               )}
-              {promptBuilderId && onArchiveToggle && (
-                <Button
-                  onClick={() => handleArchiveToggle(archived)}
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 w-6 p-0 text-gray-400 hover:text-blue-500"
-                  title={archived ? 'Show' : 'Hide'}
-                >
-                  {archived ? <ArchiveRestore className="h-3 w-3" /> : <Archive className="h-3 w-3" />}
-                </Button>
-              )}
+              {promptBuilderId &&
+                onArchiveToggle &&
+                (archived ? (
+                  <Button
+                    onClick={() => handleArchiveToggle(archived)}
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0 text-gray-400 hover:text-blue-500"
+                    title="Show"
+                  >
+                    <ArchiveRestore className="h-3 w-3" />
+                  </Button>
+                ) : (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-gray-400 hover:text-blue-500" title="Hide">
+                        <Archive className="h-3 w-3" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Archive this prompt?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          The prompt will be archived for use in analysis and replaying chats, but won't be available in the workbench
+                          anymore.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleArchiveToggle(archived)}>Archive</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ))}
               <Button
                 onClick={handleSave}
                 disabled={state.saveStatus === SaveStatus.SAVING || (!isDirty && state.saveStatus === SaveStatus.SAVED)}

@@ -58,10 +58,8 @@ function promptBuilderSuiteReducer(state: PromptBuilderSuiteState, action: Promp
     case 'TOGGLE_ARCHIVE':
       return {
         ...state,
-        promptBuilders: state.promptBuilders.map((a) => 
-          a.id === action.payload.id 
-            ? { ...a, archived: action.payload.archived, ...(action.payload.archived && { starred: false }) } 
-            : a
+        promptBuilders: state.promptBuilders.map((a) =>
+          a.id === action.payload.id ? { ...a, archived: action.payload.archived, ...(action.payload.archived && { starred: false }) } : a,
         ),
       };
 
