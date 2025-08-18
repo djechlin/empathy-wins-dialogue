@@ -79,16 +79,11 @@ const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, 
 
   const chat = useCallback(
     async (msg: string | null): Promise<string> => {
-      console.log('useParticipant.chat called:', { msg, messagesLength: messages.length, organizerFirstMessage, organizerId, humanOrAi });
-
-      // Handle first message
       if (msg === null && messages.length === 0) {
         if (organizerFirstMessage) {
-          console.log('Returning organizer first message:', organizerFirstMessage);
           setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
           return organizerFirstMessage;
         } else if (organizerId && humanOrAi === 'ai') {
-          console.log('Demo mode: using demo edge function for first message');
           setIsBusy(true);
           try {
             const responseText = await getDemoAiResponse(organizerId, []);
@@ -253,11 +248,9 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
         sender: toPersona(nextReceiver),
         timestamp: new Date(),
       };
-      // queue step
       setState((prev) => ({ ...prev, history: [...prev.history, response], queue: [...prev.queue, response], thinking: null }));
 
-      // Insert message into database (skip in demo mode)
-      if (!isDemoMode && state.chatId) {
+      if (state.chatId) {
         try {
           await insertMessage(state.chatId, response.sender, response.content);
         } catch (error) {
@@ -270,15 +263,15 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
   const start = useCallback(async () => {
     setState((prev) => {
       if (prev.controlStatus === 'ready') {
-        // Create chat in database (skip in demo mode)
-        if (!isDemoMode && !prev.chatId) {
+        // Create chat in database
+        if (!prev.chatId) {
           (async () => {
             try {
               const chatId = await createChat(
                 pp[0].mode,
                 pp[1].mode,
-                pp[0].organizerId || null,
-                null, // attendee prompt ID not available
+                pp[0].mode === 'ai' ? pp[0].organizerId || null : null,
+                pp[1].mode === 'ai' ? pp[1].organizerId || null : null,
                 pp[0].systemPrompt,
                 pp[0].organizerFirstMessage || '',
                 pp[1].systemPrompt,
@@ -295,7 +288,7 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
       }
       return prev;
     });
-  }, [isDemoMode, pp]);
+  }, [pp]);
   const pause = useCallback(() => {
     setState((prev) => {
       if (prev.controlStatus === 'started') {
@@ -307,8 +300,8 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
 
   const end = useCallback(async () => {
     setState((prev) => {
-      // End chat in database (skip in demo mode)
-      if (!isDemoMode && prev.chatId) {
+      // End chat in database
+      if (prev.chatId) {
         (async () => {
           try {
             await endChat(prev.chatId!);
@@ -319,7 +312,7 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
       }
       return { ...prev, controlStatus: 'ended' };
     });
-  }, [isDemoMode]);
+  }, []);
 
   return { start, pause, end, history: state.history, thinking: state.thinking, speaker: state.speaker };
 };
