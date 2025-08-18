@@ -155,7 +155,8 @@ export const fetchAllPromptBuildersForPersona = async (
 
 export const archivePromptBuilder = async (id: string, archived: boolean): Promise<boolean> => {
   try {
-    const { error } = await supabase.from('prompts').update({ archived }).eq('id', id);
+    const updateData = archived ? { archived, starred: false } : { archived };
+    const { error } = await supabase.from('prompts').update(updateData).eq('id', id);
 
     if (error) {
       console.error('Error updating prompt builder archive status:', error);
