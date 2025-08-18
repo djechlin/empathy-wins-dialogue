@@ -121,7 +121,7 @@ const ChatReplay = () => {
       day: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
-      timeZoneName: 'short'
+      timeZoneName: 'short',
     });
   };
 
@@ -130,7 +130,7 @@ const ChatReplay = () => {
     return date.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-      timeZoneName: 'short'
+      timeZoneName: 'short',
     });
   };
 
@@ -199,7 +199,7 @@ const ChatReplay = () => {
                 <Badge variant={chat.ended_at ? 'default' : 'secondary'}>{chat.ended_at ? 'Completed' : 'In Progress'}</Badge>
               </div>
             </CardHeader>
-            
+
             <CardContent className="space-y-4">
               {/* System Prompts Section */}
               {(chat.organizer_system_prompt || chat.attendee_system_prompt) && (
@@ -255,10 +255,7 @@ const ChatReplay = () => {
                   <CollapsibleContent className="mt-3">
                     <div className="space-y-4">
                       {messages.map((message) => (
-                        <div
-                          key={message.id}
-                          className={`flex ${message.persona === 'organizer' ? 'justify-end' : 'justify-start'}`}
-                        >
+                        <div key={message.id} className={`flex ${message.persona === 'organizer' ? 'justify-end' : 'justify-start'}`}>
                           <div
                             className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow-sm ${
                               message.persona === 'organizer' ? 'bg-purple-200 text-gray-900' : 'bg-orange-200 text-gray-900'
@@ -269,9 +266,7 @@ const ChatReplay = () => {
                               <span className="text-xs opacity-75">{message.persona === 'organizer' ? 'Organizer' : 'Attendee'}</span>
                             </div>
                             <p className="text-sm whitespace-pre-wrap">{message.message}</p>
-                            <p className="text-xs mt-1 text-gray-600">
-                              {formatTime(message.created_at)}
-                            </p>
+                            <p className="text-xs mt-1 text-gray-600">{formatTime(message.created_at)}</p>
                           </div>
                         </div>
                       ))}
