@@ -1,0 +1,91 @@
+-- Create the chats table
+CREATE TABLE chats (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id),
+    organizer_mode TEXT NOT NULL CHECK (organizer_mode IN ('ai', 'human')),
+    organizer_prompt_id UUID REFERENCES prompts(id),
+    attendee_mode TEXT NOT NULL CHECK (attendee_mode IN ('ai', 'human')),
+    attendee_prompt_id UUID REFERENCES prompts(id),
+    organizer_system_prompt TEXT,
+    organizer_first_message TEXT,
+    attendee_system_prompt TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    ended_at TIMESTAMPTZ
+);
+
+-- Create the chat_messages table
+CREATE TABLE chat_messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    chat_id UUID NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
+    persona TEXT NOT NULL CHECK (persona IN ('organizer', 'attendee')),
+    message TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Create the chat_coaches table
+CREATE TABLE chat_coaches (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    chat_id UUID NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
+    coach_id UUID NOT NULL REFERENCES prompts(id),
+    coach_prompt TEXT NOT NULL,
+    coach_result TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Enable Row Level Security on all tables
+ALTER TABLE chats ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chat_coaches ENABLE ROW LEVEL SECURITY;
+
+-- Create RLS policies for chats table
+CREATE POLICY "chats_access"
+    ON chats
+    TO authenticated
+    USING ((auth.uid() = ANY (ARRAY[
+        '32c5644f-7e19-4a3a-a90a-fb06dced98b9'::uuid, 
+        'faac6913-3ae0-4997-9426-6761704842e0'::uuid, 
+        'a425129c-324b-4574-8627-7c518a52d048'::uuid, 
+        '21303e51-b56b-4bf9-a727-58a018a6534d'::uuid
+    ])));
+
+-- Create RLS policies for chat_messages table (immutable - select and insert only)
+CREATE POLICY "chat_messages_select"
+    ON chat_messages
+    FOR SELECT
+    TO authenticated
+    USING ((auth.uid() = ANY (ARRAY[
+        '32c5644f-7e19-4a3a-a90a-fb06dced98b9'::uuid, 
+        'faac6913-3ae0-4997-9426-6761704842e0'::uuid, 
+        'a425129c-324b-4574-8627-7c518a52d048'::uuid, 
+        '21303e51-b56b-4bf9-a727-58a018a6534d'::uuid
+    ])));
+
+CREATE POLICY "chat_messages_insert"
+    ON chat_messages
+    FOR INSERT
+    TO authenticated
+    WITH CHECK ((auth.uid() = ANY (ARRAY[
+        '32c5644f-7e19-4a3a-a90a-fb06dced98b9'::uuid, 
+        'faac6913-3ae0-4997-9426-6761704842e0'::uuid, 
+        'a425129c-324b-4574-8627-7c518a52d048'::uuid, 
+        '21303e51-b56b-4bf9-a727-58a018a6534d'::uuid
+    ])));
+
+-- Create RLS policies for chat_coaches table
+CREATE POLICY "chat_coaches_access"
+    ON chat_coaches
+    TO authenticated
+    USING ((auth.uid() = ANY (ARRAY[
+        '32c5644f-7e19-4a3a-a90a-fb06dced98b9'::uuid, 
+        'faac6913-3ae0-4997-9426-6761704842e0'::uuid, 
+        'a425129c-324b-4574-8627-7c518a52d048'::uuid, 
+        '21303e51-b56b-4bf9-a727-58a018a6534d'::uuid
+    ])));
+
+-- Create indexes for better performance
+CREATE INDEX idx_chats_user_id ON chats(user_id);
+CREATE INDEX idx_chats_created_at ON chats(created_at);
+CREATE INDEX idx_chat_messages_chat_id ON chat_messages(chat_id);
+CREATE INDEX idx_chat_messages_created_at ON chat_messages(created_at);
+CREATE INDEX idx_chat_coaches_chat_id ON chat_coaches(chat_id);
+

@@ -1,6 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { WorkbenchResponse } from '@/types/edge-function-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 interface ParticipantMessage {
   role: 'user' | 'assistant';
@@ -155,12 +156,83 @@ type State = {
   controlStatus: ControlStatus;
   thinking: ParticipantProps | null;
   speaker: ParticipantProps;
+  chatId: string | null;
 };
 
 let counter = 1;
 
+// Database operations for chat tracking
+const createChat = async (
+  organizerMode: 'ai' | 'human',
+  attendeeMode: 'ai' | 'human',
+  organizerPromptId: string | null,
+  attendeePromptId: string | null,
+  organizerSystemPrompt: string,
+  organizerFirstMessage: string,
+  attendeeSystemPrompt: string,
+): Promise<string> => {
+  // Get current user
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) {
+    throw new Error('User not authenticated');
+  }
+
+  const { data, error } = await supabase
+    .from('chats')
+    .insert({
+      user_id: user.id,
+      organizer_mode: organizerMode,
+      organizer_prompt_id: organizerPromptId,
+      attendee_mode: attendeeMode,
+      attendee_prompt_id: attendeePromptId,
+      organizer_system_prompt: organizerSystemPrompt,
+      organizer_first_message: organizerFirstMessage,
+      attendee_system_prompt: attendeeSystemPrompt,
+    })
+    .select('id')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data.id;
+};
+
+const endChat = async (chatId: string): Promise<void> => {
+  const { error } = await supabase.from('chats').update({ ended_at: new Date().toISOString() }).eq('id', chatId);
+
+  if (error) {
+    throw error;
+  }
+};
+
+const insertMessage = async (chatId: string, persona: 'organizer' | 'attendee', message: string): Promise<void> => {
+  const { error } = await supabase.from('chat_messages').insert({
+    chat_id: chatId,
+    persona,
+    message,
+  });
+
+  if (error) {
+    throw error;
+  }
+};
+
 export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
-  const [state, setState] = useState<State>({ queue: [null], history: [], controlStatus: 'ready', thinking: null, speaker: pp[0] });
+  const location = useLocation();
+  const isDemoMode = location.pathname.includes('/demo');
+  const [state, setState] = useState<State>({
+    queue: [null],
+    history: [],
+    controlStatus: 'ready',
+    thinking: null,
+    speaker: pp[0],
+    chatId: null,
+  });
   const participant0 = useParticipant(pp[0]);
   const participant1 = useParticipant(pp[1]);
   const participants = useMemo(() => [participant0, participant1], [participant0, participant1]);
@@ -183,17 +255,47 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
       };
       // queue step
       setState((prev) => ({ ...prev, history: [...prev.history, response], queue: [...prev.queue, response], thinking: null }));
+
+      // Insert message into database (skip in demo mode)
+      if (!isDemoMode && state.chatId) {
+        try {
+          await insertMessage(state.chatId, response.sender, response.content);
+        } catch (error) {
+          console.error('Failed to insert message:', error);
+        }
+      }
     }, 0);
-  }, [state.controlStatus, state.queue, participants, pp]);
+  }, [state.controlStatus, state.queue, participants, pp, isDemoMode, state.chatId]);
 
   const start = useCallback(async () => {
     setState((prev) => {
-      if (prev.controlStatus === 'ready' || prev.controlStatus === 'paused') {
+      if (prev.controlStatus === 'ready') {
+        // Create chat in database (skip in demo mode)
+        if (!isDemoMode && !prev.chatId) {
+          (async () => {
+            try {
+              const chatId = await createChat(
+                pp[0].mode,
+                pp[1].mode,
+                pp[0].organizerId || null,
+                null, // attendee prompt ID not available
+                pp[0].systemPrompt,
+                pp[0].organizerFirstMessage || '',
+                pp[1].systemPrompt,
+              );
+              setState((current) => ({ ...current, chatId }));
+            } catch (error) {
+              console.error('Failed to create chat:', error);
+            }
+          })();
+        }
+        return { ...prev, controlStatus: 'started' };
+      } else if (prev.controlStatus === 'paused') {
         return { ...prev, controlStatus: 'started' };
       }
       return prev;
     });
-  }, []);
+  }, [isDemoMode, pp]);
   const pause = useCallback(() => {
     setState((prev) => {
       if (prev.controlStatus === 'started') {
@@ -203,11 +305,21 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
     });
   }, []);
 
-  const end = useCallback(() => {
+  const end = useCallback(async () => {
     setState((prev) => {
+      // End chat in database (skip in demo mode)
+      if (!isDemoMode && prev.chatId) {
+        (async () => {
+          try {
+            await endChat(prev.chatId!);
+          } catch (error) {
+            console.error('Failed to end chat:', error);
+          }
+        })();
+      }
       return { ...prev, controlStatus: 'ended' };
     });
-  }, []);
+  }, [isDemoMode]);
 
   return { start, pause, end, history: state.history, thinking: state.thinking, speaker: state.speaker };
 };

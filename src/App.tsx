@@ -25,6 +25,8 @@ import Text from './pages/Text';
 import RallyFollowup from './pages/RallyFollowup';
 import Workbench from './pages/Workbench';
 import WorkbenchDemo from './pages/WorkbenchDemo';
+import WorkbenchChats from './pages/WorkbenchChats';
+import ChatReplay from './pages/ChatReplay';
 import Relational from './pages/Relational';
 import PromptsHistory from './pages/PromptsHistory';
 
@@ -60,6 +62,8 @@ const App = () => (
             <Route path="/rally-followup" element={<RallyFollowup />} />
             <Route path="/workbench" element={<Workbench />} />
             <Route path="/workbench/demo" element={<WorkbenchDemo />} />
+            <Route path="/workbench/chats" element={<WorkbenchChats />} />
+            <Route path="/workbench/chats/:chatId" element={<ChatReplay />} />
             <Route path="/relational" element={<Relational />} />
             <Route path="/prompts/history" element={<PromptsHistory />} />
 
