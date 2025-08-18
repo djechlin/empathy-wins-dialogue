@@ -19,7 +19,6 @@ const Navbar = ({ pageTitle, pageSummary }: NavbarProps) => {
   const isWorkbench = location.pathname === '/workbench';
   const isWorkbenchDemo = location.pathname === '/workbench/demo';
   const isWorkbenchChats = location.pathname === '/workbench/chats';
-  const isPromptsHistory = location.pathname === '/prompts/history';
 
   const getCurrentStep = () => {
     if (location.pathname === '/challenge/prepare') return 1;
@@ -99,7 +98,7 @@ const Navbar = ({ pageTitle, pageSummary }: NavbarProps) => {
                 </div>
               ))}
             </div>
-          ) : (isWorkbench || isWorkbenchChats || isPromptsHistory) && !isWorkbenchDemo ? (
+          ) : (isWorkbench || isWorkbenchChats) && !isWorkbenchDemo ? (
             <div className="flex items-center space-x-6">
               <Link
                 to="/workbench"
@@ -117,14 +116,6 @@ const Navbar = ({ pageTitle, pageSummary }: NavbarProps) => {
               >
                 Chats
               </Link>
-              <Link
-                to="/prompts/history"
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isPromptsHistory ? 'text-primary' : 'text-muted-foreground'
-                }`}
-              >
-                History
-              </Link>
             </div>
           ) : (
             <></>
@@ -132,7 +123,7 @@ const Navbar = ({ pageTitle, pageSummary }: NavbarProps) => {
         </div>
 
         <div className="flex items-center gap-4">
-          {(isWorkbench || isWorkbenchChats || isPromptsHistory) && !isWorkbenchDemo ? (
+          {(isWorkbench || isWorkbenchChats) && !isWorkbenchDemo ? (
             <>
               {user ? (
                 <div className="flex items-center gap-2">
