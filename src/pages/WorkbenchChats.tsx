@@ -220,19 +220,6 @@ const WorkbenchChats = () => {
     });
   };
 
-  const formatDuration = (startDate: string, endDate: string | null) => {
-    const start = new Date(startDate);
-    const end = endDate ? new Date(endDate) : new Date();
-    const durationMs = end.getTime() - start.getTime();
-    const minutes = Math.floor(durationMs / (1000 * 60));
-    const seconds = Math.floor((durationMs % (1000 * 60)) / 1000);
-
-    if (minutes > 0) {
-      return `${minutes}m ${seconds}s`;
-    }
-    return `${seconds}s`;
-  };
-
   if (!user && !userLoading) {
     return (
       <div className="min-h-screen bg-gray-50 relative">
@@ -355,29 +342,23 @@ const WorkbenchChats = () => {
                           <CardContent className="p-6 w-full">
                             <div className="flex items-center justify-between text-left">
                               <div className="flex-1">
-                                <div className="flex items-center gap-4 mb-2">
-                                  <div className="flex items-center gap-2">
-                                    <Badge variant="outline" className="flex items-center gap-1">
-                                      {chat.organizer_mode === 'ai' ? <Bot className="h-3 w-3" /> : <User className="h-3 w-3" />}
-                                      Organizer: {chat.organizer_mode}
-                                    </Badge>
-                                    <Badge variant="outline" className="flex items-center gap-1">
-                                      {chat.attendee_mode === 'ai' ? <Bot className="h-3 w-3" /> : <User className="h-3 w-3" />}
-                                      Attendee: {chat.attendee_mode}
-                                    </Badge>
-                                    <Badge variant={chat.ended_at ? 'default' : 'secondary'}>
-                                      {chat.ended_at ? 'Completed' : 'In Progress'}
-                                    </Badge>
-                                    <span className="text-sm text-gray-500">{formatDateTime(chat.created_at)}</span>
-                                  </div>
-                                </div>
-
-                                <div className="flex items-center gap-6 text-sm text-gray-600">
-                                  <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="outline" className="flex items-center gap-1">
+                                    {chat.organizer_mode === 'ai' ? <Bot className="h-3 w-3" /> : <User className="h-3 w-3" />}
+                                    Organizer: {chat.organizer_mode}
+                                  </Badge>
+                                  <Badge variant="outline" className="flex items-center gap-1">
+                                    {chat.attendee_mode === 'ai' ? <Bot className="h-3 w-3" /> : <User className="h-3 w-3" />}
+                                    Attendee: {chat.attendee_mode}
+                                  </Badge>
+                                  <Badge variant={chat.ended_at ? 'default' : 'secondary'}>
+                                    {chat.ended_at ? 'Completed' : 'In Progress'}
+                                  </Badge>
+                                  <div className="flex items-center gap-1 text-sm text-gray-600">
                                     <MessageCircle className="h-4 w-4" />
                                     {chat.message_count} messages
                                   </div>
-                                  <div>Duration: {formatDuration(chat.created_at, chat.ended_at)}</div>
+                                  <span className="text-sm text-gray-500">{formatDateTime(chat.created_at)}</span>
                                 </div>
                               </div>
 
