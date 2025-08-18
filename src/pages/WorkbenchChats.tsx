@@ -21,6 +21,7 @@ interface ChatData {
 
 const WorkbenchChats = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
   const [chats, setChats] = useState<ChatData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +39,7 @@ const WorkbenchChats = () => {
       } else {
         setUser(session?.user ?? null);
       }
+      setUserLoading(false);
     });
 
     return () => {
@@ -108,30 +110,44 @@ const WorkbenchChats = () => {
     return `${seconds}s`;
   };
 
-  if (!user) {
+  if (!user && !userLoading) {
     return (
       <div className="min-h-screen bg-gray-50 relative">
         <Navbar pageTitle="Chat History" pageSummary="View your conversation history" />
         <div className="p-6">
           <div className="max-w-4xl mx-auto">
-            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-              <Card className="w-full max-w-md">
-                <CardHeader className="text-center pb-4">
-                  <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                    <Lock className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <CardTitle className="text-2xl font-serif">Authentication Required</CardTitle>
-                  <p className="text-gray-600">You need to be logged in to view your chat history.</p>
-                </CardHeader>
-                <CardContent>
-                  <Link to="/auth">
-                    <Button className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue">
-                      <LogIn className="mr-2 h-4 w-4" />
-                      Sign In
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+            <Card className="w-full max-w-md mx-auto">
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                  <Lock className="w-6 h-6 text-purple-600" />
+                </div>
+                <CardTitle className="text-2xl font-serif">Authentication Required</CardTitle>
+                <p className="text-gray-600">You need to be logged in to view your chat history.</p>
+              </CardHeader>
+              <CardContent>
+                <Link to="/auth">
+                  <Button className="w-full bg-dialogue-purple hover:bg-dialogue-darkblue">
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Sign In
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (userLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar pageTitle="Chat History" pageSummary="View your conversation history" />
+        <div className="p-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded mb-4"></div>
+              <div className="h-64 bg-gray-200 rounded"></div>
             </div>
           </div>
         </div>
