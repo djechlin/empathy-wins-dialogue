@@ -449,17 +449,17 @@ const ScoutResults = ({
 
           setEvaluations(newEvaluations);
 
-          // Save scout results to database (using chat_coaches table for now)
+          // Save scout results to database
           if (chatId) {
             for (const scout of scouts) {
               const evaluation = newEvaluations[scout.id];
               if (evaluation && scout.id) {
                 try {
-                  await supabase.from('chat_coaches').insert({
+                  await supabase.from('chat_scouts').insert({
                     chat_id: chatId,
-                    coach_id: scout.id,
-                    coach_prompt: `[SCOUT] ${scout.system_prompt}`, // Prefix to identify as scout
-                    coach_result: evaluation,
+                    scout_id: scout.id,
+                    scout_prompt: scout.system_prompt,
+                    scout_result: evaluation,
                   });
                 } catch (saveError) {
                   console.error('Error saving scout result:', saveError);
