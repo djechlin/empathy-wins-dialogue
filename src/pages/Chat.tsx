@@ -277,7 +277,6 @@ const Chat = ({
             mode: 'ai' as const,
             organizerFirstMessage: organizerPb.firstMessage,
             systemPrompt: organizerPb.system_prompt,
-            getTextInput,
             persona: 'organizer' as const,
             promptLocation: 'ui' as const,
           }
@@ -293,7 +292,6 @@ const Chat = ({
           organizerFirstMessage: null,
           organizerId: organizerId!,
           systemPrompt: organizerPb?.system_prompt || '',
-          getTextInput,
           persona: 'organizer' as const,
           promptLocation: 'database' as const,
         },
@@ -301,7 +299,6 @@ const Chat = ({
       ? {
           mode: 'ai' as const,
           systemPrompt: attendeePb.system_prompt,
-          getTextInput,
           organizerFirstMessage: null,
           persona: 'attendee' as const,
           promptLocation: 'ui' as const,

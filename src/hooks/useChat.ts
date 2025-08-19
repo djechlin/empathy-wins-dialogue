@@ -67,7 +67,6 @@ type BaseParticipantProps = {
   persona: 'organizer' | 'attendee';
   promptId?: string | null;
   systemPrompt: string;
-  getTextInput?: () => Promise<string>;
 };
 
 // Human organizer with first message from UI
@@ -75,6 +74,7 @@ type HumanOrganizerProps = BaseParticipantProps & {
   mode: 'human';
   persona: 'organizer';
   organizerFirstMessage: string;
+  getTextInput: () => Promise<string>;
 };
 
 // Human attendee (never has first message)
@@ -82,6 +82,7 @@ type HumanAttendeeProps = BaseParticipantProps & {
   mode: 'human';
   persona: 'attendee';
   organizerFirstMessage: null;
+  getTextInput: () => Promise<string>;
 };
 
 // AI organizer with prompt from UI
@@ -112,7 +113,8 @@ type AiAttendeeProps = BaseParticipantProps & {
 type ParticipantProps = HumanOrganizerProps | HumanAttendeeProps | AiOrganizerFromUiProps | AiOrganizerFromDatabaseProps | AiAttendeeProps;
 
 const useParticipant = (props: ParticipantProps) => {
-  const { mode: humanOrAi, systemPrompt, getTextInput } = props;
+  const { mode: humanOrAi, systemPrompt } = props;
+  const getTextInput = props.mode === 'human' ? props.getTextInput : undefined;
   const organizerFirstMessage = 'organizerFirstMessage' in props ? props.organizerFirstMessage : null;
   const promptLocation = props.mode === 'ai' && 'promptLocation' in props ? props.promptLocation : null;
   const organizerId = props.mode === 'ai' && 'organizerId' in props ? props.organizerId : null;
