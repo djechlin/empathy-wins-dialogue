@@ -187,7 +187,7 @@ const useParticipant = (props: ParticipantProps) => {
 export type Message = {
   id: string;
   senderIndex: 0 | 1;
-  timestamp;
+  timestamp: Date;
   sender: 'organizer' | 'attendee';
   content: string;
 };
@@ -346,10 +346,13 @@ export const useChat = (
                 setState((current) => ({ ...current, chatId: chatResult }));
               } else {
                 // ChatInitData with messages to rehydrate
+                console.log('Rehydrating chat with', chatResult.initialMessages.length, 'messages');
                 setState((current) => ({
                   ...current,
                   chatId: chatResult.chatId,
                   history: chatResult.initialMessages,
+                  queue: [], // Clear queue to prevent starting new conversation
+                  controlStatus: 'ended', // Mark as ended since conversation is complete
                 }));
               }
             } catch (error) {
