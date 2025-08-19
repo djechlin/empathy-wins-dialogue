@@ -129,7 +129,8 @@ const useParticipant = (props: ParticipantProps) => {
           console.log('first');
           setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
           return organizerFirstMessage;
-        } else if (promptLocation === 'database' && organizerId && humanOrAi === 'ai') {
+        } else if (promptLocation === 'database' && humanOrAi === 'ai') {
+          if (!organizerId) throw new Error('organizerId required for database prompts');
           console.log('heyyy');
           setIsBusy(true);
           try {
@@ -158,7 +159,8 @@ const useParticipant = (props: ParticipantProps) => {
         let responseText: string;
 
         if (humanOrAi === 'ai') {
-          if (promptLocation === 'database' && organizerId) {
+          if (promptLocation === 'database') {
+            if (!organizerId) throw new Error('organizerId required for database prompts');
             responseText = await getDemoAiResponse(organizerId, updatedMessages);
           } else {
             responseText = await getAiResponse(updatedMessages, systemPrompt);
@@ -204,10 +206,7 @@ type State = {
 let counter = 1;
 
 // Database operations for chat tracking
-const createChat = async (
-  organizerPrompt: string,
-  attendeePrompt: string,
-): Promise<string> => {
+const createChat = async (organizerPrompt: string, attendeePrompt: string): Promise<string> => {
   // Get current user
   const {
     data: { user },
@@ -308,10 +307,7 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
         if (!prev.chatId) {
           (async () => {
             try {
-              const chatId = await createChat(
-                pp[0].systemPrompt,
-                pp[1].systemPrompt,
-              );
+              const chatId = await createChat(pp[0].systemPrompt, pp[1].systemPrompt);
               setState((current) => ({ ...current, chatId }));
             } catch (error) {
               console.error('Failed to create chat:', error);
