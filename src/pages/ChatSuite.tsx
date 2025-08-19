@@ -210,7 +210,6 @@ const ChatSuite = ({
             coaches={coaches}
             scouts={scouts}
             defaultOpen={false}
-            reuseChatsWithSameAIs={reuseChatsWithSameAIs}
           />
         ))}
 
@@ -233,7 +232,6 @@ const ChatSuite = ({
         coaches={coaches}
         scouts={scouts}
         defaultOpen={false}
-        reuseChatsWithSameAIs={reuseChatsWithSameAIs}
       />
 
       {/* Active Coaches Cards - Moved to bottom */}

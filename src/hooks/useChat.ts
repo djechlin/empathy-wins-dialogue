@@ -256,7 +256,15 @@ const insertMessage = async (chatId: string, persona: 'organizer' | 'attendee', 
   }
 };
 
-export const useChat = (pp: [ParticipantProps, ParticipantProps], createChatFn?: (organizerPrompt: string, attendeePrompt: string, organizerFirstMessage?: string) => Promise<string>) => {
+type ChatInitData = {
+  chatId: string;
+  initialMessages: Message[];
+};
+
+export const useChat = (
+  pp: [ParticipantProps, ParticipantProps],
+  createChatFn?: (organizerPrompt: string, attendeePrompt: string, organizerFirstMessage?: string) => Promise<string | ChatInitData>,
+) => {
   const location = useLocation();
   const isDemoMode = location.pathname.includes('/demo');
   const [state, setState] = useState<State>({
@@ -327,11 +335,23 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps], createChatFn?:
         if (!prev.chatId) {
           (async () => {
             try {
-              const organizerFirstMessage = pp[0].mode === 'ai' && 'organizerFirstMessage' in pp[0] ? pp[0].organizerFirstMessage || '' : '';
-              const chatId = createChatFn 
+              const organizerFirstMessage =
+                pp[0].mode === 'ai' && 'organizerFirstMessage' in pp[0] ? pp[0].organizerFirstMessage || '' : '';
+              const chatResult = createChatFn
                 ? await createChatFn(pp[0].systemPrompt, pp[1].systemPrompt, organizerFirstMessage)
                 : await createChat(pp[0].systemPrompt, pp[1].systemPrompt);
-              setState((current) => ({ ...current, chatId }));
+
+              if (typeof chatResult === 'string') {
+                // Simple chat ID
+                setState((current) => ({ ...current, chatId: chatResult }));
+              } else {
+                // ChatInitData with messages to rehydrate
+                setState((current) => ({
+                  ...current,
+                  chatId: chatResult.chatId,
+                  history: chatResult.initialMessages,
+                }));
+              }
             } catch (error) {
               console.error('Failed to create chat:', error);
             }
@@ -343,7 +363,7 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps], createChatFn?:
       }
       return prev;
     });
-  }, [pp]);
+  }, [pp, createChatFn]);
   const pause = useCallback(() => {
     setState((prev) => {
       if (prev.controlStatus === 'started') {

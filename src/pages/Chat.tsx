@@ -55,6 +55,14 @@ interface ChatStatus {
   lastActivity?: Date;
 }
 
+interface ExistingChatMessage {
+  id: string;
+  chat_id: string;
+  persona: 'organizer' | 'attendee';
+  message: string;
+  created_at: string;
+}
+
 interface ChatProps {
   attendeePb: PromptBuilderData;
   organizerPb?: PromptBuilderData;
@@ -412,60 +420,60 @@ const Chat = ({
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [existingMessages, setExistingMessages] = useState<ExistingChatMessage[]>([]);
 
-  const findOrCreateChat = useCallback(async (organizerPrompt: string, attendeePrompt: string, organizerFirstMessage: string): Promise<string> => {
-    // Check if reuse is enabled and both participants are AI
-    if (reuseChatsWithSameAIs && organizerMode === 'ai' && attendeeMode === 'ai') {
-      try {
-        const { data: existingChats, error } = await supabase
-          .from('chats')
-          .select('id, created_at')
-          .eq('organizer_mode', 'ai')
-          .eq('attendee_mode', 'ai')
-          .eq('organizer_system_prompt', organizerPrompt)
-          .eq('organizer_first_message', organizerFirstMessage)
-          .eq('attendee_system_prompt', attendeePrompt)
-          .order('created_at', { ascending: false })
-          .limit(1);
+  const findAndLoadExistingChat = useCallback(async () => {
+    if (!reuseChatsWithSameAIs || organizerMode !== 'ai' || attendeeMode !== 'ai' || !organizerPb) {
+      return null;
+    }
 
-        if (error) {
-          console.error('Error finding existing chat:', error);
-        } else if (existingChats && existingChats.length > 0) {
-          console.log('Found existing chat, reusing:', existingChats[0].id);
-          return existingChats[0].id;
-        }
-      } catch (error) {
-        console.error('Error in findOrCreateChat:', error);
+    try {
+      const { data: existingChats, error } = await supabase
+        .from('chats')
+        .select('id, created_at')
+        .eq('organizer_mode', 'ai')
+        .eq('attendee_mode', 'ai')
+        .eq('organizer_system_prompt', organizerPb.system_prompt)
+        .eq('organizer_first_message', organizerPb.firstMessage || '')
+        .eq('attendee_system_prompt', attendeePb.system_prompt)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (error) {
+        console.error('Error finding existing chat:', error);
+        return null;
       }
+
+      if (existingChats && existingChats.length > 0) {
+        const chatId = existingChats[0].id;
+        console.log('Found existing chat, loading messages for:', chatId);
+
+        const { data: messages, error: messagesError } = await supabase
+          .from('chat_messages')
+          .select('*')
+          .eq('chat_id', chatId)
+          .order('created_at', { ascending: true });
+
+        if (messagesError) {
+          console.error('Error loading existing messages:', messagesError);
+          return null;
+        }
+
+        setExistingMessages((messages || []) as ExistingChatMessage[]);
+        return chatId;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error in findAndLoadExistingChat:', error);
+      return null;
     }
+  }, [reuseChatsWithSameAIs, organizerMode, attendeeMode, organizerPb, attendeePb]);
 
-    // Create new chat if no existing chat found or reuse disabled
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      throw new Error('User not authenticated');
-    }
-
-    const { data, error } = await supabase
-      .from('chats')
-      .insert({
-        user_id: user.id,
-        organizer_mode: 'ai',
-        organizer_prompt_id: null,
-        attendee_mode: 'ai',
-        attendee_prompt_id: null,
-        organizer_system_prompt: organizerPrompt,
-        organizer_first_message: organizerFirstMessage,
-        attendee_system_prompt: attendeePrompt,
-      })
-      .select('id')
-      .single();
-
-    if (error) {
-      throw error;
-    }
-
-    return data.id;
-  }, [reuseChatsWithSameAIs, organizerMode, attendeeMode]);
+  // Load existing messages on mount
+  useEffect(() => {
+    findAndLoadExistingChat();
+  }, [findAndLoadExistingChat]);
 
   const getTextInput = useCallback((): Promise<string> => {
     return new Promise((resolve) => {
@@ -519,7 +527,7 @@ const Chat = ({
           organizerFirstMessage: null,
           persona: 'attendee' as const,
         },
-  ], findOrCreateChat);
+  ]);
 
   const aiThinking = useMemo(() => chatEngine.thinking?.mode === 'ai', [chatEngine.thinking]);
 
@@ -663,6 +671,46 @@ const Chat = ({
               {/* Chat Messages Area */}
               <ScrollToBottom className="h-96 p-4 bg-gray-50" followButtonClassName="hidden">
                 <div className="space-y-4">
+                  {/* Existing messages from reused chat */}
+                  {existingMessages.map((message) => (
+                    <motion.div
+                      key={`existing-${message.id}`}
+                      initial={{ opacity: 0.7 }}
+                      animate={{ opacity: 0.8 }}
+                      className={`flex ${message.persona === 'organizer' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow-sm border ${
+                          message.persona === 'organizer'
+                            ? 'bg-purple-100 text-gray-700 border-purple-200'
+                            : 'bg-orange-100 text-gray-700 border-orange-200'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          {message.persona === 'organizer' ? (
+                            <User size={12} className="text-purple-600" />
+                          ) : (
+                            <Bot size={12} className="text-orange-600" />
+                          )}
+                          <span className="text-xs opacity-75">
+                            {message.persona === 'organizer' ? 'Organizer' : 'Attendee'} (previous)
+                          </span>
+                        </div>
+                        <p className="text-sm whitespace-pre-wrap">{message.message}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+
+                  {/* Separator if there are existing messages */}
+                  {existingMessages.length > 0 && (
+                    <div className="flex items-center gap-2 my-4">
+                      <div className="flex-1 border-t border-gray-300"></div>
+                      <span className="text-xs text-gray-500 px-2">Continuing conversation</span>
+                      <div className="flex-1 border-t border-gray-300"></div>
+                    </div>
+                  )}
+
+                  {/* Current chat messages */}
                   {chatEngine.history.map((message) => (
                     <motion.div
                       key={message.id}
