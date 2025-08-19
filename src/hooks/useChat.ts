@@ -288,15 +288,17 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
         sender: toPersona(nextReceiver),
         timestamp: new Date(),
       };
-      setState((prev) => ({ ...prev, history: [...prev.history, response], queue: [...prev.queue, response], thinking: null }));
-
-      if (state.chatId) {
-        try {
-          await insertMessage(state.chatId, response.sender, response.content);
-        } catch (error) {
-          console.error('Failed to insert message:', error);
+      setState((prev) => {
+        const newState = { ...prev, history: [...prev.history, response], queue: [...prev.queue, response], thinking: null };
+        
+        if (newState.chatId) {
+          insertMessage(newState.chatId, response.sender, response.content).catch(error => {
+            console.error('Failed to insert message:', error);
+          });
         }
-      }
+        
+        return newState;
+      });
     }, 0);
   }, [state.controlStatus, state.queue, participants, pp, isDemoMode, state.chatId]);
 
