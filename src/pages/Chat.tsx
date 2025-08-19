@@ -413,6 +413,60 @@ const Chat = ({
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const findOrCreateChat = useCallback(async (organizerPrompt: string, attendeePrompt: string, organizerFirstMessage: string): Promise<string> => {
+    // Check if reuse is enabled and both participants are AI
+    if (reuseChatsWithSameAIs && organizerMode === 'ai' && attendeeMode === 'ai') {
+      try {
+        const { data: existingChats, error } = await supabase
+          .from('chats')
+          .select('id, created_at')
+          .eq('organizer_mode', 'ai')
+          .eq('attendee_mode', 'ai')
+          .eq('organizer_system_prompt', organizerPrompt)
+          .eq('organizer_first_message', organizerFirstMessage)
+          .eq('attendee_system_prompt', attendeePrompt)
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (error) {
+          console.error('Error finding existing chat:', error);
+        } else if (existingChats && existingChats.length > 0) {
+          console.log('Found existing chat, reusing:', existingChats[0].id);
+          return existingChats[0].id;
+        }
+      } catch (error) {
+        console.error('Error in findOrCreateChat:', error);
+      }
+    }
+
+    // Create new chat if no existing chat found or reuse disabled
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      throw new Error('User not authenticated');
+    }
+
+    const { data, error } = await supabase
+      .from('chats')
+      .insert({
+        user_id: user.id,
+        organizer_mode: 'ai',
+        organizer_prompt_id: null,
+        attendee_mode: 'ai',
+        attendee_prompt_id: null,
+        organizer_system_prompt: organizerPrompt,
+        organizer_first_message: organizerFirstMessage,
+        attendee_system_prompt: attendeePrompt,
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data.id;
+  }, [reuseChatsWithSameAIs, organizerMode, attendeeMode]);
+
   const getTextInput = useCallback((): Promise<string> => {
     return new Promise((resolve) => {
       if (state.userSentQueue.length > 0) {
@@ -465,7 +519,7 @@ const Chat = ({
           organizerFirstMessage: null,
           persona: 'attendee' as const,
         },
-  ]);
+  ], findOrCreateChat);
 
   const aiThinking = useMemo(() => chatEngine.thinking?.mode === 'ai', [chatEngine.thinking]);
 

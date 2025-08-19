@@ -256,7 +256,7 @@ const insertMessage = async (chatId: string, persona: 'organizer' | 'attendee', 
   }
 };
 
-export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
+export const useChat = (pp: [ParticipantProps, ParticipantProps], createChatFn?: (organizerPrompt: string, attendeePrompt: string, organizerFirstMessage?: string) => Promise<string>) => {
   const location = useLocation();
   const isDemoMode = location.pathname.includes('/demo');
   const [state, setState] = useState<State>({
@@ -327,7 +327,10 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
         if (!prev.chatId) {
           (async () => {
             try {
-              const chatId = await createChat(pp[0].systemPrompt, pp[1].systemPrompt);
+              const organizerFirstMessage = pp[0].mode === 'ai' && 'organizerFirstMessage' in pp[0] ? pp[0].organizerFirstMessage || '' : '';
+              const chatId = createChatFn 
+                ? await createChatFn(pp[0].systemPrompt, pp[1].systemPrompt, organizerFirstMessage)
+                : await createChat(pp[0].systemPrompt, pp[1].systemPrompt);
               setState((current) => ({ ...current, chatId }));
             } catch (error) {
               console.error('Failed to create chat:', error);
