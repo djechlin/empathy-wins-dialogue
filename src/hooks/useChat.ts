@@ -305,7 +305,8 @@ export const useChat = (
             console.error('Failed to insert message:', error);
           });
 
-          if (newState.chatId) {
+          // Only end the chat if it hasn't been ended already
+          if (newState.chatId && prev.controlStatus !== 'ended') {
             (async () => {
               try {
                 await endChat(newState.chatId!);
@@ -382,7 +383,8 @@ export const useChat = (
 
   const end = useCallback(async () => {
     setState((prev) => {
-      if (prev.chatId) {
+      // Only end the chat if it hasn't been ended already
+      if (prev.chatId && prev.controlStatus !== 'ended') {
         (async () => {
           try {
             await endChat(prev.chatId!);
