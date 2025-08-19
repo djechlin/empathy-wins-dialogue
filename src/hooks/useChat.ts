@@ -164,7 +164,18 @@ const useParticipant = (props: ParticipantProps) => {
         setIsBusy(false);
       }
     },
-    [messages, isBusy, systemPrompt, humanOrAi, getTextInput, organizerFirstMessage, organizerId, promptLocation, props.mode, props.persona],
+    [
+      messages,
+      isBusy,
+      systemPrompt,
+      humanOrAi,
+      getTextInput,
+      organizerFirstMessage,
+      organizerId,
+      promptLocation,
+      props.mode,
+      props.persona,
+    ],
   );
 
   return {
@@ -263,6 +274,8 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
     if (state.controlStatus !== 'started' || state.queue.length === 0) {
       return;
     }
+
+    // Pause does not cancel the previous message, ergo unless an error that breaks the chat (which is possible), queue not empty
     const next = state.queue[0];
     const nextReceiver = next === null ? 0 : ((1 - next.senderIndex) as 0 | 1);
     setState((prev) => ({ ...prev, queue: prev.queue.slice(1), thinking: pp[nextReceiver], speaker: pp[nextReceiver] }));
