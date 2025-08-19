@@ -32,23 +32,39 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<Prompt
 
     let result;
     if (data.id) {
-      // Update existing record
-      const { data: updatedData, error } = await supabase
+      // Check if this prompt belongs to the current user
+      const { data: existingPrompt } = await supabase
         .from('prompts')
-        .update(promptBuilderRecord)
+        .select('user_id')
         .eq('id', data.id)
-        .eq('user_id', user.id) // Ensure user can only update their own records
-        .select();
+        .single();
 
-      if (error) {
-        throw new Error(error.message || 'Database update error occurred');
+      if (existingPrompt && existingPrompt.user_id === user.id) {
+        // Update existing record that belongs to current user
+        const { data: updatedData, error } = await supabase
+          .from('prompts')
+          .update(promptBuilderRecord)
+          .eq('id', data.id)
+          .select();
+
+        if (error) {
+          throw new Error(error.message || 'Database update error occurred');
+        }
+        
+        if (!updatedData || updatedData.length === 0) {
+          throw new Error('Prompt not found');
+        }
+        
+        result = updatedData[0];
+      } else {
+        // Create new record for current user (copying someone else's prompt)
+        const { data: insertedData, error } = await supabase.from('prompts').insert(promptBuilderRecord).select().single();
+
+        if (error) {
+          throw new Error(error.message || 'Database insert error occurred');
+        }
+        result = insertedData;
       }
-      
-      if (!updatedData || updatedData.length === 0) {
-        throw new Error('Prompt not found or you do not have permission to update it');
-      }
-      
-      result = updatedData[0];
     } else {
       // Create new record
       const { data: insertedData, error } = await supabase.from('prompts').insert(promptBuilderRecord).select().single();
