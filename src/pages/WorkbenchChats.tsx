@@ -58,6 +58,269 @@ interface ExpandedChatData {
   scoutEvals: ScoutEval[];
 }
 
+interface EvaluationCriterion {
+  shortCriterion: string;
+  score: number;
+  feedback: string;
+}
+
+interface EvaluationCriterionProps {
+  criterion: EvaluationCriterion;
+  index: number;
+}
+
+const EvaluationCriterionComponent = ({ criterion, index }: EvaluationCriterionProps) => {
+  const getScoreIndicator = (): string => {
+    return '●';
+  };
+
+  const getScoreIndicatorColor = (score: number): string => {
+    if (score >= 4) return 'text-green-500';
+    if (score === 3) return 'text-gray-400';
+    return 'text-red-500';
+  };
+
+  const getScoreBadgeColor = (score: number): string => {
+    if (score >= 4) return 'border border-green-500 text-green-700 bg-green-50';
+    if (score === 3) return 'border border-gray-500 text-gray-700 bg-gray-50';
+    return 'border border-red-500 text-red-700 bg-red-50';
+  };
+
+  return (
+    <div key={index} className="border-l-2 border-gray-200 pl-3 py-1">
+      <div className="flex items-center gap-2 mb-1">
+        <span className={`text-lg ${getScoreIndicatorColor(criterion.score)}`}>{getScoreIndicator()}</span>
+        <span className="font-medium text-gray-900 text-sm">{criterion.shortCriterion}</span>
+        <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getScoreBadgeColor(criterion.score)}`}>{criterion.score}/5</span>
+      </div>
+      <p className="text-sm text-gray-600 ml-6">{criterion.feedback}</p>
+    </div>
+  );
+};
+
+interface CoachEvaluationProps {
+  evaluation: CoachEval;
+}
+
+const CoachEvaluationComponent = ({ evaluation }: CoachEvaluationProps) => {
+  const parseEvaluationJSON = (text: string): EvaluationCriterion[] | null => {
+    try {
+      // Try to extract JSON from the text
+      // Look for JSON array pattern or ```json blocks
+      const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) || text.match(/(\[[\s\S]*\])/);
+
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[1]);
+        if (
+          Array.isArray(parsed) &&
+          parsed.every((item) => typeof item === 'object' && 'shortCriterion' in item && 'score' in item && 'feedback' in item)
+        ) {
+          return parsed;
+        }
+      }
+
+      // Not valid JSON, return null
+    } catch {
+      // Not valid JSON, return null
+    }
+    return null;
+  };
+
+  const parseScore = (text: string): { score: number | null; content: string } => {
+    const lines = text.split('\n');
+    const firstLine = lines[0]?.trim();
+    const scoreMatch = firstLine?.match(/^Score:\s*([0-5])$/);
+    if (scoreMatch) {
+      const score = parseInt(scoreMatch[1], 10);
+      const content = lines.slice(1).join('\n').trim();
+      return { score, content };
+    }
+    return { score: null, content: text };
+  };
+
+  const criteria = parseEvaluationJSON(evaluation.coach_result);
+  const fallbackParsed = !criteria ? parseScore(evaluation.coach_result) : { score: null, content: '' };
+
+  return (
+    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-3 h-3 bg-red-300 rounded-full" />
+        <span className="text-sm font-medium text-gray-900">Coach Evaluation</span>
+      </div>
+
+      <Collapsible>
+        <CollapsibleTrigger asChild>
+          <Button variant="ghost" className="w-full justify-start p-0 h-auto text-xs mb-2">
+            <div className="flex items-center gap-1">
+              <ChevronRight className="h-3 w-3" />
+              <span className="font-medium text-gray-600">Coach Prompt</span>
+            </div>
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="mb-3">
+          <div className="text-xs text-gray-700 bg-white p-2 rounded border ml-4">{evaluation.coach_prompt}</div>
+        </CollapsibleContent>
+      </Collapsible>
+
+      <div>
+        <h5 className="text-xs font-medium text-gray-600 mb-2">Evaluation:</h5>
+        {criteria ? (
+          <div className="space-y-2">
+            {criteria.map((criterion, idx) => (
+              <EvaluationCriterionComponent key={idx} criterion={criterion} index={idx} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-sm text-gray-600 bg-white p-2 rounded border whitespace-pre-wrap">
+            {fallbackParsed.content || evaluation.coach_result}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+interface ScoutEvaluationProps {
+  evaluation: ScoutEval;
+}
+
+interface ConversationMessageProps {
+  message: ChatMessage;
+  formatTime: (dateString: string) => string;
+}
+
+const ConversationMessageComponent = ({ message, formatTime }: ConversationMessageProps) => {
+  return (
+    <div className={`flex ${message.persona === 'organizer' ? 'justify-end' : 'justify-start'}`}>
+      <div
+        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow-sm ${
+          message.persona === 'organizer' ? 'bg-purple-200 text-gray-900' : 'bg-orange-200 text-gray-900'
+        }`}
+      >
+        <div className="flex items-center gap-2 mb-1">
+          {message.persona === 'organizer' ? <User size={12} /> : <Bot size={12} />}
+          <span className="text-xs opacity-75">{message.persona === 'organizer' ? 'Organizer' : 'Attendee'}</span>
+        </div>
+        <p className="text-sm whitespace-pre-wrap">{message.message}</p>
+        <p className="text-xs mt-1 text-gray-600">{formatTime(message.created_at)}</p>
+      </div>
+    </div>
+  );
+};
+
+interface ConversationSectionProps {
+  chatData: ExpandedChatData;
+  chatId: string;
+  messagesOpen: Record<string, boolean>;
+  setMessagesOpen: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  formatTime: (dateString: string) => string;
+}
+
+const ConversationSectionComponent = ({ chatData, chatId, messagesOpen, setMessagesOpen, formatTime }: ConversationSectionProps) => {
+  if (chatData.messages.length === 0) return null;
+
+  return (
+    <Collapsible
+      open={messagesOpen[chatId] || false}
+      onOpenChange={(open) => setMessagesOpen((prev) => ({ ...prev, [chatId]: open }))}
+    >
+      <CollapsibleTrigger asChild>
+        <Button variant="ghost" className="w-full justify-start p-0 h-auto font-semibold">
+          <div className="flex items-center gap-2">
+            {messagesOpen[chatId] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            Conversation ({chatData.messages.length} messages)
+          </div>
+        </Button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="mt-3">
+        <div className="space-y-4">
+          {chatData.messages.map((message) => (
+            <ConversationMessageComponent key={message.id} message={message} formatTime={formatTime} />
+          ))}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
+
+const ScoutEvaluationComponent = ({ evaluation }: ScoutEvaluationProps) => {
+  const parseEvaluationJSON = (text: string): EvaluationCriterion[] | null => {
+    try {
+      // Try to extract JSON from the text
+      // Look for JSON array pattern or ```json blocks
+      const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) || text.match(/(\[[\s\S]*\])/);
+
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[1]);
+        if (
+          Array.isArray(parsed) &&
+          parsed.every((item) => typeof item === 'object' && 'shortCriterion' in item && 'score' in item && 'feedback' in item)
+        ) {
+          return parsed;
+        }
+      }
+
+      // Not valid JSON, return null
+    } catch {
+      // Not valid JSON, return null
+    }
+    return null;
+  };
+
+  const parseScore = (text: string): { score: number | null; content: string } => {
+    const lines = text.split('\n');
+    const firstLine = lines[0]?.trim();
+    const scoreMatch = firstLine?.match(/^Score:\s*([0-5])$/);
+    if (scoreMatch) {
+      const score = parseInt(scoreMatch[1], 10);
+      const content = lines.slice(1).join('\n').trim();
+      return { score, content };
+    }
+    return { score: null, content: text };
+  };
+
+  const criteria = parseEvaluationJSON(evaluation.scout_result);
+  const fallbackParsed = !criteria ? parseScore(evaluation.scout_result) : { score: null, content: '' };
+
+  return (
+    <div className="bg-white border border-purple-200 rounded-lg p-4">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-3 h-3 bg-purple-300 rounded-full" />
+        <span className="text-sm font-medium text-gray-900">Scout Evaluation</span>
+      </div>
+
+      <Collapsible>
+        <CollapsibleTrigger asChild>
+          <Button variant="ghost" className="w-full justify-start p-0 h-auto text-xs mb-2">
+            <div className="flex items-center gap-1">
+              <ChevronRight className="h-3 w-3" />
+              <span className="font-medium text-gray-600">Scout Prompt</span>
+            </div>
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="mb-3">
+          <div className="text-xs text-gray-700 bg-gray-50 p-2 rounded border ml-4">{evaluation.scout_prompt}</div>
+        </CollapsibleContent>
+      </Collapsible>
+
+      <div>
+        <h5 className="text-xs font-medium text-gray-600 mb-2">Evaluation:</h5>
+        {criteria ? (
+          <div className="space-y-2">
+            {criteria.map((criterion, idx) => (
+              <EvaluationCriterionComponent key={idx} criterion={criterion} index={idx} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-sm text-gray-600 bg-white p-2 rounded border whitespace-pre-wrap">
+            {fallbackParsed.content || evaluation.scout_result}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const WorkbenchChats = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [userLoading, setUserLoading] = useState(true);
@@ -209,61 +472,6 @@ const WorkbenchChats = () => {
     }
 
     setExpandedChatIds(newExpandedIds);
-  };
-
-  interface EvaluationCriterion {
-    shortCriterion: string;
-    score: number;
-    feedback: string;
-  }
-
-  const parseEvaluationJSON = (text: string): EvaluationCriterion[] | null => {
-    try {
-      // Try to extract JSON from the text
-      // Look for JSON array pattern or ```json blocks
-      const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) || text.match(/(\[[\s\S]*\])/);
-
-      if (jsonMatch) {
-        const jsonStr = jsonMatch[1].trim();
-        const parsed = JSON.parse(jsonStr);
-        if (Array.isArray(parsed)) {
-          return parsed as EvaluationCriterion[];
-        }
-      }
-    } catch {
-      // Not valid JSON, return null
-    }
-    return null;
-  };
-
-  const parseScore = (text: string): { score: number | null; content: string } => {
-    const lines = text.split('\n');
-    const firstLine = lines[0]?.trim();
-
-    const scoreMatch = firstLine?.match(/^Score:\s*([0-5])$/);
-    if (scoreMatch) {
-      const score = parseInt(scoreMatch[1], 10);
-      const remainingContent = lines.slice(1).join('\n').trim();
-      return { score, content: remainingContent };
-    }
-
-    return { score: null, content: text };
-  };
-
-  const getScoreBadgeColor = (score: number): string => {
-    if (score >= 4) return 'border border-green-500 text-green-700 bg-green-50';
-    if (score === 3) return 'border border-gray-500 text-gray-700 bg-gray-50';
-    return 'border border-red-500 text-red-700 bg-red-50';
-  };
-
-  const getScoreIndicator = (): string => {
-    return '●';
-  };
-
-  const getScoreIndicatorColor = (score: number): string => {
-    if (score >= 4) return 'text-green-500';
-    if (score === 3) return 'text-gray-400';
-    return 'text-red-500';
   };
 
   const formatDateTime = (dateString: string) => {
@@ -488,48 +696,13 @@ const WorkbenchChats = () => {
                               )}
 
                               {/* Messages Section */}
-                              {chatData.messages.length > 0 && (
-                                <Collapsible
-                                  open={messagesOpen[chat.id] || false}
-                                  onOpenChange={(open) => setMessagesOpen((prev) => ({ ...prev, [chat.id]: open }))}
-                                >
-                                  <CollapsibleTrigger asChild>
-                                    <Button variant="ghost" className="w-full justify-start p-0 h-auto font-semibold">
-                                      <div className="flex items-center gap-2">
-                                        {messagesOpen[chat.id] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                                        Conversation ({chatData.messages.length} messages)
-                                      </div>
-                                    </Button>
-                                  </CollapsibleTrigger>
-                                  <CollapsibleContent className="mt-3">
-                                    <div className="space-y-4">
-                                      {chatData.messages.map((message) => (
-                                        <div
-                                          key={message.id}
-                                          className={`flex ${message.persona === 'organizer' ? 'justify-end' : 'justify-start'}`}
-                                        >
-                                          <div
-                                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow-sm ${
-                                              message.persona === 'organizer'
-                                                ? 'bg-purple-200 text-gray-900'
-                                                : 'bg-orange-200 text-gray-900'
-                                            }`}
-                                          >
-                                            <div className="flex items-center gap-2 mb-1">
-                                              {message.persona === 'organizer' ? <User size={12} /> : <Bot size={12} />}
-                                              <span className="text-xs opacity-75">
-                                                {message.persona === 'organizer' ? 'Organizer' : 'Attendee'}
-                                              </span>
-                                            </div>
-                                            <p className="text-sm whitespace-pre-wrap">{message.message}</p>
-                                            <p className="text-xs mt-1 text-gray-600">{formatTime(message.created_at)}</p>
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </CollapsibleContent>
-                                </Collapsible>
-                              )}
+                              <ConversationSectionComponent
+                                chatData={chatData}
+                                chatId={chat.id}
+                                messagesOpen={messagesOpen}
+                                setMessagesOpen={setMessagesOpen}
+                                formatTime={formatTime}
+                              />
 
                               {/* Evaluations Section */}
                               {(chatData.coachEvals.length > 0 || chatData.scoutEvals.length > 0) && (
@@ -553,130 +726,14 @@ const WorkbenchChats = () => {
                                   <CollapsibleContent className="mt-3">
                                     <div className="space-y-4">
                                       {/* Coach Evaluations */}
-                                      {chatData.coachEvals.map((evaluation) => {
-                                        const criteria = parseEvaluationJSON(evaluation.coach_result);
-                                        const fallbackParsed = !criteria
-                                          ? parseScore(evaluation.coach_result)
-                                          : { score: null, content: '' };
-
-                                        return (
-                                          <div key={evaluation.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                            <div className="flex items-center gap-2 mb-3">
-                                              <div className="w-3 h-3 bg-red-300 rounded-full" />
-                                              <span className="text-sm font-medium text-gray-900">Coach Evaluation</span>
-                                            </div>
-
-                                            <Collapsible>
-                                              <CollapsibleTrigger asChild>
-                                                <Button variant="ghost" className="w-full justify-start p-0 h-auto text-xs mb-2">
-                                                  <div className="flex items-center gap-1">
-                                                    <ChevronRight className="h-3 w-3" />
-                                                    <span className="font-medium text-gray-600">Coach Prompt</span>
-                                                  </div>
-                                                </Button>
-                                              </CollapsibleTrigger>
-                                              <CollapsibleContent className="mb-3">
-                                                <div className="text-xs text-gray-700 bg-white p-2 rounded border ml-4">
-                                                  {evaluation.coach_prompt}
-                                                </div>
-                                              </CollapsibleContent>
-                                            </Collapsible>
-
-                                            <div>
-                                              <h5 className="text-xs font-medium text-gray-600 mb-2">Evaluation:</h5>
-                                              {criteria ? (
-                                                <div className="space-y-2">
-                                                  {criteria.map((criterion, idx) => (
-                                                    <div key={idx} className="border-l-2 border-gray-200 pl-3 py-1">
-                                                      <div className="flex items-center gap-2 mb-1">
-                                                        <span className={`text-lg ${getScoreIndicatorColor(criterion.score)}`}>
-                                                          {getScoreIndicator()}
-                                                        </span>
-                                                        <span className="font-medium text-gray-900 text-sm">
-                                                          {criterion.shortCriterion}
-                                                        </span>
-                                                        <span
-                                                          className={`px-2 py-0.5 text-xs font-medium rounded-full ${getScoreBadgeColor(criterion.score)}`}
-                                                        >
-                                                          {criterion.score}/5
-                                                        </span>
-                                                      </div>
-                                                      <p className="text-sm text-gray-600 ml-6">{criterion.feedback}</p>
-                                                    </div>
-                                                  ))}
-                                                </div>
-                                              ) : (
-                                                <div className="text-sm text-gray-600 bg-white p-2 rounded border whitespace-pre-wrap">
-                                                  {fallbackParsed.content || evaluation.coach_result}
-                                                </div>
-                                              )}
-                                            </div>
-                                          </div>
-                                        );
-                                      })}
+                                      {chatData.coachEvals.map((evaluation) => (
+                                        <CoachEvaluationComponent key={evaluation.id} evaluation={evaluation} />
+                                      ))}
 
                                       {/* Scout Evaluations */}
-                                      {chatData.scoutEvals.map((evaluation) => {
-                                        const criteria = parseEvaluationJSON(evaluation.scout_result);
-                                        const fallbackParsed = !criteria
-                                          ? parseScore(evaluation.scout_result)
-                                          : { score: null, content: '' };
-
-                                        return (
-                                          <div key={evaluation.id} className="bg-white border border-purple-200 rounded-lg p-4">
-                                            <div className="flex items-center gap-2 mb-3">
-                                              <div className="w-3 h-3 bg-purple-300 rounded-full" />
-                                              <span className="text-sm font-medium text-gray-900">Scout Evaluation</span>
-                                            </div>
-
-                                            <Collapsible>
-                                              <CollapsibleTrigger asChild>
-                                                <Button variant="ghost" className="w-full justify-start p-0 h-auto text-xs mb-2">
-                                                  <div className="flex items-center gap-1">
-                                                    <ChevronRight className="h-3 w-3" />
-                                                    <span className="font-medium text-gray-600">Scout Prompt</span>
-                                                  </div>
-                                                </Button>
-                                              </CollapsibleTrigger>
-                                              <CollapsibleContent className="mb-3">
-                                                <div className="text-xs text-gray-700 bg-gray-50 p-2 rounded border ml-4">
-                                                  {evaluation.scout_prompt}
-                                                </div>
-                                              </CollapsibleContent>
-                                            </Collapsible>
-
-                                            <div>
-                                              <h5 className="text-xs font-medium text-gray-600 mb-2">Evaluation:</h5>
-                                              {criteria ? (
-                                                <div className="space-y-2">
-                                                  {criteria.map((criterion, idx) => (
-                                                    <div key={idx} className="border-l-2 border-gray-200 pl-3 py-1">
-                                                      <div className="flex items-center gap-2 mb-1">
-                                                        <span className={`text-lg ${getScoreIndicatorColor(criterion.score)}`}>
-                                                          {getScoreIndicator()}
-                                                        </span>
-                                                        <span className="font-medium text-gray-900 text-sm">
-                                                          {criterion.shortCriterion}
-                                                        </span>
-                                                        <span
-                                                          className={`px-2 py-0.5 text-xs font-medium rounded-full ${getScoreBadgeColor(criterion.score)}`}
-                                                        >
-                                                          {criterion.score}/5
-                                                        </span>
-                                                      </div>
-                                                      <p className="text-sm text-gray-600 ml-6">{criterion.feedback}</p>
-                                                    </div>
-                                                  ))}
-                                                </div>
-                                              ) : (
-                                                <div className="text-sm text-gray-600 bg-white p-2 rounded border whitespace-pre-wrap">
-                                                  {fallbackParsed.content || evaluation.scout_result}
-                                                </div>
-                                              )}
-                                            </div>
-                                          </div>
-                                        );
-                                      })}
+                                      {chatData.scoutEvals.map((evaluation) => (
+                                        <ScoutEvaluationComponent key={evaluation.id} evaluation={evaluation} />
+                                      ))}
                                     </div>
                                   </CollapsibleContent>
                                 </Collapsible>
