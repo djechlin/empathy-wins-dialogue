@@ -62,14 +62,12 @@ const getDemoAiResponse = async (organizerId: string, messages: ParticipantMessa
   return responseText;
 };
 
-// Base type for all participants
 type BaseParticipantProps = {
   persona: 'organizer' | 'attendee';
   promptId?: string | null;
   systemPrompt: string;
 };
 
-// Human organizer with first message from UI
 type HumanOrganizerProps = BaseParticipantProps & {
   mode: 'human';
   persona: 'organizer';
@@ -77,7 +75,6 @@ type HumanOrganizerProps = BaseParticipantProps & {
   getTextInput: () => Promise<string>;
 };
 
-// Human attendee (never has first message)
 type HumanAttendeeProps = BaseParticipantProps & {
   mode: 'human';
   persona: 'attendee';
@@ -85,7 +82,6 @@ type HumanAttendeeProps = BaseParticipantProps & {
   getTextInput: () => Promise<string>;
 };
 
-// AI organizer with prompt from UI
 type AiOrganizerFromUiProps = BaseParticipantProps & {
   mode: 'ai';
   persona: 'organizer';
@@ -93,7 +89,6 @@ type AiOrganizerFromUiProps = BaseParticipantProps & {
   promptLocation: 'ui';
 };
 
-// AI organizer with prompt from database
 type AiOrganizerFromDatabaseProps = BaseParticipantProps & {
   mode: 'ai';
   persona: 'organizer';
@@ -102,7 +97,6 @@ type AiOrganizerFromDatabaseProps = BaseParticipantProps & {
   organizerId: string;
 };
 
-// AI attendee (always from UI)
 type AiAttendeeProps = BaseParticipantProps & {
   mode: 'ai';
   persona: 'attendee';
@@ -123,14 +117,11 @@ const useParticipant = (props: ParticipantProps) => {
 
   const chat = useCallback(
     async (msg: string | null): Promise<string> => {
-      console.log('use participant callback', msg, messages.length);
       if (msg === null && messages.length === 0) {
         if (organizerFirstMessage) {
-          console.log('first');
           setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
           return organizerFirstMessage;
         } else if (promptLocation === 'database' && humanOrAi === 'ai' && organizerId) {
-          console.log('heyyy');
           setIsBusy(true);
           try {
             const responseText = await getDemoAiResponse(organizerId, []);
@@ -203,9 +194,7 @@ type State = {
 
 let counter = 1;
 
-// Database operations for chat tracking
 const createChat = async (organizerPrompt: string, attendeePrompt: string): Promise<string> => {
-  // Get current user
   const {
     data: { user },
     error: userError,
@@ -276,7 +265,6 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
     }
     const next = state.queue[0];
     const nextReceiver = next === null ? 0 : ((1 - next.senderIndex) as 0 | 1);
-    // dequeue step
     setState((prev) => ({ ...prev, queue: prev.queue.slice(1), thinking: pp[nextReceiver], speaker: pp[nextReceiver] }));
     setTimeout(async () => {
       const content: string = await participants[nextReceiver].chat(next?.content || null);
@@ -330,7 +318,6 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
 
   const end = useCallback(async () => {
     setState((prev) => {
-      // End chat in database
       if (prev.chatId) {
         (async () => {
           try {
