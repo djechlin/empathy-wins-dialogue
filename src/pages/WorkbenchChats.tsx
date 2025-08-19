@@ -220,10 +220,7 @@ const ConversationSectionComponent = ({ chatData, chatId, messagesOpen, setMessa
   if (chatData.messages.length === 0) return null;
 
   return (
-    <Collapsible
-      open={messagesOpen[chatId] || false}
-      onOpenChange={(open) => setMessagesOpen((prev) => ({ ...prev, [chatId]: open }))}
-    >
+    <Collapsible open={messagesOpen[chatId] || false} onOpenChange={(open) => setMessagesOpen((prev) => ({ ...prev, [chatId]: open }))}>
       <CollapsibleTrigger asChild>
         <Button variant="ghost" className="w-full justify-start p-0 h-auto font-semibold">
           <div className="flex items-center gap-2">
@@ -529,8 +526,8 @@ const WorkbenchChats = () => {
         <Navbar pageTitle="Chat History" />
         <div className="p-6">
           <div className="max-w-4xl mx-auto">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 rounded mb-4"></div>
+            <div className="animate-pulse space-y-4">
+              <div className="h-8 bg-gray-200 rounded"></div>
               <div className="h-64 bg-gray-200 rounded"></div>
             </div>
           </div>
