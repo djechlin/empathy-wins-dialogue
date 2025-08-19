@@ -585,6 +585,13 @@ const Chat = ({
     }
   }, [chatEngine.history.length, onStatusUpdate]);
 
+  // Notify parent when chat ends internally (e.g., due to {{DONE}})
+  useEffect(() => {
+    if (chatEngine.controlStatus === 'ended') {
+      onStatusUpdate({ messageCount: chatEngine.history.length, lastActivity: new Date() });
+    }
+  }, [chatEngine.controlStatus, chatEngine.history.length, onStatusUpdate]);
+
   const sendHumanMessage = useCallback(() => {
     if (!state.userTextInput.trim() || chatEngine.thinking?.mode !== 'human') return;
 
@@ -603,13 +610,16 @@ const Chat = ({
 
   const lastMessage = chatEngine.history[chatEngine.history.length - 1];
   const chatStatus = useMemo(() => {
+    // Check if chat engine itself has ended (e.g., due to {{DONE}})
+    if (chatEngine.controlStatus === 'ended') return 'ended';
+    // Otherwise, use parent control status
     if (controlStatus === 'ready') return 'ready';
     if (controlStatus === 'paused') return 'paused';
     if (controlStatus === 'ended') return 'ended';
     if (aiThinking) return 'ai-thinking';
     if (chatEngine.speaker.mode === 'human') return 'waiting-human';
     return 'active';
-  }, [controlStatus, aiThinking, chatEngine.speaker]);
+  }, [controlStatus, aiThinking, chatEngine.speaker, chatEngine.controlStatus]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

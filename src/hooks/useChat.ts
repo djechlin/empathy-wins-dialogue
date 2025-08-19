@@ -297,8 +297,8 @@ export const useChat = (
         timestamp: new Date(),
       };
       setState((prev) => {
-        // Check if attendee sent {{DONE}} to end the chat - don't re-queue
-        if (response.sender === 'attendee' && response.content.includes('{{DONE}}')) {
+        // Check if attendee sent DONE (with or without braces) to end the chat - don't re-queue
+        if (response.sender === 'attendee' && (response.content.includes('{{DONE}}') || response.content.trim() === 'DONE')) {
           const newState = { ...prev, history: [...prev.history, response], thinking: null, controlStatus: 'ended' as ControlStatus };
 
           insertMessage(newState.chatId, response.sender, response.content).catch((error) => {
@@ -395,5 +395,5 @@ export const useChat = (
     });
   }, []);
 
-  return { start, pause, end, history: state.history, thinking: state.thinking, speaker: state.speaker };
+  return { start, pause, end, history: state.history, thinking: state.thinking, speaker: state.speaker, controlStatus: state.controlStatus };
 };
