@@ -16,6 +16,9 @@ interface ChatData {
   organizer_system_prompt: string | null;
   organizer_first_message: string | null;
   attendee_system_prompt: string | null;
+  organizer_prompt?: { name: string };
+  attendee_prompt?: { name: string };
+  chat_messages?: { count: number }[];
   organizer_name?: string;
   attendee_name?: string;
   created_at: string;
@@ -95,7 +98,7 @@ const WorkbenchChats = () => {
       try {
         setLoading(true);
 
-        // Fetch chats for the current user
+        // Fetch chats for the current user with message counts
         const { data: chatsData, error: chatsError } = await supabase
           .from('chats')
           .select(
@@ -111,7 +114,8 @@ const WorkbenchChats = () => {
             created_at,
             ended_at,
             organizer_prompt:prompts!organizer_prompt_id(name),
-            attendee_prompt:prompts!attendee_prompt_id(name)
+            attendee_prompt:prompts!attendee_prompt_id(name),
+            chat_messages(count)
           `,
           )
           .eq('user_id', user.id)
@@ -119,22 +123,15 @@ const WorkbenchChats = () => {
 
         if (chatsError) throw chatsError;
 
-        // Get message counts for each chat
-        const chatsWithCounts = await Promise.all(
-          (chatsData || []).map(async (chat) => {
-            const { count } = await supabase.from('chat_messages').select('*', { count: 'exact', head: true }).eq('chat_id', chat.id);
+        // Transform data and filter out chats with 0 messages
+        const chatsWithCounts = (chatsData || []).map((chat) => ({
+          ...chat,
+          message_count: chat.chat_messages?.[0]?.count || 0,
+          organizer_name: chat.organizer_prompt?.name,
+          attendee_name: chat.attendee_prompt?.name,
+        }));
 
-            return {
-              ...chat,
-              message_count: count || 0,
-              organizer_name: chat.organizer_prompt?.name,
-              attendee_name: chat.attendee_prompt?.name,
-            };
-          }),
-        );
-
-        // Filter out chats with 0 messages
-        const chatsWithMessages = chatsWithCounts.filter((chat) => chat.message_count && chat.message_count > 0);
+        const chatsWithMessages = chatsWithCounts.filter((chat) => chat.message_count > 0);
         setChats(chatsWithMessages);
       } catch (err) {
         console.error('Error fetching chats:', err);
