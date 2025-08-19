@@ -33,28 +33,20 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<Prompt
     let result;
     if (data.id) {
       // Check if this prompt belongs to the current user
-      const { data: existingPrompt } = await supabase
-        .from('prompts')
-        .select('user_id')
-        .eq('id', data.id)
-        .single();
+      const { data: existingPrompt } = await supabase.from('prompts').select('user_id').eq('id', data.id).single();
 
       if (existingPrompt && existingPrompt.user_id === user.id) {
         // Update existing record that belongs to current user
-        const { data: updatedData, error } = await supabase
-          .from('prompts')
-          .update(promptBuilderRecord)
-          .eq('id', data.id)
-          .select();
+        const { data: updatedData, error } = await supabase.from('prompts').update(promptBuilderRecord).eq('id', data.id).select();
 
         if (error) {
           throw new Error(error.message || 'Database update error occurred');
         }
-        
+
         if (!updatedData || updatedData.length === 0) {
           throw new Error('Prompt not found');
         }
-        
+
         result = updatedData[0];
       } else {
         // Create new record for current user (copying someone else's prompt)

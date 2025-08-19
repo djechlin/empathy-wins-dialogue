@@ -522,7 +522,9 @@ const PromptBuilder = memo(
                     </div>
                   )}
                   <div>
-                    <Label className="text-sm mb-2 block text-gray-600">System Prompt</Label>
+                    <Label className="text-sm mb-2 block text-gray-600">
+                      System Prompt{persona === 'attendee' && ' (attendee can use {{DONE}} to end chat)'}
+                    </Label>
                     <Textarea
                       value={state.systemPrompt}
                       onChange={(e) => dispatch({ type: 'SET_SYSTEM_PROMPT', payload: e.target.value })}
