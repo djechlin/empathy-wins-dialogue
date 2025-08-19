@@ -115,7 +115,9 @@ const WorkbenchChats = () => {
           }),
         );
 
-        setChats(chatsWithCounts);
+        // Filter out chats with 0 messages
+        const chatsWithMessages = chatsWithCounts.filter(chat => chat.message_count && chat.message_count > 0);
+        setChats(chatsWithMessages);
       } catch (err) {
         console.error('Error fetching chats:', err);
         setError(err instanceof Error ? err.message : 'Failed to load chats');

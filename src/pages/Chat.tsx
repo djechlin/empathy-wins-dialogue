@@ -120,7 +120,7 @@ const CoachResults = ({
       // Try to extract JSON from the text
       // Look for JSON array pattern or ```json blocks
       const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) || text.match(/(\[[\s\S]*\])/);
-      
+
       if (jsonMatch) {
         const jsonStr = jsonMatch[1].trim();
         const parsed = JSON.parse(jsonStr);
@@ -327,7 +327,7 @@ const ScoutResults = ({
       // Try to extract JSON from the text
       // Look for JSON array pattern or ```json blocks
       const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) || text.match(/(\[[\s\S]*\])/);
-      
+
       if (jsonMatch) {
         const jsonStr = jsonMatch[1].trim();
         const parsed = JSON.parse(jsonStr);
