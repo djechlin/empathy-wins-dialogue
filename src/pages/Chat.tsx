@@ -563,7 +563,8 @@ const Chat = ({
             persona: 'attendee' as const,
           },
     ],
-    findOrCreateChat,
+    // Only use findOrCreateChat for AI-only conversations
+    organizerMode === 'ai' && attendeeMode === 'ai' ? findOrCreateChat : undefined,
   );
 
   const aiThinking = useMemo(() => chatEngine.thinking?.mode === 'ai', [chatEngine.thinking]);
