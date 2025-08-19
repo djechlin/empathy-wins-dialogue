@@ -118,9 +118,9 @@ const useParticipant = (props: ParticipantProps) => {
   const chat = useCallback(
     async (msg: string | null): Promise<string> => {
       if (msg === null && messages.length === 0) {
-        if (organizerFirstMessage) {
-          setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
-          return organizerFirstMessage;
+        if (props.persona === 'organizer' && (props.mode === 'human' || (props.mode === 'ai' && promptLocation === 'ui'))) {
+          setMessages([{ role: 'assistant' as const, content: organizerFirstMessage! }]);
+          return organizerFirstMessage!;
         } else if (promptLocation === 'database' && humanOrAi === 'ai') {
           setIsBusy(true);
           try {
@@ -164,7 +164,7 @@ const useParticipant = (props: ParticipantProps) => {
         setIsBusy(false);
       }
     },
-    [messages, isBusy, systemPrompt, humanOrAi, getTextInput, organizerFirstMessage, organizerId, promptLocation],
+    [messages, isBusy, systemPrompt, humanOrAi, getTextInput, organizerFirstMessage, organizerId, promptLocation, props.mode, props.persona],
   );
 
   return {
