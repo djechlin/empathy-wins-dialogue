@@ -107,6 +107,7 @@ const CoachResults = ({
   const [evaluations, setEvaluations] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasEvaluated, setHasEvaluated] = useState(false);
 
   const parseScore = (text: string): { score: number | null; content: string } => {
     const lines = text.split('\n');
@@ -130,8 +131,9 @@ const CoachResults = ({
   };
 
   useEffect(() => {
-    if (controlStatus === 'ended' && coaches.length > 0 && messages.length > 0) {
+    if (controlStatus === 'ended' && coaches.length > 0 && messages.length > 0 && !hasEvaluated) {
       const getCoachEvaluations = async () => {
+        setHasEvaluated(true); // Mark as evaluated immediately to prevent re-runs
         setLoading(true);
         setError(null);
 
@@ -184,7 +186,7 @@ const CoachResults = ({
 
       getCoachEvaluations();
     }
-  }, [controlStatus, coaches, messages]);
+  }, [controlStatus, coaches, messages, hasEvaluated]);
 
   if (coaches.length === 0 || controlStatus === 'ready') {
     return null;
@@ -259,6 +261,25 @@ const ScoutResults = ({
   const [evaluations, setEvaluations] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasEvaluated, setHasEvaluated] = useState(false);
+
+  interface ScoutCriterion {
+    shortCriterion: string;
+    score: number;
+    feedback: string;
+  }
+
+  const parseScoutEvaluation = (text: string): ScoutCriterion[] | null => {
+    try {
+      const parsed = JSON.parse(text);
+      if (Array.isArray(parsed)) {
+        return parsed as ScoutCriterion[];
+      }
+    } catch {
+      // Not JSON, return null
+    }
+    return null;
+  };
 
   const parseScore = (text: string): { score: number | null; content: string } => {
     const lines = text.split('\n');
@@ -274,16 +295,28 @@ const ScoutResults = ({
     return { score: null, content: text };
   };
 
-  const getScoreBadgeColor = (score: number | null): string => {
-    if (score === null) return '';
+  const getScoreBadgeColor = (score: number): string => {
     if (score >= 4) return 'border border-green-500 text-green-700 bg-green-50';
     if (score === 3) return 'border border-gray-500 text-gray-700 bg-gray-50';
     return 'border border-red-500 text-red-700 bg-red-50';
   };
 
+  const getScoreIndicator = (score: number): string => {
+    if (score >= 4) return '●';
+    if (score === 3) return '●';
+    return '●';
+  };
+
+  const getScoreIndicatorColor = (score: number): string => {
+    if (score >= 4) return 'text-green-500';
+    if (score === 3) return 'text-gray-400';
+    return 'text-red-500';
+  };
+
   useEffect(() => {
-    if (controlStatus === 'ended' && scouts.length > 0 && messages.length > 0) {
+    if (controlStatus === 'ended' && scouts.length > 0 && messages.length > 0 && !hasEvaluated) {
       const getScoutEvaluations = async () => {
+        setHasEvaluated(true); // Mark as evaluated immediately to prevent re-runs
         setLoading(true);
         setError(null);
 
@@ -294,10 +327,11 @@ const ScoutResults = ({
         try {
           for (const scout of scouts) {
             // Combine the static system prompt with the scout's criteria
-            const scoutSystemPrompt = "The attendee attended a Bernie Sanders' \"Fighting the Oligarchy\" rally and was re-contacted by an organizer. You will be given a transcript of that conversation as well as a list of user criteria. return a list where you rate the attendee according to each of the user criteria 1-5 as well as a brief, single sentence explaining your recommendation. you can use 3 for no signal and simply state 'No signal'. add a blank line and an overall 1-5 recommendation based on your findings, as well as a single one sentence summary.";
-            
+            const scoutSystemPrompt =
+              "The attendee attended a Bernie Sanders' \"Fighting the Oligarchy\" rally and was re-contacted by an organizer. You will be given a transcript of that conversation as well as a list of user criteria. return a list where you rate the attendee according to each of the user criteria 1-5 as well as a brief, single sentence explaining your recommendation. you can use 3 for no signal and simply state 'No signal'. add a blank line and an overall 1-5 recommendation based on your findings, as well as a single one sentence summary.";
+
             const scoutPromptWithCriteria = `${scoutSystemPrompt}\n\nUser Criteria:\n${scout.system_prompt}`;
-            
+
             const request: WorkbenchRequest = {
               coach: {
                 transcript,
@@ -341,7 +375,7 @@ const ScoutResults = ({
 
       getScoutEvaluations();
     }
-  }, [controlStatus, scouts, messages]);
+  }, [controlStatus, scouts, messages, hasEvaluated]);
 
   if (scouts.length === 0 || controlStatus === 'ready') {
     return null;
@@ -376,22 +410,39 @@ const ScoutResults = ({
       <div className="space-y-3">
         {scouts.map((scout) => {
           const evaluation = evaluations[scout.id];
-          const { score, content } = evaluation ? parseScore(evaluation) : { score: null, content: '' };
+          const criteria = evaluation ? parseScoutEvaluation(evaluation) : null;
+          const fallbackParsed = evaluation && !criteria ? parseScore(evaluation) : { score: null, content: '' };
 
           return (
             <div key={scout.id} className="bg-white border border-purple-200 rounded-lg p-3">
               <div className="flex items-start justify-between mb-2">
                 <span className="text-sm font-medium text-gray-900">Scout Evaluation</span>
-                {score !== null && (
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${getScoreBadgeColor(score)}`}>Score: {score}/5</span>
-                )}
               </div>
               <h5 className="text-xs font-medium text-gray-600 mb-1">Scout Prompt:</h5>
               <p className="text-xs text-gray-500 mb-2 bg-gray-50 p-2 rounded border-l-2 border-purple-300">
                 {scout.system_prompt || 'No prompt available'}
               </p>
               <div className="text-sm text-gray-700">
-                {content ? <div className="whitespace-pre-wrap">{content}</div> : <span className="italic">No evaluation available</span>}
+                {criteria ? (
+                  <div className="space-y-2">
+                    {criteria.map((criterion, idx) => (
+                      <div key={idx} className="border-l-2 border-gray-200 pl-3 py-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-lg ${getScoreIndicatorColor(criterion.score)}`}>{getScoreIndicator(criterion.score)}</span>
+                          <span className="font-medium text-gray-900">{criterion.shortCriterion}</span>
+                          <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getScoreBadgeColor(criterion.score)}`}>
+                            {criterion.score}/5
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 ml-6">{criterion.feedback}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : fallbackParsed.content ? (
+                  <div className="whitespace-pre-wrap">{fallbackParsed.content}</div>
+                ) : (
+                  <span className="italic">No evaluation available</span>
+                )}
               </div>
             </div>
           );
@@ -456,7 +507,7 @@ const Chat = ({
               .select('*')
               .eq('chat_id', chatId)
               .order('created_at', { ascending: true });
-            
+
             console.log('Loaded', messages?.length, 'messages from database for chat', chatId);
 
             if (messagesError) {
@@ -474,7 +525,10 @@ const Chat = ({
             }));
 
             console.log('Rehydrating chat with', initialMessages.length, 'messages');
-            console.log('Message IDs:', initialMessages.map(m => m.id));
+            console.log(
+              'Message IDs:',
+              initialMessages.map((m) => m.id),
+            );
             return { chatId, initialMessages };
           }
         } catch (error) {
