@@ -210,6 +210,7 @@ const ChatSuite = ({
             coaches={coaches}
             scouts={scouts}
             defaultOpen={false}
+            reuseChatsWithSameAIs={reuseChatsWithSameAIs}
           />
         ))}
 
