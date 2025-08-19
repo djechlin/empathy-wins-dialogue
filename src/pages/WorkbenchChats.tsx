@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Badge } from '@/ui/badge';
 import { Button } from '@/ui/button';
-import { MessageCircle, User, Bot, LogIn, Lock, ChevronDown, ChevronRight, Zap } from 'lucide-react';
+import { MessageCircle, User, Bot, LogIn, Lock, ChevronDown, ChevronRight, Zap, Megaphone } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import Navbar from '@/components/layout/Navbar';
 import { User as SupabaseUser } from '@supabase/supabase-js';
@@ -16,6 +16,8 @@ interface ChatData {
   organizer_system_prompt: string | null;
   organizer_first_message: string | null;
   attendee_system_prompt: string | null;
+  organizer_name?: string;
+  attendee_name?: string;
   created_at: string;
   ended_at: string | null;
   message_count?: number;
@@ -104,8 +106,12 @@ const WorkbenchChats = () => {
             organizer_system_prompt,
             organizer_first_message,
             attendee_system_prompt,
+            organizer_prompt_id,
+            attendee_prompt_id,
             created_at,
-            ended_at
+            ended_at,
+            organizer_prompt:prompts!organizer_prompt_id(name),
+            attendee_prompt:prompts!attendee_prompt_id(name)
           `,
           )
           .eq('user_id', user.id)
@@ -121,6 +127,8 @@ const WorkbenchChats = () => {
             return {
               ...chat,
               message_count: count || 0,
+              organizer_name: chat.organizer_prompt?.name,
+              attendee_name: chat.attendee_prompt?.name,
             };
           }),
         );
@@ -400,12 +408,12 @@ const WorkbenchChats = () => {
                               <div className="flex-1">
                                 <div className="flex items-center gap-2">
                                   <Badge variant="outline" className="flex items-center gap-1">
-                                    {chat.organizer_mode === 'ai' ? <Bot className="h-3 w-3" /> : <User className="h-3 w-3" />}
-                                    Organizer: {chat.organizer_mode}
+                                    <Megaphone className="h-3 w-3" />
+                                    {chat.organizer_name || 'Human'}
                                   </Badge>
                                   <Badge variant="outline" className="flex items-center gap-1">
-                                    {chat.attendee_mode === 'ai' ? <Bot className="h-3 w-3" /> : <User className="h-3 w-3" />}
-                                    Attendee: {chat.attendee_mode}
+                                    <User className="h-3 w-3" />
+                                    {chat.attendee_name || 'Human'}
                                   </Badge>
                                   <Badge variant={chat.ended_at ? 'default' : 'secondary'}>
                                     {chat.ended_at ? 'Completed' : 'In Progress'}
