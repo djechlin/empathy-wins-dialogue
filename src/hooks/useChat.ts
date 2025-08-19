@@ -205,13 +205,8 @@ let counter = 1;
 
 // Database operations for chat tracking
 const createChat = async (
-  organizerMode: 'ai' | 'human',
-  attendeeMode: 'ai' | 'human',
-  organizerPromptId: string | null,
-  attendeePromptId: string | null,
-  organizerSystemPrompt: string,
-  organizerFirstMessage: string,
-  attendeeSystemPrompt: string,
+  organizerPrompt: string,
+  attendeePrompt: string,
 ): Promise<string> => {
   // Get current user
   const {
@@ -226,13 +221,13 @@ const createChat = async (
     .from('chats')
     .insert({
       user_id: user.id,
-      organizer_mode: organizerMode,
-      organizer_prompt_id: organizerPromptId,
-      attendee_mode: attendeeMode,
-      attendee_prompt_id: attendeePromptId,
-      organizer_system_prompt: organizerSystemPrompt,
-      organizer_first_message: organizerFirstMessage,
-      attendee_system_prompt: attendeeSystemPrompt,
+      organizer_mode: 'ai',
+      organizer_prompt_id: null,
+      attendee_mode: 'ai',
+      attendee_prompt_id: null,
+      organizer_system_prompt: organizerPrompt,
+      organizer_first_message: '',
+      attendee_system_prompt: attendeePrompt,
     })
     .select('id')
     .single();
@@ -314,12 +309,7 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
           (async () => {
             try {
               const chatId = await createChat(
-                pp[0].mode,
-                pp[1].mode,
-                pp[0].mode === 'ai' && 'organizerId' in pp[0] ? pp[0].organizerId : null,
-                pp[1].mode === 'ai' && 'organizerId' in pp[1] ? pp[1].organizerId : null,
                 pp[0].systemPrompt,
-                'organizerFirstMessage' in pp[0] && pp[0].organizerFirstMessage ? pp[0].organizerFirstMessage : '',
                 pp[1].systemPrompt,
               );
               setState((current) => ({ ...current, chatId }));
