@@ -379,7 +379,7 @@ const WorkbenchChats = () => {
                               {/* System Prompts Section */}
                               {(chat.organizer_system_prompt || chat.attendee_system_prompt || chat.organizer_first_message) && (
                                 <Collapsible
-                                  open={systemPromptsOpen[chat.id]}
+                                  open={systemPromptsOpen[chat.id] || false}
                                   onOpenChange={(open) => setSystemPromptsOpen((prev) => ({ ...prev, [chat.id]: open }))}
                                 >
                                   <CollapsibleTrigger asChild>
@@ -426,7 +426,7 @@ const WorkbenchChats = () => {
                               {/* Messages Section */}
                               {chatData.messages.length > 0 && (
                                 <Collapsible
-                                  open={messagesOpen[chat.id]}
+                                  open={messagesOpen[chat.id] || false}
                                   onOpenChange={(open) => setMessagesOpen((prev) => ({ ...prev, [chat.id]: open }))}
                                 >
                                   <CollapsibleTrigger asChild>
@@ -470,7 +470,7 @@ const WorkbenchChats = () => {
                               {/* Coach Evaluations Section */}
                               {chatData.coachEvals.length > 0 && (
                                 <Collapsible
-                                  open={coachEvalsOpen[chat.id]}
+                                  open={coachEvalsOpen[chat.id] || false}
                                   onOpenChange={(open) => setCoachEvalsOpen((prev) => ({ ...prev, [chat.id]: open }))}
                                 >
                                   <CollapsibleTrigger asChild>
