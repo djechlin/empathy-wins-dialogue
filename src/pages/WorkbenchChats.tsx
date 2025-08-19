@@ -223,7 +223,7 @@ const WorkbenchChats = () => {
   if (!user && !userLoading) {
     return (
       <div className="min-h-screen bg-gray-50 relative">
-        <Navbar pageTitle="Chat History" pageSummary="View your conversation history" />
+        <Navbar pageTitle="Chat History" />
         <div className="p-6">
           <div className="max-w-4xl mx-auto">
             <Card className="w-full max-w-md mx-auto">
@@ -252,7 +252,7 @@ const WorkbenchChats = () => {
   if (userLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar pageTitle="Chat History" pageSummary="View your conversation history" />
+        <Navbar pageTitle="Chat History" />
         <div className="p-6">
           <div className="max-w-4xl mx-auto">
             <div className="animate-pulse">
@@ -268,7 +268,7 @@ const WorkbenchChats = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar pageTitle="Chat History" pageSummary="View your conversation history" />
+        <Navbar pageTitle="Chat History" />
         <div className="p-6">
           <div className="max-w-4xl mx-auto">
             <div className="animate-pulse space-y-4">
@@ -286,7 +286,7 @@ const WorkbenchChats = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar pageTitle="Chat History" pageSummary="View your conversation history" />
+        <Navbar pageTitle="Chat History" />
         <div className="p-6">
           <div className="max-w-4xl mx-auto">
             <Card>
@@ -305,7 +305,7 @@ const WorkbenchChats = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar pageTitle="Chat History" pageSummary="View your conversation history" />
+      <Navbar pageTitle="Chat History" />
       <div className="p-6">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">

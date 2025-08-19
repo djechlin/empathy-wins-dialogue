@@ -150,7 +150,7 @@ const Workbench = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
-      <Navbar pageTitle="Workbench" pageSummary="Develop AI organizer prompts" />
+      <Navbar pageTitle="Workbench" />
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
           <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 ${!user ? 'filter blur-sm pointer-events-none' : ''}`}>
