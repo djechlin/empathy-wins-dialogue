@@ -1,4 +1,5 @@
 import { Button } from '@/ui/button';
+import { Switch } from '@/ui/switch';
 import { PromptBuilderData } from '@/utils/promptBuilder';
 import { MessageCircle, Pause, Play, Square, Users } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -32,6 +33,7 @@ const ChatSuite = ({
   // Suite-level chat controls - organizer is always AI, attendees vary by chat
   const organizerMode = 'ai'; // Fixed as AI
   const [controlStatus, setControlStatus] = useState<'ready' | 'started' | 'paused' | 'ended'>('ready');
+  const [reuseChatsWithSameAIs, setReuseChatsWithSameAIs] = useState<boolean>(true);
 
   // Track individual chat statuses (including Human chat)
   const [chatStatuses, setChatStatuses] = useState<Record<string, ChatStatus>>(() => {
@@ -102,7 +104,15 @@ const ChatSuite = ({
 
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold font-sans">Chats</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold font-sans">Chats</h3>
+        <div className="flex items-center gap-2">
+          <label htmlFor="reuse-chats-toggle" className="text-sm text-gray-600">
+            Re-use chats with exact same AIs
+          </label>
+          <Switch id="reuse-chats-toggle" checked={reuseChatsWithSameAIs} onCheckedChange={setReuseChatsWithSameAIs} />
+        </div>
+      </div>
 
       <div className="bg-gray-50 border rounded-lg p-4">
         <div className="flex items-center justify-between mb-4">

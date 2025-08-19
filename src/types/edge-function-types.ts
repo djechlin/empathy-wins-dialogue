@@ -17,6 +17,14 @@ export interface WorkbenchRequest {
     transcript: string;
     coach: string;
   };
+  scout?: {
+    systemPrompt: string;
+    userPrompt: string;
+    messages: Array<{
+      role: 'user' | 'assistant';
+      content: string;
+    }>;
+  };
 }
 
 export interface WorkbenchResponse {

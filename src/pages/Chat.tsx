@@ -66,6 +66,7 @@ interface ChatProps {
   coaches?: PromptBuilderData[];
   scouts?: PromptBuilderData[];
   defaultOpen?: boolean;
+  reuseChatsWithSameAIs?: boolean;
 }
 
 const AiThinking = ({ persona: participant }: { persona: 'organizer' | 'attendee' }) => (
@@ -285,9 +286,10 @@ const ScoutResults = ({
         try {
           for (const scout of scouts) {
             const request: WorkbenchRequest = {
-              coach: {
-                transcript,
-                coach: scout.system_prompt,
+              scout: {
+                systemPrompt: 'You are a scout evaluating dialogue performance.', // Static system prompt
+                userPrompt: `${scout.system_prompt}\n\nTranscript:\n${transcript}`, // Scout prompt + concat of messages
+                messages: [], // Empty as specified
               },
             };
 
