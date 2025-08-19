@@ -12,7 +12,7 @@ import { User } from '@supabase/supabase-js';
 
 import Navbar from '@/components/layout/Navbar';
 
-type PersonaType = 'organizer' | 'attendee' | 'coach';
+type PersonaType = 'organizer' | 'attendee' | 'coach' | 'scout';
 
 interface PersonaSection {
   title: string;
@@ -40,6 +40,12 @@ const personaSections: PersonaSection[] = [
     persona: 'coach',
     description: 'Prompt builders for coaching and mentorship scenarios',
   },
+  {
+    title: 'Scouts',
+    icon: GraduationCap,
+    persona: 'scout',
+    description: 'Prompt builders for scouting and reconnaissance scenarios',
+  },
 ];
 
 const PromptsHistory = () => {
@@ -48,6 +54,7 @@ const PromptsHistory = () => {
     organizer: [],
     attendee: [],
     coach: [],
+    scout: [],
   });
   const [loading, setLoading] = useState(true);
   const [showOnlyMine, setShowOnlyMine] = useState(false);
@@ -74,16 +81,18 @@ const PromptsHistory = () => {
     const loadAllPrompts = async () => {
       try {
         const userId = showOnlyMine ? user?.id : undefined;
-        const [organizers, attendees, coaches] = await Promise.all([
+        const [organizers, attendees, coaches, scouts] = await Promise.all([
           fetchAllPromptBuildersForPersona('organizer', userId),
           fetchAllPromptBuildersForPersona('attendee', userId),
           fetchAllPromptBuildersForPersona('coach', userId),
+          fetchAllPromptBuildersForPersona('scout', userId),
         ]);
 
         setPromptData({
           organizer: organizers || [],
           attendee: attendees || [],
           coach: coaches || [],
+          scout: scouts || [],
         });
       } catch (error) {
         console.error('Error loading prompt builders:', error);

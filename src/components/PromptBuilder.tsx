@@ -20,7 +20,7 @@ import { Archive, ArchiveRestore, ChevronDown, Share, Star } from 'lucide-react'
 import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useReducer } from 'react';
 
 interface PromptBuilderProps {
-  persona: 'organizer' | 'attendee' | 'coach';
+  persona: 'organizer' | 'attendee' | 'coach' | 'scout';
   color: string;
   initialPrompt?: string;
   initialFirstMessage?: string;
@@ -149,11 +149,12 @@ const promptBuilderReducer = (state: PromptBuilderState, action: PromptBuilderAc
   }
 };
 
-const getPersonaDisplayName = (persona: 'organizer' | 'attendee' | 'coach'): string => {
+const getPersonaDisplayName = (persona: 'organizer' | 'attendee' | 'coach' | 'scout'): string => {
   const names = {
     organizer: 'Organizer',
     attendee: 'Attendee',
     coach: 'Coach',
+    scout: 'Scout',
   };
   return names[persona];
 };

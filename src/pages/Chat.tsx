@@ -64,6 +64,7 @@ interface ChatProps {
   controlStatus: 'ready' | 'started' | 'paused' | 'ended';
   onStatusUpdate: (updates: ChatStatus) => void;
   coaches?: PromptBuilderData[];
+  scouts?: PromptBuilderData[];
   defaultOpen?: boolean;
 }
 
@@ -237,6 +238,155 @@ const CoachResults = ({
   );
 };
 
+const ScoutResults = ({
+  scouts,
+  messages,
+  controlStatus,
+}: {
+  scouts: PromptBuilderData[];
+  messages: Message[];
+  controlStatus: 'ready' | 'started' | 'paused' | 'ended';
+}) => {
+  const [evaluations, setEvaluations] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const parseScore = (text: string): { score: number | null; content: string } => {
+    const lines = text.split('\n');
+    const firstLine = lines[0]?.trim();
+
+    const scoreMatch = firstLine?.match(/^Score:\s*([0-5])$/);
+    if (scoreMatch) {
+      const score = parseInt(scoreMatch[1], 10);
+      const remainingContent = lines.slice(1).join('\n').trim();
+      return { score, content: remainingContent };
+    }
+
+    return { score: null, content: text };
+  };
+
+  const getScoreBadgeColor = (score: number | null): string => {
+    if (score === null) return '';
+    if (score >= 4) return 'border border-green-500 text-green-700 bg-green-50';
+    if (score === 3) return 'border border-gray-500 text-gray-700 bg-gray-50';
+    return 'border border-red-500 text-red-700 bg-red-50';
+  };
+
+  useEffect(() => {
+    if (controlStatus === 'ended' && scouts.length > 0 && messages.length > 0) {
+      const getScoutEvaluations = async () => {
+        setLoading(true);
+        setError(null);
+
+        const transcript = messages.map((msg) => `${msg.sender}: ${msg.content}`).join('\n\n');
+
+        const newEvaluations: Record<string, string> = {};
+
+        try {
+          for (const scout of scouts) {
+            const request: WorkbenchRequest = {
+              coach: {
+                transcript,
+                coach: scout.system_prompt,
+              },
+            };
+
+            const { data, error: supabaseError } = await supabase.functions.invoke('workbench', {
+              body: request,
+            });
+
+            if (supabaseError) {
+              throw new Error(`Failed to get evaluation for ${scout.name}: ${supabaseError.message}`);
+            }
+
+            const response = data as WorkbenchResponse;
+            if (response?.error) {
+              throw new Error(`Error from workbench: ${response.error}`);
+            }
+
+            let evaluation: string;
+            if (response?.message) {
+              evaluation = response.message;
+            } else if (typeof data === 'string') {
+              evaluation = data;
+            } else {
+              evaluation = 'No evaluation available';
+            }
+
+            newEvaluations[scout.id] = evaluation;
+          }
+
+          setEvaluations(newEvaluations);
+        } catch (err) {
+          console.error('Error getting scout evaluations:', err);
+          setError(err instanceof Error ? err.message : 'Failed to get evaluations');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      getScoutEvaluations();
+    }
+  }, [controlStatus, scouts, messages]);
+
+  if (scouts.length === 0 || controlStatus === 'ready') {
+    return null;
+  }
+
+  if (messages.length < 3) {
+    return (
+      <div className="border-t bg-gray-50 p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <h4 className="font-medium text-gray-900">Scout Evaluations</h4>
+        </div>
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+          <span className="text-sm text-gray-600 italic">Scout evaluation requires at least 3 messages in the conversation</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="border-t bg-purple-50 p-4">
+      <div className="flex items-center gap-2 mb-3">
+        <h4 className="font-medium text-gray-900">Scout Evaluations</h4>
+        {loading && <div className="text-sm text-purple-600">Evaluating...</div>}
+      </div>
+
+      {error && (
+        <div className="mb-3 bg-red-50 border border-red-200 rounded-lg p-3">
+          <span className="text-sm text-red-600">{error}</span>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        {scouts.map((scout) => {
+          const evaluation = evaluations[scout.id];
+          const { score, content } = evaluation ? parseScore(evaluation) : { score: null, content: '' };
+
+          return (
+            <div key={scout.id} className="bg-white border border-purple-200 rounded-lg p-3">
+              <div className="flex items-start justify-between mb-2">
+                <span className="text-sm font-medium text-gray-900">Scout Evaluation</span>
+                {score !== null && (
+                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${getScoreBadgeColor(score)}`}>Score: {score}/5</span>
+                )}
+              </div>
+              <h5 className="text-xs font-medium text-gray-600 mb-1">Scout Prompt:</h5>
+              <p className="text-xs text-gray-500 mb-2 bg-gray-50 p-2 rounded border-l-2 border-purple-300">
+                {scout.system_prompt || 'No prompt available'}
+              </p>
+              <div className="text-sm text-gray-700">
+                {content ? <div className="whitespace-pre-wrap">{content}</div> : <span className="italic">No evaluation available</span>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 const Chat = ({
   attendeePb,
   organizerPb,
@@ -246,6 +396,7 @@ const Chat = ({
   controlStatus,
   onStatusUpdate,
   coaches = [],
+  scouts = [],
   defaultOpen = true,
 }: ChatProps) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -555,6 +706,7 @@ const Chat = ({
               )}
 
               <CoachResults coaches={coaches} messages={chatEngine.history} controlStatus={controlStatus} />
+              <ScoutResults scouts={scouts} messages={chatEngine.history} controlStatus={controlStatus} />
             </div>
           </motion.div>
         )}

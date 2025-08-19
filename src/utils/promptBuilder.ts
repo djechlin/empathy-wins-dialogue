@@ -4,7 +4,7 @@ export interface PromptBuilderData {
   id?: string;
   name: string;
   system_prompt: string;
-  persona: 'organizer' | 'attendee' | 'coach';
+  persona: 'organizer' | 'attendee' | 'coach' | 'scout';
   firstMessage?: string;
   archived?: boolean;
   starred?: boolean;
@@ -72,7 +72,7 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<Prompt
       id: result.id,
       name: result.name,
       system_prompt: result.system_prompt,
-      persona: result.persona as 'organizer' | 'attendee' | 'coach',
+      persona: result.persona as 'organizer' | 'attendee' | 'coach' | 'scout',
       firstMessage: result.first_message || undefined,
       archived: result.archived || false,
       starred: result.starred || false,
@@ -85,7 +85,9 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<Prompt
   }
 };
 
-export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'attendee' | 'coach'): Promise<PromptBuilderData | null> => {
+export const fetchMostRecentPromptForPersona = async (
+  persona: 'organizer' | 'attendee' | 'coach' | 'scout',
+): Promise<PromptBuilderData | null> => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -118,7 +120,7 @@ export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'at
     id: pb.id,
     name: pb.name,
     system_prompt: pb.system_prompt,
-    persona: pb.persona as 'organizer' | 'attendee' | 'coach', // part of the 'where'
+    persona: pb.persona as 'organizer' | 'attendee' | 'coach' | 'scout', // part of the 'where'
     firstMessage: pb.first_message || undefined,
     archived: pb.archived || false,
     starred: pb.starred || false,
@@ -128,7 +130,7 @@ export const fetchMostRecentPromptForPersona = async (persona: 'organizer' | 'at
 };
 
 export const fetchAllPromptBuildersForPersona = async (
-  persona: 'organizer' | 'attendee' | 'coach',
+  persona: 'organizer' | 'attendee' | 'coach' | 'scout',
   userId?: string,
 ): Promise<PromptBuilderData[]> => {
   console.log('fetch all... dje');
@@ -156,7 +158,7 @@ export const fetchAllPromptBuildersForPersona = async (
     id: pb.id,
     name: pb.name,
     system_prompt: pb.system_prompt,
-    persona: pb.persona as 'organizer' | 'attendee' | 'coach',
+    persona: pb.persona as 'organizer' | 'attendee' | 'coach' | 'scout',
     firstMessage: pb.first_message || undefined,
     archived: pb.archived || false,
     starred: pb.starred || false,

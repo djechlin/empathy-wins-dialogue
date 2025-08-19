@@ -7,6 +7,7 @@ import Chat from './Chat';
 interface ChatSuiteProps {
   attendees: PromptBuilderData[];
   coaches: PromptBuilderData[];
+  scouts: PromptBuilderData[];
   organizerPromptText: string;
   organizerFirstMessage: string;
   hasValidOrganizer?: boolean;
@@ -20,7 +21,14 @@ interface ChatStatus {
 
 const MemoizedChat = React.memo(Chat);
 
-const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMessage, hasValidOrganizer = false }: ChatSuiteProps) => {
+const ChatSuite = ({
+  attendees,
+  coaches,
+  scouts,
+  organizerPromptText,
+  organizerFirstMessage,
+  hasValidOrganizer = false,
+}: ChatSuiteProps) => {
   // Suite-level chat controls - organizer is always AI, attendees vary by chat
   const organizerMode = 'ai'; // Fixed as AI
   const [controlStatus, setControlStatus] = useState<'ready' | 'started' | 'paused' | 'ended'>('ready');
@@ -190,6 +198,7 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
             controlStatus={controlStatus}
             onStatusUpdate={statusUpdateCallbacks[attendee.id]}
             coaches={coaches}
+            scouts={scouts}
             defaultOpen={false}
           />
         ))}
@@ -211,6 +220,7 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
         controlStatus={controlStatus}
         onStatusUpdate={statusUpdateCallbacks.human}
         coaches={coaches}
+        scouts={scouts}
         defaultOpen={false}
       />
 
@@ -224,6 +234,23 @@ const ChatSuite = ({ attendees, coaches, organizerPromptText, organizerFirstMess
                 <div className="font-medium text-red-800">{coach.name}</div>
                 <div className="text-xs text-red-600 truncate max-w-[200px]">
                   {coach.system_prompt.length > 50 ? `${coach.system_prompt.substring(0, 47)}...` : coach.system_prompt || 'No prompt set'}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Active Scouts Cards */}
+      {scouts.length > 0 && (
+        <div className="space-y-2">
+          <div className="text-sm font-medium text-gray-700">Active Scouts:</div>
+          <div className="flex flex-wrap gap-2">
+            {scouts.map((scout) => (
+              <div key={scout.id} className="bg-purple-50 border border-purple-200 rounded-lg px-3 py-2 text-sm">
+                <div className="font-medium text-purple-800">{scout.name}</div>
+                <div className="text-xs text-purple-600 truncate max-w-[200px]">
+                  {scout.system_prompt.length > 50 ? `${scout.system_prompt.substring(0, 47)}...` : scout.system_prompt || 'No prompt set'}
                 </div>
               </div>
             ))}

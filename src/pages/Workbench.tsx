@@ -17,9 +17,11 @@ interface WorkbenchState {
   organizerFirstMessage: string;
   attendees: PromptBuilderData[];
   coaches: PromptBuilderData[];
+  scouts: PromptBuilderData[];
   organizerDirty: boolean;
   attendeesDirty: boolean;
   coachesDirty: boolean;
+  scoutsDirty: boolean;
 }
 
 type WorkbenchAction =
@@ -27,9 +29,11 @@ type WorkbenchAction =
   | { type: 'UPDATE_ORGANIZER_DATA'; payload: { systemPrompt: string; firstMessage: string } }
   | { type: 'UPDATE_ATTENDEES'; payload: PromptBuilderData[] }
   | { type: 'UPDATE_COACHES'; payload: PromptBuilderData[] }
+  | { type: 'UPDATE_SCOUTS'; payload: PromptBuilderData[] }
   | { type: 'SET_ORGANIZER_DIRTY'; payload: boolean }
   | { type: 'SET_ATTENDEES_DIRTY'; payload: boolean }
-  | { type: 'SET_COACHES_DIRTY'; payload: boolean };
+  | { type: 'SET_COACHES_DIRTY'; payload: boolean }
+  | { type: 'SET_SCOUTS_DIRTY'; payload: boolean };
 
 function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
   console.log('workbench dispatch: ', action.type);
@@ -59,6 +63,12 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
         coaches: action.payload,
       };
 
+    case 'UPDATE_SCOUTS':
+      return {
+        ...state,
+        scouts: action.payload,
+      };
+
     case 'SET_ORGANIZER_DIRTY':
       return {
         ...state,
@@ -77,6 +87,12 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
         coachesDirty: action.payload,
       };
 
+    case 'SET_SCOUTS_DIRTY':
+      return {
+        ...state,
+        scoutsDirty: action.payload,
+      };
+
     default:
       return state;
   }
@@ -91,9 +107,11 @@ const Workbench = () => {
     organizerFirstMessage: '',
     attendees: [{ id: generateTimestampId(), name: 'attendee', system_prompt: '', firstMessage: '', persona: 'attendee' as const }],
     coaches: [],
+    scouts: [],
     organizerDirty: false,
     attendeesDirty: false,
     coachesDirty: false,
+    scoutsDirty: false,
   });
 
   useEffect(() => {
@@ -148,6 +166,10 @@ const Workbench = () => {
     dispatch({ type: 'UPDATE_COACHES', payload: coaches.filter((c) => c.starred) });
   }, []);
 
+  const handleScoutsChange = useCallback((scouts: PromptBuilderData[]) => {
+    dispatch({ type: 'UPDATE_SCOUTS', payload: scouts.filter((s) => s.starred) });
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 relative">
       <Navbar pageTitle="Workbench" />
@@ -170,6 +192,7 @@ const Workbench = () => {
                   onPromptBuildersChange={handleAttendeesChangeCb}
                 />
                 <PromptBuilderSuite persona="coach" color="bg-red-200" defaultOpen={true} onPromptBuildersChange={handleCoachesChange} />
+                <PromptBuilderSuite persona="scout" color="bg-purple-100" defaultOpen={true} onPromptBuildersChange={handleScoutsChange} />
               </div>
             </div>
 
@@ -246,6 +269,7 @@ const Workbench = () => {
               <ChatSuite
                 attendees={state.attendees}
                 coaches={state.coaches}
+                scouts={state.scouts}
                 organizerPromptText={state.organizerPromptText}
                 organizerFirstMessage={state.organizerFirstMessage}
                 hasValidOrganizer={state.organizers.filter((o) => o.starred && !o.archived).length === 1}

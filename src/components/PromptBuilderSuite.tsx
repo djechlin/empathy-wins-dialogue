@@ -17,13 +17,13 @@ import PromptBuilder from './PromptBuilder';
 interface PromptBuilderSuiteProps {
   color: string;
   defaultOpen?: boolean;
-  persona: 'organizer' | 'attendee' | 'coach';
+  persona: 'organizer' | 'attendee' | 'coach' | 'scout';
   onPromptBuildersChange?: (pbs: PromptBuilderData[]) => void;
 }
 interface PromptBuilderSuiteState {
   promptBuilders: PromptBuilderData[];
   loading: 'new' | 'loading' | 'loaded';
-  persona: 'organizer' | 'attendee' | 'coach';
+  persona: 'organizer' | 'attendee' | 'coach' | 'scout';
   error: string | null;
   archivedOpen: boolean;
 }
@@ -77,11 +77,12 @@ function promptBuilderSuiteReducer(state: PromptBuilderSuiteState, action: Promp
   }
 }
 
-const getPersonaDisplayName = (persona: 'organizer' | 'attendee' | 'coach', plural: boolean = false): string => {
+const getPersonaDisplayName = (persona: 'organizer' | 'attendee' | 'coach' | 'scout', plural: boolean = false): string => {
   const names = {
     organizer: plural ? 'Organizers' : 'Organizer',
     attendee: plural ? 'Attendees' : 'Attendee',
     coach: plural ? 'Coaches' : 'Coach',
+    scout: plural ? 'Scouts' : 'Scout',
   };
   return names[persona];
 };
