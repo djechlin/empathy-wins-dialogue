@@ -65,6 +65,7 @@ const getDemoAiResponse = async (organizerId: string, messages: ParticipantMessa
 type ParticipantProps = {
   mode: 'human' | 'ai';
   persona: 'organizer' | 'attendee';
+  promptId?: string | null;
   systemPrompt: string;
   getTextInput?: () => Promise<string>;
 } & (
@@ -79,11 +80,14 @@ const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, 
 
   const chat = useCallback(
     async (msg: string | null): Promise<string> => {
+      console.log('use participant callback', msg, messages.length);
       if (msg === null && messages.length === 0) {
         if (organizerFirstMessage) {
+          console.log('first');
           setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
           return organizerFirstMessage;
         } else if (organizerId && humanOrAi === 'ai') {
+          console.log('heyyy');
           setIsBusy(true);
           try {
             const responseText = await getDemoAiResponse(organizerId, []);
@@ -263,7 +267,6 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
   const start = useCallback(async () => {
     setState((prev) => {
       if (prev.controlStatus === 'ready') {
-        // Create chat in database
         if (!prev.chatId) {
           (async () => {
             try {

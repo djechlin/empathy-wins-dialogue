@@ -1,12 +1,12 @@
-import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import Navbar from '@/components/layout/Navbar';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Badge } from '@/ui/badge';
 import { Button } from '@/ui/button';
-import { Bot, User, MessageCircle, Clock, Zap, ChevronDown, ChevronRight } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
-import Navbar from '@/components/layout/Navbar';
+import { Bot, ChevronDown, ChevronRight, Clock, MessageCircle, User, Zap } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 interface ChatData {
   id: string;
@@ -56,14 +56,10 @@ const ChatReplay = () => {
     const fetchChatData = async () => {
       try {
         setLoading(true);
-
-        // Fetch chat details
         const { data: chatData, error: chatError } = await supabase.from('chats').select('*').eq('id', chatId).single();
 
         if (chatError) throw chatError;
         setChat(chatData);
-
-        // Fetch messages
         const { data: messagesData, error: messagesError } = await supabase
           .from('chat_messages')
           .select('*')
@@ -221,14 +217,6 @@ const ChatReplay = () => {
                         </div>
                       </div>
                     )}
-                    {chat.organizer_first_message && (
-                      <div>
-                        <h4 className="font-medium text-purple-800 mb-2">Organizer First Message</h4>
-                        <div className="bg-purple-50 p-3 rounded border">
-                          <p className="text-sm whitespace-pre-wrap">{chat.organizer_first_message}</p>
-                        </div>
-                      </div>
-                    )}
                     {chat.attendee_system_prompt && (
                       <div>
                         <h4 className="font-medium text-orange-800 mb-2">Attendee Prompt</h4>
@@ -241,7 +229,6 @@ const ChatReplay = () => {
                 </Collapsible>
               )}
 
-              {/* Messages Section */}
               {messages.length > 0 && (
                 <Collapsible open={messagesOpen} onOpenChange={setMessagesOpen}>
                   <CollapsibleTrigger asChild>
@@ -275,7 +262,6 @@ const ChatReplay = () => {
                 </Collapsible>
               )}
 
-              {/* Coach Evaluations Section */}
               {coachEvals.length > 0 && (
                 <Collapsible open={coachEvalsOpen} onOpenChange={setCoachEvalsOpen}>
                   <CollapsibleTrigger asChild>
