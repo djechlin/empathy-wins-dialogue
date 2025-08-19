@@ -413,5 +413,6 @@ export const useChat = (
     thinking: state.thinking,
     speaker: state.speaker,
     controlStatus: state.controlStatus,
+    chatId: state.chatId,
   };
 };

@@ -137,6 +137,48 @@ export type Database = {
           },
         ];
       };
+      chat_scouts: {
+        Row: {
+          chat_id: string;
+          created_at: string;
+          id: string;
+          scout_id: string;
+          scout_prompt: string;
+          scout_result: string;
+        };
+        Insert: {
+          chat_id: string;
+          created_at?: string;
+          id?: string;
+          scout_id: string;
+          scout_prompt: string;
+          scout_result: string;
+        };
+        Update: {
+          chat_id?: string;
+          created_at?: string;
+          id?: string;
+          scout_id?: string;
+          scout_prompt?: string;
+          scout_result?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'chat_scouts_chat_id_fkey';
+            columns: ['chat_id'];
+            isOneToOne: false;
+            referencedRelation: 'chats';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chat_scouts_scout_id_fkey';
+            columns: ['scout_id'];
+            isOneToOne: false;
+            referencedRelation: 'prompts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       chats: {
         Row: {
           attendee_mode: string;

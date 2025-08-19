@@ -99,10 +99,12 @@ const CoachResults = ({
   coaches,
   messages,
   controlStatus,
+  chatId,
 }: {
   coaches: PromptBuilderData[];
   messages: Message[];
   controlStatus: 'ready' | 'started' | 'paused' | 'ended';
+  chatId: string | null;
 }) => {
   const [evaluations, setEvaluations] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -212,6 +214,25 @@ const CoachResults = ({
           }
 
           setEvaluations(newEvaluations);
+
+          // Save coach results to database
+          if (chatId) {
+            for (const coach of coaches) {
+              const evaluation = newEvaluations[coach.id];
+              if (evaluation && coach.id) {
+                try {
+                  await supabase.from('chat_coaches').insert({
+                    chat_id: chatId,
+                    coach_id: coach.id,
+                    coach_prompt: coach.system_prompt,
+                    coach_result: evaluation,
+                  });
+                } catch (saveError) {
+                  console.error('Error saving coach result:', saveError);
+                }
+              }
+            }
+          }
         } catch (err) {
           console.error('Error getting coach evaluations:', err);
           setError(err instanceof Error ? err.message : 'Failed to get evaluations');
@@ -222,7 +243,7 @@ const CoachResults = ({
 
       getCoachEvaluations();
     }
-  }, [controlStatus, coaches, messages, hasEvaluated]);
+  }, [controlStatus, coaches, messages, hasEvaluated, chatId]);
 
   if (coaches.length === 0 || controlStatus === 'ready') {
     return null;
@@ -306,10 +327,12 @@ const ScoutResults = ({
   scouts,
   messages,
   controlStatus,
+  chatId,
 }: {
   scouts: PromptBuilderData[];
   messages: Message[];
   controlStatus: 'ready' | 'started' | 'paused' | 'ended';
+  chatId: string | null;
 }) => {
   const [evaluations, setEvaluations] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -425,6 +448,25 @@ const ScoutResults = ({
           }
 
           setEvaluations(newEvaluations);
+
+          // Save scout results to database (using chat_coaches table for now)
+          if (chatId) {
+            for (const scout of scouts) {
+              const evaluation = newEvaluations[scout.id];
+              if (evaluation && scout.id) {
+                try {
+                  await supabase.from('chat_coaches').insert({
+                    chat_id: chatId,
+                    coach_id: scout.id,
+                    coach_prompt: `[SCOUT] ${scout.system_prompt}`, // Prefix to identify as scout
+                    coach_result: evaluation,
+                  });
+                } catch (saveError) {
+                  console.error('Error saving scout result:', saveError);
+                }
+              }
+            }
+          }
         } catch (err) {
           console.error('Error getting scout evaluations:', err);
           setError(err instanceof Error ? err.message : 'Failed to get evaluations');
@@ -435,7 +477,7 @@ const ScoutResults = ({
 
       getScoutEvaluations();
     }
-  }, [controlStatus, scouts, messages, hasEvaluated]);
+  }, [controlStatus, scouts, messages, hasEvaluated, chatId]);
 
   if (scouts.length === 0 || controlStatus === 'ready') {
     return null;
@@ -940,8 +982,8 @@ const Chat = ({
                 </div>
               )}
 
-              <CoachResults coaches={coaches} messages={chatEngine.history} controlStatus={controlStatus} />
-              <ScoutResults scouts={scouts} messages={chatEngine.history} controlStatus={controlStatus} />
+              <CoachResults coaches={coaches} messages={chatEngine.history} controlStatus={controlStatus} chatId={chatEngine.chatId} />
+              <ScoutResults scouts={scouts} messages={chatEngine.history} controlStatus={controlStatus} chatId={chatEngine.chatId} />
             </div>
           </motion.div>
         )}
