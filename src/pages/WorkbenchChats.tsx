@@ -113,8 +113,8 @@ const WorkbenchChats = () => {
             attendee_prompt_id,
             created_at,
             ended_at,
-            organizer_prompt:prompts!organizer_prompt_id(name),
-            attendee_prompt:prompts!attendee_prompt_id(name),
+            organizer_prompt:prompts!chats_organizer_prompt_id_fkey(name),
+            attendee_prompt:prompts!chats_attendee_prompt_id_fkey(name),
             chat_messages(count)
           `,
           )
@@ -123,13 +123,18 @@ const WorkbenchChats = () => {
 
         if (chatsError) throw chatsError;
 
+        console.log('Raw chat data:', chatsData); // Debug log
+
         // Transform data and filter out chats with 0 messages
-        const chatsWithCounts = (chatsData || []).map((chat) => ({
-          ...chat,
-          message_count: chat.chat_messages?.[0]?.count || 0,
-          organizer_name: chat.organizer_prompt?.name,
-          attendee_name: chat.attendee_prompt?.name,
-        }));
+        const chatsWithCounts = (chatsData || []).map((chat) => {
+          console.log('Processing chat:', chat.id, 'organizer_prompt:', chat.organizer_prompt, 'attendee_prompt:', chat.attendee_prompt); // Debug log
+          return {
+            ...chat,
+            message_count: chat.chat_messages?.[0]?.count || 0,
+            organizer_name: chat.organizer_prompt?.name,
+            attendee_name: chat.attendee_prompt?.name,
+          };
+        });
 
         const chatsWithMessages = chatsWithCounts.filter((chat) => chat.message_count > 0);
         setChats(chatsWithMessages);
