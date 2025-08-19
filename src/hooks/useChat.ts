@@ -295,6 +295,24 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
           console.error('Failed to insert message:', error);
         });
 
+        // Check if attendee sent {{DONE}} to end the chat
+        if (response.sender === 'attendee' && response.content.includes('{{DONE}}')) {
+          setTimeout(() => {
+            setState((prev) => {
+              if (prev.chatId) {
+                (async () => {
+                  try {
+                    await endChat(prev.chatId!);
+                  } catch (error) {
+                    console.error('Failed to end chat:', error);
+                  }
+                })();
+              }
+              return { ...prev, controlStatus: 'ended' };
+            });
+          }, 100);
+        }
+
         return newState;
       });
     }, 0);
