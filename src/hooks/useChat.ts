@@ -297,7 +297,6 @@ export const useChat = (
         timestamp: new Date(),
       };
       setState((prev) => {
-        // Check if attendee sent {{DONE}} to end the chat - don't re-queue
         if (response.sender === 'attendee' && response.content.includes('{{DONE}}')) {
           const newState = { ...prev, history: [...prev.history, response], thinking: null, controlStatus: 'ended' as ControlStatus };
 

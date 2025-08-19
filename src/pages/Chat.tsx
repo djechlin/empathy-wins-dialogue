@@ -109,6 +109,24 @@ const CoachResults = ({
   const [error, setError] = useState<string | null>(null);
   const [hasEvaluated, setHasEvaluated] = useState(false);
 
+  interface CoachCriterion {
+    shortCriterion: string;
+    score: number;
+    feedback: string;
+  }
+
+  const parseCoachEvaluation = (text: string): CoachCriterion[] | null => {
+    try {
+      const parsed = JSON.parse(text);
+      if (Array.isArray(parsed)) {
+        return parsed as CoachCriterion[];
+      }
+    } catch {
+      // Not JSON, return null
+    }
+    return null;
+  };
+
   const parseScore = (text: string): { score: number | null; content: string } => {
     const lines = text.split('\n');
     const firstLine = lines[0]?.trim();
@@ -123,11 +141,22 @@ const CoachResults = ({
     return { score: null, content: text };
   };
 
-  const getScoreBadgeColor = (score: number | null): string => {
-    if (score === null) return '';
+  const getScoreBadgeColor = (score: number): string => {
     if (score >= 4) return 'border border-green-500 text-green-700 bg-green-50';
     if (score === 3) return 'border border-gray-500 text-gray-700 bg-gray-50';
     return 'border border-red-500 text-red-700 bg-red-50';
+  };
+  
+  const getScoreIndicator = (score: number): string => {
+    if (score >= 4) return '●';
+    if (score === 3) return '●';
+    return '●';
+  };
+  
+  const getScoreIndicatorColor = (score: number): string => {
+    if (score >= 4) return 'text-green-500';
+    if (score === 3) return 'text-gray-400';
+    return 'text-red-500';
   };
 
   useEffect(() => {
@@ -215,7 +244,8 @@ const CoachResults = ({
       <div className="space-y-3">
         {coaches.map((coach) => {
           const evaluation = evaluations[coach.id];
-          const { score, content } = evaluation ? parseScore(evaluation) : { score: null, content: '' };
+          const criteria = evaluation ? parseCoachEvaluation(evaluation) : null;
+          const fallbackParsed = evaluation && !criteria ? parseScore(evaluation) : { score: null, content: '' };
 
           return (
             <div key={coach.id} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
@@ -224,19 +254,37 @@ const CoachResults = ({
                   <div className="w-3 h-3 bg-gray-300 rounded-full" />
                   <span className="text-sm font-medium text-gray-900">{coach.name}</span>
                 </div>
-                {score !== null && (
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getScoreBadgeColor(score)}`}>{score}/5</span>
-                )}
               </div>
-              <div className="text-sm text-gray-600 bg-white p-2 rounded">
+              <h5 className="text-xs font-medium text-gray-600 mb-1">Coach Prompt:</h5>
+              <p className="text-xs text-gray-500 mb-2 bg-white p-2 rounded border-l-2 border-gray-300">
+                {coach.system_prompt || 'No prompt available'}
+              </p>
+              <div className="text-sm text-gray-700">
                 {controlStatus !== 'ended' ? (
                   <span className="italic">Evaluation will appear here once conversation is complete</span>
                 ) : loading ? (
                   <span className="italic">Getting evaluation...</span>
                 ) : error ? (
                   <span className="text-red-600">Error: {error}</span>
-                ) : evaluation ? (
-                  <div className="whitespace-pre-wrap">{content || evaluation}</div>
+                ) : criteria ? (
+                  <div className="space-y-2">
+                    {criteria.map((criterion, idx) => (
+                      <div key={idx} className="border-l-2 border-gray-200 pl-3 py-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-lg ${getScoreIndicatorColor(criterion.score)}`}>
+                            {getScoreIndicator(criterion.score)}
+                          </span>
+                          <span className="font-medium text-gray-900">{criterion.shortCriterion}</span>
+                          <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getScoreBadgeColor(criterion.score)}`}>
+                            {criterion.score}/5
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 ml-6">{criterion.feedback}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : fallbackParsed.content ? (
+                  <div className="whitespace-pre-wrap">{fallbackParsed.content}</div>
                 ) : (
                   <span className="italic">No evaluation available</span>
                 )}
