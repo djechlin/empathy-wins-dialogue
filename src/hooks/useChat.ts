@@ -289,29 +289,32 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
         timestamp: new Date(),
       };
       setState((prev) => {
+        // Check if attendee sent {{DONE}} to end the chat - don't re-queue
+        if (response.sender === 'attendee' && response.content.includes('{{DONE}}')) {
+          const newState = { ...prev, history: [...prev.history, response], thinking: null, controlStatus: 'ended' as ControlStatus };
+
+          insertMessage(newState.chatId, response.sender, response.content).catch((error) => {
+            console.error('Failed to insert message:', error);
+          });
+
+          if (newState.chatId) {
+            (async () => {
+              try {
+                await endChat(newState.chatId!);
+              } catch (error) {
+                console.error('Failed to end chat:', error);
+              }
+            })();
+          }
+
+          return newState;
+        }
+
         const newState = { ...prev, history: [...prev.history, response], queue: [...prev.queue, response], thinking: null };
 
         insertMessage(newState.chatId, response.sender, response.content).catch((error) => {
           console.error('Failed to insert message:', error);
         });
-
-        // Check if attendee sent {{DONE}} to end the chat
-        if (response.sender === 'attendee' && response.content.includes('{{DONE}}')) {
-          setTimeout(() => {
-            setState((prev) => {
-              if (prev.chatId) {
-                (async () => {
-                  try {
-                    await endChat(prev.chatId!);
-                  } catch (error) {
-                    console.error('Failed to end chat:', error);
-                  }
-                })();
-              }
-              return { ...prev, controlStatus: 'ended' };
-            });
-          }, 100);
-        }
 
         return newState;
       });
