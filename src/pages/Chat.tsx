@@ -117,12 +117,19 @@ const CoachResults = ({
 
   const parseCoachEvaluation = (text: string): CoachCriterion[] | null => {
     try {
-      const parsed = JSON.parse(text);
-      if (Array.isArray(parsed)) {
-        return parsed as CoachCriterion[];
+      // Try to extract JSON from the text
+      // Look for JSON array pattern or ```json blocks
+      const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) || text.match(/(\[[\s\S]*\])/);
+      
+      if (jsonMatch) {
+        const jsonStr = jsonMatch[1].trim();
+        const parsed = JSON.parse(jsonStr);
+        if (Array.isArray(parsed)) {
+          return parsed as CoachCriterion[];
+        }
       }
     } catch {
-      // Not JSON, return null
+      // Not valid JSON, return null
     }
     return null;
   };
@@ -146,13 +153,13 @@ const CoachResults = ({
     if (score === 3) return 'border border-gray-500 text-gray-700 bg-gray-50';
     return 'border border-red-500 text-red-700 bg-red-50';
   };
-  
+
   const getScoreIndicator = (score: number): string => {
     if (score >= 4) return '●';
     if (score === 3) return '●';
     return '●';
   };
-  
+
   const getScoreIndicatorColor = (score: number): string => {
     if (score >= 4) return 'text-green-500';
     if (score === 3) return 'text-gray-400';
@@ -271,9 +278,7 @@ const CoachResults = ({
                     {criteria.map((criterion, idx) => (
                       <div key={idx} className="border-l-2 border-gray-200 pl-3 py-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className={`text-lg ${getScoreIndicatorColor(criterion.score)}`}>
-                            {getScoreIndicator(criterion.score)}
-                          </span>
+                          <span className={`text-lg ${getScoreIndicatorColor(criterion.score)}`}>{getScoreIndicator(criterion.score)}</span>
                           <span className="font-medium text-gray-900">{criterion.shortCriterion}</span>
                           <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getScoreBadgeColor(criterion.score)}`}>
                             {criterion.score}/5
@@ -319,12 +324,19 @@ const ScoutResults = ({
 
   const parseScoutEvaluation = (text: string): ScoutCriterion[] | null => {
     try {
-      const parsed = JSON.parse(text);
-      if (Array.isArray(parsed)) {
-        return parsed as ScoutCriterion[];
+      // Try to extract JSON from the text
+      // Look for JSON array pattern or ```json blocks
+      const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) || text.match(/(\[[\s\S]*\])/);
+      
+      if (jsonMatch) {
+        const jsonStr = jsonMatch[1].trim();
+        const parsed = JSON.parse(jsonStr);
+        if (Array.isArray(parsed)) {
+          return parsed as ScoutCriterion[];
+        }
       }
     } catch {
-      // Not JSON, return null
+      // Not valid JSON, return null
     }
     return null;
   };
