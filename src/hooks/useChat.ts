@@ -237,7 +237,7 @@ const createChat = async (organizerPrompt: string, attendeePrompt: string): Prom
 };
 
 const endChat = async (chatId: string): Promise<void> => {
-  const { error } = await supabase.from('chats').update({ ended_at: new Date().toISOString() }).eq('id', chatId);
+  const { error } = await supabase.from('chats').update({ ended_at: new Date().toISOString() }).eq('id', chatId).is('ended_at', null);
 
   if (error) {
     throw error;

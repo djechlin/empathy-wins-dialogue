@@ -287,7 +287,8 @@ const ScoutResults = ({
           for (const scout of scouts) {
             const request: WorkbenchRequest = {
               scout: {
-                systemPrompt: "The attendee attended a Bernie Sanders' \"Fighting the Oligarchy\" rally and was re-contacted by an organizer. You will be given a transcript of that conversation as well as a list of user criteria. return a list where you rate the attendee according to each of the user criteria 1-5 as well as a brief, single sentence explaining your recommendation. you can use 3 for no signal and simply state 'No signal'. add a blank line and an overall 1-5 recommendation based on your findings, as well as a single one sentence summary.", // Static system prompt
+                systemPrompt:
+                  "The attendee attended a Bernie Sanders' \"Fighting the Oligarchy\" rally and was re-contacted by an organizer. You will be given a transcript of that conversation as well as a list of user criteria. return a list where you rate the attendee according to each of the user criteria 1-5 as well as a brief, single sentence explaining your recommendation. you can use 3 for no signal and simply state 'No signal'. add a blank line and an overall 1-5 recommendation based on your findings, as well as a single one sentence summary.", // Static system prompt
                 userPrompt: `${scout.system_prompt}\n\nTranscript:\n${transcript}`, // Scout prompt + concat of messages
                 messages: [], // Empty as specified
               },
@@ -400,6 +401,7 @@ const Chat = ({
   coaches = [],
   scouts = [],
   defaultOpen = true,
+  reuseChatsWithSameAIs = false,
 }: ChatProps) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [state, dispatch] = useReducer(reducer, {
