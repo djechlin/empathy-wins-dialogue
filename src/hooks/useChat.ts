@@ -290,13 +290,11 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
       };
       setState((prev) => {
         const newState = { ...prev, history: [...prev.history, response], queue: [...prev.queue, response], thinking: null };
-        
-        if (newState.chatId) {
-          insertMessage(newState.chatId, response.sender, response.content).catch(error => {
-            console.error('Failed to insert message:', error);
-          });
-        }
-        
+
+        insertMessage(newState.chatId, response.sender, response.content).catch((error) => {
+          console.error('Failed to insert message:', error);
+        });
+
         return newState;
       });
     }, 0);
