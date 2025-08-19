@@ -117,7 +117,7 @@ const useParticipant = (props: ParticipantProps) => {
   const getTextInput = props.mode === 'human' ? props.getTextInput : undefined;
   const organizerFirstMessage = 'organizerFirstMessage' in props ? props.organizerFirstMessage : null;
   const promptLocation = props.mode === 'ai' && 'promptLocation' in props ? props.promptLocation : null;
-  const organizerId = props.mode === 'ai' && 'organizerId' in props ? props.organizerId : null;
+  const organizerId = props.mode === 'ai' && 'organizerId' in props ? props.organizerId : undefined;
   const [messages, setMessages] = useState<ParticipantMessage[]>([]);
   const [isBusy, setIsBusy] = useState(false);
 
@@ -129,8 +129,7 @@ const useParticipant = (props: ParticipantProps) => {
           console.log('first');
           setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
           return organizerFirstMessage;
-        } else if (promptLocation === 'database' && humanOrAi === 'ai') {
-          if (!organizerId) throw new Error('organizerId required for database prompts');
+        } else if (promptLocation === 'database' && humanOrAi === 'ai' && organizerId) {
           console.log('heyyy');
           setIsBusy(true);
           try {
@@ -159,8 +158,7 @@ const useParticipant = (props: ParticipantProps) => {
         let responseText: string;
 
         if (humanOrAi === 'ai') {
-          if (promptLocation === 'database') {
-            if (!organizerId) throw new Error('organizerId required for database prompts');
+          if (promptLocation === 'database' && organizerId) {
             responseText = await getDemoAiResponse(organizerId, updatedMessages);
           } else {
             responseText = await getAiResponse(updatedMessages, systemPrompt);
