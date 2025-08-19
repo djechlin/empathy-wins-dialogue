@@ -62,19 +62,60 @@ const getDemoAiResponse = async (organizerId: string, messages: ParticipantMessa
   return responseText;
 };
 
-type ParticipantProps = {
-  mode: 'human' | 'ai';
+// Base type for all participants
+type BaseParticipantProps = {
   persona: 'organizer' | 'attendee';
   promptId?: string | null;
   systemPrompt: string;
   getTextInput?: () => Promise<string>;
-} & (
-  | { organizerFirstMessage: string; organizerId?: undefined }
-  | { organizerFirstMessage: null; organizerId: string }
-  | { organizerFirstMessage: null; organizerId?: undefined }
-);
+};
 
-const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, getTextInput, organizerId }: ParticipantProps) => {
+// Human organizer with first message from UI
+type HumanOrganizerProps = BaseParticipantProps & {
+  mode: 'human';
+  persona: 'organizer';
+  organizerFirstMessage: string;
+};
+
+// Human attendee (never has first message)
+type HumanAttendeeProps = BaseParticipantProps & {
+  mode: 'human';
+  persona: 'attendee';
+  organizerFirstMessage: null;
+};
+
+// AI organizer with prompt from UI
+type AiOrganizerFromUiProps = BaseParticipantProps & {
+  mode: 'ai';
+  persona: 'organizer';
+  organizerFirstMessage: string;
+  promptLocation: 'ui';
+};
+
+// AI organizer with prompt from database
+type AiOrganizerFromDatabaseProps = BaseParticipantProps & {
+  mode: 'ai';
+  persona: 'organizer';
+  organizerFirstMessage: null;
+  promptLocation: 'database';
+  organizerId: string;
+};
+
+// AI attendee (always from UI)
+type AiAttendeeProps = BaseParticipantProps & {
+  mode: 'ai';
+  persona: 'attendee';
+  organizerFirstMessage: null;
+  promptLocation: 'ui';
+};
+
+type ParticipantProps = HumanOrganizerProps | HumanAttendeeProps | AiOrganizerFromUiProps | AiOrganizerFromDatabaseProps | AiAttendeeProps;
+
+const useParticipant = (props: ParticipantProps) => {
+  const { mode: humanOrAi, systemPrompt, getTextInput } = props;
+  const organizerFirstMessage = 'organizerFirstMessage' in props ? props.organizerFirstMessage : null;
+  const promptLocation = props.mode === 'ai' && 'promptLocation' in props ? props.promptLocation : null;
+  const organizerId = props.mode === 'ai' && 'organizerId' in props ? props.organizerId : null;
   const [messages, setMessages] = useState<ParticipantMessage[]>([]);
   const [isBusy, setIsBusy] = useState(false);
 
@@ -86,7 +127,7 @@ const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, 
           console.log('first');
           setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
           return organizerFirstMessage;
-        } else if (organizerId && humanOrAi === 'ai') {
+        } else if (promptLocation === 'database' && organizerId && humanOrAi === 'ai') {
           console.log('heyyy');
           setIsBusy(true);
           try {
@@ -115,7 +156,7 @@ const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, 
         let responseText: string;
 
         if (humanOrAi === 'ai') {
-          if (organizerId) {
+          if (promptLocation === 'database' && organizerId) {
             responseText = await getDemoAiResponse(organizerId, updatedMessages);
           } else {
             responseText = await getAiResponse(updatedMessages, systemPrompt);
@@ -130,7 +171,7 @@ const useParticipant = ({ mode: humanOrAi, organizerFirstMessage, systemPrompt, 
         setIsBusy(false);
       }
     },
-    [messages, isBusy, systemPrompt, humanOrAi, getTextInput, organizerFirstMessage, organizerId],
+    [messages, isBusy, systemPrompt, humanOrAi, getTextInput, organizerFirstMessage, organizerId, promptLocation],
   );
 
   return {
@@ -273,10 +314,10 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
               const chatId = await createChat(
                 pp[0].mode,
                 pp[1].mode,
-                pp[0].mode === 'ai' ? pp[0].organizerId || null : null,
-                pp[1].mode === 'ai' ? pp[1].organizerId || null : null,
+                pp[0].mode === 'ai' && 'organizerId' in pp[0] ? pp[0].organizerId : null,
+                pp[1].mode === 'ai' && 'organizerId' in pp[1] ? pp[1].organizerId : null,
                 pp[0].systemPrompt,
-                pp[0].organizerFirstMessage || '',
+                'organizerFirstMessage' in pp[0] && pp[0].organizerFirstMessage ? pp[0].organizerFirstMessage : '',
                 pp[1].systemPrompt,
               );
               setState((current) => ({ ...current, chatId }));

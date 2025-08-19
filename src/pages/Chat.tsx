@@ -272,28 +272,47 @@ const Chat = ({
 
   const chatEngine = useChat([
     organizerPb?.firstMessage
-      ? {
-          mode: organizerMode,
-          organizerFirstMessage: organizerPb.firstMessage,
-          systemPrompt: organizerPb.system_prompt,
-          getTextInput,
-          persona: 'organizer',
-        }
+      ? organizerMode === 'ai'
+        ? {
+            mode: 'ai' as const,
+            organizerFirstMessage: organizerPb.firstMessage,
+            systemPrompt: organizerPb.system_prompt,
+            getTextInput,
+            persona: 'organizer' as const,
+            promptLocation: 'ui' as const,
+          }
+        : {
+            mode: 'human' as const,
+            organizerFirstMessage: organizerPb.firstMessage,
+            systemPrompt: organizerPb.system_prompt,
+            getTextInput,
+            persona: 'organizer' as const,
+          }
       : {
-          mode: organizerMode,
+          mode: 'ai' as const,
           organizerFirstMessage: null,
           organizerId: organizerId!,
           systemPrompt: organizerPb?.system_prompt || '',
           getTextInput,
-          persona: 'organizer',
+          persona: 'organizer' as const,
+          promptLocation: 'database' as const,
         },
-    {
-      mode: attendeeMode,
-      systemPrompt: attendeePb.system_prompt,
-      getTextInput,
-      organizerFirstMessage: null,
-      persona: 'attendee',
-    },
+    attendeeMode === 'ai'
+      ? {
+          mode: 'ai' as const,
+          systemPrompt: attendeePb.system_prompt,
+          getTextInput,
+          organizerFirstMessage: null,
+          persona: 'attendee' as const,
+          promptLocation: 'ui' as const,
+        }
+      : {
+          mode: 'human' as const,
+          systemPrompt: attendeePb.system_prompt,
+          getTextInput,
+          organizerFirstMessage: null,
+          persona: 'attendee' as const,
+        },
   ]);
 
   const aiThinking = useMemo(() => chatEngine.thinking?.mode === 'ai', [chatEngine.thinking]);
