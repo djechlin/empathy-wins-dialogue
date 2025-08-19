@@ -342,10 +342,10 @@ export const useChat = (
                 : await createChat(pp[0].systemPrompt, pp[1].systemPrompt);
 
               if (typeof chatResult === 'string') {
-                // Simple chat ID
-                setState((current) => ({ ...current, chatId: chatResult }));
+                // Simple chat ID - start normally
+                setState((current) => ({ ...current, chatId: chatResult, controlStatus: 'started' }));
               } else {
-                // ChatInitData with messages to rehydrate
+                // ChatInitData with messages to rehydrate - jump to ended
                 console.log('Rehydrating chat with', chatResult.initialMessages.length, 'messages');
                 setState((current) => ({
                   ...current,
@@ -357,8 +357,12 @@ export const useChat = (
               }
             } catch (error) {
               console.error('Failed to create chat:', error);
+              // On error, still set to started for normal flow
+              setState((current) => ({ ...current, controlStatus: 'started' }));
             }
           })();
+          // Don't set to started immediately - let the async handler decide
+          return prev;
         }
         return { ...prev, controlStatus: 'started' };
       } else if (prev.controlStatus === 'paused') {
