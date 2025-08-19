@@ -121,10 +121,10 @@ const useParticipant = (props: ParticipantProps) => {
         if (organizerFirstMessage) {
           setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
           return organizerFirstMessage;
-        } else if (promptLocation === 'database' && humanOrAi === 'ai' && organizerId) {
+        } else if (promptLocation === 'database' && humanOrAi === 'ai') {
           setIsBusy(true);
           try {
-            const responseText = await getDemoAiResponse(organizerId, []);
+            const responseText = await getDemoAiResponse(organizerId!, []);
             setMessages([{ role: 'assistant' as const, content: responseText }]);
             return responseText;
           } finally {
@@ -149,8 +149,8 @@ const useParticipant = (props: ParticipantProps) => {
         let responseText: string;
 
         if (humanOrAi === 'ai') {
-          if (promptLocation === 'database' && organizerId) {
-            responseText = await getDemoAiResponse(organizerId, updatedMessages);
+          if (promptLocation === 'database') {
+            responseText = await getDemoAiResponse(organizerId!, updatedMessages);
           } else {
             responseText = await getAiResponse(updatedMessages, systemPrompt);
           }
