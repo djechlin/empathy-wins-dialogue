@@ -348,10 +348,19 @@ export const useChat = (
               } else {
                 // ChatInitData with messages to rehydrate - jump to ended
                 console.log('Rehydrating chat with', chatResult.initialMessages.length, 'messages');
+                // Check for duplicate messages by ID
+                const uniqueMessages = chatResult.initialMessages.filter((msg, index, self) => 
+                  index === self.findIndex((m) => m.id === msg.id)
+                );
+                if (uniqueMessages.length !== chatResult.initialMessages.length) {
+                  console.warn('Duplicate messages detected in rehydration!', 
+                    'Total:', chatResult.initialMessages.length, 
+                    'Unique:', uniqueMessages.length);
+                }
                 setState((current) => ({
                   ...current,
                   chatId: chatResult.chatId,
-                  history: chatResult.initialMessages,
+                  history: uniqueMessages,
                   queue: [], // Clear queue to prevent starting new conversation
                   controlStatus: 'ended', // Mark as ended since conversation is complete
                 }));
