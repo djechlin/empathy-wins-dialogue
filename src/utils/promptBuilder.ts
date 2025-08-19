@@ -38,13 +38,17 @@ export const savePromptBuilder = async (data: PromptBuilderData): Promise<Prompt
         .update(promptBuilderRecord)
         .eq('id', data.id)
         .eq('user_id', user.id) // Ensure user can only update their own records
-        .select()
-        .single();
+        .select();
 
       if (error) {
         throw new Error(error.message || 'Database update error occurred');
       }
-      result = updatedData;
+      
+      if (!updatedData || updatedData.length === 0) {
+        throw new Error('Prompt not found or you do not have permission to update it');
+      }
+      
+      result = updatedData[0];
     } else {
       // Create new record
       const { data: insertedData, error } = await supabase.from('prompts').insert(promptBuilderRecord).select().single();

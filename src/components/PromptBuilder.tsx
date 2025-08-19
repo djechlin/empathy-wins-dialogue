@@ -1,8 +1,4 @@
 import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/ui/button';
-import { Input } from '@/ui/input';
-import { Label } from '@/ui/label';
-import { Textarea } from '@/ui/textarea';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +10,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/ui/alert-dialog';
+import { Button } from '@/ui/button';
+import { Input } from '@/ui/input';
+import { Label } from '@/ui/label';
+import { Textarea } from '@/ui/textarea';
 import { fetchMostRecentPromptForPersona, savePromptBuilder } from '@/utils/promptBuilder';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Archive, ArchiveRestore, ChevronDown, Share, Star } from 'lucide-react';
@@ -21,7 +21,7 @@ import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo,
 
 interface PromptBuilderProps {
   persona: 'organizer' | 'attendee' | 'coach';
-  color: string; // Tailwind background color class (e.g., 'bg-purple-200')
+  color: string;
   initialPrompt?: string;
   initialFirstMessage?: string;
   initialDisplayName?: string;
