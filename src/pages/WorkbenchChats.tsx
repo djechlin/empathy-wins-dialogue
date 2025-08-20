@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import Navbar from '@/components/layout/Navbar';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Badge } from '@/ui/badge';
 import { Button } from '@/ui/button';
-import { MessageCircle, User, Bot, LogIn, Lock, ChevronDown, ChevronRight, Zap, Megaphone } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
-import Navbar from '@/components/layout/Navbar';
 import { User as SupabaseUser } from '@supabase/supabase-js';
+import { Bot, ChevronDown, ChevronRight, Lock, LogIn, Megaphone, MessageCircle, User, Zap } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 interface ChatData {
@@ -243,10 +243,7 @@ const ConversationSectionComponent = ({ chatData, chatId, messagesOpen, setMessa
 const ScoutEvaluationComponent = ({ evaluation }: ScoutEvaluationProps) => {
   const parseEvaluationJSON = (text: string): EvaluationCriterion[] | null => {
     try {
-      // Try to extract JSON from the text
-      // Look for JSON array pattern or ```json blocks
       const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) || text.match(/(\[[\s\S]*\])/);
-
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[1]);
         if (
@@ -256,10 +253,8 @@ const ScoutEvaluationComponent = ({ evaluation }: ScoutEvaluationProps) => {
           return parsed;
         }
       }
-
-      // Not valid JSON, return null
     } catch {
-      // Not valid JSON, return null
+      //
     }
     return null;
   };
