@@ -582,8 +582,8 @@ const Chat = ({
       organizerPrompt: string,
       attendeePrompt: string,
       organizerFirstMessage: string,
-      organizerPromptId?: string,
-      attendeePromptId?: string,
+      organizerPromptId?: string | null,
+      attendeePromptId?: string | null,
     ): Promise<string | { chatId: string; initialMessages: Message[] }> => {
       // Check if reuse is enabled and both participants are AI
       if (reuseChatsWithSameAIs && organizerMode === 'ai' && attendeeMode === 'ai') {

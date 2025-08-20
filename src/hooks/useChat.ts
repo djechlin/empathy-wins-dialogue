@@ -213,6 +213,13 @@ const createChat = async (
   organizerPromptId?: string | null,
   attendeePromptId?: string | null,
 ): Promise<string> => {
+  console.log('createChat called with:', {
+    organizerMode,
+    attendeeMode,
+    organizerPromptId,
+    attendeePromptId,
+  });
+  
   const {
     data: { user },
     error: userError,
@@ -346,6 +353,7 @@ export const useChat = (
             try {
               const organizerFirstMessage =
                 pp[0].mode === 'ai' && 'organizerFirstMessage' in pp[0] ? pp[0].organizerFirstMessage || '' : '';
+              console.log('Creating chat with prompt IDs:', pp[0].promptId, pp[1].promptId);
               const chatResult = createChatFn
                 ? await createChatFn(pp[0].systemPrompt, pp[1].systemPrompt, organizerFirstMessage, pp[0].promptId, pp[1].promptId)
                 : await createChat(pp[0].systemPrompt, pp[1].systemPrompt, pp[0].mode, pp[1].mode, pp[0].promptId, pp[1].promptId);
