@@ -25,17 +25,16 @@ const WorkbenchDemo = () => {
           <div>
             {urlOrganizerId ? (
               <Chat
-                attendeePb={{
-                  id: 'human-attendee',
-                  name: 'Human',
-                  system_prompt: '',
-                  persona: 'attendee',
-                  firstMessage: '',
-                  starred: true,
+                organizer={{
+                  mode: 'ai',
+                  organizerId: urlOrganizerId,
+                  promptLocation: 'database',
+                  persona: 'organizer',
                 }}
-                organizerId={urlOrganizerId}
-                organizerMode="ai"
-                attendeeMode="human"
+                attendee={{
+                  mode: 'human',
+                  persona: 'attendee',
+                }}
                 controlStatus={controlStatus}
                 onStatusUpdate={handleChatStatusUpdate}
                 coaches={[]}

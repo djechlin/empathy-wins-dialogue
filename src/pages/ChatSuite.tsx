@@ -1,5 +1,4 @@
 import { Button } from '@/ui/button';
-import { Switch } from '@/ui/switch';
 import { PromptBuilderData } from '@/utils/promptBuilder';
 import { MessageCircle, Pause, Play, Square, Users } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -9,6 +8,7 @@ interface ChatSuiteProps {
   attendees: PromptBuilderData[];
   coaches: PromptBuilderData[];
   scouts: PromptBuilderData[];
+  organizerId: string;
   organizerPromptText: string;
   organizerFirstMessage: string;
   hasValidOrganizer?: boolean;
@@ -26,16 +26,13 @@ const ChatSuite = ({
   attendees,
   coaches,
   scouts,
+  organizerId,
   organizerPromptText,
   organizerFirstMessage,
   hasValidOrganizer = false,
 }: ChatSuiteProps) => {
-  // Suite-level chat controls - organizer is always AI, attendees vary by chat
-  const organizerMode = 'ai'; // Fixed as AI
   const [controlStatus, setControlStatus] = useState<'ready' | 'started' | 'paused' | 'ended'>('ready');
-  const [reuseChatsWithSameAIs, setReuseChatsWithSameAIs] = useState<boolean>(true);
 
-  // Track individual chat statuses (including Human chat)
   const [chatStatuses, setChatStatuses] = useState<Record<string, ChatStatus>>(() => {
     const aiChats = attendees
       .filter((attendee) => attendee.starred)
@@ -47,14 +44,11 @@ const ChatSuite = ({
         {},
       );
 
-    // Add Human chat
     return {
       ...aiChats,
       human: { started: false, messageCount: 0, lastActivity: null },
     };
   });
-
-  // No mode toggle needed - modes are fixed per chat
 
   const handleStartAll = useCallback(() => {
     setControlStatus('started');
@@ -79,7 +73,6 @@ const ChatSuite = ({
     }));
   }, []);
 
-  // Create memoized status update callbacks for each chat (AI attendees + Human)
   const statusUpdateCallbacks = useMemo(() => {
     const callbacks: Record<string, (updates: Partial<ChatStatus>) => void> = {};
     attendees
@@ -87,12 +80,10 @@ const ChatSuite = ({
       .forEach((attendee) => {
         callbacks[attendee.id] = (updates: Partial<ChatStatus>) => updateChatStatus(attendee.id, updates);
       });
-    // Add Human chat callback
     callbacks.human = (updates: Partial<ChatStatus>) => updateChatStatus('human', updates);
     return callbacks;
   }, [attendees, updateChatStatus]);
 
-  // Calculate suite statistics with useMemo to prevent recalculation on every render
   const { totalChats, totalMessages, activeChats } = useMemo(() => {
     const aiChats = attendees.filter((a) => a.starred && a.system_prompt.trim() !== '').length;
     const total = aiChats + 1; // +1 for Human chat
@@ -106,12 +97,6 @@ const ChatSuite = ({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold font-sans">Chats</h3>
-        <div className="flex items-center gap-2">
-          <label htmlFor="reuse-chats-toggle" className="text-sm text-gray-600">
-            Re-use chats with exact same AIs
-          </label>
-          <Switch id="reuse-chats-toggle" checked={reuseChatsWithSameAIs} onCheckedChange={setReuseChatsWithSameAIs} />
-        </div>
       </div>
 
       <div className="bg-gray-50 border rounded-lg p-4">
@@ -188,52 +173,43 @@ const ChatSuite = ({
         </div>
       </div>
 
-      {/* AI Attendee Chats */}
       {attendees
         .filter((attendee) => attendee.starred && attendee.system_prompt.trim() !== '')
         .map((attendee) => (
           <MemoizedChat
             key={attendee.id}
-            attendeePb={attendee}
-            organizerPb={{
-              name: 'Organizer',
-              system_prompt: organizerPromptText,
-              firstMessage: organizerFirstMessage,
-              id: 'organizer',
-              starred: true,
+            attendee={{ mode: 'ai', persona: 'attendee', systemPrompt: attendee.system_prompt }}
+            organizer={{
+              mode: 'ai',
               persona: 'organizer',
+              organizerId,
+              organizerFirstMessage,
+              systemPrompt: organizerPromptText,
+              promptLocation: 'local',
             }}
-            organizerMode={organizerMode}
-            attendeeMode="ai"
             controlStatus={controlStatus}
             onStatusUpdate={statusUpdateCallbacks[attendee.id]}
             coaches={coaches}
             scouts={scouts}
             defaultOpen={false}
-            reuseChatsWithSameAIs={reuseChatsWithSameAIs}
           />
         ))}
 
-      {/* Fixed Human Chat */}
       <MemoizedChat
         key="human"
-        attendeePb={{ name: 'Human', system_prompt: '', firstMessage: '', id: 'human', starred: true, persona: 'attendee' }}
-        organizerPb={{
-          name: 'Organizer',
-          system_prompt: organizerPromptText,
-          firstMessage: organizerFirstMessage,
-          id: 'organizer',
-          starred: true,
+        attendee={{ mode: 'human', persona: 'attendee' }}
+        organizer={{
+          mode: 'ai',
           persona: 'organizer',
+          organizerFirstMessage,
+          systemPrompt: organizerPromptText,
+          promptLocation: 'local',
         }}
-        organizerMode={organizerMode}
-        attendeeMode="human"
         controlStatus={controlStatus}
         onStatusUpdate={statusUpdateCallbacks.human}
         coaches={coaches}
         scouts={scouts}
         defaultOpen={false}
-        reuseChatsWithSameAIs={reuseChatsWithSameAIs}
       />
 
       {/* Active Coaches Cards - Moved to bottom */}

@@ -1,4 +1,4 @@
-import type { Message } from '@/hooks/useChat';
+import type { Message, ParticipantProps } from '@/hooks/useChat';
 import { useChat } from '@/hooks/useChat';
 import { supabase } from '@/integrations/supabase/client';
 import { WorkbenchRequest, WorkbenchResponse } from '@/types/edge-function-types';
@@ -10,14 +10,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Bot, ChevronRight, MessageCircle, Send, User, Zap } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import ScrollToBottom from 'react-scroll-to-bottom';
-
-type ChatMessage = {
-  id: string;
-  chat_id: string;
-  created_at: string;
-  message: string;
-  persona: string;
-};
 
 interface ChatState {
   userTextInput: string;
@@ -37,7 +29,6 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
       return { ...state, userTextInput: action.payload };
     case 'SEND_USER_MESSAGE': {
       const newQueue = [...state.userSentQueue, action.payload];
-      // Resolve any pending promise with the first message in queue
       if (state.pendingPromiseResolve && newQueue.length > 0) {
         state.pendingPromiseResolve(newQueue[0]);
         return {
@@ -64,17 +55,13 @@ interface ChatStatus {
 }
 
 interface ChatProps {
-  attendeePb: PromptBuilderData;
-  organizerPb?: PromptBuilderData;
-  organizerId?: string;
-  organizerMode: 'human' | 'ai';
-  attendeeMode: 'human' | 'ai';
+  attendee: Omit<ParticipantProps, 'getTextInput'>;
+  organizer: Omit<ParticipantProps, 'getTextInput'>;
   controlStatus: 'ready' | 'started' | 'paused' | 'ended';
   onStatusUpdate: (updates: ChatStatus) => void;
   coaches?: PromptBuilderData[];
   scouts?: PromptBuilderData[];
   defaultOpen?: boolean;
-  reuseChatsWithSameAIs?: boolean;
 }
 
 const AiThinking = ({ persona: participant }: { persona: 'organizer' | 'attendee' }) => (
@@ -119,8 +106,6 @@ const CoachResults = ({
 
   const parseCoachEvaluation = (text: string): CoachCriterion[] | null => {
     try {
-      // Try to extract JSON from the text
-      // Look for JSON array pattern or ```json blocks
       const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) || text.match(/(\[[\s\S]*\])/);
 
       if (jsonMatch) {
@@ -448,8 +433,6 @@ const ScoutResults = ({
           }
 
           setEvaluations(newEvaluations);
-
-          // Save scout results to database
           if (chatId) {
             for (const scout of scouts) {
               const evaluation = newEvaluations[scout.id];
@@ -554,19 +537,7 @@ const ScoutResults = ({
   );
 };
 
-const Chat = ({
-  attendeePb,
-  organizerPb,
-  organizerId,
-  organizerMode,
-  attendeeMode,
-  controlStatus,
-  onStatusUpdate,
-  coaches = [],
-  scouts = [],
-  defaultOpen = true,
-  reuseChatsWithSameAIs = false,
-}: ChatProps) => {
+const Chat = ({ attendee, organizer, controlStatus, onStatusUpdate, coaches = [], scouts = [], defaultOpen = true }: ChatProps) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [state, dispatch] = useReducer(reducer, {
     userTextInput: '',
@@ -576,102 +547,6 @@ const Chat = ({
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const findOrCreateChat = useCallback(
-    async (
-      organizerPrompt: string,
-      attendeePrompt: string,
-      organizerFirstMessage: string,
-      organizerPromptId?: string | null,
-      attendeePromptId?: string | null,
-    ): Promise<string | { chatId: string; initialMessages: Message[] }> => {
-      // Check if reuse is enabled and both participants are AI
-      if (reuseChatsWithSameAIs && organizerMode === 'ai' && attendeeMode === 'ai') {
-        try {
-          const { data: existingChats, error } = await supabase
-            .from('chats')
-            .select('id, created_at')
-            .eq('organizer_mode', 'ai')
-            .eq('attendee_mode', 'ai')
-            .eq('organizer_system_prompt', organizerPrompt)
-            .eq('organizer_first_message', organizerFirstMessage)
-            .eq('attendee_system_prompt', attendeePrompt)
-            .order('created_at', { ascending: false })
-            .limit(1);
-
-          if (error) {
-            console.error('Error finding existing chat:', error);
-          } else if (existingChats && existingChats.length > 0) {
-            const chatId = existingChats[0].id;
-            console.log('Found existing chat, reusing with messages:', chatId);
-
-            // Load existing messages
-            const { data: messages, error: messagesError } = await supabase
-              .from('chat_messages')
-              .select('*')
-              .eq('chat_id', chatId)
-              .order('created_at', { ascending: true });
-
-            console.log('Loaded', messages?.length, 'messages from database for chat', chatId);
-
-            if (messagesError) {
-              console.error('Error loading existing messages:', messagesError);
-              return chatId; // Fall back to empty chat
-            }
-
-            // Convert database messages to chat engine format
-            const initialMessages = (messages || []).map((msg: ChatMessage) => ({
-              id: msg.id,
-              senderIndex: (msg.persona === 'organizer' ? 0 : 1) as 0 | 1,
-              sender: msg.persona as 'organizer' | 'attendee',
-              content: msg.message,
-              timestamp: new Date(msg.created_at),
-            }));
-
-            console.log('Rehydrating chat with', initialMessages.length, 'messages');
-            console.log(
-              'Message IDs:',
-              initialMessages.map((m) => m.id),
-            );
-            return { chatId, initialMessages };
-          }
-        } catch (error) {
-          console.error('Error in findOrCreateChat:', error);
-        }
-      }
-
-      // Create new chat if no existing chat found or reuse disabled
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
-      if (userError || !user) {
-        throw new Error('User not authenticated');
-      }
-
-      const { data, error } = await supabase
-        .from('chats')
-        .insert({
-          user_id: user.id,
-          organizer_mode: organizerMode,
-          organizer_prompt_id: organizerPromptId || null,
-          attendee_mode: attendeeMode,
-          attendee_prompt_id: attendeePromptId || null,
-          organizer_system_prompt: organizerPrompt,
-          organizer_first_message: organizerFirstMessage,
-          attendee_system_prompt: attendeePrompt,
-        })
-        .select('id')
-        .single();
-
-      if (error) {
-        throw error;
-      }
-
-      return data.id;
-    },
-    [reuseChatsWithSameAIs, organizerMode, attendeeMode],
-  );
 
   const getTextInput = useCallback((): Promise<string> => {
     return new Promise((resolve) => {
@@ -685,57 +560,10 @@ const Chat = ({
     });
   }, [state.userSentQueue]);
 
-  const chatEngine = useChat(
-    [
-      organizerPb?.firstMessage
-        ? organizerMode === 'ai'
-          ? {
-              mode: 'ai' as const,
-              organizerFirstMessage: organizerPb.firstMessage,
-              systemPrompt: organizerPb.system_prompt,
-              persona: 'organizer' as const,
-              promptLocation: 'ui' as const,
-              promptId: organizerPb?.id,
-            }
-          : {
-              mode: 'human' as const,
-              organizerFirstMessage: organizerPb.firstMessage,
-              systemPrompt: organizerPb.system_prompt,
-              getTextInput,
-              persona: 'organizer' as const,
-              promptId: organizerPb?.id,
-            }
-        : {
-            mode: 'ai' as const,
-            organizerFirstMessage: null,
-            organizerId: organizerId!,
-            systemPrompt: organizerPb?.system_prompt || '',
-            persona: 'organizer' as const,
-            promptLocation: 'database' as const,
-            promptId: organizerPb?.id,
-          },
-      attendeeMode === 'ai'
-        ? {
-            mode: 'ai' as const,
-            systemPrompt: attendeePb.system_prompt,
-            organizerFirstMessage: null,
-            persona: 'attendee' as const,
-            promptLocation: 'ui' as const,
-            promptId: attendeePb?.id,
-          }
-        : {
-            mode: 'human' as const,
-            systemPrompt: attendeePb.system_prompt,
-            getTextInput,
-            organizerFirstMessage: null,
-            persona: 'attendee' as const,
-            promptId: attendeePb?.id,
-          },
-    ],
-    // Pass findOrCreateChat for creating chats
-    findOrCreateChat,
-  );
-
+  const chatEngine = useChat([
+    { ...organizer, getTextInput },
+    { ...attendee, getTextInput },
+  ] as [ParticipantProps, ParticipantProps]);
   const aiThinking = useMemo(() => chatEngine.thinking?.mode === 'ai', [chatEngine.thinking]);
 
   useEffect(() => {
@@ -834,9 +662,9 @@ const Chat = ({
             </motion.div>
             <div className="text-left">
               <div className="flex items-center gap-2">
-                {attendeePb.name === 'Human' && <User size={16} className="text-blue-600" />}
-                <h3 className="font-medium text-gray-900 font-sans">{attendeePb.name}</h3>
-                {attendeePb.name === 'Human' && <span className="text-xs text-gray-500">(manual input)</span>}
+                {attendee.mode === 'human' && <User size={16} className="text-blue-600" />}
+                <h3 className="font-medium text-gray-900 font-sans">SDLJSDLFKJFDKLSJLDFJD</h3>
+                {attendee.mode === 'human' && <span className="text-xs text-gray-500">(manual input)</span>}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                 <div className={`w-2 h-2 rounded-full ${getStatusColor(chatStatus)}`} />
@@ -949,8 +777,7 @@ const Chat = ({
                 </div>
               </ScrollToBottom>
 
-              {/* Chat Input Area - Hidden in double AI mode */}
-              {!(organizerMode === 'ai' && attendeeMode === 'ai') && (
+              {(organizer.mode === 'human' || attendee.mode === 'human') && (
                 <div className="border-t p-4 bg-white">
                   <div className="flex space-x-2">
                     <Textarea

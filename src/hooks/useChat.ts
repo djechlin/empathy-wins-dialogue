@@ -24,7 +24,7 @@ const getAiResponse = async (updatedMessages: ParticipantMessage[], systemPrompt
     throw error;
   }
 
-  let responseText;
+  let responseText: string;
   if (data?.message) {
     responseText = data.message;
   } else if (typeof data === 'string') {
@@ -50,7 +50,7 @@ const getDemoAiResponse = async (organizerId: string, messages: ParticipantMessa
     throw error;
   }
 
-  let responseText;
+  let responseText: string;
   if (data?.message) {
     responseText = data.message;
   } else if (typeof data === 'string') {
@@ -64,21 +64,23 @@ const getDemoAiResponse = async (organizerId: string, messages: ParticipantMessa
 
 type BaseParticipantProps = {
   persona: 'organizer' | 'attendee';
-  promptId?: string | null;
-  systemPrompt: string;
+  mode: 'human' | 'ai';
+  organizerFirstMessage?: string;
+  organizerId?: string;
+  attendeeId?: string;
+  systemPrompt?: string;
+  promptLocation?: 'database' | 'local';
 };
 
 type HumanOrganizerProps = BaseParticipantProps & {
   mode: 'human';
   persona: 'organizer';
-  organizerFirstMessage: string;
   getTextInput: () => Promise<string>;
 };
 
 type HumanAttendeeProps = BaseParticipantProps & {
   mode: 'human';
   persona: 'attendee';
-  organizerFirstMessage: null;
   getTextInput: () => Promise<string>;
 };
 
@@ -86,101 +88,74 @@ type AiOrganizerFromUiProps = BaseParticipantProps & {
   mode: 'ai';
   persona: 'organizer';
   organizerFirstMessage: string;
-  promptLocation: 'ui';
+  organizerId: string;
+  systemPrompt: string;
+  promptLocation: 'local';
 };
 
 type AiOrganizerFromDatabaseProps = BaseParticipantProps & {
   mode: 'ai';
   persona: 'organizer';
-  organizerFirstMessage: null;
-  promptLocation: 'database';
   organizerId: string;
+  promptLocation: 'database';
 };
 
 type AiAttendeeProps = BaseParticipantProps & {
   mode: 'ai';
   persona: 'attendee';
-  organizerFirstMessage: null;
-  promptLocation: 'ui';
+  attendeeId: string;
+  systemPrompt: string;
 };
 
-type ParticipantProps = HumanOrganizerProps | HumanAttendeeProps | AiOrganizerFromUiProps | AiOrganizerFromDatabaseProps | AiAttendeeProps;
+export type ParticipantProps =
+  | HumanOrganizerProps
+  | HumanAttendeeProps
+  | AiOrganizerFromUiProps
+  | AiOrganizerFromDatabaseProps
+  | AiAttendeeProps;
 
 const useParticipant = (props: ParticipantProps) => {
-  const { mode: humanOrAi, systemPrompt } = props;
-  const getTextInput = props.mode === 'human' ? props.getTextInput : undefined;
+  const { mode } = props;
+  const getTextInput = mode === 'human' ? props.getTextInput : undefined;
   const organizerFirstMessage = 'organizerFirstMessage' in props ? props.organizerFirstMessage : null;
   const promptLocation = props.mode === 'ai' && 'promptLocation' in props ? props.promptLocation : null;
+  const systemPrompt = props.systemPrompt;
   const organizerId = props.mode === 'ai' && 'organizerId' in props ? props.organizerId : undefined;
   const [messages, setMessages] = useState<ParticipantMessage[]>([]);
-  const [isBusy, setIsBusy] = useState(false);
 
   const chat = useCallback(
     async (msg: string | null): Promise<string> => {
       if (msg === null && messages.length === 0) {
-        if (props.persona === 'organizer' && (props.mode === 'human' || (props.mode === 'ai' && promptLocation === 'ui'))) {
-          setMessages([{ role: 'assistant' as const, content: organizerFirstMessage! }]);
-          return organizerFirstMessage!;
-        } else if (promptLocation === 'database' && humanOrAi === 'ai') {
-          setIsBusy(true);
-          try {
-            const responseText = await getDemoAiResponse(organizerId!, []);
-            setMessages([{ role: 'assistant' as const, content: responseText }]);
-            return responseText;
-          } finally {
-            setIsBusy(false);
-          }
+        if (mode === 'ai' && promptLocation === 'local') {
+          setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
+          return organizerFirstMessage;
+        } else if (promptLocation === 'database') {
+          const responseText = await getDemoAiResponse(organizerId, []);
+          setMessages([{ role: 'assistant' as const, content: responseText }]);
+          return responseText;
         }
       }
 
-      if (msg === null) {
-        throw new Error('No message provided');
+      const updatedMessages = [...messages, { role: 'user' as const, content: msg }];
+      setMessages(updatedMessages);
+
+      let responseText: string;
+      if (mode === 'human') {
+        responseText = await getTextInput();
+      } else if (promptLocation === 'database') {
+        responseText = await getDemoAiResponse(organizerId, updatedMessages);
+      } else {
+        responseText = await getAiResponse(updatedMessages, systemPrompt);
       }
-      if (isBusy) {
-        throw new Error('Participant is busy');
-      }
 
-      setIsBusy(true);
-
-      try {
-        const updatedMessages = [...messages, { role: 'user' as const, content: msg }];
-        setMessages(updatedMessages);
-
-        let responseText: string;
-
-        if (humanOrAi === 'ai') {
-          if (promptLocation === 'database') {
-            responseText = await getDemoAiResponse(organizerId!, updatedMessages);
-          } else {
-            responseText = await getAiResponse(updatedMessages, systemPrompt);
-          }
-        } else {
-          responseText = await getTextInput();
-        }
-
-        setMessages((prev) => [...prev, { role: 'assistant' as const, content: responseText }]);
-        return responseText;
-      } finally {
-        setIsBusy(false);
-      }
+      setMessages((prev) => [...prev, { role: 'assistant' as const, content: responseText }]);
+      return responseText;
     },
-    [
-      messages,
-      isBusy,
-      systemPrompt,
-      humanOrAi,
-      getTextInput,
-      organizerFirstMessage,
-      organizerId,
-      promptLocation,
-      props.mode,
-      props.persona,
-    ],
+    [messages, mode, getTextInput, organizerFirstMessage, organizerId, promptLocation, systemPrompt],
   );
 
   return {
     chat,
-    isBusy,
   };
 };
 
@@ -213,13 +188,6 @@ const createChat = async (
   organizerPromptId?: string | null,
   attendeePromptId?: string | null,
 ): Promise<string> => {
-  console.log('createChat called with:', {
-    organizerMode,
-    attendeeMode,
-    organizerPromptId,
-    attendeePromptId,
-  });
-
   const {
     data: { user },
     error: userError,
@@ -270,21 +238,7 @@ const insertMessage = async (chatId: string, persona: 'organizer' | 'attendee', 
   }
 };
 
-type ChatInitData = {
-  chatId: string;
-  initialMessages: Message[];
-};
-
-export const useChat = (
-  pp: [ParticipantProps, ParticipantProps],
-  createChatFn?: (
-    organizerPrompt: string,
-    attendeePrompt: string,
-    organizerFirstMessage?: string,
-    organizerPromptId?: string | null,
-    attendeePromptId?: string | null,
-  ) => Promise<string | ChatInitData>,
-) => {
+export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
   const location = useLocation();
   const isDemoMode = location.pathname.includes('/demo');
   const [state, setState] = useState<State>({
@@ -303,7 +257,6 @@ export const useChat = (
       return;
     }
 
-    // Pause does not cancel the previous message, ergo unless an error that breaks the chat (which is possible), queue not empty
     const next = state.queue[0];
     const nextReceiver = next === null ? 0 : ((1 - next.senderIndex) as 0 | 1);
     setState((prev) => ({ ...prev, queue: prev.queue.slice(1), thinking: pp[nextReceiver], speaker: pp[nextReceiver] }));
@@ -317,7 +270,6 @@ export const useChat = (
         timestamp: new Date(),
       };
       setState((prev) => {
-        // Check if attendee sent {{DONE}} to end the chat - don't re-queue
         if (response.sender === 'attendee' && response.content.includes('{{DONE}}')) {
           const newState = { ...prev, history: [...prev.history, response], thinking: null, controlStatus: 'ended' as ControlStatus };
 
@@ -351,47 +303,20 @@ export const useChat = (
         if (!prev.chatId) {
           (async () => {
             try {
-              const organizerFirstMessage =
-                pp[0].mode === 'ai' && 'organizerFirstMessage' in pp[0] ? pp[0].organizerFirstMessage || '' : '';
-              console.log('Creating chat with prompt IDs:', pp[0].promptId, pp[1].promptId);
-              const chatResult = createChatFn
-                ? await createChatFn(pp[0].systemPrompt, pp[1].systemPrompt, organizerFirstMessage, pp[0].promptId, pp[1].promptId)
-                : await createChat(pp[0].systemPrompt, pp[1].systemPrompt, pp[0].mode, pp[1].mode, pp[0].promptId, pp[1].promptId);
-
-              if (typeof chatResult === 'string') {
-                // Simple chat ID - start normally
-                setState((current) => ({ ...current, chatId: chatResult, controlStatus: 'started' }));
-              } else {
-                // ChatInitData with messages to rehydrate - jump to ended
-                console.log('Rehydrating chat with', chatResult.initialMessages.length, 'messages');
-                // Check for duplicate messages by ID
-                const uniqueMessages = chatResult.initialMessages.filter(
-                  (msg, index, self) => index === self.findIndex((m) => m.id === msg.id),
-                );
-                if (uniqueMessages.length !== chatResult.initialMessages.length) {
-                  console.warn(
-                    'Duplicate messages detected in rehydration!',
-                    'Total:',
-                    chatResult.initialMessages.length,
-                    'Unique:',
-                    uniqueMessages.length,
-                  );
-                }
-                setState((current) => ({
-                  ...current,
-                  chatId: chatResult.chatId,
-                  history: uniqueMessages,
-                  queue: [], // Clear queue to prevent starting new conversation
-                  controlStatus: 'ended', // Mark as ended since conversation is complete
-                }));
-              }
+              const chatResult = await createChat(
+                pp[0].systemPrompt,
+                pp[1].systemPrompt,
+                pp[0].mode,
+                pp[1].mode,
+                pp[0].organizerId,
+                pp[1].attendeeId,
+              );
+              setState((current) => ({ ...current, chatId: chatResult, controlStatus: 'started' }));
             } catch (error) {
               console.error('Failed to create chat:', error);
-              // On error, still set to started for normal flow
               setState((current) => ({ ...current, controlStatus: 'started' }));
             }
           })();
-          // Don't set to started immediately - let the async handler decide
           return prev;
         }
         return { ...prev, controlStatus: 'started' };
@@ -400,7 +325,7 @@ export const useChat = (
       }
       return prev;
     });
-  }, [pp, createChatFn]);
+  }, [pp]);
   const pause = useCallback(() => {
     setState((prev) => {
       if (prev.controlStatus === 'started') {
@@ -412,7 +337,6 @@ export const useChat = (
 
   const end = useCallback(async () => {
     setState((prev) => {
-      // Only end the chat if it hasn't been ended already
       if (prev.chatId && prev.controlStatus !== 'ended') {
         (async () => {
           try {

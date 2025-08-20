@@ -1,18 +1,19 @@
 import Navbar from '@/components/layout/Navbar';
 import PromptBuilderSuite from '@/components/PromptBuilderSuite';
-import { generateTimestampId } from '@/utils/id';
-import { type PromptBuilderData } from '@/utils/promptBuilder';
-import { useCallback, useReducer, useEffect, useState } from 'react';
-import ChatSuite from './ChatSuite';
 import { supabase } from '@/integrations/supabase/client';
-import { User } from '@supabase/supabase-js';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
-import { LogIn, Lock } from 'lucide-react';
+import { generateTimestampId } from '@/utils/id';
+import { type PromptBuilderData } from '@/utils/promptBuilder';
+import { User } from '@supabase/supabase-js';
+import { Lock, LogIn } from 'lucide-react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ChatSuite from './ChatSuite';
 
 interface WorkbenchState {
   organizers: PromptBuilderData[];
+  organizerId: string;
   organizerPromptText: string;
   organizerFirstMessage: string;
   attendees: PromptBuilderData[];
@@ -26,7 +27,7 @@ interface WorkbenchState {
 
 type WorkbenchAction =
   | { type: 'UPDATE_ORGANIZERS'; payload: PromptBuilderData[] }
-  | { type: 'UPDATE_ORGANIZER_DATA'; payload: { systemPrompt: string; firstMessage: string } }
+  | { type: 'UPDATE_ORGANIZER_DATA'; payload: { systemPrompt: string; firstMessage: string; organizerId: string } }
   | { type: 'UPDATE_ATTENDEES'; payload: PromptBuilderData[] }
   | { type: 'UPDATE_COACHES'; payload: PromptBuilderData[] }
   | { type: 'UPDATE_SCOUTS'; payload: PromptBuilderData[] }
@@ -47,6 +48,7 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
     case 'UPDATE_ORGANIZER_DATA':
       return {
         ...state,
+        organizerId: action.payload.organizerId,
         organizerPromptText: action.payload.systemPrompt,
         organizerFirstMessage: action.payload.firstMessage,
       };
@@ -103,6 +105,7 @@ const Workbench = () => {
   const [user, setUser] = useState<User | null>(null);
   const [state, dispatch] = useReducer(workbenchReducer, {
     organizers: [],
+    organizerId: '',
     organizerPromptText: '',
     organizerFirstMessage: '',
     attendees: [{ id: generateTimestampId(), name: 'attendee', system_prompt: '', firstMessage: '', persona: 'attendee' as const }],
@@ -137,25 +140,23 @@ const Workbench = () => {
   const organizerPromptChangeCb = useCallback((organizers: PromptBuilderData[]) => {
     dispatch({ type: 'UPDATE_ORGANIZERS', payload: organizers });
 
-    // Select the starred organizer for chat use
     const starredOrganizers = organizers.filter((o) => o.starred);
     if (starredOrganizers.length === 1) {
       const selectedOrganizer = starredOrganizers[0];
       dispatch({
         type: 'UPDATE_ORGANIZER_DATA',
         payload: {
+          organizerId: selectedOrganizer.id,
           systemPrompt: selectedOrganizer.system_prompt,
           firstMessage: selectedOrganizer.firstMessage || '',
         },
       });
     } else if (starredOrganizers.length === 0) {
-      // No starred organizer, clear the data
       dispatch({
         type: 'UPDATE_ORGANIZER_DATA',
-        payload: { systemPrompt: '', firstMessage: '' },
+        payload: { systemPrompt: '', firstMessage: '', organizerId: '' },
       });
     }
-    // If multiple starred organizers, we'll handle this with a warning in the UI
   }, []);
 
   const handleAttendeesChangeCb = useCallback((attendees: PromptBuilderData[]) => {
@@ -197,7 +198,6 @@ const Workbench = () => {
             </div>
 
             <div className="space-y-4">
-              {/* Organizer Selection Status */}
               {(() => {
                 const starredOrganizers = state.organizers.filter((o) => o.starred && !o.archived);
                 if (starredOrganizers.length === 1) {
@@ -270,6 +270,7 @@ const Workbench = () => {
                 attendees={state.attendees}
                 coaches={state.coaches}
                 scouts={state.scouts}
+                organizerId={state.organizerId}
                 organizerPromptText={state.organizerPromptText}
                 organizerFirstMessage={state.organizerFirstMessage}
                 hasValidOrganizer={state.organizers.filter((o) => o.starred && !o.archived).length === 1}
