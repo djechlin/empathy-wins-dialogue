@@ -205,7 +205,14 @@ type State = {
 
 let counter = 1;
 
-const createChat = async (organizerPrompt: string, attendeePrompt: string): Promise<string> => {
+const createChat = async (
+  organizerPrompt: string,
+  attendeePrompt: string,
+  organizerMode: 'human' | 'ai' = 'ai',
+  attendeeMode: 'human' | 'ai' = 'ai',
+  organizerPromptId?: string | null,
+  attendeePromptId?: string | null,
+): Promise<string> => {
   const {
     data: { user },
     error: userError,
@@ -218,10 +225,10 @@ const createChat = async (organizerPrompt: string, attendeePrompt: string): Prom
     .from('chats')
     .insert({
       user_id: user.id,
-      organizer_mode: 'ai',
-      organizer_prompt_id: null,
-      attendee_mode: 'ai',
-      attendee_prompt_id: null,
+      organizer_mode: organizerMode,
+      organizer_prompt_id: organizerPromptId || null,
+      attendee_mode: attendeeMode,
+      attendee_prompt_id: attendeePromptId || null,
       organizer_system_prompt: organizerPrompt,
       organizer_first_message: '',
       attendee_system_prompt: attendeePrompt,
@@ -263,7 +270,13 @@ type ChatInitData = {
 
 export const useChat = (
   pp: [ParticipantProps, ParticipantProps],
-  createChatFn?: (organizerPrompt: string, attendeePrompt: string, organizerFirstMessage?: string) => Promise<string | ChatInitData>,
+  createChatFn?: (
+    organizerPrompt: string,
+    attendeePrompt: string,
+    organizerFirstMessage?: string,
+    organizerPromptId?: string | null,
+    attendeePromptId?: string | null,
+  ) => Promise<string | ChatInitData>,
 ) => {
   const location = useLocation();
   const isDemoMode = location.pathname.includes('/demo');
@@ -334,8 +347,8 @@ export const useChat = (
               const organizerFirstMessage =
                 pp[0].mode === 'ai' && 'organizerFirstMessage' in pp[0] ? pp[0].organizerFirstMessage || '' : '';
               const chatResult = createChatFn
-                ? await createChatFn(pp[0].systemPrompt, pp[1].systemPrompt, organizerFirstMessage)
-                : await createChat(pp[0].systemPrompt, pp[1].systemPrompt);
+                ? await createChatFn(pp[0].systemPrompt, pp[1].systemPrompt, organizerFirstMessage, pp[0].promptId, pp[1].promptId)
+                : await createChat(pp[0].systemPrompt, pp[1].systemPrompt, pp[0].mode, pp[1].mode, pp[0].promptId, pp[1].promptId);
 
               if (typeof chatResult === 'string') {
                 // Simple chat ID - start normally

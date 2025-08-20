@@ -582,6 +582,8 @@ const Chat = ({
       organizerPrompt: string,
       attendeePrompt: string,
       organizerFirstMessage: string,
+      organizerPromptId?: string,
+      attendeePromptId?: string,
     ): Promise<string | { chatId: string; initialMessages: Message[] }> => {
       // Check if reuse is enabled and both participants are AI
       if (reuseChatsWithSameAIs && organizerMode === 'ai' && attendeeMode === 'ai') {
@@ -652,9 +654,9 @@ const Chat = ({
         .insert({
           user_id: user.id,
           organizer_mode: 'ai',
-          organizer_prompt_id: null,
+          organizer_prompt_id: organizerPromptId || null,
           attendee_mode: 'ai',
-          attendee_prompt_id: null,
+          attendee_prompt_id: attendeePromptId || null,
           organizer_system_prompt: organizerPrompt,
           organizer_first_message: organizerFirstMessage,
           attendee_system_prompt: attendeePrompt,
@@ -693,6 +695,7 @@ const Chat = ({
               systemPrompt: organizerPb.system_prompt,
               persona: 'organizer' as const,
               promptLocation: 'ui' as const,
+              promptId: organizerPb?.id,
             }
           : {
               mode: 'human' as const,
@@ -700,6 +703,7 @@ const Chat = ({
               systemPrompt: organizerPb.system_prompt,
               getTextInput,
               persona: 'organizer' as const,
+              promptId: organizerPb?.id,
             }
         : {
             mode: 'ai' as const,
@@ -708,6 +712,7 @@ const Chat = ({
             systemPrompt: organizerPb?.system_prompt || '',
             persona: 'organizer' as const,
             promptLocation: 'database' as const,
+            promptId: organizerPb?.id,
           },
       attendeeMode === 'ai'
         ? {
@@ -716,6 +721,7 @@ const Chat = ({
             organizerFirstMessage: null,
             persona: 'attendee' as const,
             promptLocation: 'ui' as const,
+            promptId: attendeePb?.id,
           }
         : {
             mode: 'human' as const,
@@ -723,6 +729,7 @@ const Chat = ({
             getTextInput,
             organizerFirstMessage: null,
             persona: 'attendee' as const,
+            promptId: attendeePb?.id,
           },
     ],
     // Only use findOrCreateChat for AI-only conversations
