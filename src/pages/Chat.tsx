@@ -332,8 +332,6 @@ const ScoutResults = ({
 
   const parseScoutEvaluation = (text: string): ScoutCriterion[] | null => {
     try {
-      // Try to extract JSON from the text
-      // Look for JSON array pattern or ```json blocks
       const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) || text.match(/(\[[\s\S]*\])/);
 
       if (jsonMatch) {
@@ -582,7 +580,6 @@ const Chat = ({ attendee, organizer, controlStatus, onStatusUpdate, coaches = []
     }
   }, [chatEngine.history.length, onStatusUpdate]);
 
-  // Notify parent when chat ends internally (e.g., due to {{DONE}})
   useEffect(() => {
     if (chatEngine.controlStatus === 'ended') {
       onStatusUpdate({ messageCount: chatEngine.history.length, lastActivity: new Date() });
@@ -663,7 +660,7 @@ const Chat = ({ attendee, organizer, controlStatus, onStatusUpdate, coaches = []
             <div className="text-left">
               <div className="flex items-center gap-2">
                 {attendee.mode === 'human' && <User size={16} className="text-blue-600" />}
-                <h3 className="font-medium text-gray-900 font-sans">SDLJSDLFKJFDKLSJLDFJD</h3>
+                <h3 className="font-medium text-gray-900 font-sans">{attendee.displayName}</h3>
                 {attendee.mode === 'human' && <span className="text-xs text-gray-500">(manual input)</span>}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">

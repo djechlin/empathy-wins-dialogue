@@ -65,6 +65,7 @@ const getDemoAiResponse = async (organizerId: string, messages: ParticipantMessa
 type BaseParticipantProps = {
   persona: 'organizer' | 'attendee';
   mode: 'human' | 'ai';
+  displayName: string;
   organizerFirstMessage?: string;
   organizerId?: string;
   attendeeId?: string;

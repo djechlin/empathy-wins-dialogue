@@ -14,6 +14,7 @@ import ChatSuite from './ChatSuite';
 interface WorkbenchState {
   organizers: PromptBuilderData[];
   organizerId: string;
+  organizerName: string;
   organizerPromptText: string;
   organizerFirstMessage: string;
   attendees: PromptBuilderData[];
@@ -27,7 +28,7 @@ interface WorkbenchState {
 
 type WorkbenchAction =
   | { type: 'UPDATE_ORGANIZERS'; payload: PromptBuilderData[] }
-  | { type: 'UPDATE_ORGANIZER_DATA'; payload: { systemPrompt: string; firstMessage: string; organizerId: string } }
+  | { type: 'UPDATE_ORGANIZER_DATA'; payload: { systemPrompt: string; firstMessage: string; organizerName: string; organizerId: string } }
   | { type: 'UPDATE_ATTENDEES'; payload: PromptBuilderData[] }
   | { type: 'UPDATE_COACHES'; payload: PromptBuilderData[] }
   | { type: 'UPDATE_SCOUTS'; payload: PromptBuilderData[] }
@@ -49,6 +50,7 @@ function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): Workb
       return {
         ...state,
         organizerId: action.payload.organizerId,
+        organizerName: action.payload.organizerName,
         organizerPromptText: action.payload.systemPrompt,
         organizerFirstMessage: action.payload.firstMessage,
       };
@@ -106,6 +108,7 @@ const Workbench = () => {
   const [state, dispatch] = useReducer(workbenchReducer, {
     organizers: [],
     organizerId: '',
+    organizerName: '',
     organizerPromptText: '',
     organizerFirstMessage: '',
     attendees: [{ id: generateTimestampId(), name: 'attendee', system_prompt: '', firstMessage: '', persona: 'attendee' as const }],
@@ -149,12 +152,13 @@ const Workbench = () => {
           organizerId: selectedOrganizer.id,
           systemPrompt: selectedOrganizer.system_prompt,
           firstMessage: selectedOrganizer.firstMessage || '',
+          organizerName: selectedOrganizer.name,
         },
       });
     } else if (starredOrganizers.length === 0) {
       dispatch({
         type: 'UPDATE_ORGANIZER_DATA',
-        payload: { systemPrompt: '', firstMessage: '', organizerId: '' },
+        payload: { systemPrompt: '', firstMessage: '', organizerId: '', organizerName: '' },
       });
     }
   }, []);
@@ -271,6 +275,7 @@ const Workbench = () => {
                 coaches={state.coaches}
                 scouts={state.scouts}
                 organizerId={state.organizerId}
+                organizerName={state.organizerName}
                 organizerPromptText={state.organizerPromptText}
                 organizerFirstMessage={state.organizerFirstMessage}
                 hasValidOrganizer={state.organizers.filter((o) => o.starred && !o.archived).length === 1}

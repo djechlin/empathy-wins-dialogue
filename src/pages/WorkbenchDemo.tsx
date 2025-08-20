@@ -27,12 +27,14 @@ const WorkbenchDemo = () => {
               <Chat
                 organizer={{
                   mode: 'ai',
+                  displayName: 'Suzie',
                   organizerId: urlOrganizerId,
                   promptLocation: 'database',
                   persona: 'organizer',
                 }}
                 attendee={{
                   mode: 'human',
+                  displayName: 'User',
                   persona: 'attendee',
                 }}
                 controlStatus={controlStatus}

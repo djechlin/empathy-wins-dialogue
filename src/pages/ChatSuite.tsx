@@ -9,6 +9,7 @@ interface ChatSuiteProps {
   coaches: PromptBuilderData[];
   scouts: PromptBuilderData[];
   organizerId: string;
+  organizerName: string;
   organizerPromptText: string;
   organizerFirstMessage: string;
   hasValidOrganizer?: boolean;
@@ -27,6 +28,7 @@ const ChatSuite = ({
   coaches,
   scouts,
   organizerId,
+  organizerName,
   organizerPromptText,
   organizerFirstMessage,
   hasValidOrganizer = false,
@@ -178,11 +180,12 @@ const ChatSuite = ({
         .map((attendee) => (
           <MemoizedChat
             key={attendee.id}
-            attendee={{ mode: 'ai', persona: 'attendee', systemPrompt: attendee.system_prompt }}
+            attendee={{ mode: 'ai', persona: 'attendee', displayName: attendee.name, systemPrompt: attendee.system_prompt }}
             organizer={{
               mode: 'ai',
               persona: 'organizer',
               organizerId,
+              displayName: organizerName,
               organizerFirstMessage,
               systemPrompt: organizerPromptText,
               promptLocation: 'local',
@@ -197,11 +200,12 @@ const ChatSuite = ({
 
       <MemoizedChat
         key="human"
-        attendee={{ mode: 'human', persona: 'attendee' }}
+        attendee={{ mode: 'human', persona: 'attendee', displayName: 'Human' }}
         organizer={{
           mode: 'ai',
           persona: 'organizer',
           organizerFirstMessage,
+          displayName: organizerName,
           systemPrompt: organizerPromptText,
           promptLocation: 'local',
         }}
