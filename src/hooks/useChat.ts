@@ -219,7 +219,7 @@ const createChat = async (
     organizerPromptId,
     attendeePromptId,
   });
-  
+
   const {
     data: { user },
     error: userError,

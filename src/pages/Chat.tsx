@@ -653,9 +653,9 @@ const Chat = ({
         .from('chats')
         .insert({
           user_id: user.id,
-          organizer_mode: 'ai',
+          organizer_mode: organizerMode,
           organizer_prompt_id: organizerPromptId || null,
-          attendee_mode: 'ai',
+          attendee_mode: attendeeMode,
           attendee_prompt_id: attendeePromptId || null,
           organizer_system_prompt: organizerPrompt,
           organizer_first_message: organizerFirstMessage,
@@ -732,8 +732,8 @@ const Chat = ({
             promptId: attendeePb?.id,
           },
     ],
-    // Only use findOrCreateChat for AI-only conversations
-    organizerMode === 'ai' && attendeeMode === 'ai' ? findOrCreateChat : undefined,
+    // Pass findOrCreateChat for creating chats
+    findOrCreateChat,
   );
 
   const aiThinking = useMemo(() => chatEngine.thinking?.mode === 'ai', [chatEngine.thinking]);
