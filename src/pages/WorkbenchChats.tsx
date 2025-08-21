@@ -355,7 +355,6 @@ const WorkbenchChats = () => {
       try {
         setLoading(true);
 
-        // Fetch chats for the current user with message counts
         const { data: chatsData, error: chatsError } = await supabase
           .from('chats')
           .select(
@@ -380,11 +379,7 @@ const WorkbenchChats = () => {
 
         if (chatsError) throw chatsError;
 
-        console.log('Raw chat data:', chatsData); // Debug log
-
-        // Transform data and filter out chats with 0 messages
         const chatsWithCounts = (chatsData || []).map((chat) => {
-          console.log('Processing chat:', chat.id, 'organizer_prompt:', chat.organizer_prompt, 'attendee_prompt:', chat.attendee_prompt); // Debug log
           return {
             ...chat,
             message_count: chat.chat_messages?.[0]?.count || 0,
@@ -393,7 +388,7 @@ const WorkbenchChats = () => {
           };
         });
 
-        const chatsWithMessages = chatsWithCounts.filter((chat) => chat.message_count > 0);
+        const chatsWithMessages = chatsWithCounts.filter((chat) => chat.message_count > 1);
         setChats(chatsWithMessages);
       } catch (err) {
         console.error('Error fetching chats:', err);
@@ -408,7 +403,6 @@ const WorkbenchChats = () => {
 
   const fetchChatDetails = async (chatId: string) => {
     try {
-      // Fetch messages
       const { data: messagesData, error: messagesError } = await supabase
         .from('chat_messages')
         .select('*')
@@ -417,7 +411,6 @@ const WorkbenchChats = () => {
 
       if (messagesError) throw messagesError;
 
-      // Fetch coach evaluations
       const { data: coachData, error: coachError } = await supabase
         .from('chat_coaches')
         .select('*')
