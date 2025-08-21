@@ -159,6 +159,18 @@ const getPersonaDisplayName = (persona: 'organizer' | 'attendee' | 'coach' | 'sc
   return names[persona];
 };
 
+const getInitialPromptForPersona = (persona: 'organizer' | 'attendee' | 'coach' | 'scout', providedPrompt?: string): string => {
+  if (providedPrompt) {
+    return providedPrompt;
+  }
+
+  if (persona === 'scout') {
+    return `<background>Information on leader identification. Can be article-lengthed.</background> <criteria>1. Quality name: quality description. 2. Other quality name: other quality description.</criteria>`;
+  }
+
+  return '<empty>';
+};
+
 // Generate timestamped name for prompt builder instance
 const generateTimestampedName = (type: string): string => {
   const now = new Date();
@@ -189,9 +201,11 @@ const PromptBuilder = memo(
       },
       ref,
     ) => {
+      const computedInitialPrompt = getInitialPromptForPersona(persona, initialPrompt);
+      
       const initialState: PromptBuilderState = {
         id: promptBuilderId || null,
-        systemPrompt: initialPrompt,
+        systemPrompt: computedInitialPrompt,
         firstMessage: initialFirstMessage,
         saveStatus: SaveStatus.SAVED,
         saveError: null,
@@ -203,7 +217,7 @@ const PromptBuilder = memo(
         lastSavedPromptBuilder:
           initialPrompt || initialFirstMessage || initialDisplayName
             ? {
-                systemPrompt: initialPrompt,
+                systemPrompt: computedInitialPrompt,
                 firstMessage: initialFirstMessage,
                 displayName: initialDisplayName || persona,
               }
