@@ -604,9 +604,7 @@ const Chat = ({ attendee, organizer, controlStatus, onStatusUpdate, coaches = []
 
   const lastMessage = chatEngine.history[chatEngine.history.length - 1];
   const chatStatus = useMemo(() => {
-    // Check if chat engine itself has ended (e.g., due to {{DONE}})
     if (chatEngine.controlStatus === 'ended') return 'ended';
-    // Otherwise, use parent control status
     if (controlStatus === 'ready') return 'ready';
     if (controlStatus === 'paused') return 'paused';
     if (controlStatus === 'ended') return 'ended';

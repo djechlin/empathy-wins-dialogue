@@ -8,10 +8,6 @@ interface ParticipantMessage {
   content: string;
 }
 
-function toPersona(index: 0 | 1) {
-  return index === 0 ? 'organizer' : 'attendee';
-}
-
 const getAiResponse = async (updatedMessages: ParticipantMessage[], systemPrompt: string): Promise<string> => {
   const { data, error } = await supabase.functions.invoke<WorkbenchResponse>('workbench', {
     body: {
@@ -124,15 +120,15 @@ const useParticipant = (props: ParticipantProps) => {
   const organizerId = props.mode === 'ai' && 'organizerId' in props ? props.organizerId : undefined;
   const [messages, setMessages] = useState<ParticipantMessage[]>([]);
 
-  const chat = useCallback(
+  const chatWithoutInsertMessage = useCallback(
     async (msg: string | null): Promise<string> => {
       if (msg === null && messages.length === 0) {
         if (mode === 'ai' && promptLocation === 'local') {
-          setMessages([{ role: 'assistant' as const, content: organizerFirstMessage }]);
+          setMessages([...messages, { role: 'assistant' as const, content: organizerFirstMessage }]);
           return organizerFirstMessage;
         } else if (promptLocation === 'database') {
           const responseText = await getDemoAiResponse(organizerId, []);
-          setMessages([{ role: 'assistant' as const, content: responseText }]);
+          setMessages([...messages, { role: 'assistant' as const, content: responseText }]);
           return responseText;
         }
       }
@@ -154,6 +150,15 @@ const useParticipant = (props: ParticipantProps) => {
     },
     [messages, mode, getTextInput, organizerFirstMessage, organizerId, promptLocation, systemPrompt],
   );
+
+  const chat = useCallback(async (msg: string | null) => {
+    const result = chatWithoutInsertMessage(msg);
+    try {
+      insertMessage(chatId, persona, msg);
+    } 
+    return result;
+
+  }, [chatWithoutInsertMessage]);
 
   return {
     chat,
@@ -267,7 +272,7 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
         id: (counter++).toString(),
         content,
         senderIndex: nextReceiver,
-        sender: toPersona(nextReceiver),
+        sender: nextReceiver === 0 ? 'organizer' : 'attendee',
         timestamp: new Date(),
       };
       setState((prev) => {
@@ -278,7 +283,6 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
             console.error('Failed to insert message:', error);
           });
 
-          // Only end the chat if it hasn't been ended already
           if (newState.chatId && prev.controlStatus !== 'ended') {
             (async () => {
               try {
@@ -288,7 +292,6 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
               }
             })();
           }
-
           return newState;
         }
 
