@@ -35,7 +35,6 @@ interface ChatMessage {
   created_at: string;
 }
 
-
 interface ScoutEval {
   id: string;
   chat_id: string;
@@ -89,7 +88,6 @@ const EvaluationCriterionComponent = ({ criterion, index }: EvaluationCriterionP
     </div>
   );
 };
-
 
 interface ScoutEvaluationProps {
   evaluation: ScoutEval;
@@ -321,7 +319,6 @@ const WorkbenchChats = () => {
 
       if (messagesError) throw messagesError;
 
-
       // Fetch scout evaluations
       const { data: scoutData, error: scoutError } = await supabase
         .from('chat_scouts')
@@ -400,7 +397,7 @@ const WorkbenchChats = () => {
   };
 
   const truncateUuid = (uuid: string) => {
-    return `${uuid.slice(0, 8)}...${uuid.slice(-4)}`;
+    return `${uuid.slice(0, 4)}...`;
   };
 
   if (!user && !userLoading) {
@@ -552,12 +549,47 @@ const WorkbenchChats = () => {
                                   </Badge>
                                   <div className="flex items-center gap-1 text-sm text-gray-600">
                                     <MessageCircle className="h-4 w-4" />
-                                    {chat.message_count} messages
+                                    {chat.message_count}
                                   </div>
                                   {chatData && chatData.scoutEvals.length > 0 && (
-                                    <div className="flex items-center gap-1 text-sm text-blue-600">
-                                      <Zap className="h-4 w-4" />
-                                      Scout Eval
+                                    <div className="flex items-center gap-1">
+                                      <Zap className="h-4 w-4 text-blue-600" />
+                                      {(() => {
+                                        // Extract overall score from scout evaluation
+                                        const scoutEval = chatData.scoutEvals[0];
+                                        if (!scoutEval) return null;
+                                        
+                                        // Try to find overall score in the result
+                                        const lines = scoutEval.scout_result.split('\n');
+                                        let overallScore = null;
+                                        
+                                        // Look for patterns like "Overall: 4/5" or "Overall recommendation: 4" or just a line with a score
+                                        for (let i = lines.length - 1; i >= Math.max(0, lines.length - 5); i--) {
+                                          const line = lines[i].trim();
+                                          const overallMatch = line.match(/(?:overall|recommendation)[:\s]+([1-5])(?:\/5)?/i) ||
+                                                               line.match(/^([1-5])\/5/i) ||
+                                                               line.match(/^Score:\s*([1-5])$/i);
+                                          if (overallMatch) {
+                                            overallScore = parseInt(overallMatch[1], 10);
+                                            break;
+                                          }
+                                        }
+                                        
+                                        if (overallScore !== null) {
+                                          const getScoreBadgeColor = (score: number): string => {
+                                            if (score >= 4) return 'border-green-500 text-green-700 bg-green-50';
+                                            if (score === 3) return 'border-gray-500 text-gray-700 bg-gray-50';
+                                            return 'border-red-500 text-red-700 bg-red-50';
+                                          };
+                                          
+                                          return (
+                                            <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${getScoreBadgeColor(overallScore)}`}>
+                                              {overallScore}/5
+                                            </span>
+                                          );
+                                        }
+                                        return <span className="text-sm text-blue-600">Scout</span>;
+                                      })()}
                                     </div>
                                   )}
                                   <span className="text-sm text-gray-500">{formatDateTime(chat.created_at)}</span>
