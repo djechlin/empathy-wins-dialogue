@@ -2,6 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { WorkbenchResponse } from '@/types/edge-function-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 interface ParticipantMessage {
   role: 'user' | 'assistant';
@@ -113,6 +114,7 @@ export type ParticipantProps =
 
 const useParticipant = (props: ParticipantProps) => {
   const { mode } = props;
+  const { toast } = useToast();
   const getTextInput = mode === 'human' ? props.getTextInput : undefined;
   const organizerFirstMessage = 'organizerFirstMessage' in props ? props.organizerFirstMessage : null;
   const promptLocation = props.mode === 'ai' && 'promptLocation' in props ? props.promptLocation : null;
@@ -151,14 +153,24 @@ const useParticipant = (props: ParticipantProps) => {
     [messages, mode, getTextInput, organizerFirstMessage, organizerId, promptLocation, systemPrompt],
   );
 
-  const chat = useCallback(async (msg: string | null) => {
-    const result = chatWithoutInsertMessage(msg);
-    try {
-      insertMessage(chatId, persona, msg);
-    } 
-    return result;
-
-  }, [chatWithoutInsertMessage]);
+  const chat = useCallback(
+    async (msg: string | null, chatId: string | null, persona: 'organizer' | 'attendee') => {
+      const result = await chatWithoutInsertMessage(msg);
+      try {
+        if (chatId && msg) {
+          await insertMessage(chatId, persona, msg);
+        }
+      } catch (error) {
+        toast({
+          title: 'Failed to save message',
+          description: error instanceof Error ? error.message : 'An error occurred while saving the message',
+          variant: 'destructive',
+        });
+      }
+      return result;
+    },
+    [chatWithoutInsertMessage, toast],
+  );
 
   return {
     chat,
@@ -247,6 +259,7 @@ const insertMessage = async (chatId: string, persona: 'organizer' | 'attendee', 
 export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
   const location = useLocation();
   const isDemoMode = location.pathname.includes('/demo');
+  const { toast } = useToast();
   const [state, setState] = useState<State>({
     queue: [null],
     history: [],
@@ -267,7 +280,11 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
     const nextReceiver = next === null ? 0 : ((1 - next.senderIndex) as 0 | 1);
     setState((prev) => ({ ...prev, queue: prev.queue.slice(1), thinking: pp[nextReceiver], speaker: pp[nextReceiver] }));
     setTimeout(async () => {
-      const content: string = await participants[nextReceiver].chat(next?.content || null);
+      const content: string = await participants[nextReceiver].chat(
+        next?.content || null,
+        state.chatId,
+        nextReceiver === 0 ? 'organizer' : 'attendee',
+      );
       const response: Message = {
         id: (counter++).toString(),
         content,
@@ -280,7 +297,11 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
           const newState = { ...prev, history: [...prev.history, response], thinking: null, controlStatus: 'ended' as ControlStatus };
 
           insertMessage(newState.chatId, response.sender, response.content).catch((error) => {
-            console.error('Failed to insert message:', error);
+            toast({
+              title: 'Failed to save final message',
+              description: error instanceof Error ? error.message : 'An error occurred while saving the message',
+              variant: 'destructive',
+            });
           });
 
           if (newState.chatId && prev.controlStatus !== 'ended') {
@@ -299,7 +320,7 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
         return newState;
       });
     }, 0);
-  }, [state.controlStatus, state.queue, participants, pp, isDemoMode, state.chatId]);
+  }, [state.controlStatus, state.queue, participants, pp, isDemoMode, state.chatId, toast]);
 
   const start = useCallback(async () => {
     setState((prev) => {
