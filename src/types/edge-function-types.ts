@@ -18,8 +18,7 @@ export interface WorkbenchRequest {
     coach: string;
   };
   scout?: {
-    systemPrompt: string;
-    userPrompt: string;
+    backgroundAndCriteria: string;
     messages: Array<{
       role: 'user' | 'assistant';
       content: string;
