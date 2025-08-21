@@ -558,32 +558,35 @@ const WorkbenchChats = () => {
                                         // Extract overall score from scout evaluation
                                         const scoutEval = chatData.scoutEvals[0];
                                         if (!scoutEval) return null;
-                                        
+
                                         // Try to find overall score in the result
                                         const lines = scoutEval.scout_result.split('\n');
                                         let overallScore = null;
-                                        
+
                                         // Look for patterns like "Overall: 4/5" or "Overall recommendation: 4" or just a line with a score
                                         for (let i = lines.length - 1; i >= Math.max(0, lines.length - 5); i--) {
                                           const line = lines[i].trim();
-                                          const overallMatch = line.match(/(?:overall|recommendation)[:\s]+([1-5])(?:\/5)?/i) ||
-                                                               line.match(/^([1-5])\/5/i) ||
-                                                               line.match(/^Score:\s*([1-5])$/i);
+                                          const overallMatch =
+                                            line.match(/(?:overall|recommendation)[:\s]+([1-5])(?:\/5)?/i) ||
+                                            line.match(/^([1-5])\/5/i) ||
+                                            line.match(/^Score:\s*([1-5])$/i);
                                           if (overallMatch) {
                                             overallScore = parseInt(overallMatch[1], 10);
                                             break;
                                           }
                                         }
-                                        
+
                                         if (overallScore !== null) {
                                           const getScoreBadgeColor = (score: number): string => {
                                             if (score >= 4) return 'border-green-500 text-green-700 bg-green-50';
                                             if (score === 3) return 'border-gray-500 text-gray-700 bg-gray-50';
                                             return 'border-red-500 text-red-700 bg-red-50';
                                           };
-                                          
+
                                           return (
-                                            <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${getScoreBadgeColor(overallScore)}`}>
+                                            <span
+                                              className={`px-2 py-0.5 text-xs font-medium rounded-full border ${getScoreBadgeColor(overallScore)}`}
+                                            >
                                               {overallScore}/5
                                             </span>
                                           );
