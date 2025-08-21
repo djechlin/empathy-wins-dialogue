@@ -145,9 +145,13 @@ const PromptBuilderSuite = ({ color, defaultOpen, onPromptBuildersChange, person
   );
 
   const addPromptBuilder = useCallback(async () => {
+    const systemPrompt =
+      persona === 'scout'
+        ? '<background>\n</background>\n\n<criteria>\n1. Criterion name: description\n2. Other name: other description\n</criteria>'
+        : '<empty>';
     const newPromptBuilder = {
       name: generateTimestampName(persona),
-      system_prompt: '',
+      system_prompt: systemPrompt,
       persona,
       firstMessage: '',
       starred: true,
