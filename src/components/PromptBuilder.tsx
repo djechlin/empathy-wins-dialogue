@@ -529,7 +529,11 @@ const PromptBuilder = memo(
                     <Textarea
                       value={state.systemPrompt}
                       onChange={(e) => dispatch({ type: 'SET_SYSTEM_PROMPT', payload: e.target.value })}
-                      placeholder={`Enter ${getPersonaDisplayName(persona).toLowerCase()} system prompt...`}
+                      placeholder={
+                        persona === 'scout'
+                          ? `Follow this exact format: <background>Information on leader identification. Can be article-lengthed.</background> <criteria>1. Quality name: quality description. 2. Other quality name: other quality description.</criteria>`
+                          : `Enter ${getPersonaDisplayName(persona).toLowerCase()} system prompt...`
+                      }
                       className="min-h-[200px] text-sm flex-1"
                     />
                   </div>
