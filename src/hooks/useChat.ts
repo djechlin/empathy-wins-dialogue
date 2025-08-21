@@ -154,11 +154,11 @@ const useParticipant = (props: ParticipantProps) => {
   );
 
   const chat = useCallback(
-    async (msg: string | null, chatId: string | null, persona: 'organizer' | 'attendee') => {
+    async (msg: string | null, chatId: string | null) => {
       const result = await chatWithoutInsertMessage(msg);
       try {
-        if (chatId && msg) {
-          await insertMessage(chatId, persona, msg);
+        if (chatId) {
+          await insertMessage(chatId, props.persona, result);
         }
       } catch (error) {
         toast({
@@ -169,7 +169,7 @@ const useParticipant = (props: ParticipantProps) => {
       }
       return result;
     },
-    [chatWithoutInsertMessage, toast],
+    [chatWithoutInsertMessage, props.persona, toast],
   );
 
   return {
@@ -280,11 +280,7 @@ export const useChat = (pp: [ParticipantProps, ParticipantProps]) => {
     const nextReceiver = next === null ? 0 : ((1 - next.senderIndex) as 0 | 1);
     setState((prev) => ({ ...prev, queue: prev.queue.slice(1), thinking: pp[nextReceiver], speaker: pp[nextReceiver] }));
     setTimeout(async () => {
-      const content: string = await participants[nextReceiver].chat(
-        next?.content || null,
-        state.chatId,
-        nextReceiver === 0 ? 'organizer' : 'attendee',
-      );
+      const content: string = await participants[nextReceiver].chat(next?.content || null, state.chatId);
       const response: Message = {
         id: (counter++).toString(),
         content,
