@@ -1,11 +1,12 @@
 import Navbar from '@/components/layout/Navbar';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/ui/badge';
 import { Button } from '@/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/collapsible';
 import { User as SupabaseUser } from '@supabase/supabase-js';
-import { Bot, ChevronDown, ChevronRight, Lock, LogIn, Megaphone, MessageCircle, User, Zap } from 'lucide-react';
+import { Bot, ChevronDown, ChevronRight, Copy, Lock, LogIn, Megaphone, MessageCircle, User, Zap } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -314,6 +315,7 @@ const ScoutEvaluationComponent = ({ evaluation }: ScoutEvaluationProps) => {
 };
 
 const WorkbenchChats = () => {
+  const { toast } = useToast();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [userLoading, setUserLoading] = useState(true);
   const [chats, setChats] = useState<ChatData[]>([]);
@@ -486,6 +488,26 @@ const WorkbenchChats = () => {
     });
   };
 
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: 'Copied!',
+        description: 'UUID copied to clipboard',
+      });
+    } catch {
+      toast({
+        title: 'Failed to copy',
+        description: 'Could not copy UUID to clipboard',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const truncateUuid = (uuid: string) => {
+    return `${uuid.slice(0, 8)}...${uuid.slice(-4)}`;
+  };
+
   if (!user && !userLoading) {
     return (
       <div className="min-h-screen bg-gray-50 relative">
@@ -608,7 +630,20 @@ const WorkbenchChats = () => {
                           <CardContent className="p-6 w-full">
                             <div className="flex items-center justify-between text-left">
                               <div className="flex-1">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-auto px-2 py-1 font-mono text-xs hover:bg-gray-100"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      copyToClipboard(chat.id);
+                                    }}
+                                    title={`Click to copy: ${chat.id}`}
+                                  >
+                                    <Copy className="h-3 w-3 mr-1" />
+                                    {truncateUuid(chat.id)}
+                                  </Button>
                                   <Badge variant="outline" className="flex items-center gap-1">
                                     <Megaphone className="h-3 w-3" />
                                     {chat.organizer_name || 'Human'}

@@ -1,8 +1,8 @@
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { WorkbenchResponse } from '@/types/edge-function-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
 
 interface ParticipantMessage {
   role: 'user' | 'assistant';
