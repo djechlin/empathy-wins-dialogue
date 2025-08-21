@@ -35,14 +35,6 @@ interface ChatMessage {
   created_at: string;
 }
 
-interface CoachEval {
-  id: string;
-  chat_id: string;
-  coach_id: string;
-  coach_prompt: string;
-  coach_result: string;
-  created_at: string;
-}
 
 interface ScoutEval {
   id: string;
@@ -55,7 +47,6 @@ interface ScoutEval {
 
 interface ExpandedChatData {
   messages: ChatMessage[];
-  coachEvals: CoachEval[];
   scoutEvals: ScoutEval[];
 }
 
@@ -99,87 +90,6 @@ const EvaluationCriterionComponent = ({ criterion, index }: EvaluationCriterionP
   );
 };
 
-interface CoachEvaluationProps {
-  evaluation: CoachEval;
-}
-
-const CoachEvaluationComponent = ({ evaluation }: CoachEvaluationProps) => {
-  const parseEvaluationJSON = (text: string): EvaluationCriterion[] | null => {
-    try {
-      // Try to extract JSON from the text
-      // Look for JSON array pattern or ```json blocks
-      const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) || text.match(/(\[[\s\S]*\])/);
-
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[1]);
-        if (
-          Array.isArray(parsed) &&
-          parsed.every((item) => typeof item === 'object' && 'shortCriterion' in item && 'score' in item && 'feedback' in item)
-        ) {
-          return parsed;
-        }
-      }
-
-      // Not valid JSON, return null
-    } catch {
-      // Not valid JSON, return null
-    }
-    return null;
-  };
-
-  const parseScore = (text: string): { score: number | null; content: string } => {
-    const lines = text.split('\n');
-    const firstLine = lines[0]?.trim();
-    const scoreMatch = firstLine?.match(/^Score:\s*([0-5])$/);
-    if (scoreMatch) {
-      const score = parseInt(scoreMatch[1], 10);
-      const content = lines.slice(1).join('\n').trim();
-      return { score, content };
-    }
-    return { score: null, content: text };
-  };
-
-  const criteria = parseEvaluationJSON(evaluation.coach_result);
-  const fallbackParsed = !criteria ? parseScore(evaluation.coach_result) : { score: null, content: '' };
-
-  return (
-    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <div className="w-3 h-3 bg-red-300 rounded-full" />
-        <span className="text-sm font-medium text-gray-900">Coach Evaluation</span>
-      </div>
-
-      <Collapsible>
-        <CollapsibleTrigger asChild>
-          <Button variant="ghost" className="w-full justify-start p-0 h-auto text-xs mb-2">
-            <div className="flex items-center gap-1">
-              <ChevronRight className="h-3 w-3" />
-              <span className="font-medium text-gray-600">Coach Prompt</span>
-            </div>
-          </Button>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="mb-3">
-          <div className="text-xs text-gray-700 bg-white p-2 rounded border ml-4">{evaluation.coach_prompt}</div>
-        </CollapsibleContent>
-      </Collapsible>
-
-      <div>
-        <h5 className="text-xs font-medium text-gray-600 mb-2">Evaluation:</h5>
-        {criteria ? (
-          <div className="space-y-2">
-            {criteria.map((criterion, idx) => (
-              <EvaluationCriterionComponent key={idx} criterion={criterion} index={idx} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-sm text-gray-600 bg-white p-2 rounded border whitespace-pre-wrap">
-            {fallbackParsed.content || evaluation.coach_result}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
 
 interface ScoutEvaluationProps {
   evaluation: ScoutEval;
@@ -411,13 +321,6 @@ const WorkbenchChats = () => {
 
       if (messagesError) throw messagesError;
 
-      const { data: coachData, error: coachError } = await supabase
-        .from('chat_coaches')
-        .select('*')
-        .eq('chat_id', chatId)
-        .order('created_at', { ascending: true });
-
-      if (coachError) throw coachError;
 
       // Fetch scout evaluations
       const { data: scoutData, error: scoutError } = await supabase
@@ -430,7 +333,6 @@ const WorkbenchChats = () => {
 
       const expandedData: ExpandedChatData = {
         messages: (messagesData || []) as ChatMessage[],
-        coachEvals: coachData || [],
         scoutEvals: scoutData || [],
       };
 
@@ -652,6 +554,12 @@ const WorkbenchChats = () => {
                                     <MessageCircle className="h-4 w-4" />
                                     {chat.message_count} messages
                                   </div>
+                                  {chatData && chatData.scoutEvals.length > 0 && (
+                                    <div className="flex items-center gap-1 text-sm text-blue-600">
+                                      <Zap className="h-4 w-4" />
+                                      Scout Eval
+                                    </div>
+                                  )}
                                   <span className="text-sm text-gray-500">{formatDateTime(chat.created_at)}</span>
                                 </div>
                               </div>
@@ -724,8 +632,8 @@ const WorkbenchChats = () => {
                                 formatTime={formatTime}
                               />
 
-                              {/* Evaluations Section */}
-                              {(chatData.coachEvals.length > 0 || chatData.scoutEvals.length > 0) && (
+                              {/* Scout Evaluations Section */}
+                              {chatData.scoutEvals.length > 0 && (
                                 <Collapsible
                                   open={evaluationsOpen[chat.id] || false}
                                   onOpenChange={(open) => setEvaluationsOpen((prev) => ({ ...prev, [chat.id]: open }))}
@@ -739,18 +647,12 @@ const WorkbenchChats = () => {
                                           <ChevronRight className="h-4 w-4" />
                                         )}
                                         <Zap className="h-4 w-4 text-blue-600" />
-                                        Evaluations ({chatData.coachEvals.length + chatData.scoutEvals.length})
+                                        Scout Evaluations ({chatData.scoutEvals.length})
                                       </div>
                                     </Button>
                                   </CollapsibleTrigger>
                                   <CollapsibleContent className="mt-3">
                                     <div className="space-y-4">
-                                      {/* Coach Evaluations */}
-                                      {chatData.coachEvals.map((evaluation) => (
-                                        <CoachEvaluationComponent key={evaluation.id} evaluation={evaluation} />
-                                      ))}
-
-                                      {/* Scout Evaluations */}
                                       {chatData.scoutEvals.map((evaluation) => (
                                         <ScoutEvaluationComponent key={evaluation.id} evaluation={evaluation} />
                                       ))}
@@ -759,7 +661,7 @@ const WorkbenchChats = () => {
                                 </Collapsible>
                               )}
 
-                              {chatData.messages.length === 0 && chatData.coachEvals.length === 0 && chatData.scoutEvals.length === 0 && (
+                              {chatData.messages.length === 0 && chatData.scoutEvals.length === 0 && (
                                 <div className="text-center py-8">
                                   <p className="text-gray-500">No messages or evaluations found for this chat.</p>
                                 </div>

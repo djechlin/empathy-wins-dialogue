@@ -202,7 +202,7 @@ const PromptBuilder = memo(
       ref,
     ) => {
       const computedInitialPrompt = getInitialPromptForPersona(persona, initialPrompt);
-      
+
       const initialState: PromptBuilderState = {
         id: promptBuilderId || null,
         systemPrompt: computedInitialPrompt,
