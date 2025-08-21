@@ -180,7 +180,13 @@ const ChatSuite = ({
         .map((attendee) => (
           <MemoizedChat
             key={attendee.id}
-            attendee={{ mode: 'ai', persona: 'attendee', displayName: attendee.name, systemPrompt: attendee.system_prompt }}
+            attendee={{
+              mode: 'ai',
+              persona: 'attendee',
+              attendeeId: attendee.id,
+              displayName: attendee.name,
+              systemPrompt: attendee.system_prompt,
+            }}
             organizer={{
               mode: 'ai',
               persona: 'organizer',
