@@ -135,18 +135,18 @@ const Learn = () => {
                       <h3 className="font-semibold text-dialogue-darkblue text-lg">The Philosophy Behind Deep Canvassing</h3>
                     </div>
                     <div className="space-y-3 text-sm">
-                      <p className="flex items-start gap-2">
+                      <div className="flex items-start gap-2">
                         <ArrowRight className="h-4 w-4 text-dialogue-purple mt-0.5 flex-shrink-0" />
-                        Political persuasion happens by creating safe spaces for processing, not by presenting more facts
-                      </p>
-                      <p className="flex items-start gap-2">
+                        <span>Political persuasion happens by creating safe spaces for processing, not by presenting more facts</span>
+                      </div>
+                      <div className="flex items-start gap-2">
                         <ArrowRight className="h-4 w-4 text-dialogue-purple mt-0.5 flex-shrink-0" />
-                        Focus on lowering emotional resistance rather than piling on information
-                      </p>
-                      <p className="flex items-start gap-2">
+                        <span>Focus on lowering emotional resistance rather than piling on information</span>
+                      </div>
+                      <div className="flex items-start gap-2">
                         <ArrowRight className="h-4 w-4 text-dialogue-purple mt-0.5 flex-shrink-0" />
-                        Create space for cognitive dissonance and natural mind-changing
-                      </p>
+                        <span>Create space for cognitive dissonance and natural mind-changing</span>
+                      </div>
                     </div>
                   </div>
 

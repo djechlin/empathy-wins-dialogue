@@ -193,7 +193,7 @@ function RoleplayContent() {
                             {step.hasQuote && !step.text.includes('<MessageSquare>') && !step.text.includes('<Heart>') && (
                               <MessageSquare className="w-4 h-4 text-blue-500 mt-1 flex-shrink-0" />
                             )}
-                            <p className="text-sm text-gray-600 whitespace-pre-line">
+                            <div className="text-sm text-gray-600 whitespace-pre-line">
                               {step.text.split('\n\n').map((line, i) => {
                                 if (line.startsWith('<MessageSquare>')) {
                                   return (
@@ -217,7 +217,7 @@ function RoleplayContent() {
                                   </div>
                                 );
                               })}
-                            </p>
+                            </div>
                           </div>
                         </div>
                       </div>
