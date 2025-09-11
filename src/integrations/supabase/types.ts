@@ -8,36 +8,6 @@ export type Database = {
   };
   public: {
     Tables: {
-      all_claude_logs: {
-        Row: {
-          claude_result_raw: string;
-          created_at: string | null;
-          edge_function: string;
-          id: string;
-          messages: Json;
-          model: string;
-          system_message: string;
-        };
-        Insert: {
-          claude_result_raw: string;
-          created_at?: string | null;
-          edge_function: string;
-          id?: string;
-          messages: Json;
-          model: string;
-          system_message: string;
-        };
-        Update: {
-          claude_result_raw?: string;
-          created_at?: string | null;
-          edge_function?: string;
-          id?: string;
-          messages?: Json;
-          model?: string;
-          system_message?: string;
-        };
-        Relationships: [];
-      };
       claude_rally_followup_logs: {
         Row: {
           claude_model: string | null;
