@@ -66,20 +66,23 @@ function fromHumeStatus(status: VoiceStatus): 'connected' | 'connecting' | 'not-
 }
 
 // Requires a Hume VoiceProvider to be set up, which is why we need 2 layers
-function InnerDialogueProvider({ children }: { children: ReactNode }) {
+function InnerDialogueProvider({ children, configId, accessToken }: { children: ReactNode; configId: string; accessToken: string }) {
   const humeVoice = useHumeVoice();
   const { seconds: secondsElapsed, pause, start, isRunning } = useStopwatch({ autoStart: false });
   const { request: requestWakeLock, release: releaseWakeLock } = useWakeLock();
 
   const connect = useCallback(async () => {
-    await humeVoice.connect();
+    await humeVoice.connect({ 
+      auth: { type: 'accessToken', value: accessToken },
+      configId 
+    });
     start();
     try {
       requestWakeLock();
     } catch (error) {
       console.error('Wake lock not supported or failed:', error);
     }
-  }, [humeVoice, start, requestWakeLock]);
+  }, [humeVoice, start, requestWakeLock, accessToken, configId]);
 
   const disconnect = useCallback(() => {
     humeVoice.disconnect();
@@ -141,12 +144,17 @@ function InnerDialogueProvider({ children }: { children: ReactNode }) {
   return <DialogueContextObject.Provider value={dialogueContext}>{children}</DialogueContextObject.Provider>;
 }
 
-export function HumeDialogueProvider({ children, configId, onToolCall, ...otherProps }: HumeDialogueProviderProps) {
+export function HumeDialogueProvider({ children, configId, onToolCall }: HumeDialogueProviderProps) {
+  const [fetchingAccessToken, setFetchingAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function getToken() {
+      if (fetchingAccessToken) {
+        return;
+      }
+      setFetchingAccessToken(true);
       try {
         const token = await getHumeAccessToken();
         setAccessToken(token);
@@ -156,7 +164,7 @@ export function HumeDialogueProvider({ children, configId, onToolCall, ...otherP
       }
     }
     getToken();
-  }, []);
+  }, [fetchingAccessToken]);
 
   if (error) {
     return <div className="p-8 text-red-500">Error: {error || 'Failed to load voice connection'}</div>;
@@ -169,9 +177,6 @@ export function HumeDialogueProvider({ children, configId, onToolCall, ...otherP
   return (
     <VoiceProvider
       onToolCall={onToolCall}
-      auth={{ type: 'accessToken', value: accessToken }}
-      configId={configId}
-      debug={true}
       onClose={(event) => {
         console.error('WebSocket closed:', {
           code: event.code,
@@ -179,12 +184,10 @@ export function HumeDialogueProvider({ children, configId, onToolCall, ...otherP
           wasClean: event.wasClean,
         });
       }}
-      onError={(event) => {
-        console.error('WebSocket error:', event);
-      }}
-      {...otherProps}
     >
-      <InnerDialogueProvider>{children}</InnerDialogueProvider>
+      <InnerDialogueProvider configId={configId} accessToken={accessToken}>
+        {children}
+      </InnerDialogueProvider>
     </VoiceProvider>
   );
 }
