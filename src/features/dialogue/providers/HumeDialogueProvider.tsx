@@ -172,6 +172,16 @@ export function HumeDialogueProvider({ children, configId, onToolCall, ...otherP
       auth={{ type: 'accessToken', value: accessToken }}
       configId={configId}
       debug={true}
+      onClose={(event) => {
+        console.error('WebSocket closed:', {
+          code: event.code,
+          reason: event.reason,
+          wasClean: event.wasClean,
+        });
+      }}
+      onError={(event) => {
+        console.error('WebSocket error:', event);
+      }}
       {...otherProps}
     >
       <InnerDialogueProvider>{children}</InnerDialogueProvider>
