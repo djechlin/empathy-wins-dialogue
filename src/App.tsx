@@ -4,9 +4,9 @@ import { TooltipProvider } from '@/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import ChallengeLayout from './components/layout/ChallengeLayout';
 import About from './pages/About';
 import Auth from './pages/Auth';
-import ChallengeLayout from './components/layout/ChallengeLayout';
 import Blog from './pages/Blog';
 import CognitiveDissonance from './pages/blog/CognitiveDissonance';
 import SwingVoters from './pages/blog/SwingVoters';
@@ -18,16 +18,12 @@ import LearnChapter from './pages/LearnChapter';
 import NotFound from './pages/NotFound';
 import Prepare from './pages/Prepare';
 import Privacy from './pages/Privacy';
+import RallyFollowup from './pages/RallyFollowup';
+import Relational from './pages/Relational';
 import Report from './pages/Report';
 import Roleplay from './pages/Roleplay';
 import StartingOut from './pages/StartingOut';
 import Text from './pages/Text';
-import RallyFollowup from './pages/RallyFollowup';
-import Workbench from './pages/Workbench';
-import WorkbenchDemo from './pages/WorkbenchDemo';
-import WorkbenchChats from './pages/WorkbenchChats';
-import Relational from './pages/Relational';
-import PromptsHistory from './pages/PromptsHistory';
 
 const queryClient = new QueryClient();
 
@@ -59,11 +55,7 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/text" element={<Text />} />
             <Route path="/rally-followup" element={<RallyFollowup />} />
-            <Route path="/workbench" element={<Workbench />} />
-            <Route path="/workbench/demo" element={<WorkbenchDemo />} />
-            <Route path="/workbench/chats" element={<WorkbenchChats />} />
             <Route path="/relational" element={<Relational />} />
-            <Route path="/prompts/history" element={<PromptsHistory />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

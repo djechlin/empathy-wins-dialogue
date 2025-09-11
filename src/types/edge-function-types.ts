@@ -6,32 +6,6 @@
  * types must be manually maintained to match the function implementations.
  */
 
-// Workbench Edge Function Types
-export interface WorkbenchRequest {
-  messages?: Array<{
-    role: 'user' | 'assistant';
-    content: string;
-  }>;
-  systemPrompt?: string;
-  coach?: {
-    transcript: string;
-    coach: string;
-  };
-  scout?: {
-    backgroundAndCriteria: string;
-    messages: Array<{
-      role: 'user' | 'assistant';
-      content: string;
-    }>;
-  };
-}
-
-export interface WorkbenchResponse {
-  message?: string;
-  user_id?: string;
-  error?: string;
-}
-
 // Claude Report Edge Function Types
 export interface ClaudeReportRequest {
   userMessage: string;
