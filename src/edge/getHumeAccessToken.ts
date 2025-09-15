@@ -11,7 +11,7 @@ export const getHumeAccessToken = async () => {
       return null;
     }
 
-    return data?.access_token ?? null;
+    return data?.accessToken ?? null;
   } catch (error) {
     console.error('Error calling Hume token function:', error);
     return null;

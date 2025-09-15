@@ -1,5 +1,5 @@
 import { getHumeAccessToken } from '@/edge/getHumeAccessToken';
-import { ToolCallHandler, useVoice as useHumeVoice, VoiceContextType, VoiceProvider } from '@humeai/voice-react';
+import { useVoice as useHumeVoice, VoiceContextType, VoiceProvider } from '@humeai/voice-react';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useStopwatch } from 'react-timer-hook';
 import useWakeLock from 'react-use-wake-lock';
@@ -9,7 +9,6 @@ import { DialogueContextObject } from './DialogueContextObject';
 interface HumeDialogueProviderProps {
   children: ReactNode;
   configId: string;
-  onToolCall?: ToolCallHandler;
 }
 
 // Transform Hume emotion scores to Record<string, number>
@@ -144,7 +143,7 @@ function InnerDialogueProvider({ children, configId, accessToken }: { children: 
   return <DialogueContextObject.Provider value={dialogueContext}>{children}</DialogueContextObject.Provider>;
 }
 
-export function HumeDialogueProvider({ children, configId, onToolCall }: HumeDialogueProviderProps) {
+export function HumeDialogueProvider({ children, configId }: HumeDialogueProviderProps) {
   const [fetchingAccessToken, setFetchingAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -176,7 +175,6 @@ export function HumeDialogueProvider({ children, configId, onToolCall }: HumeDia
 
   return (
     <VoiceProvider
-      onToolCall={onToolCall}
       onClose={(event) => {
         console.error('WebSocket closed:', {
           code: event.code,
